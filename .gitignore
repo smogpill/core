@@ -1,29 +1,10 @@
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+# Copyright(c) 2016 Jounayd Id Salah
+# Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 
-# Precompiled Headers
-*.gch
-*.pch
+build
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
 *.exe
 *.out
 *.app
+*.bat
+
