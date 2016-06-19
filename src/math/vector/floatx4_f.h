@@ -8,6 +8,8 @@
 
 namespace co
 {
+	struct floatx3;
+
 	coFORCE_INLINE floatx4 make_floatx4(float _a) { return bitCast<floatx4>(_mm_set1_ps(_a)); }
 	coFORCE_INLINE floatx4 make_floatx4(float _x, float _y, float _z, float _w) { return bitCast<floatx4>(_mm_set_ps(_x, _y, _z, _w)); }
 	coFORCE_INLINE floatx4 make_floatx4(const floatx4& _xxxx, const floatx4& _yyyy, const floatx4& _zzzz, const floatx4& _wwww)
@@ -55,6 +57,14 @@ namespace co
 	coFORCE_INLINE floatx4 selectW(const floatx4& _a, const floatx4& _b)
 	{
 		return bitCast<floatx4>(_mm_or_ps(_mm_and_ps(__m128_MASK_W, bitCast<__m128>(_b)), _mm_andnot_ps(__m128_MASK_W, bitCast<__m128>(_a))));
+	}
+	coFORCE_INLINE floatx4 make_floatx4XYZ0(const floatx4& _xyz)
+	{
+		return selectXYZ(_xyz, floatx4_ZERO);
+	}
+	coFORCE_INLINE floatx4 make_floatx4XYZ0(const floatx3& _xyz)
+	{
+		return selectXYZ(bitCast<floatx4>(_xyz), floatx4_ZERO);
 	}
 	coFORCE_INLINE floatx4 abs(const floatx4& _a) { return bitCast<floatx4>(_mm_andnot_ps(__m128_SIGN_MASK, bitCast<__m128>(_a))); }
 	coFORCE_INLINE floatx4 sqrt(const floatx4& _a) { return bitCast<floatx4>(_mm_sqrt_ps(bitCast<__m128>(_a))); }

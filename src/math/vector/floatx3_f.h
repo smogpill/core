@@ -66,4 +66,5 @@ namespace co
 		const floatx3 delta = abs(_b - _a);
 		return delta < _epsilon;
 	}
+	coFORCE_INLINE floatx3 getLength(const floatx3& _a) { return sqrt(dot(_a, _a)); }
 }
