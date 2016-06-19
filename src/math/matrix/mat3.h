@@ -6,10 +6,10 @@
 
 namespace co
 {
-	struct mat3
+	struct Mat3
 	{
-		floatx3 c0;
-		floatx3 c1;
-		floatx3 c2;
+		Floatx3 c0;
+		Floatx3 c1;
+		Floatx3 c2;
 	};
 }

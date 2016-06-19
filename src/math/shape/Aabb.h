@@ -6,9 +6,9 @@
 
 namespace co
 {
-	struct coAabb
+	struct Aabb
 	{
-		floatx3 min;
-		floatx3 max;
+		Floatx3 min;
+		Floatx3 max;
 	};
 }

@@ -8,14 +8,14 @@
 
 namespace co
 {
-	floatx3 getScale(const mat3& _a)
+	Floatx3 getScale(const Mat3& _a)
 	{
 		return make_floatx3(getLength(_a.c0), getLength(_a.c1), getLength(_a.c2));
 	}
 
-	mat3 removeScale(const mat3& _a)
+	Mat3 removeScale(const Mat3& _a)
 	{
-		mat3 m;
+		Mat3 m;
 		m.c0 = normalize(_a.c0);
 		m.c1 = normalize(_a.c1);
 		m.c2 = normalize(_a.c2);

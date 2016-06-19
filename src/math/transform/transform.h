@@ -7,10 +7,10 @@
 
 namespace co
 {
-	struct transform
+	struct Transform
 	{
-		quat rotation;
-		floatx3 translation;
-		floatx3 scale;
+		Quat rotation;
+		Floatx3 translation;
+		Floatx3 scale;
 	};
 }

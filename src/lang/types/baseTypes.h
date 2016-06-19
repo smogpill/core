@@ -12,9 +12,11 @@ namespace co
 	typedef uint16_t			uint16;
 	typedef uint32_t			uint32;
 	typedef uint64_t			uint64;
+	typedef unsigned int		uint;
 	typedef bool				bool8;
 	typedef uint32_t			bool32;
 	typedef char				char8;
+	typedef unsigned char		uchar;
 	typedef wchar_t				char16;
 	typedef uint8_t				byte;
 	typedef std::nullptr_t		nullptrType;

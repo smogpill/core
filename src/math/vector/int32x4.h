@@ -6,7 +6,7 @@
 
 namespace co
 {
-	struct alignas(16) int32x4
+	struct alignas(16) Int32x4
 	{
 		int32 x;
 		int32 y;

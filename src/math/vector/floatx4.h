@@ -4,7 +4,7 @@
 
 namespace co
 {
-	struct alignas(16) floatx4
+	struct alignas(16) Floatx4
 	{
 		float x;
 		float y;

@@ -7,7 +7,7 @@
 
 namespace co
 {
-	coFORCE_INLINE int32x4 operator& (const int32x4& _a, const int32x4& _b) { return bitCast<int32x4>(_mm_and_ps(bitCast<__m128>(_a), bitCast<__m128>(_b))); }
-	coFORCE_INLINE int32x4 operator| (const int32x4& _a, const int32x4& _b) { return bitCast<int32x4>(_mm_or_ps(bitCast<__m128>(_a), bitCast<__m128>(_b))); }
-	coFORCE_INLINE int32x4 operator^ (const int32x4& _a, const int32x4& _b) { return bitCast<int32x4>(_mm_xor_ps(bitCast<__m128>(_a), bitCast<__m128>(_b))); }
+	coFORCE_INLINE Int32x4 operator& (const Int32x4& _a, const Int32x4& _b) { return bitCast<Int32x4>(_mm_and_ps(bitCast<__m128>(_a), bitCast<__m128>(_b))); }
+	coFORCE_INLINE Int32x4 operator| (const Int32x4& _a, const Int32x4& _b) { return bitCast<Int32x4>(_mm_or_ps(bitCast<__m128>(_a), bitCast<__m128>(_b))); }
+	coFORCE_INLINE Int32x4 operator^ (const Int32x4& _a, const Int32x4& _b) { return bitCast<Int32x4>(_mm_xor_ps(bitCast<__m128>(_a), bitCast<__m128>(_b))); }
 }

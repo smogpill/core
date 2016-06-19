@@ -6,11 +6,11 @@
 
 namespace co
 {
-	struct mat4
+	struct Mat4
 	{
-		floatx4 c0;
-		floatx4 c1;
-		floatx4 c2;
-		floatx4 c3;
+		Floatx4 c0;
+		Floatx4 c1;
+		Floatx4 c2;
+		Floatx4 c3;
 	};
 }

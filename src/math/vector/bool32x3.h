@@ -6,7 +6,7 @@
 
 namespace co
 {
-	struct alignas(16) bool32x3
+	struct alignas(16) Bool32x3
 	{
 		bool32 x;
 		bool32 y;

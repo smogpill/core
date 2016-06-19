@@ -6,7 +6,7 @@
 
 namespace co
 {
-	struct alignas(16) quat
+	struct alignas(16) Quat
 	{
 		float x;
 		float y;

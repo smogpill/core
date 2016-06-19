@@ -12,3 +12,9 @@
 #include "math/matrix/mat3_f.h"
 #include "math/matrix/mat4_f.h"
 #include "math/transform/transform_f.h"
+
+using namespace co;
+
+void test()
+{
+}
