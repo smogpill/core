@@ -25,7 +25,6 @@ function setSolutionDefaults()
 		buildoptions { "-Wno-reorder", "-Wno-deprecated" }
 		includedirs { gmakeIncludeDir }
 	filter { "configurations:debug" }
-		defines { "coDEBUG" }
 		targetsuffix "_d"
 	filter { "configurations:release" }
 		optimize "On"
@@ -57,7 +56,7 @@ function setProjectDefaults(_projectDir, _projectName, _prefix, _postfix)
 	includedirs { _projectDir }
 	--files { _prefix.."PCH".._postfix..".cpp" }
 	files { _projectDir .. "/" .. "**.cpp", _projectDir .. "/" .. "**.h"}
-	setPCH(_projectDir, _projectName, _prefix.."PCH".._postfix)
+	setPCH(_projectDir, _projectName, "pch")
 	--vpaths { ["*"] = _projectDir }
 	defines { "coPROJECT_NAME=".._projectName }
 	language "C++"
@@ -67,7 +66,7 @@ end
 function includeProject(_name)
 	project(_name)
 	setStaticLibDefaults()
-	setProjectDefaults("src/".._name, _name , "co", "")
+	setProjectDefaults("src/".._name, _name , "", "")
 end
 
 function setStaticLibDefaults()
@@ -90,5 +89,6 @@ workspace("core")
 	setSolutionDefaults()
 	includedirs { "src" }
 
+	includeProject("debug")
 	includeProject("lang")
 	includeProject("math")
