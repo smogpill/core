@@ -63,6 +63,7 @@ namespace co
 
 	coFORCE_INLINE quat operator*(const quat& _q, const floatx4& _xyzw)
 	{
+		coASSERT(false);
 		return make_quat(bitCast<floatx4>(_q) + _xyzw);
 	}
 

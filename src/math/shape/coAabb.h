@@ -6,10 +6,9 @@
 
 namespace co
 {
-	struct mat3
+	struct coAabb
 	{
-		floatx3 c0;
-		floatx3 c1;
-		floatx3 c2;
+		floatx3 min;
+		floatx3 max;
 	};
 }

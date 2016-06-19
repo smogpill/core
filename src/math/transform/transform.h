@@ -3,14 +3,14 @@
 #pragma once
 
 #include "math/quaternion/quat.h"
-#include "math/vector/floatx4.h"
+#include "math/vector/floatx3.h"
 
 namespace co
 {
 	struct transform
 	{
 		quat rotation;
-		floatx4 translation;
-		floatx4 scale;
+		floatx3 translation;
+		floatx3 scale;
 	};
 }

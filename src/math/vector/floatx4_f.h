@@ -79,7 +79,7 @@ namespace co
 	coFORCE_INLINE floatx4 normalize(const floatx4& _a) { return _a * invSqrt(dot(_a, _a)); }
 	coFORCE_INLINE floatx4 pow2(const floatx4& _a) { return  _a * _a; }
 	coFORCE_INLINE floatx4 pow4(const floatx4& _a) { return pow2(_a * _a); }
-	coFORCE_INLINE floatx4 denullify(const floatx4& _a) { return _a + bitCast<floatx4>(+1.0e-037f); }
+	coFORCE_INLINE floatx4 denullify(const floatx4& _a) { return _a + make_floatx4(+1.0e-037f); }
 	coFORCE_INLINE floatx4 min(const floatx4& _a, const floatx4& _b) { return bitCast<floatx4>(_mm_min_ps(bitCast<__m128>(_a), bitCast<__m128>(_b))); }
 	coFORCE_INLINE floatx4 max(const floatx4& _a, const floatx4& _b) { return bitCast<floatx4>(_mm_max_ps(bitCast<__m128>(_a), bitCast<__m128>(_b))); }
 	coFORCE_INLINE floatx4 clamp(const floatx4& _a, const floatx4& _min, const floatx4& _max) { return min(max(_a, _min), _max); }
