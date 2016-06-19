@@ -3,7 +3,7 @@
 #pragma once
 
 #include "lang/cppExtensions.h"
-#include "math/vector/int32x4.h"
+#include "math/vector/Int32x4.h"
 
 namespace co
 {

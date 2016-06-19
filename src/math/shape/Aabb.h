@@ -2,7 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include "math/vector/floatx3.h"
+#include "math/vector/Floatx3.h"
 
 namespace co
 {

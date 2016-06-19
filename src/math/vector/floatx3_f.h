@@ -3,9 +3,9 @@
 #pragma once
 
 #include "lang/cppExtensions.h"
-#include "math/vector/floatx3.h"
-#include "math/vector/bool32x3_f.h"
-#include "math/vector/floatx4_f.h"
+#include "math/vector/Floatx3.h"
+#include "math/vector/Bool32x3_f.h"
+#include "math/vector/Floatx4_f.h"
 
 namespace co
 {

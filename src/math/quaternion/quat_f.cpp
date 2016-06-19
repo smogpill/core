@@ -2,7 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include "math/pch.h"
-#include "math/quaternion/quat_f.h"
+#include "math/quaternion/Quat_f.h"
 
 namespace co
 {

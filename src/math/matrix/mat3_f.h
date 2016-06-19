@@ -3,8 +3,8 @@
 #pragma once
 
 #include "lang/cppExtensions.h"
-#include "math/matrix/mat3.h"
-#include "math/vector/floatx3_f.h"
+#include "math/matrix/Mat3.h"
+#include "math/vector/Floatx3_f.h"
 
 namespace co
 {

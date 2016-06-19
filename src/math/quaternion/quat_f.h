@@ -3,9 +3,9 @@
 #pragma once
 
 #include "math/scalar/float_f.h"
-#include "math/vector/floatx4_f.h"
-#include "math/vector/int32x4_f.h"
-#include "math/quaternion/quat.h"
+#include "math/vector/Floatx4_f.h"
+#include "math/vector/Int32x4_f.h"
+#include "math/quaternion/Quat.h"
 #include "lang/cppExtensions.h"
 
 namespace co

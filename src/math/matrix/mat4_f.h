@@ -3,9 +3,9 @@
 #pragma once
 
 #include "lang/cppExtensions.h"
-#include "math/matrix/mat4.h"
-#include "math/vector/floatx3.h"
-#include "math/vector/floatx4_f.h"
+#include "math/matrix/Mat4.h"
+#include "math/vector/Floatx3.h"
+#include "math/vector/Floatx4_f.h"
 
 namespace co
 {
