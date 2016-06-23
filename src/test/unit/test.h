@@ -9,4 +9,7 @@ namespace co
 	void _testName_()
 
 #define coTEST(...) _coTEST(_test_##__COUNTER__, __VA_ARGS__)
+
+#define coEXPECT(_cond_)
+#define coEXPECT_FATAL(_cond_)
 }

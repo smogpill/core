@@ -95,6 +95,8 @@ workspace("core")
 	includeProject("memory")
 	includeProject("container")
 	includeProject("test")
+	includeProject("test_math")
 	includeProject("event")
 	includeProject("io")
 	includeProject("string")
+	
