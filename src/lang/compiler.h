@@ -2,12 +2,10 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-namespace co
+struct coConfig
 {
-	struct config
-	{
-		static bool breakOnError;
-	};
+	static bool breakOnError;
+};
 
 #if defined(_MSC_VER)
 #define coMSVC_COMPILER
@@ -26,9 +24,7 @@ namespace co
 
 	inline void _coReturnVoid(int) {}  // to avoid some gcc warnings with the comma operator
 #ifdef coMSVC_COMPILER
-#define coBREAK() _coReturnVoid(config::breakOnError && (__debugbreak(), true))
+#define coBREAK() _coReturnVoid(coConfig::breakOnError && (__debugbreak(), true))
 #else
-#define coBREAK() _coReturnVoid(config::breakOnError && ::raise(SIGINT))
+#define coBREAK() _coReturnVoid(coConfig::breakOnError && ::raise(SIGINT))
 #endif
-
-}

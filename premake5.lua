@@ -98,5 +98,4 @@ workspace("core")
 	includeProject("test_math")
 	includeProject("event")
 	includeProject("io")
-	includeProject("string")
 	

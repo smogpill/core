@@ -2,10 +2,11 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include <cstddef>
-#include <cstdint>
-#include <xmmintrin.h>
+#include "math/vector/coFloatx3.h"
 
-#include "lang/types/baseTypes.h"
-#include "lang/compiler.h"
-
+struct coMat3
+{
+	coFloatx3 c0;
+	coFloatx3 c1;
+	coFloatx3 c2;
+};

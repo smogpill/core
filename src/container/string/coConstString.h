@@ -2,10 +2,11 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include <cstddef>
-#include <cstdint>
-#include <xmmintrin.h>
+#include "container/array/coConstArray.h"
 
-#include "lang/types/baseTypes.h"
-#include "lang/compiler.h"
-
+class coConstString : public coConstArray<coChar>
+{
+public:
+	coConstString();
+	coConstString(const coChar* _s, coUint32 _size);
+};

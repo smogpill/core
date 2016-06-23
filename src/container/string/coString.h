@@ -2,10 +2,11 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include <cstddef>
-#include <cstdint>
-#include <xmmintrin.h>
+#include "container/array/coArray.h"
 
-#include "lang/types/baseTypes.h"
-#include "lang/compiler.h"
-
+class coString : public coArray<coChar>
+{
+public:
+	coString();
+	coString(coChar* _s, coUint32 _size);
+};
