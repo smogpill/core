@@ -7,4 +7,4 @@
 template <class T>
 const T* begin(const coConstArray<T>& _a) { return _a.data; }
 template <class T>
-const T* end(const coConstArray<T>& _a) { return _a.data + _a.size; }
+const T* end(const coConstArray<T>& _a) { return _a.data + _a.count; }

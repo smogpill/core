@@ -2,7 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include "test/pch.h"
-#include "test/unit/coTestInfo.h"
+#include "test/unit/internal/coTestInfo.h"
 
 _coTestInfo::_coTestInfo(const coConstString& _testCaseName, const coConstString& _testName, const coConstString& _sourcePath, coUint _sourceLine, _coTestFactory& _factory)
 	: testCaseName(_testCaseName)

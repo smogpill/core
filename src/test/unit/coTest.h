@@ -2,9 +2,9 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include "test/unit/coTestAutoRegistrator.h"
-#include "test/unit/coTestFactory.h"
-#include "test/unit/coTestInfo.h"
+#include "test/unit/internal/coTestAutoRegistrator.h"
+#include "test/unit/internal/coTestFactory.h"
+#include "test/unit/internal/coTestInfo.h"
 #include "container/string/coConstString.h"
 
 class coTest

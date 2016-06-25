@@ -4,7 +4,7 @@
 
 #include "lang/cppExtensions.h"
 #include "math/scalar/coUint8_f.h"
-#include "debug/log.h"
+#include "debug/assert.h"
 
 const coUint32 coUint32_max = static_cast<coUint32>(-1);
 

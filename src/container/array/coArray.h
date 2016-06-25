@@ -3,14 +3,17 @@
 #pragma once
 
 #include "container/array/coConstArray.h"
+#include "debug/assert.h"
 
 template <class T>
-class coArray : public coConstArray<T>
+class coArray
 {
 public:
-	coArray() {}
-	coArray(T* _data, coUint32 _size) : coConstArray(_data, _size) {}
-	coFORCE_INLINE T& operator[] (coUint _i) { coASSERT(_i < size); return const_cast<T&>(data[_i]); }
-	coFORCE_INLINE const T& operator[] (coUint _i) const { coASSERT(_i < size); return data[_i]; }
-};
+	coArray() : data(nullptr), count(0) {}
+	coArray(T* _data, coUint32 _count) : data(_data), count(_count) {}
+	coFORCE_INLINE T& operator[] (coUint32 _i) { coASSERT(_i < count); return const_cast<T&>(data[_i]); }
+	coFORCE_INLINE const T& operator[] (coUint32 _i) const { coASSERT(_i < count); return data[_i]; }
 
+	T* data;
+	coUint32 count;
+};
