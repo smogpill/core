@@ -2,8 +2,10 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-class coTestAutoRegistrator
+class _coTestInfo;
+
+class _coTestAutoRegistrator
 {
 public:
-
+	_coTestAutoRegistrator(const _coTestInfo& _testInfo);
 };
