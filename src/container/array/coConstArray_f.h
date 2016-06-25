@@ -5,6 +5,12 @@
 #include "container/array/coConstArray.h"
 
 template <class T>
-const T* begin(const coConstArray<T>& _a) { return _a.data; }
+coFORCE_INLINE const T* coBegin(const coConstArray<T>& _a) { return _a.data; }
 template <class T>
-const T* end(const coConstArray<T>& _a) { return _a.data + _a.count; }
+coFORCE_INLINE const T* coEnd(const coConstArray<T>& _a) { return _a.data + _a.count; }
+
+// STD compat
+template <class T>
+coFORCE_INLINE const T* begin(const coConstArray<T> _a) { return coBegin(_a); }
+template <class T>
+coFORCE_INLINE const T* end(const coConstArray<T> _a) { return coEnd(_a); }

@@ -3,6 +3,8 @@
 #pragma once
 #include "test/pch.h"
 #include "test/unit/coTestRegistry.h"
+#include "test/unit/coTest.h"
+#include "test/unit/internal/coTestInfo.h"
 #include "container/array/coDynamicArray_f.h"
 
 coTestRegistry* coTestRegistry::instance = nullptr;
@@ -10,6 +12,19 @@ coTestRegistry* coTestRegistry::instance = nullptr;
 void coTestRegistry::add(const _coTestInfo& _info)
 {
 	coAdd(testInfos, &_info);
+}
+
+void coTestRegistry::runAllTests()
+{
+	for (const _coTestInfo* info : testInfos)
+	{
+		coASSERT(info);
+		coASSERT(info->factory);
+		coTest* test = info->factory.createTest();
+		coASSERT(test);
+		test->executeBody();
+		delete test;
+	}
 }
 
 void coTestRegistry::createInstanceIfMissing()

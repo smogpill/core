@@ -3,6 +3,7 @@
 #pragma once
 
 #include "container/array/coDynamicArray.h"
+#include "container/array/coArray_f.h"
 
 template <class T>
 void coReserve(coDynamicArray<T>& _array, coUint32 _size)

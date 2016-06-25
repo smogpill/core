@@ -10,8 +10,9 @@ class coTestRegistry
 {
 public:
 	void add(const _coTestInfo& _info);
-
+	void runAllTests();
 	static void createInstanceIfMissing();
+
 	static coTestRegistry* instance;
 private:
 	coDynamicArray<const _coTestInfo*> testInfos;
