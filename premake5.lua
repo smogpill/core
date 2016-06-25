@@ -63,10 +63,17 @@ function setProjectDefaults(_projectDir, _projectName, _prefix, _postfix)
 	filter {}
 end
 
-function includeProject(_name)
+function includeLib(_name)
 	project(_name)
 	setStaticLibDefaults()
 	setProjectDefaults("src/".._name, _name , "", "")
+end
+
+function includeConsoleApp(_name, _links)
+	project(_name)
+	setConsoleAppDefaults()
+	setProjectDefaults("src/".._name, _name , "", "")
+	links {_links}
 end
 
 function setStaticLibDefaults()
@@ -89,13 +96,13 @@ workspace("core")
 	setSolutionDefaults()
 	includedirs { "src" }
 
-	includeProject("debug")
-	includeProject("lang")
-	includeProject("math")
-	includeProject("memory")
-	includeProject("container")
-	includeProject("test")
-	includeProject("test_math")
-	includeProject("event")
-	includeProject("io")
+	includeLib("debug")
+	includeLib("lang")
+	includeLib("math")
+	includeLib("memory")
+	includeLib("container")
+	includeLib("test")
+	includeConsoleApp("test_math", {"test", "container"})
+	includeLib("event")
+	includeLib("io")
 	
