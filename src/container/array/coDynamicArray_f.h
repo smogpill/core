@@ -18,7 +18,7 @@ void coReserve(coDynamicArray<T>& _this, coUint32 _desiredCount)
 	if (_desiredCount > _this.capacity)
 	{
 		const coUint32 clampedCapacity = coMax(16u, _desiredCount);
-		coASSERT(_array.allocator);
+		coASSERT(_this.allocator);
 		T* newBuffer = static_cast<T*>(_this.allocator->allocate(clampedCapacity * sizeof(T)));
 		if (_this.data) // [opt] not using size directly not to break CPU's pipe too early
 		{

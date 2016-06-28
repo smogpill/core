@@ -2,8 +2,9 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-struct coConfig
+class coConfig
 {
+public:
 	static bool breakOnError;
 };
 
@@ -22,9 +23,22 @@ struct coConfig
 #error "Unknown compiler"
 #endif
 
-	inline void _coReturnVoid(int) {}  // to avoid some gcc warnings with the comma operator
+inline void _coReturnVoid(int) {}  // to avoid some gcc warnings with the comma operator
+
 #ifdef coMSVC_COMPILER
-#define coBREAK() _coReturnVoid(coConfig::breakOnError && (__debugbreak(), true))
+#define coBREAK() _coReturnVoid(coConfig::breakOnError && (__debugbreak(), 1))
 #else
 #define coBREAK() _coReturnVoid(coConfig::breakOnError && ::raise(SIGINT))
+#endif
+
+#if coGCC_COMPATIBLE_COMPILER || coCLANG_COMPILER
+#	define coCRASH() (coBREAK(), __builtin_trap())
+#else
+#	define coCRASH() (coBREAK(), ((void)(*(volatile char*)0 = 0)))
+#endif
+
+#ifdef coMSVC_COMPILER
+#define coFORCE_INLINE __forceinline
+#else
+#define coFORCE_INLINE inline __attribute__((always_inline))
 #endif

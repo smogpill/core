@@ -19,7 +19,6 @@ void coTestRegistry::runAllTests()
 	for (const _coTestInfo* info : testInfos)
 	{
 		coASSERT(info);
-		coASSERT(info->factory);
 		coTest* test = info->factory.createTest();
 		coASSERT(test);
 		test->executeBody();

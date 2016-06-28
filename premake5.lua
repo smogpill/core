@@ -102,7 +102,7 @@ workspace("core")
 	includeLib("memory")
 	includeLib("container")
 	includeLib("test")
-	includeConsoleApp("test_math", {"test", "container", "memory"})
+	includeConsoleApp("test_math", {"test", "container", "memory", "lang"})
 	includeLib("event")
 	includeLib("io")
 	

@@ -4,11 +4,10 @@
 
 #include "lang/compiler.h"
 
-#ifdef coMSVC_COMPILER
-#define coFORCE_INLINE __forceinline
-#else
-#define coFORCE_INLINE inline __attribute__((always_inline))
-#endif
+coFORCE_INLINE bool coReturnFalse() { return false; }
+coFORCE_INLINE bool coReturnTrue() { return true; }
+
+#define coSAFE_SCOPE(_x_) do { _x_ } while (coReturnFalse())
 
 template <class T, class A>
 coFORCE_INLINE const T& coBitCast(const A& _a)
