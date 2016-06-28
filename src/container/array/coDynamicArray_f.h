@@ -4,7 +4,6 @@
 
 #include "container/array/coDynamicArray.h"
 #include "container/array/coArray_f.h"
-#include "math/scalar/coUint32_f.h"
 
 template<class T>
 coDynamicArray<T>::~coDynamicArray()
@@ -17,7 +16,7 @@ void coReserve(coDynamicArray<T>& _this, coUint32 _desiredCount)
 {
 	if (_desiredCount > _this.capacity)
 	{
-		const coUint32 clampedCapacity = coMax(16u, _desiredCount);
+		const coUint32 clampedCapacity = _desiredCount >= 16u ? _desiredCount : 16u;
 		coASSERT(_this.allocator);
 		T* newBuffer = static_cast<T*>(_this.allocator->allocate(clampedCapacity * sizeof(T)));
 		if (_this.data) // [opt] not using size directly not to break CPU's pipe too early
