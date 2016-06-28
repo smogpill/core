@@ -14,23 +14,23 @@ public:
 	virtual void executeBody() {}
 };
 
-#define _coUNIQUE_TEST_NAME(_testCaseName_, _testName_) _coTest__##_testCaseName_##__##_testName_
+#define _coUNIQUE_TEST_NAME(_testCaseName_, _testName_) _test__##_testCaseName_##__##_testName_
 
 #define _coTEST(_testCaseName_, _testName_, _parentClass_) \
-	class _coUNIQUE_TEST_NAME(_testCaseName_, _testName_) : public _parentClass_ \
-	{ \
-		typedef _coUNIQUE_TEST_NAME(_testCaseName_, _testName_) Self; \
-		typedef _parentClass_ Super; \
-	public: \
-		virtual void executeBody() override; \
-	}; \
-	namespace \
-	{ \
-		_coTestFactoryImpl<_coUNIQUE_TEST_NAME(_testCaseName_, _testName_)> factory; \
+	namespace _coUNIQUE_TEST_NAME(_testCaseName_, _testName_) \
+	{  \
+		class TestImpl : public _parentClass_ \
+		{ \
+			typedef TestImpl Self; \
+			typedef _parentClass_ Super; \
+		public: \
+			virtual void executeBody() override; \
+		}; \
+		_coTestFactoryImpl<TestImpl> factory; \
 		_coTestInfo info(coConstString(#_testCaseName_), coConstString(#_testName_), coConstString(__FILE__), __LINE__, factory); \
 		_coTestAutoRegistrator autoRegistrator(info); \
 	} \
-	void _coUNIQUE_TEST_NAME(_testCaseName_, _testName_)::executeBody()
+	void _coUNIQUE_TEST_NAME(_testCaseName_, _testName_)::TestImpl::executeBody()
 
 #define coTEST(_testCaseName_, _testName_) _coTEST(_testCaseName_, _testName_, coTest)
 #define coFIXTURE_TEST(_fixtureClassName_, _testName_) _coTEST(_fixtureClassName_, _testName_, _fixtureClassName_)

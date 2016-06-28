@@ -2,6 +2,13 @@
 #include "test/unit/coTest.h"
 #include "container/array/coDynamicArray_f.h"
 
+coTEST(coDynamicArray, defaultValues)
+{
+	coDynamicArray<int> a;
+	coEXPECT(a.allocator);
+	coEXPECT(a.count == 0);
+}
+
 coTEST(coDynamicArray, reserve)
 {
 	coDynamicArray<int> a;
