@@ -11,6 +11,15 @@
 #endif
 
 template <class T, class A>
-coFORCE_INLINE const T& coBitCast(const A& _a) { return reinterpret_cast<const T&>(_a); }
+coFORCE_INLINE const T& coBitCast(const A& _a)
+{
+	static_assert(sizeof(A) == sizeof(T), "");
+	return reinterpret_cast<const T&>(_a);
+}
+
 template <class T, class A>
-coFORCE_INLINE T& coBitCast(A& _a) { return reinterpret_cast<T&>(_a); }
+coFORCE_INLINE T& coBitCast(A& _a)
+{
+	static_assert(sizeof(A) == sizeof(T), "");
+	return reinterpret_cast<T&>(_a);
+}

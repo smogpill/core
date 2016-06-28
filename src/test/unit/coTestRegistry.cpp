@@ -11,7 +11,7 @@ coTestRegistry* coTestRegistry::instance = nullptr;
 
 void coTestRegistry::add(const _coTestInfo& _info)
 {
-	coAdd(testInfos, &_info);
+	coPushBack(testInfos, &_info);
 }
 
 void coTestRegistry::runAllTests()

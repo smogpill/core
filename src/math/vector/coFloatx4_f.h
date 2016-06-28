@@ -4,6 +4,7 @@
 
 #include "lang/cppExtensions.h"
 #include "math/vector/coFloatx4.h"
+#include "math/vector/coFloatx3.h"
 #include "math/vector/coBool32x4_f.h"
 
 class coFloatx3;
