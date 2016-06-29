@@ -2,9 +2,10 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include <cstddef>
-#include <cstdint>
-#include <xmmintrin.h>
-
-#include "lang/types/coBaseTypes.h"
 #include "lang/coCompiler.h"
+
+#ifdef coDEBUG
+#	define coASSERT(_cond_) coSAFE_SCOPE( if(!(_cond_) && coReturnTrue()){ coCRASH(); } )
+#else
+#	define coASSERT(_cond_)
+#endif

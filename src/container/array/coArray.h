@@ -3,7 +3,7 @@
 #pragma once
 
 #include "container/array/coConstArray.h"
-#include "debug/assert.h"
+#include "debug/coAssert.h"
 
 template <class T>
 class coArray

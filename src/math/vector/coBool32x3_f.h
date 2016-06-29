@@ -2,7 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include "lang/cppExtensions.h"
+#include "lang/coCppExtensions.h"
 #include "math/vector/coBool32x3.h"
 
 coFORCE_INLINE bool coAreAllTrue(const coBool32x3& _a) { return (_mm_movemask_ps(coBitCast<__m128>(_a)) & 7) == 7; }

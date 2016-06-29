@@ -2,9 +2,9 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include "lang/cppExtensions.h"
+#include "lang/coCppExtensions.h"
 #include "math/scalar/coUint8_f.h"
-#include "debug/assert.h"
+#include "debug/coAssert.h"
 
 const coUint32 coUint32_max = static_cast<coUint32>(-1);
 

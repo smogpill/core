@@ -6,7 +6,7 @@
 #include "math/vector/coFloatx4_f.h"
 #include "math/vector/coInt32x4_f.h"
 #include "math/quaternion/coQuat.h"
-#include "lang/cppExtensions.h"
+#include "lang/coCppExtensions.h"
 
 coFORCE_INLINE const coFloatx4& coMake_floatx4(const coQuat& _a) { return coBitCast<coFloatx4>(_a); }
 coFORCE_INLINE const coQuat& coMake_quat(const coFloatx4& _a) { return coBitCast<coQuat>(_a); }

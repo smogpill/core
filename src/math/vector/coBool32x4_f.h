@@ -2,7 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include "lang/cppExtensions.h"
+#include "lang/coCppExtensions.h"
 #include "math/vector/coBool32x4.h"
 
 coFORCE_INLINE const coBool32x4& coMake_Bool32x4(const __m128& _a) { return reinterpret_cast<const coBool32x4&>(_a); }

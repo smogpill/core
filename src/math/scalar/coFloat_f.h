@@ -2,8 +2,8 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include "lang/cppExtensions.h"
-#include "debug/assert.h"
+#include "lang/coCppExtensions.h"
+#include "debug/coAssert.h"
 
 const coFloat coFloat_pi = 3.14159265f;
 const coFloat coFloat_pi2 = 9.86960440f;
