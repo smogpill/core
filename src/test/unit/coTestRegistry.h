@@ -3,7 +3,7 @@
 #pragma once
 
 #include "container/array/coDynamicArray.h"
-#include "container/singleton/coSingleton.h"
+#include "pattern/singleton/coSingleton.h"
 
 class _coTestInfo;
 
