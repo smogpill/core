@@ -8,7 +8,7 @@
 template<class T>
 coDynamicArray<T>::~coDynamicArray()
 {
-	allocator->free(data);
+	allocator->Free(data);
 }
 
 template <class T>
@@ -18,11 +18,11 @@ void coReserve(coDynamicArray<T>& _this, coUint32 _desiredCount)
 	{
 		const coUint32 clampedCapacity = _desiredCount >= 16u ? _desiredCount : 16u;
 		coASSERT(_this.allocator);
-		T* newBuffer = static_cast<T*>(_this.allocator->allocate(clampedCapacity * sizeof(T)));
+		T* newBuffer = static_cast<T*>(_this.allocator->Allocate(clampedCapacity * sizeof(T)));
 		if (_this.data) // [opt] not using size directly not to break CPU's pipe too early
 		{
 			coMemCopy(newBuffer, _this.data, _this.count * sizeof(T));
-			_this.allocator->free(_this.data);
+			_this.allocator->Free(_this.data);
 		}
 		_this.data = newBuffer;
 		_this.capacity = clampedCapacity;

@@ -9,24 +9,24 @@
 
 coTestRegistry* coTestRegistry::instance = nullptr;
 
-void coTestRegistry::add(const _coTestInfo& _info)
+void coTestRegistry::Add(const _coTestInfo& _info)
 {
 	coPushBack(testInfos, &_info);
 }
 
-void coTestRegistry::runAllTests()
+void coTestRegistry::RunAllTests()
 {
 	for (const _coTestInfo* info : testInfos)
 	{
 		coASSERT(info);
-		coTest* test = info->factory.createTest();
+		coTest* test = info->factory.CreateTest();
 		coASSERT(test);
-		test->executeBody();
+		test->ExecuteBody();
 		delete test;
 	}
 }
 
-void coTestRegistry::createInstanceIfMissing()
+void coTestRegistry::CreateInstanceIfMissing()
 {
 	if (instance == nullptr)
 	{

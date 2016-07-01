@@ -3,7 +3,7 @@
 
 int main()
 {
-	coTestRegistry::instance->runAllTests();
+	coTestRegistry::instance->RunAllTests();
 
 	return 0;
 }

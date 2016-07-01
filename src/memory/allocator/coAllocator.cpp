@@ -5,16 +5,16 @@
 #include "memory/allocator/coAllocator.h"
 #include "memory/allocator/coHeapAllocator.h"
 
-coAllocator * coAllocator::getHeap()
+coAllocator * coAllocator::GetHeap()
 {
 	if (!initialized)
 	{
-		init();
+		Init();
 	}
 	return heap;
 }
 
-void coAllocator::init()
+void coAllocator::Init()
 {
 	if (initialized)
 		return;

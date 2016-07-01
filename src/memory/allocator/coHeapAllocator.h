@@ -9,8 +9,8 @@ class coHeapAllocator : public coAllocator
 public:
 	virtual ~coHeapAllocator() {}
 
-	virtual void* allocate(coUint32 _size8) override;
-	virtual void* allocateAligned(coUint32 _size8, coUint _alignment) override;
-	virtual void free(void* _p) override;
-	virtual void freeAligned(void* _p) override;
+	virtual void* Allocate(coUint32 _size8) override;
+	virtual void* AllocateAligned(coUint32 _size8, coUint _alignment) override;
+	virtual void Free(void* _p) override;
+	virtual void FreeAligned(void* _p) override;
 };

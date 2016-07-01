@@ -11,7 +11,7 @@ class coTest
 {
 public:
 	virtual ~coTest() {}
-	virtual void executeBody() {}
+	virtual void ExecuteBody() {}
 };
 
 #define _coUNIQUE_TEST_NAME(_testCaseName_, _testName_) _test__##_testCaseName_##__##_testName_
@@ -24,13 +24,13 @@ public:
 			typedef TestImpl Self; \
 			typedef _parentClass_ Super; \
 		public: \
-			virtual void executeBody() override; \
+			virtual void ExecuteBody() override; \
 		}; \
 		_coTestFactoryImpl<TestImpl> factory; \
 		_coTestInfo info(coConstString(#_testCaseName_), coConstString(#_testName_), coConstString(__FILE__), __LINE__, factory); \
 		_coTestAutoRegistrator autoRegistrator(info); \
 	} \
-	void _coUNIQUE_TEST_NAME(_testCaseName_, _testName_)::TestImpl::executeBody()
+	void _coUNIQUE_TEST_NAME(_testCaseName_, _testName_)::TestImpl::ExecuteBody()
 
 #define coTEST(_testCaseName_, _testName_) _coTEST(_testCaseName_, _testName_, coTest)
 #define coFIXTURE_TEST(_fixtureClassName_, _testName_) _coTEST(_fixtureClassName_, _testName_, _fixtureClassName_)

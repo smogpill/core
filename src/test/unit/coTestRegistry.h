@@ -9,9 +9,9 @@ class _coTestInfo;
 class coTestRegistry
 {
 public:
-	void add(const _coTestInfo& _info);
-	void runAllTests();
-	static void createInstanceIfMissing();
+	void Add(const _coTestInfo& _info);
+	void RunAllTests();
+	static void CreateInstanceIfMissing();
 
 	static coTestRegistry* instance;
 private:

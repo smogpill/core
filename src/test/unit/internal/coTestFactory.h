@@ -8,14 +8,14 @@ class _coTestFactory
 {
 public:
 	virtual ~_coTestFactory() {}
-	virtual coTest* createTest() const = 0;
+	virtual coTest* CreateTest() const = 0;
 };
 
 template <class T>
 class _coTestFactoryImpl : public _coTestFactory
 {
 public:
-	virtual coTest* createTest() const override
+	virtual coTest* CreateTest() const override
 	{
 		return new T;
 	}

@@ -7,6 +7,6 @@
 
 _coTestAutoRegistrator::_coTestAutoRegistrator(const _coTestInfo& _info)
 {
-	coTestRegistry::createInstanceIfMissing();
-	coTestRegistry::instance->add(_info);
+	coTestRegistry::CreateInstanceIfMissing();
+	coTestRegistry::instance->Add(_info);
 }

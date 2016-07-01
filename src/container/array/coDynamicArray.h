@@ -11,7 +11,7 @@ template <class T>
 class coDynamicArray : public coArray<T>
 {
 public:
-	coDynamicArray(coAllocator* _allocator = coAllocator::getHeap()) : capacity(0), allocator(_allocator) {}
+	coDynamicArray(coAllocator* _allocator = coAllocator::GetHeap()) : capacity(0), allocator(_allocator) {}
 	~coDynamicArray();
 
 	coUint32 capacity;

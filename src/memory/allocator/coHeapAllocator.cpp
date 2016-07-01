@@ -5,13 +5,13 @@
 #include "memory/allocator/coHeapAllocator.h"
 
 //-------------------------------------------------------
-void* coHeapAllocator::allocate(coUint32 _size8)
+void* coHeapAllocator::Allocate(coUint32 _size8)
 {
 	return ::malloc(_size8);
 }
 
 //-------------------------------------------------------
-void* coHeapAllocator::allocateAligned(coUint32 _size8, coUint _alignment)
+void* coHeapAllocator::AllocateAligned(coUint32 _size8, coUint _alignment)
 {
 #ifdef coMSVC_COMPILER
 	return ::_aligned_malloc(_size8, _alignment);
@@ -21,13 +21,13 @@ void* coHeapAllocator::allocateAligned(coUint32 _size8, coUint _alignment)
 }
 
 //-------------------------------------------------------
-void coHeapAllocator::free(void* _p)
+void coHeapAllocator::Free(void* _p)
 {
 	::free(_p);
 }
 
 //-------------------------------------------------------
-void coHeapAllocator::freeAligned(void* _p)
+void coHeapAllocator::FreeAligned(void* _p)
 {
 #ifdef coMSVC_COMPILER
 	::_aligned_free(_p);

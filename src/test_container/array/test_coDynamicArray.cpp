@@ -9,7 +9,7 @@ coTEST(coDynamicArray, defaultValues)
 	coEXPECT(a.count == 0);
 }
 
-coTEST(coDynamicArray, reserve)
+coTEST(coDynamicArray, Reserve)
 {
 	coDynamicArray<int> a;
 	coEXPECT(a.capacity == 0);
