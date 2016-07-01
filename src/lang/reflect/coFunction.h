@@ -2,9 +2,9 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-class coSymbol
+#include "lang/reflect/coSymbol.h"
+
+class coFunction : public coSymbol
 {
 public:
-	coUint64 id;
-	const coChar* name;
 };

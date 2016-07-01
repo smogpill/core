@@ -2,9 +2,12 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-class coSymbol
+class coSignature
 {
 public:
-	coUint64 id;
-	const coChar* name;
+	coSignature();
+
+	coUint64					m_resultTypeId;
+	coUint64					m_classTypeId;
+	coFixedArray<coUint64, 4>	m_paramsTypeIds;
 };
