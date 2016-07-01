@@ -4,8 +4,9 @@
 
 #include "math/vector/coFloatx3.h"
 
-struct coMat3
+class coMat3
 {
+public:
 	coFloatx3 c0;
 	coFloatx3 c1;
 	coFloatx3 c2;

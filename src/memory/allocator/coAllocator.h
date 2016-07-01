@@ -12,11 +12,14 @@ public:
 	virtual void Free(void* _p) = 0;
 	virtual void FreeAligned(void* _p) = 0;
 	static coAllocator* GetHeap();
+	static coAllocator* GetDebug();
+	static coAllocator* GetFrame();
 
 private:
 	static void Init();
 
 	static coAllocator*	heap;
 	static coAllocator*	frame;
+	static coAllocator* debug;
 	static bool initialized;
 };

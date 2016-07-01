@@ -7,7 +7,7 @@
 #include "test/unit/internal/coTestInfo.h"
 #include "container/array/coDynamicArray_f.h"
 
-coTestRegistry* coTestRegistry::instance = nullptr;
+coDEFINE_SINGLETON(coTestRegistry);
 
 void coTestRegistry::Add(const _coTestInfo& _info)
 {

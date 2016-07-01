@@ -5,13 +5,36 @@
 #include "memory/allocator/coAllocator.h"
 #include "memory/allocator/coHeapAllocator.h"
 
-coAllocator * coAllocator::GetHeap()
+coAllocator* coAllocator::heap = nullptr;
+coAllocator* coAllocator::frame = nullptr;
+coAllocator* coAllocator::debug = nullptr;
+bool coAllocator::initialized = false;
+
+coAllocator* coAllocator::GetHeap()
 {
 	if (!initialized)
 	{
 		Init();
 	}
 	return heap;
+}
+
+coAllocator* coAllocator::GetDebug()
+{
+	if (!initialized)
+	{
+		Init();
+	}
+	return debug;
+}
+
+coAllocator* coAllocator::GetFrame()
+{
+	if (!initialized)
+	{
+		Init();
+	}
+	return frame;
 }
 
 void coAllocator::Init()
@@ -23,6 +46,3 @@ void coAllocator::Init()
 	coAllocator::frame = nullptr;
 }
 
-coAllocator* coAllocator::heap = nullptr;
-coAllocator* coAllocator::frame = nullptr;
-bool coAllocator::initialized = false;

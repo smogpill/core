@@ -3,17 +3,17 @@
 #pragma once
 
 #include "container/array/coDynamicArray.h"
+#include "container/singleton/coSingleton.h"
 
 class _coTestInfo;
 
 class coTestRegistry
 {
+	coDECLARE_SINGLETON(coTestRegistry);
 public:
 	void Add(const _coTestInfo& _info);
 	void RunAllTests();
 	static void CreateInstanceIfMissing();
-
-	static coTestRegistry* instance;
 private:
 	coDynamicArray<const _coTestInfo*> testInfos;
 };

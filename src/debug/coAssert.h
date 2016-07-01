@@ -3,6 +3,7 @@
 #pragma once
 
 #include "lang/coCompiler.h"
+#include "lang/coCppExtensions.h"
 
 #ifdef coDEBUG
 #	define coASSERT(_cond_) coSAFE_SCOPE( if(!(_cond_) && coReturnTrue()){ coCRASH(); } )
