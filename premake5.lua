@@ -52,6 +52,7 @@ end
 function setProjectDefaults(_projectDir, _projectName, _prefix, _postfix)
 	__prefix = _prefix
 	__postfix= _postfix
+	kind "StaticLib"
 	location (buildAbsPath.."/projects")
 	includedirs { _projectDir }
 	--files { _prefix.."PCH".._postfix..".cpp" }
@@ -63,48 +64,44 @@ function setProjectDefaults(_projectDir, _projectName, _prefix, _postfix)
 	filter {}
 end
 
-function includeLib(_name)
+function addProject(_name, _params)
 	project(_name)
-	setStaticLibDefaults()
 	setProjectDefaults("src/".._name, _name , "", "")
-end
-
-function includeConsoleApp(_name, _links)
-	project(_name)
-	setConsoleAppDefaults()
-	setProjectDefaults("src/".._name, _name , "", "")
-	links {_links}
-end
-
-function setStaticLibDefaults()
-	kind "StaticLib"
-end
-
-function setConsoleAppDefaults()
-	kind "ConsoleApp"
-end
-
-function setWindowedAppDefaults()
-	kind "WindowedApp"
-end
-
-function setConsoleAppDefaults()
-	kind "ConsoleApp"
+	if _params then
+		if _params.kind then
+			kind(_params.kind)
+		end
+		if _params.links then
+			links {_params.links}
+		end
+	end
 end
 
 workspace("core")
 	setSolutionDefaults()
 	includedirs { "src" }
 
-	includeLib("debug")
-	includeLib("lang")
-	includeLib("math")
-	includeLib("memory")
-	includeLib("container")
-	includeLib("pattern")
-	includeLib("test")
-	includeConsoleApp("test_math", {"test", "container", "memory", "lang", "math"})
-	includeConsoleApp("test_container", {"test", "container", "memory", "lang"})
-	includeLib("event")
-	includeLib("io")
-	
+	addProject("debug")
+	addProject("lang")
+	addProject("math")
+	addProject("memory")
+	addProject("container")
+	addProject("pattern")
+	addProject("test")
+	addProject("event")
+	addProject("io")
+	addProject("prebuild", 
+		{
+			kind = "ConsoleApp", 
+			links = {"lang"}
+		})
+	addProject("test_math", 
+		{
+			kind = "ConsoleApp", 
+			links = {"test", "container", "memory", "lang", "math"}
+		})
+	addProject("test_container", 
+		{
+			kind = "ConsoleApp", 
+			links = {"test", "container", "memory", "lang"}
+		})
