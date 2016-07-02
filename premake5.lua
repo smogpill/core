@@ -6,7 +6,7 @@ versionMajor = 0
 versionMinor = 0
 versionBuild = 0
 
-function setSolutionDefaults()
+function coSetSolutionDefaults()
 	configurations {"debug", "release"}
 	architecture "x86_64"
 	location(buildPath)
@@ -36,7 +36,7 @@ function setSolutionDefaults()
 	filter {}
 end
 
-function setPCH(_dir, _projectName, _fileName)
+function coSetPCH(_dir, _projectName, _fileName)
 	pchheader(_projectName .. "/".. _fileName .. '.h')
 	pchsource(_dir .. "/" .. _fileName .. '.cpp')
 	--[[
@@ -49,7 +49,7 @@ function setPCH(_dir, _projectName, _fileName)
 	--]]
 end
 
-function setProjectDefaults(_projectDir, _projectName, _prefix, _postfix)
+function coSetProjectDefaults(_projectDir, _projectName, _prefix, _postfix)
 	__prefix = _prefix
 	__postfix= _postfix
 	kind "StaticLib"
@@ -57,16 +57,16 @@ function setProjectDefaults(_projectDir, _projectName, _prefix, _postfix)
 	includedirs { _projectDir }
 	--files { _prefix.."PCH".._postfix..".cpp" }
 	files { _projectDir .. "/" .. "**.cpp", _projectDir .. "/" .. "**.h"}
-	setPCH(_projectDir, _projectName, "pch")
+	coSetPCH(_projectDir, _projectName, "pch")
 	--vpaths { ["*"] = _projectDir }
 	defines { "coPROJECT_NAME=".._projectName }
 	language "C++"
 	filter {}
 end
 
-function addProject(_name, _params)
+function coAddProject(_name, _params)
 	project(_name)
-	setProjectDefaults("src/".._name, _name , "", "")
+	coSetProjectDefaults("src/".._name, _name , "", "")
 	if _params then
 		if _params.kind then
 			kind(_params.kind)
@@ -78,29 +78,29 @@ function addProject(_name, _params)
 end
 
 workspace("core")
-	setSolutionDefaults()
+	coSetSolutionDefaults()
 	includedirs { "src" }
 
-	addProject("debug")
-	addProject("lang")
-	addProject("math")
-	addProject("memory")
-	addProject("container")
-	addProject("pattern")
-	addProject("test")
-	addProject("event")
-	addProject("io")
-	addProject("prebuild", 
+	coAddProject("debug")
+	coAddProject("lang")
+	coAddProject("math")
+	coAddProject("memory")
+	coAddProject("container")
+	coAddProject("pattern")
+	coAddProject("test")
+	coAddProject("event")
+	coAddProject("io")
+	coAddProject("prebuild", 
 		{
 			kind = "ConsoleApp", 
 			links = {"lang"}
 		})
-	addProject("test_math", 
+	coAddProject("test_math", 
 		{
 			kind = "ConsoleApp", 
 			links = {"test", "container", "memory", "lang", "math"}
 		})
-	addProject("test_container", 
+	coAddProject("test_container", 
 		{
 			kind = "ConsoleApp", 
 			links = {"test", "container", "memory", "lang"}
