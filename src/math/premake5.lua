@@ -1,0 +1,1 @@
+coSetProjectDefaults("math")

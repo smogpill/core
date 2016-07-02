@@ -38,7 +38,7 @@ end
 
 function coSetPCH(_dir, _projectName, _fileName)
 	pchheader(_projectName .. "/".. _fileName .. '.h')
-	pchsource(_dir .. "/" .. _fileName .. '.cpp')
+	pchsource(_fileName .. '.cpp')
 	--[[
 	filter { "action:vs*" }
 		pchheader(_fileName .. '.h')
@@ -49,24 +49,20 @@ function coSetPCH(_dir, _projectName, _fileName)
 	--]]
 end
 
-function coSetProjectDefaults(_projectDir, _projectName, _prefix, _postfix)
-	__prefix = _prefix
-	__postfix= _postfix
+function coSetProjectDefaults(_name, _params)
+	project(_name)
+	filter {}
+
+	-- Defaults
 	kind "StaticLib"
 	location (buildAbsPath.."/projects")
-	includedirs { _projectDir }
-	--files { _prefix.."PCH".._postfix..".cpp" }
-	files { _projectDir .. "/" .. "**.cpp", _projectDir .. "/" .. "**.h"}
-	coSetPCH(_projectDir, _projectName, "pch")
+	projectDir = "src/".._name
+	files { "**.cpp", "**.h"}
+	coSetPCH(projectDir, _name, "pch")
 	--vpaths { ["*"] = _projectDir }
-	defines { "coPROJECT_NAME=".._projectName }
+	defines { "coPROJECT_NAME=".._name }
 	language "C++"
-	filter {}
-end
-
-function coAddProject(_name, _params)
-	project(_name)
-	coSetProjectDefaults("src/".._name, _name , "", "")
+	
 	if _params then
 		if _params.kind then
 			kind(_params.kind)
@@ -81,27 +77,16 @@ workspace("core")
 	coSetSolutionDefaults()
 	includedirs { "src" }
 
-	coAddProject("debug")
-	coAddProject("lang")
-	coAddProject("math")
-	coAddProject("memory")
-	coAddProject("container")
-	coAddProject("pattern")
-	coAddProject("test")
-	coAddProject("event")
-	coAddProject("io")
-	coAddProject("prebuild", 
-		{
-			kind = "ConsoleApp", 
-			links = {"lang"}
-		})
-	coAddProject("test_math", 
-		{
-			kind = "ConsoleApp", 
-			links = {"test", "container", "memory", "lang", "math"}
-		})
-	coAddProject("test_container", 
-		{
-			kind = "ConsoleApp", 
-			links = {"test", "container", "memory", "lang"}
-		})
+	include("src/lang")
+	include("src/debug")
+	include("src/math")
+	include("src/memory")
+	include("src/container")
+	include("src/pattern")
+	include("src/test")
+	include("src/event")
+	include("src/io")
+	include("src/prebuild")
+	include("src/test_math")
+	include("src/test_container")
+	
