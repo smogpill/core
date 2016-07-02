@@ -3,8 +3,10 @@
 #pragma once
 
 #include "lang/reflect/coSymbol.h"
+#include "lang/reflect/coSignature.h"
 
 class coFunction : public coSymbol
 {
 public:
+	coSignature signature;
 };

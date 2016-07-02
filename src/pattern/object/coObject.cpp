@@ -3,3 +3,8 @@
 #pragma once
 #include "pattern/pch.h"
 #include "pattern/object/coObject.h"
+
+coResult coObject::Init()
+{
+	return true;
+}

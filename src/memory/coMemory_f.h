@@ -37,3 +37,21 @@ void coAssign(void* _ptr, coUint _count, const T& _val)
 		*p++ = _val;
 	}
 }
+
+template <typename T>
+coFORCE_INLINE void coSwap(T& _a, T& _b)
+{
+	// should be faster than other methods because of many possible compiler optimizations
+	const T tmp(std::move(_a));
+	_a = std::move(_b);
+	_b = std::move(tmp);
+}
+
+template <typename T>
+coFORCE_INLINE void swapMemory(T& _a, T& _b)
+{
+	coByte tmp[sizeof(T)];
+	coMemCopy(tmp, sizeof(tmp), &_a, sizeof(_a));
+	coMemCopy(&_a, sizeof(_a), &_b, sizeof(_b));
+	coMemCopy(&_b, sizeof(_b), tmp, sizeof(tmp));
+}

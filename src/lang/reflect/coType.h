@@ -10,6 +10,12 @@
 class coType : public coSymbol
 {
 public:
+	typedef void* CreateFunc();
+	coType();
+
+	coUint32 size8;
+	coType* super;
+	CreateFunc* createFunc;
 	coDynamicArray<coAttribute> attributes;
 	coDynamicArray<coFunction> functions;
 };
