@@ -8,7 +8,7 @@
 
 coFloatx3 coGetScale(const coMat3& _a)
 {
-	return coMake_Floatx3(coGetLength(_a.c0), coGetLength(_a.c1), coGetLength(_a.c2));
+	return coMake_Floatx3(coLength(_a.c0), coLength(_a.c1), coLength(_a.c2));
 }
 
 coMat3 coRemoveScale(const coMat3& _a)

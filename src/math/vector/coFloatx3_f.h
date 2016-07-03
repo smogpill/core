@@ -64,4 +64,4 @@ coFORCE_INLINE coBool32x3 coNearEqual(const coFloatx3& _a, const coFloatx3& _b, 
 	const coFloatx3 delta = coAbs(_b - _a);
 	return delta < _epsilon;
 }
-coFORCE_INLINE coFloatx3 getLength(const coFloatx3& _a) { return coSqrt(coDot(_a, _a)); }
+coFORCE_INLINE coFloatx3 coLength(const coFloatx3& _a) { return coSqrt(coDot(_a, _a)); }
