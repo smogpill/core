@@ -2,7 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include "debug/coAssert.h"
+#include "debug/log/coAssert.h"
 
 class coResult
 {
@@ -42,3 +42,6 @@ public:
 	mutable coBool tested;
 #endif
 };
+
+#define coTRY(_cond_, _msg_) coSAFE_SCOPE( if(!(_cond_)){ coERROR(_msg_); return false; } )
+#define coCHECK(_cond_, _msg_) coSAFE_SCOPE( if(!(_cond_)){ coERROR(_msg_); } )

@@ -4,7 +4,54 @@
 #include "pattern/pch.h"
 #include "pattern/object/coObject.h"
 
-coResult coObject::Init()
+coObject::coObject()
+	: objectState(ObjectState::NONE)
+{
+
+}
+
+coResult coObject::Init(const InitConfig& desc)
+{
+	if (objectState >= ObjectState::INITIALIZED)
+		return true;
+
+	OnInit(desc);
+	objectState = ObjectState::INITIALIZED;
+	return true;
+}
+
+coResult coObject::Start()
+{
+	if (objectState >= ObjectState::STARTED)
+		return true;
+
+	OnStart();
+	objectState = ObjectState::STARTED;
+	return true;
+}
+
+void coObject::Stop()
+{
+	if (objectState < ObjectState::STARTED)
+		return;
+
+	OnStop();
+	objectState = ObjectState::INITIALIZED;
+}
+
+coResult coObject::OnInit(const InitConfig& desc)
+{
+#ifdef coDEBUG
+	debugName = desc.debugName;
+#endif
+	return true;
+}
+
+coResult coObject::OnStart()
 {
 	return true;
+}
+
+void coObject::OnStop()
+{
 }

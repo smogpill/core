@@ -22,3 +22,11 @@ coFORCE_INLINE T& coBitCast(A& _a)
 	static_assert(sizeof(A) == sizeof(T), "");
 	return reinterpret_cast<T&>(_a);
 }
+
+#ifdef coMSVC_COMPILER
+#define coPRAGMA_MESSAGE(_x_)	__pragma(message(__FILE__##"("## coLINE_STR ##"): "##_x_))
+#define coNOEXCEPT				throw()
+#else
+#define coPRAGMA_MESSAGE(_x_)	_Pragma(_coSTRINGIFY(message "Warning: " _x_))
+#define coNOEXCEPT				noexcept
+#endif

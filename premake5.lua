@@ -1,5 +1,6 @@
 baseAbsPath = os.getcwd()
 srcAbsPath = baseAbsPath .. "/src"
+externalAbsPath = baseAbsPath .. "/external"
 buildPath = "build/" .. _ACTION
 buildAbsPath = baseAbsPath .. "/" .. buildPath
 versionMajor = 0
@@ -86,7 +87,8 @@ workspace("core")
 	include("src/test")
 	include("src/event")
 	include("src/io")
+	include("src/app")
 	include("src/prebuild")
 	include("src/test_math")
 	include("src/test_container")
-	
+

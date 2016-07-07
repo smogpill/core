@@ -8,6 +8,6 @@ class coConstString : public coConstArray<coChar>
 {
 public:
 	coConstString() = default;
-	explicit coConstString(const coChar* _s);
+	coConstString(const coChar* _s);
 	coConstString(const coChar* _s, coUint32 _size);
 };

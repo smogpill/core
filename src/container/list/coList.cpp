@@ -3,7 +3,7 @@
 #pragma once
 #include "container/pch.h"
 #include "container/list/coList.h"
-#include "debug/coAssert.h"
+#include "debug/log/coAssert.h"
 
 coListNode::coListNode()
 {

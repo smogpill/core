@@ -4,6 +4,22 @@
 
 #include "container/array/coDynamicArray.h"
 #include "container/array/coArray_f.h"
+#include "memory/allocator/coAllocator.h"
+#include "lang/coCppExtensions.h"
+
+template <class T>
+coDynamicArray<T>::coDynamicArray()
+	: coDynamicArray(*coAllocator::GetHeap())
+{
+}
+
+template <class T>
+coDynamicArray<T>::coDynamicArray(coAllocator& _allocator)
+	: capacity(0)
+	, allocator(&_allocator)
+{
+	static_assert(std::is_pod<T>::value, "POD only");
+}
 
 template<class T>
 coDynamicArray<T>::~coDynamicArray()
@@ -30,12 +46,26 @@ void coReserve(coDynamicArray<T>& _this, coUint32 _desiredCount)
 }
 
 template <class T>
-void coPushBack(coDynamicArray<T>& _array, const T& _val)
+void coPushBack(coDynamicArray<T>& _this, const T& _val)
 {
-	coUint32 newCount = _array.count + 1;
-	coReserve(_array, newCount);
-	_array.data[_array.count] = _val;
-	_array.count = newCount;
+	coUint32 newCount = _this.count + 1;
+	coReserve(_this, newCount);
+	_this.data[_this.count] = _val;
+	_this.count = newCount;
+}
+
+template <class T>
+void coPushBackArray(coDynamicArray<T>& _this, const coConstArray<T>& _from)
+{
+	//static_assert(std::is_base_of<coArray<T>, A>::value, "_this should be an array");
+	const coUint32 desiredCount = _this.count + _from.count;
+	if (desiredCount > _this.capacity)
+	{
+		const coUint32 newCapacity = desiredCount > 8u ? desiredCount : 8u;
+		coReserve(_this, newCapacity);
+	}
+	coMemCopy(&_this[_this.count], _from.data, _from.count);
+	_this.count += _from.count;
 }
 
 /*

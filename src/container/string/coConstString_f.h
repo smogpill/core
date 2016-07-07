@@ -3,3 +3,7 @@
 #pragma once
 
 #include "container/string/coConstString.h"
+#include "container/array/coDynamicArray.h"
+
+coBool operator==(const coConstString& _a, const coConstString& _b);
+void coSplit(coDynamicArray<coConstString>& _out, const coConstString& _input, const coConstString& _delimiters);

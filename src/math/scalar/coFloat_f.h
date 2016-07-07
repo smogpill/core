@@ -3,7 +3,7 @@
 #pragma once
 
 #include "lang/coCppExtensions.h"
-#include "debug/coAssert.h"
+#include "debug/log/coAssert.h"
 
 const coFloat coFloat_pi = 3.14159265f;
 const coFloat coFloat_pi2 = 9.86960440f;

@@ -3,7 +3,6 @@
 #pragma once
 
 #include "container/array/coArray.h"
-#include "memory/allocator/coAllocator.h"
 
 class coAllocator;
 
@@ -11,8 +10,10 @@ template <class T>
 class coDynamicArray : public coArray<T>
 {
 public:
-	coDynamicArray(coAllocator* _allocator = coAllocator::GetHeap()) : capacity(0), allocator(_allocator) {}
+	coDynamicArray();
+	coDynamicArray(coAllocator& _allocator);
 	~coDynamicArray();
+	operator const coConstArray<T>&() const { return reinterpret_cast<const coConstArray<T>&>(*this); }
 
 	coUint32 capacity;
 	coAllocator* allocator;
