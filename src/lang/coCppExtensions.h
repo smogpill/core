@@ -23,7 +23,8 @@ coFORCE_INLINE T& coBitCast(A& _a)
 	return reinterpret_cast<T&>(_a);
 }
 
-#define coTO_STRING(_x_) #_x_
+#define _coSTRINGIFY(_x_) #_x_
+#define coSTRINGIFY(_x_) _coSTRINGIFY(_x_)
 
 #ifdef coMSVC_COMPILER
 #define coPRAGMA_MESSAGE(_x_)	__pragma(message(__FILE__##"("## coLINE_STR ##"): "##_x_))

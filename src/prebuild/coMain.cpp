@@ -11,7 +11,7 @@ coResult InitArgParser(coCommandLineArgs& _argParser)
 {
 	{
 		coCommandLineArgs::InitConfig config;
-		config.commandName = coTO_STRING(coPROJECT_NAME);
+		config.commandName = coSTRINGIFY(coPROJECT_NAME);
 		coTRY(_argParser.Init(config), nullptr);
 	}
 
@@ -27,7 +27,7 @@ coResult Main(coInt nbArgs, const coChar** argv)
 {
 	coAppImpl app;
 	coAppImpl::InitConfig config;
-	config.debugName = coTO_STRING(coPROJECT_NAME);
+	config.debugName = coSTRINGIFY(coPROJECT_NAME);
 	coTRY(app.Init(config), nullptr);
 
 	coCommandLineArgs argParser;
