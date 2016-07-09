@@ -32,6 +32,11 @@ coBool operator==(const coConstString& _a, const coConstString& _b)
 	return true;
 }
 
+coBool operator!=(const coConstString& _a, const coConstString& _b)
+{
+	return !operator==(_a, _b);
+}
+
 void coSplit(coDynamicArray<coConstString>& _out, const coConstString& _input, const coConstString& _delimiters)
 {
 	coClear(_out);

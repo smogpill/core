@@ -6,4 +6,5 @@
 #include "container/array/coDynamicArray.h"
 
 coBool operator==(const coConstString& _a, const coConstString& _b);
+coBool operator!=(const coConstString& _a, const coConstString& _b);
 void coSplit(coDynamicArray<coConstString>& _out, const coConstString& _input, const coConstString& _delimiters);

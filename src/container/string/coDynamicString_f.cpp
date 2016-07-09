@@ -5,6 +5,22 @@
 #include "container/string/coConstString.h"
 #include "container/array/coDynamicArray_f.h"
 
+coDynamicString::coDynamicString(const coConstString& _s)
+	: coDynamicString()
+{
+	coReserve(*this, _s.count);
+	coMemCopy(data, _s.data, _s.count);
+	count = _s.count;
+}
+
+void coDynamicString::operator=(const coConstString& _s)
+{
+	coClear(*this);
+	coReserve(*this, _s.count);
+	coMemCopy(data, _s.data, _s.count);
+	count = _s.count;
+}
+
 coDynamicString& operator<<(coDynamicString& _this, const coConstString& _a)
 {
 	coPushBackArray(_this, _a);

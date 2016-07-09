@@ -26,12 +26,12 @@ public:
 	coObject();
 	virtual ~coObject() {}
 
-	coResult Init(const InitConfig& desc);
+	coResult Init(const InitConfig& config);
 	coResult Start();
 	void Stop();
 
 protected:
-	virtual coResult OnInit(const InitConfig& desc);
+	virtual coResult OnInit(const InitConfig& config);
 	virtual coResult OnStart();
 	virtual void OnStop();
 private:

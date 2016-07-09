@@ -3,6 +3,7 @@
 #pragma once
 
 #include "debug/log/coAssert.h"
+#include "debug/log/coLog.h"
 
 class coResult
 {
@@ -43,5 +44,3 @@ public:
 #endif
 };
 
-#define coTRY(_cond_, _msg_) coSAFE_SCOPE( if(!(_cond_)){ coERROR(_msg_); return false; } )
-#define coCHECK(_cond_, _msg_) coSAFE_SCOPE( if(!(_cond_)){ coERROR(_msg_); } )

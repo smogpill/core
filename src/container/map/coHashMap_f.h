@@ -22,7 +22,7 @@ coHashMap::coHashMap(coAllocator& _allocator)
 	, count(0)
 	, allocator(&_allocator)
 {
-	static_assert(std::is_pod<T>::value, "POD only");
+	static_assert(std::is_trivially_copyable<T>::value, "Trivially copyable only");
 }
 
 template <class T>

@@ -18,7 +18,7 @@ coDynamicArray<T>::coDynamicArray(coAllocator& _allocator)
 	: capacity(0)
 	, allocator(&_allocator)
 {
-	static_assert(std::is_pod<T>::value, "POD only");
+	static_assert(std::is_trivially_copyable<T>::value, "Trivially copyable only");
 }
 
 template<class T>

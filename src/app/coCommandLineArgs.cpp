@@ -2,12 +2,24 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "app/pch.h"
 #include "app/coCommandLineArgs.h"
-#include "lang/result/coTry.h"
+#include "lang/result/coResult_f.h"
 #include "container/string/coDynamicString_f.h"
 #include "container/string/coConstString_f.h"
 #include "container/Array/coDynamicArray_f.h"
 #include "container/array/coConstArray_f.h"
 #include "debug/log/coLog.h"
+
+coCommandLineArgs::~coCommandLineArgs()
+{
+	for (auto p : args)
+	{
+		delete p;
+	}
+	for (auto p : argConfigs)
+	{
+		delete p;
+	}
+}
 
 coCommandLineArgs::ArgConfig::ArgConfig()
 	: type(nullptr)
@@ -31,15 +43,15 @@ coResult coCommandLineArgs::OnInit(const coObject::InitConfig& _config)
 	Super::OnInit(_config);
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
 	commandName = config.commandName;
-	coPushBackArray(argConfigs, (const coConstArray<const ArgConfig*>&)config.argConfigs);
 
 	return true;
 }
 
-coResult coCommandLineArgs::Parse(const coConstArray<coConstString>& _rawArgs)
+coResult coCommandLineArgs::Parse(const coChar** _args, coUint _nbArgs)
 {
-	for (const coConstString& rawArg : _rawArgs)
+	for (coUint i = 0; i < _nbArgs; ++i)
 	{
+		coConstString rawArg = _args[i];
 		if (!ParseRawArg(rawArg))
 		{
 			coCHECK(DumpHelp(), nullptr);
@@ -76,11 +88,11 @@ coResult coCommandLineArgs::ParseRawArg(const coConstString& _rawArg)
 
 		// Find the corresponding arg def
 		const ArgConfig* foundConfig = nullptr;
-		for (const ArgConfig* argConfig : argConfigs)
+		for (const ArgConfig* opt : optionalArgConfigs)
 		{
-			if (tokens[0] == (isLongName ? argConfig->name : argConfig->shortName))
+			if (tokens[0] == (isLongName ? opt->name : opt->shortName))
 			{
-				foundConfig = argConfig;
+				foundConfig = opt;
 				break;
 			}
 		}
@@ -98,16 +110,32 @@ coResult coCommandLineArgs::ParseRawArg(const coConstString& _rawArg)
 	}
 	else
 	{
-		const coUint paramIndex = args.count;
-		coTRY(paramIndex < m_config->m_paramDefs.count, "Wrong arg count");
+		const coUint argIndex = args.count;
+		coTRY(argIndex < nonOptionalArgConfigs.count, "Wrong arg count");
 
-		const ArgConfig* argConfig = m_config->m_paramDefs[paramIndex];
+		const ArgConfig* argConfig = nonOptionalArgConfigs[argIndex];
 		Arg* arg = new Arg();
 		arg->argConfig = argConfig;
 		arg->value = _rawArg;
 
 		coPushBack(args, arg);
 	}
+
+	return true;
+}
+
+coResult coCommandLineArgs::Add(const ArgConfig& _argConfig)
+{
+	for (const ArgConfig* a : argConfigs)
+	{
+		coTRY(a->name != _argConfig.name, "Arg config already registered for: " << _argConfig.name);
+	}
+	ArgConfig* copy = new ArgConfig(_argConfig);
+	coPushBack(argConfigs, copy);
+	if (_argConfig.optional)
+		coPushBack(optionalArgConfigs, copy);
+	else
+		coPushBack(nonOptionalArgConfigs, copy);
 
 	return true;
 }

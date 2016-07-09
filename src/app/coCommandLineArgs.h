@@ -29,7 +29,6 @@ public:
 	public:
 		InitConfig();
 		coConstString commandName;
-		coDynamicArray<const ArgConfig*> argConfigs;
 	};
 	class Arg
 	{
@@ -39,7 +38,9 @@ public:
 		const ArgConfig* argConfig;
 	};
 
-	coResult Parse(const coConstArray<coConstString>& _rawArgs);
+	~coCommandLineArgs();
+	coResult Add(const ArgConfig& _argConfig);
+	coResult Parse(const coChar** args, coUint nbArgs);
 	coResult DumpHelp() const;
 	const Arg* GetArg(const coConstString& _name) const;
 
@@ -50,6 +51,8 @@ private:
 	coResult ParseRawArg(const coConstString& _rawArg);
 
 	coDynamicString commandName;
-	coDynamicArray<const ArgConfig*> argConfigs;
+	coDynamicArray<ArgConfig*> argConfigs;
+	coDynamicArray<ArgConfig*> optionalArgConfigs;
+	coDynamicArray<ArgConfig*> nonOptionalArgConfigs;
 	coDynamicArray<Arg*> args;
 };

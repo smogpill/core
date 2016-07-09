@@ -1,6 +1,6 @@
 coSetProjectDefaults("prebuild")
 kind "ConsoleApp"
-links {"lang"}
+links {"lang", "container", "debug", "app", "pattern", "memory"}
 
 clangPath = externalAbsPath .. "/clang"
 includedirs {clangPath.."/include"}

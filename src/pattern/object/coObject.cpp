@@ -10,12 +10,12 @@ coObject::coObject()
 
 }
 
-coResult coObject::Init(const InitConfig& desc)
+coResult coObject::Init(const InitConfig& config)
 {
 	if (objectState >= ObjectState::INITIALIZED)
 		return true;
 
-	OnInit(desc);
+	OnInit(config);
 	objectState = ObjectState::INITIALIZED;
 	return true;
 }
@@ -39,10 +39,10 @@ void coObject::Stop()
 	objectState = ObjectState::INITIALIZED;
 }
 
-coResult coObject::OnInit(const InitConfig& desc)
+coResult coObject::OnInit(const InitConfig& config)
 {
 #ifdef coDEBUG
-	debugName = desc.debugName;
+	debugName = config.debugName;
 #endif
 	return true;
 }

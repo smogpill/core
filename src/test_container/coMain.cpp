@@ -1,7 +1,7 @@
 #include "test_container/pch.h"
 #include "test/unit/coTestRegistry.h"
 
-int main()
+coInt main()
 {
 	coTestRegistry::instance->RunAllTests();
 

@@ -6,5 +6,11 @@
 
 class coApp : public coObject
 {
+	typedef coObject Super;
 public:
+	class InitConfig : public Super::InitConfig
+	{
+	public:
+		coConstArray<coConstString> args;
+	};
 };
