@@ -12,7 +12,7 @@ void coDefaultLogHandler::Log(_coLogType _type, const coConstString& _file, coUi
 	{
 	case _coLogType::INFO:
 	{
-		tag = "<Info";
+		tag = "Info";
 		break;
 	}
 	case _coLogType::WARNING:
@@ -31,7 +31,19 @@ void coDefaultLogHandler::Log(_coLogType _type, const coConstString& _file, coUi
 	}
 	}
 
-	coDynamicString s;
-	s << _file << "(" << _line << "): <" << tag << "> " << _message;
-	//printf(s);
+	const coBool error = _type >= _coLogType::WARNING;
+
+	const coConstString& msg = _message.count ? _message : "<no message>";
+	if (error)
+	{
+		coDynamicString s;
+		s << _file << "(" << _line << "): [" << tag << "] " << msg;
+		fwrite(s.data, sizeof(*s.data), s.count, stderr);
+		fprintf(stderr, "\n");
+	}
+	else
+	{
+		fwrite(msg.data, sizeof(*msg.data), msg.count, stdout);
+		fprintf(stdout, "\n");
+	}
 }

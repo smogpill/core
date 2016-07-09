@@ -11,14 +11,6 @@
 
 coCommandLineArgs::~coCommandLineArgs()
 {
-	for (auto p : args)
-	{
-		delete p;
-	}
-	for (auto p : argConfigs)
-	{
-		delete p;
-	}
 }
 
 coCommandLineArgs::ArgConfig::ArgConfig()
@@ -40,7 +32,7 @@ coCommandLineArgs::Arg::Arg()
 
 coResult coCommandLineArgs::OnInit(const coObject::InitConfig& _config)
 {
-	Super::OnInit(_config);
+	coTRY(Super::OnInit(_config), nullptr);
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
 	commandName = config.commandName;
 
@@ -49,7 +41,9 @@ coResult coCommandLineArgs::OnInit(const coObject::InitConfig& _config)
 
 coResult coCommandLineArgs::Parse(const coChar** _args, coUint _nbArgs)
 {
-	for (coUint i = 0; i < _nbArgs; ++i)
+	coClear(args);
+
+	for (coUint i = 1; i < _nbArgs; ++i)
 	{
 		coConstString rawArg = _args[i];
 		if (!ParseRawArg(rawArg))
@@ -59,13 +53,22 @@ coResult coCommandLineArgs::Parse(const coChar** _args, coUint _nbArgs)
 		}
 	}
 
-	// Check parameters count
-// 	if (args.count.size() != m_config->m_paramDefs.size())
-// 	{
-// 		coERROR("Wrong arg count");
-// 		coCHECK(DumpHelp());
-// 		return false;
-// 	}
+	// Count non optional parsed args
+	coUint nbNonOptionalArgs = 0;
+	for (const Arg& arg : args)
+	{
+		if (arg.argConfig && !arg.argConfig->optional)
+		{
+			++nbNonOptionalArgs;
+		}
+	}
+
+	if (nbNonOptionalArgs != nonOptionalArgConfigs.count)
+	{
+		coERROR("Wrong arg count: " << nbNonOptionalArgs);
+		coCHECK(DumpHelp(), nullptr);
+		return false;
+	}
 
 	return true;
 }
@@ -101,10 +104,10 @@ coResult coCommandLineArgs::ParseRawArg(const coConstString& _rawArg)
 		if (foundConfig)
 		{
 			coTRY(foundConfig->type || tokens.count == 1, "The command option " << foundConfig->name << " does not accept values");
-			Arg* arg = new Arg();
-			arg->argConfig = foundConfig;
+			Arg arg;
+			arg.argConfig = foundConfig;
 			if (tokens.count == 2)
-				arg->value = tokens[1];
+				arg.value = tokens[1];
 			coPushBack(args, arg);
 		}
 	}
@@ -114,10 +117,9 @@ coResult coCommandLineArgs::ParseRawArg(const coConstString& _rawArg)
 		coTRY(argIndex < nonOptionalArgConfigs.count, "Wrong arg count");
 
 		const ArgConfig* argConfig = nonOptionalArgConfigs[argIndex];
-		Arg* arg = new Arg();
-		arg->argConfig = argConfig;
-		arg->value = _rawArg;
-
+		Arg arg;
+		arg.argConfig = argConfig;
+		arg.value = _rawArg;
 		coPushBack(args, arg);
 	}
 
@@ -126,36 +128,36 @@ coResult coCommandLineArgs::ParseRawArg(const coConstString& _rawArg)
 
 coResult coCommandLineArgs::Add(const ArgConfig& _argConfig)
 {
-	for (const ArgConfig* a : argConfigs)
+	for (const ArgConfig& a : argConfigs)
 	{
-		coTRY(a->name != _argConfig.name, "Arg config already registered for: " << _argConfig.name);
+		coTRY(a.name != _argConfig.name, "Arg config already registered for: " << _argConfig.name);
 	}
-	ArgConfig* copy = new ArgConfig(_argConfig);
-	coPushBack(argConfigs, copy);
+	coPushBack(argConfigs, _argConfig);
+	ArgConfig& config = coBack(argConfigs);
 	if (_argConfig.optional)
-		coPushBack(optionalArgConfigs, copy);
+		coPushBack(optionalArgConfigs, &config);
 	else
-		coPushBack(nonOptionalArgConfigs, copy);
+		coPushBack(nonOptionalArgConfigs, &config);
 
 	return true;
 }
 
 coResult coCommandLineArgs::DumpHelp() const
 {
-	coDynamicString str("usage: ");
+	coDynamicString str("Usage: ");
 	str << commandName;
-	for (const ArgConfig* argConfig : argConfigs)
+	for (const ArgConfig& argConfig : argConfigs)
 	{
-		if (argConfig->optional)
+		if (argConfig.optional)
 		{
 			str << " [--";
-			str << argConfig->name;
+			str << argConfig.name;
 			str << "]";
 		}
 		else
 		{
 			str << " <";
-			str << argConfig->name;
+			str << argConfig.name;
 			str << ">";
 		}
 	}
@@ -166,12 +168,12 @@ coResult coCommandLineArgs::DumpHelp() const
 	{
 		str << "Args:\n";
 
-		for (const ArgConfig* argConfig : argConfigs)
+		for (const ArgConfig& argConfig : argConfigs)
 		{
 			str << "\t";
-			str << argConfig->name;
+			str << argConfig.name;
 			str << "\t\t";
-			str << argConfig->description;
+			str << argConfig.description;
 			str << "\n";
 		}
 	}
@@ -182,11 +184,11 @@ coResult coCommandLineArgs::DumpHelp() const
 
 const coCommandLineArgs::Arg* coCommandLineArgs::GetArg(const coConstString& _name) const
 {
-	for (const Arg* arg : args)
+	for (const Arg& arg : args)
 	{
-		if (arg->argConfig && arg->argConfig->name == _name)
+		if (arg.argConfig && arg.argConfig->name == _name)
 		{
-			return arg;
+			return &arg;
 		}
 	}
 	return nullptr;

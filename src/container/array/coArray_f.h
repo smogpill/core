@@ -9,6 +9,8 @@ template <class T> coFORCE_INLINE T* coBegin(coArray<T>& _a) { return _a.data; }
 template <class T> coFORCE_INLINE const T* coBegin(const coArray<T>& _a) { return _a.data; }
 template <class T> coFORCE_INLINE T* coEnd(coArray<T>& _a) { return _a.data + _a.count; }
 template <class T> coFORCE_INLINE const T* coEnd(const coArray<T>& _a) { return _a.data + _a.count; }
+template <class T> coFORCE_INLINE T& coBack(coArray<T>& _a) { coASSERT(_a.count); return _a.data[_a.count - 1]; }
+template <class T> coFORCE_INLINE const T& coBack(const coArray<T>& _a) { coASSERT(_a.count); return _a.data[_a.count - 1]; }
 
 template <class A>
 void coResize(A& _this, coUint32 _newCount)

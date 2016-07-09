@@ -7,27 +7,32 @@
 #include "container/array/coDynamicArray_f.h"
 #include "container/array/coConstArray.h"
 
+coResult InitArgParser(coCommandLineArgs& _argParser)
+{
+	{
+		coCommandLineArgs::InitConfig config;
+		config.commandName = coTO_STRING(coPROJECT_NAME);
+		coTRY(_argParser.Init(config), nullptr);
+	}
+
+	{
+		coCommandLineArgs::ArgConfig config;
+		config.name = "projectDir";
+		coTRY(_argParser.Add(config), nullptr);
+	}
+	return true;
+}
+
 coResult Main(coInt nbArgs, const coChar** argv)
 {
-	coCommandLineArgs argParser;
-	{
-		coCommandLineArgs::InitConfig argConfig;
-		argConfig.commandName = coTO_STRING(coPROJECT_NAME);
-		coTRY(argParser.Init(argConfig), nullptr);
-	}
-
-	{
-		coCommandLineArgs::ArgConfig arg;
-		arg.name = "projectDir";
-		coTRY(argParser.Add(arg), nullptr);
-	}
-
-	coTRY(argParser.Parse(argv, nbArgs), nullptr);
-
 	coAppImpl app;
 	coAppImpl::InitConfig config;
 	config.debugName = coTO_STRING(coPROJECT_NAME);
 	coTRY(app.Init(config), nullptr);
+
+	coCommandLineArgs argParser;
+	coTRY(InitArgParser(argParser), "Failed to init the arg parser");
+	coTRY(argParser.Parse(argv, nbArgs), nullptr);
 
 	coTRY(app.Start(), nullptr);
 

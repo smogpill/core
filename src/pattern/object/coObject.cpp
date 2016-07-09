@@ -3,6 +3,7 @@
 #pragma once
 #include "pattern/pch.h"
 #include "pattern/object/coObject.h"
+#include "lang/result/coResult_f.h"
 
 coObject::coObject()
 	: objectState(ObjectState::NONE)
@@ -15,7 +16,7 @@ coResult coObject::Init(const InitConfig& config)
 	if (objectState >= ObjectState::INITIALIZED)
 		return true;
 
-	OnInit(config);
+	coTRY(OnInit(config), "Init failed");
 	objectState = ObjectState::INITIALIZED;
 	return true;
 }
@@ -25,7 +26,7 @@ coResult coObject::Start()
 	if (objectState >= ObjectState::STARTED)
 		return true;
 
-	OnStart();
+	coTRY(OnStart(), "Start failed");
 	objectState = ObjectState::STARTED;
 	return true;
 }

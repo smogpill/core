@@ -3,7 +3,7 @@
 #include "debug/pch.h"
 #include "debug/log/coLog.h"
 #include "debug/log/coLogHandler.h"
-#include "container/string/coDynamicString.h"
+#include "container/string/coDynamicString_f.h"
 
 void _coLog(_coLogType _type, const coConstString& _file, coUint _line, const coConstString& _message)
 {
@@ -14,8 +14,9 @@ void _coLog(_coLogType _type, const coConstString& _file, coUint _line, const co
 	}
 }
 
-coDynamicString& _coGetLogString()
+coDynamicString& _coGetTempLogString()
 {
 	static coDynamicString str;
+	coClear(str);
 	return str;
 }

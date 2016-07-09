@@ -50,9 +50,12 @@ protected:
 private:
 	coResult ParseRawArg(const coConstString& _rawArg);
 
+	// Config
 	coDynamicString commandName;
-	coDynamicArray<ArgConfig*> argConfigs;
+	coDynamicArray<ArgConfig> argConfigs;
 	coDynamicArray<ArgConfig*> optionalArgConfigs;
 	coDynamicArray<ArgConfig*> nonOptionalArgConfigs;
-	coDynamicArray<Arg*> args;
+
+	// Runtime
+	coDynamicArray<Arg> args;
 };

@@ -14,11 +14,11 @@ enum class _coLogType
 };
 
 void _coLog(_coLogType _type, const coConstString& _file, coUint _line, const coConstString& _message);
-coDynamicString& _coGetLogString();
+coDynamicString& _coGetTempLogString();
 
-#define coINFO(_message_) _coLog(_coLogType::INFO, __FILE__, __LINE__, _coGetLogString() << _message_)
-#define coWARN(_message_) _coLog(_coLogType::WARNING, __FILE__, __LINE__, _coGetLogString() << _message_)
-#define coERROR(_message_) _coLog(_coLogType::ERROR, __FILE__, __LINE__, _coGetLogString() << _message_)
+#define coINFO(_message_) _coLog(_coLogType::INFO, __FILE__, __LINE__, _coGetTempLogString() << _message_)
+#define coWARN(_message_) _coLog(_coLogType::WARNING, __FILE__, __LINE__, _coGetTempLogString() << _message_)
+#define coERROR(_message_) _coLog(_coLogType::ERROR, __FILE__, __LINE__, _coGetTempLogString() << _message_)
 #define coWARN_NOT_AVAILABLE() coSAFE_SCOPE( coERROR("<not available>"); )
 #define coWARN_NOT_TESTED() coWARN("<not tested>")
 #define coWARN_NOT_OPTIMIZED() coWARN("<not optimized>")

@@ -4,13 +4,21 @@
 
 #include "pattern/object/coObject.h"
 
+class coDefaultLogHandler;
+
 class coApp : public coObject
 {
 	typedef coObject Super;
 public:
+	coApp();
+	virtual ~coApp();
+
 	class InitConfig : public Super::InitConfig
 	{
-	public:
-		coConstArray<coConstString> args;
 	};
+protected:
+	virtual coResult OnInit(const coObject::InitConfig& _config) override;
+
+private:
+	coDefaultLogHandler* defaultLogHandler;
 };

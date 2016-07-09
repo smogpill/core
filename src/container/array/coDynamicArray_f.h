@@ -64,7 +64,7 @@ void coPushBackArray(coDynamicArray<T>& _this, const coConstArray<T>& _from)
 		const coUint32 newCapacity = desiredCount > 8u ? desiredCount : 8u;
 		coReserve(_this, newCapacity);
 	}
-	coMemCopy(&_this[_this.count], _from.data, _from.count);
+	coMemCopy(&_this.data[_this.count], _from.data, _from.count);
 	_this.count += _from.count;
 }
 

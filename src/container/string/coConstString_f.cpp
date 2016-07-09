@@ -6,7 +6,7 @@
 #include "container/array/coDynamicArray_f.h"
 
 coConstString::coConstString(const coChar* _s)
-	: coConstArray(_s, static_cast<coUint32>(::strlen(_s)))
+	: coConstArray(_s, _s ? static_cast<coUint32>(::strlen(_s)) : 0)
 {
 
 }
