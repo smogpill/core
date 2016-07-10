@@ -1,7 +1,4 @@
 coSetProjectDefaults("prebuild")
 kind "ConsoleApp"
-links {"lang", "container", "debug", "app", "pattern", "memory"}
-
-clangPath = externalAbsPath .. "/clang"
-includedirs {clangPath.."/include"}
-links {clangPath.."/lib/vs/x64/libclang"}
+links {"lang", "debug", "app", "pattern", "memory", "parser", "parser_clang", "container"}
+links {externalAbsPath .. "/clang/lib/vs/x64/libclang"}

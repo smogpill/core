@@ -3,19 +3,21 @@
 #pragma once
 
 #include "lang/reflect/coSymbol.h"
-#include "lang/reflect/coAttribute.h"
-#include "lang/reflect/coFunction.h"
 #include "container/array/coDynamicArray.h"
+
+class coAttribute;
+class coFunction;
 
 class coType : public coSymbol
 {
 public:
 	typedef void* CreateFunc();
 	coType();
+	virtual ~coType();
 
 	coUint32 size8;
 	coType* super;
 	CreateFunc* createFunc;
-	coDynamicArray<coAttribute> attributes;
-	coDynamicArray<coFunction> functions;
+	coDynamicArray<coAttribute*> attributes;
+	coDynamicArray<coFunction*> functions;
 };

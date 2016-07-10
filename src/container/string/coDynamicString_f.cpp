@@ -8,17 +8,21 @@
 coDynamicString::coDynamicString(const coConstString& _s)
 	: coDynamicString()
 {
-	coReserve(*this, _s.count);
-	coMemCopy(data, _s.data, _s.count);
-	count = _s.count;
+	operator=(_s);
 }
 
-void coDynamicString::operator=(const coConstString& _s)
+coDynamicString::coDynamicString(coAllocator& _allocator)
+	: coDynamicArray<coChar>(_allocator)
 {
-	coClear(*this);
+
+}
+
+coDynamicString& coDynamicString::operator=(const coConstString& _s)
+{
 	coReserve(*this, _s.count);
 	coMemCopy(data, _s.data, _s.count);
 	count = _s.count;
+	return *this;
 }
 
 coDynamicString& operator<<(coDynamicString& _this, const coConstString& _a)
@@ -32,4 +36,22 @@ coDynamicString& operator<<(coDynamicString& _this, coUint32 _a)
 	coChar s[16];
 	::sprintf_s(s, 16, "%u", _a);
 	return _this << coConstString(s);
+}
+
+// coBool operator==(coDynamicString& _a, const coConstString& _b)
+// {
+// 	return static_cast<const coConstString&>(_a) == _b;
+// }
+// 
+// coBool operator!=(coDynamicString& _a, const coConstString& _b)
+// {
+// 	return static_cast<const coConstString&>(_a) != _b;
+// }
+
+void coNullTerminate(coDynamicString& _this)
+{
+	if (_this.count == 0 || _this.data[_this.count - 1] != '\0')
+	{
+		coPushBack(_this, '\0');
+	}
 }

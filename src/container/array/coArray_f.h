@@ -31,3 +31,11 @@ void coClear(coArray<T>& _this)
 #endif
 	_this.count = 0;
 }
+
+template <class T>
+void coDeleteElementsAndClear(coArray<T>& _this)
+{
+	for (T e : _this)
+		delete e;
+	coClear(_this);
+}

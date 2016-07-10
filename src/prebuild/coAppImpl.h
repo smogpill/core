@@ -5,11 +5,19 @@
 #include "app/coApp.h"
 #include "lang/result/coResult.h"
 
+class coReflectParser;
+
 class coAppImpl : public coApp
 {
 	typedef coApp Super;
 public:
+	coAppImpl();
+	virtual ~coAppImpl();
+
+protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
+	virtual coResult OnStart() override;
 
 private:
+	coReflectParser* parser;
 };

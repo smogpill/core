@@ -3,11 +3,13 @@
 #pragma once
 
 #include "lang/result/coResult.h"
+#include "lang/reflect/coTypeDecl.h"
 #include "container/string/coConstString.h"
 #include "container/string/coDynamicString.h"
 
 class coObject
 {
+	coDECLARE_ROOT_TYPE(coObject);
 public:
 	enum class ObjectState : coUint8
 	{
@@ -26,14 +28,15 @@ public:
 	coObject();
 	virtual ~coObject() {}
 
-	coResult Init(const InitConfig& config);
+	coResult Init(const InitConfig& _config);
 	coResult Start();
 	void Stop();
 
 protected:
-	virtual coResult OnInit(const InitConfig& config);
+	virtual coResult OnInit(const InitConfig& _config);
 	virtual coResult OnStart();
 	virtual void OnStop();
+
 private:
 	ObjectState objectState;
 #ifdef coDEBUG

@@ -3,23 +3,25 @@
 #include "prebuild/pch.h"
 #include "prebuild/coAppImpl.h"
 #include "app/coCommandLineArgs.h"
+#include "app/coProject_f.h"
 #include "lang/result/coResult_f.h"
 #include "container/array/coDynamicArray_f.h"
 #include "container/array/coConstArray.h"
+#include "pattern/scope/coDefer.h"
 
 coResult InitArgParser(coCommandLineArgs& _argParser)
 {
 	{
 		coCommandLineArgs::InitConfig config;
-		config.commandName = coSTRINGIFY(coPROJECT_NAME);
+		config.commandName = coPROJECT_NAME_WITH_VERSION_STRING;
 		coTRY(_argParser.Init(config), nullptr);
 	}
 
-	{
+	/*{
 		coCommandLineArgs::ArgConfig config;
 		config.name = "projectDir";
 		coTRY(_argParser.Add(config), nullptr);
-	}
+	}*/
 	return true;
 }
 
@@ -27,7 +29,7 @@ coResult Main(coInt nbArgs, const coChar** argv)
 {
 	coAppImpl app;
 	coAppImpl::InitConfig config;
-	config.debugName = coSTRINGIFY(coPROJECT_NAME);
+	config.debugName = coPROJECT_NAME_WITH_VERSION_STRING;
 	coTRY(app.Init(config), nullptr);
 
 	coCommandLineArgs argParser;

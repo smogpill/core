@@ -3,6 +3,9 @@
 #pragma once
 #include "lang/pch.h"
 #include "lang/reflect/coType.h"
+#include "lang/reflect/coAttribute.h"
+#include "lang/reflect/coFunction.h"
+#include "container/array/coDynamicArray_f.h"
 
 coType::coType()
 	: size8(0)
@@ -10,4 +13,10 @@ coType::coType()
 	, createFunc(nullptr)
 {
 
+}
+
+coType::~coType()
+{
+	coDeleteElementsAndClear(attributes);
+	coDeleteElementsAndClear(functions);
 }
