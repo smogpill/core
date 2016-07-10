@@ -3,7 +3,7 @@
 #pragma once
 #include "lang/pch.h"
 #include "lang/reflect/coType.h"
-#include "lang/reflect/coAttribute.h"
+#include "lang/reflect/coField.h"
 #include "lang/reflect/coFunction.h"
 #include "container/array/coDynamicArray_f.h"
 
@@ -17,6 +17,8 @@ coType::coType()
 
 coType::~coType()
 {
-	coDeleteElementsAndClear(attributes);
-	coDeleteElementsAndClear(functions);
+	for (auto* p : fields)
+		delete p;
+	for (auto* p : functions)
+		delete p;
 }

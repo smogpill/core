@@ -5,7 +5,7 @@
 #include "parser/coParser.h"
 #include "container/array/coDynamicArray.h"
 
-class coType;
+class coParsedType;
 
 class coReflectParser : public coParser
 {
@@ -16,10 +16,11 @@ public:
 		coConstString filePath;
 	};
 
-	const coConstArray<coType*>& getTypes() const { return types; }
+	const coConstArray<coParsedType*>& getTypes() const { return parsedTypes; }
 	virtual coResult Parse(const ParseConfig& _config);
 	static coReflectParser* Create();
 
-private:
-	coDynamicArray<coType*> types;
+protected:
+	coReflectParser(){}
+	coDynamicArray<coParsedType*> parsedTypes;
 };

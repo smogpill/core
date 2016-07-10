@@ -7,6 +7,5 @@
 
 coDynamicString& operator<<(coDynamicString& _this, const coConstString& _a);
 coDynamicString& operator<<(coDynamicString& _this, coUint32 _a);
-// coBool operator==(coDynamicString& _a, const coConstString& _b);
-// coBool operator!=(coDynamicString& _a, const coConstString& _b);
 void coNullTerminate(coDynamicString& _this);
+coBool coIsNullTerminated(const coDynamicString& _this);

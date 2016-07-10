@@ -5,8 +5,9 @@
 #include "parser/reflect/coReflectParser.h"
 
 class coSymbol;
-class coFunction;
-class coAttribute;
+class coParsedFunction;
+class coParsedField;
+class coParsedType;
 
 class coClangReflectParser : public coReflectParser
 {
@@ -23,13 +24,13 @@ private:
 	{
 		ScopeInfo() : parser(nullptr), curType(nullptr), cursor(nullptr) {}
 		coClangReflectParser* parser;
-		coType* curType;
+		coParsedType* curType;
 		const CXCursor* cursor;
 	};
 	coResult ParseTypeChild(const ScopeInfo& scope, const CXCursor& _cursor);
-	coResult ParseMethod(coFunction& _function, const CXCursor& _cursor);
+	coResult ParseMethod(coParsedFunction& _parsedFunction, const CXCursor& _cursor);
 	coResult ParseSymbol(coSymbol& _symbol, const CXCursor& _cursor);
-	coResult ParseAttribute(coAttribute& _attr, const CXCursor& _cursor);
+	coResult ParseField(coParsedField& _parsedField, const CXCursor& _cursor);
 	coResult ParseType(const CXCursor& _cursor);
 	coResult ParseTypes(const CXCursor& _cursor);
 

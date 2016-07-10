@@ -3,4 +3,7 @@
 #pragma once
 
 #include "lang/publicPch.h"
-#include "platform/publicPch.h"
+
+#ifdef _WIN32
+#	define coMSWINDOWS
+#endif

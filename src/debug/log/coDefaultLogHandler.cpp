@@ -10,17 +10,17 @@ void coDefaultLogHandler::Log(_coLogType _type, const coConstString& _file, coUi
 	coConstString tag;
 	switch (_type)
 	{
-	case _coLogType::INFO:
+	case _coLogType::info:
 	{
 		tag = "Info";
 		break;
 	}
-	case _coLogType::WARNING:
+	case _coLogType::warning:
 	{
 		tag = "Warning";
 		break;
 	}
-	case _coLogType::ERROR:
+	case _coLogType::error:
 	{
 		tag = "Error";
 		break;
@@ -31,7 +31,7 @@ void coDefaultLogHandler::Log(_coLogType _type, const coConstString& _file, coUi
 	}
 	}
 
-	const coBool error = _type >= _coLogType::WARNING;
+	const coBool error = _type >= _coLogType::warning;
 
 	const coConstString& msg = _message.count ? _message : "<no message>";
 	if (error)

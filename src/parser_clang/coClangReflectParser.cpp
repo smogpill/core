@@ -5,7 +5,9 @@
 #include "pattern/scope/coDefer.h"
 #include "lang/result/coResult_f.h"
 #include "lang/reflect/coType.h"
-#include "lang/reflect/coAttribute.h"
+#include "lang/reflect/coField.h"
+#include "parser/reflect/coParsedType.h"
+#include "parser/reflect/coParsedField.h"
 #include "container/string/coDynamicString_f.h"
 #include "container/array/coDynamicArray_f.h"
 #include "container/array/coConstArray_f.h"
@@ -88,11 +90,12 @@ coResult coClangReflectParser::ParseTypeChild(const ScopeInfo& scope, const CXCu
 	{
 	case CXCursor_FieldDecl:
 	{
-		coAttribute* attr = new coAttribute();
-		coDEFER() { delete attr; };
-		coTRY(ParseAttribute(*attr, _cursor), "Failed to parse attribute: " << attr->name);
-		coPushBack(scope.curType->attributes, attr);
-		attr = nullptr;
+		coParsedField* parsedField = new coParsedField();
+		parsedField->field = new coField();
+		coDEFER() { delete parsedField; };
+		coTRY(ParseField(*parsedField, _cursor), "Failed to parse field: " << parsedField->field->name);
+		coPushBack(scope.curType->parsedFields, parsedField);
+		parsedField = nullptr;
 		break;
 	}
 	case CXCursor_VarDecl: // Static field
@@ -126,24 +129,30 @@ coResult coClangReflectParser::ParseTypes(const CXCursor& _cursor)
 
 coResult coClangReflectParser::ParseType(const CXCursor& _cursor)
 {
-	coType* type = new coType();
-	coDEFER() { delete type; };
+	coParsedType* parsedType = new coParsedType();
+	coDEFER() { delete parsedType; };
+	parsedType->type = new coType();
 	ScopeInfo scope;
 	scope.parser = this;
-	scope.curType = type;
+	scope.curType = parsedType;
 	clang_visitChildren(_cursor, &ParseTypeChildrenVisitor, &scope);
+	coPushBack(parsedTypes, parsedType);
 	return true;
 }
 
-coResult coClangReflectParser::ParseAttribute(coAttribute& _attr, const CXCursor& _cursor)
+coResult coClangReflectParser::ParseField(coParsedField& _parsedField, const CXCursor& _cursor)
 {
-	coTRY(ParseSymbol(_attr, _cursor), nullptr);
+	coTRY(ParseSymbol(*_parsedField.field, _cursor), nullptr);
+	const CXType type = clang_getCursorType(_cursor);
+	const CXCursor typeCursor = clang_getTypeDeclaration(type);
+	const CXString typeSpelling = clang_getCursorSpelling(typeCursor);
+	_parsedField.typeName = clang_getCString(typeSpelling);
 	return true;
 }
 
 coResult coClangReflectParser::ParseSymbol(coSymbol& _symbol, const CXCursor& _cursor)
 {
-	CXString name = clang_getCursorSpelling(_cursor);
+	const CXString name = clang_getCursorSpelling(_cursor);
 	_symbol.name = clang_getCString(name);
 
 	const CX_CXXAccessSpecifier access = clang_getCXXAccessSpecifier(_cursor);
@@ -152,7 +161,7 @@ coResult coClangReflectParser::ParseSymbol(coSymbol& _symbol, const CXCursor& _c
 	return true;
 }
 
-coResult coClangReflectParser::ParseMethod(coFunction& /*_function*/, const CXCursor& _cursor)
+coResult coClangReflectParser::ParseMethod(coParsedFunction& /*_function*/, const CXCursor& _cursor)
 {
 	const coBool staticMethod = clang_CXXMethod_isStatic(_cursor) != 0;
 	if (staticMethod)

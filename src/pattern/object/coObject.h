@@ -31,6 +31,8 @@ public:
 	coResult Init(const InitConfig& _config);
 	coResult Start();
 	void Stop();
+	const coConstString& GetDebugName() const;
+	void SetDebugName(const coConstString& _s);
 
 protected:
 	virtual coResult OnInit(const InitConfig& _config);

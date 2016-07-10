@@ -4,3 +4,4 @@
 
 #include "lang/publicPch.h"
 #include "memory/publicPch.h"
+#include "parser/publicPch.h"

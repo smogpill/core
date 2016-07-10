@@ -5,26 +5,6 @@
 #include "container/string/coConstString.h"
 #include "container/array/coDynamicArray_f.h"
 
-coDynamicString::coDynamicString(const coConstString& _s)
-	: coDynamicString()
-{
-	operator=(_s);
-}
-
-coDynamicString::coDynamicString(coAllocator& _allocator)
-	: coDynamicArray<coChar>(_allocator)
-{
-
-}
-
-coDynamicString& coDynamicString::operator=(const coConstString& _s)
-{
-	coReserve(*this, _s.count);
-	coMemCopy(data, _s.data, _s.count);
-	count = _s.count;
-	return *this;
-}
-
 coDynamicString& operator<<(coDynamicString& _this, const coConstString& _a)
 {
 	coPushBackArray(_this, _a);
@@ -38,20 +18,13 @@ coDynamicString& operator<<(coDynamicString& _this, coUint32 _a)
 	return _this << coConstString(s);
 }
 
-// coBool operator==(coDynamicString& _a, const coConstString& _b)
-// {
-// 	return static_cast<const coConstString&>(_a) == _b;
-// }
-// 
-// coBool operator!=(coDynamicString& _a, const coConstString& _b)
-// {
-// 	return static_cast<const coConstString&>(_a) != _b;
-// }
-
 void coNullTerminate(coDynamicString& _this)
 {
-	if (_this.count == 0 || _this.data[_this.count - 1] != '\0')
-	{
+	if (!coIsNullTerminated(_this))
 		coPushBack(_this, '\0');
-	}
+}
+
+coBool coIsNullTerminated(const coDynamicString& _this)
+{
+	return _this.count > 0 && _this.data[_this.count - 1] == '\0';
 }

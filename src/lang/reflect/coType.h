@@ -5,7 +5,7 @@
 #include "lang/reflect/coSymbol.h"
 #include "container/array/coDynamicArray.h"
 
-class coAttribute;
+class coField;
 class coFunction;
 
 class coType : public coSymbol
@@ -18,6 +18,6 @@ public:
 	coUint32 size8;
 	coType* super;
 	CreateFunc* createFunc;
-	coDynamicArray<coAttribute*> attributes;
+	coDynamicArray<coField*> fields;
 	coDynamicArray<coFunction*> functions;
 };

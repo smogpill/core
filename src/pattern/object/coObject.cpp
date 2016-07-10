@@ -56,3 +56,19 @@ coResult coObject::OnStart()
 void coObject::OnStop()
 {
 }
+
+const coConstString& coObject::GetDebugName() const
+{
+#ifdef coDEBUG
+	return debugName;
+#else
+	return coConstString::GetEmpty();
+#endif
+}
+
+void coObject::SetDebugName(const coConstString& _s)
+{
+#ifdef coDEBUG
+	debugName = _s;
+#endif
+}
