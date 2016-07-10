@@ -8,40 +8,6 @@
 #include "platform/coOs.h"
 #include "lang/result/coResult_f.h"
 
-
-coResult coCloseFile_win(HANDLE _handle)
-{
-	coResult result;
-	const BOOL res = ::CloseHandle(_handle);
-	if (res == FALSE)
-	{
-		coDynamicString str;
-		coDumpLastOsError(str);
-		coERROR("Failed to close the mapped file: " << str);
-		return false;
-	}
-	return true;
-}
-
-coResult coGetFileSize_win(coInt64& _size8, HANDLE _handle)
-{
-	_size8 = 0;
-
-	LARGE_INTEGER info;
-	const BOOL res = ::GetFileSizeEx(_handle, &info);
-	if (res == FALSE)
-	{
-		coDynamicString str;
-		coDumpLastOsError(str);
-		coERROR("Failed to get the size of the file: " << str);
-		return false;
-	}
-
-	_size8 = info.QuadPart;
-
-	return true;
-}
-
 coResult coFileAccess::GetSize8(coInt64& _size8) const
 {
 	_size8 = 0;
@@ -198,7 +164,13 @@ void coFileAccess::OnImplShutdown()
 	HANDLE handle = static_cast<HANDLE>(impl);
 	if (handle)
 	{
-		coCHECK(coCloseFile_win(handle), "Failed to close the handle of the file: " << GetDebugName());
-		impl = nullptr;
+		const BOOL res = ::CloseHandle(handle);
+		if (res == FALSE)
+		{
+			coDynamicString str;
+			coDumpLastOsError(str);
+			coERROR("Failed to close the mapped file: " << str);
+		}
 	}
+	impl = nullptr;
 }
