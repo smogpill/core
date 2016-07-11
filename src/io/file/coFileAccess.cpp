@@ -5,21 +5,28 @@
 #include "lang/result/coResult_f.h"
 
 coFileAccess::coFileAccess()
-	: mode(Mode::none)
+	: mode(Mode::read)
 	, impl(nullptr)
 {
-
+	OnImplConstruct();
 }
 
 coFileAccess::~coFileAccess()
 {
-	OnImplShutdown();
+	OnImplDestruct();
+}
+
+coFileAccess::InitConfig::InitConfig()
+	: mode(Mode::read)
+{
+
 }
 
 coResult coFileAccess::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
+	mode = config.mode;
 	path = config.path;
 	SetDebugName(path);
 

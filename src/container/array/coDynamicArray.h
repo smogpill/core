@@ -13,8 +13,11 @@ public:
 	coDynamicArray();
 	coDynamicArray(coAllocator& _allocator);
 	~coDynamicArray();
-	operator const coConstArray<T>&() const { return reinterpret_cast<const coConstArray<T>&>(*this); }
 
 	coUint32 capacity;
 	coAllocator* allocator;
+
+protected:
+	coDynamicArray<T>(const coDynamicArray<T>&) = delete;
+	coDynamicArray<T>& operator=(const coDynamicArray<T>&) = delete;
 };

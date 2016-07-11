@@ -11,8 +11,8 @@
 coResult coFileAccess::GetSize8(coInt64& _size8) const
 {
 	_size8 = 0;
-	HANDLE handle = static_cast<HANDLE>(impl);
-	coTRY(handle, nullptr);
+	const HANDLE& handle = static_cast<const HANDLE&>(impl);
+	coTRY(handle != INVALID_HANDLE_VALUE, nullptr);
 
 	LARGE_INTEGER info;
 	const BOOL res = ::GetFileSizeEx(handle, &info);
@@ -31,7 +31,8 @@ coResult coFileAccess::GetSize8(coInt64& _size8) const
 
 coResult coFileAccess::Write(const coByte* _data, coUint _size8)
 {
-	HANDLE handle = static_cast<HANDLE>(impl);
+	HANDLE& handle = static_cast<HANDLE&>(impl);
+	coTRY(handle != INVALID_HANDLE_VALUE, nullptr);
 	DWORD writtenSize8 = 0;
 	const BOOL res = ::WriteFile(handle, _data, _size8, &writtenSize8, nullptr);
 	if (res == FALSE)
@@ -47,8 +48,8 @@ coResult coFileAccess::Write(const coByte* _data, coUint _size8)
 
 coResult coFileAccess::Read(coUint& _readSize8, coByte* _data, coUint _size8)
 {
-	HANDLE handle = static_cast<HANDLE>(impl);
-	coTRY(handle, nullptr);
+	HANDLE& handle = static_cast<HANDLE&>(impl);
+	coTRY(handle != INVALID_HANDLE_VALUE, nullptr);
 	_readSize8 = 0;
 	DWORD readSize8 = 0;
 	const BOOL res = ::ReadFile(handle, _data, _size8, &readSize8, nullptr);
@@ -65,8 +66,8 @@ coResult coFileAccess::Read(coUint& _readSize8, coByte* _data, coUint _size8)
 
 coResult coFileAccess::GetTime(coUint64& _creationTime, coUint64& _lastAccessTime, coUint64& _lastWriteTime) const
 {
-	HANDLE handle = static_cast<HANDLE>(impl);
-	coTRY(handle, nullptr);
+	const HANDLE& handle = static_cast<const HANDLE&>(impl);
+	coTRY(handle != INVALID_HANDLE_VALUE, nullptr);
 	_creationTime = 0;
 	_lastAccessTime = 0;
 	_lastWriteTime = 0;
@@ -89,7 +90,7 @@ coResult coFileAccess::GetTime(coUint64& _creationTime, coUint64& _lastAccessTim
 
 coResult coFileAccess::OnImplInit(const InitConfig& /*_config*/)
 {
-	HANDLE handle = INVALID_HANDLE_VALUE;
+	HANDLE& handle = static_cast<HANDLE&>(impl);
 
 	// Open mode
 	DWORD openMode = 0;
@@ -154,15 +155,13 @@ coResult coFileAccess::OnImplInit(const InitConfig& /*_config*/)
 		return false;
 	}
 
-	impl = handle;
-
 	return true;
 }
 
-void coFileAccess::OnImplShutdown()
+void coFileAccess::OnImplDestruct()
 {
-	HANDLE handle = static_cast<HANDLE>(impl);
-	if (handle)
+	HANDLE& handle = static_cast<HANDLE>(impl);
+	if (handle != INVALID_HANDLE_VALUE)
 	{
 		const BOOL res = ::CloseHandle(handle);
 		if (res == FALSE)
@@ -171,6 +170,11 @@ void coFileAccess::OnImplShutdown()
 			coDumpLastOsError(str);
 			coERROR("Failed to close the mapped file: " << str);
 		}
+		handle = INVALID_HANDLE_VALUE;
 	}
-	impl = nullptr;
+}
+
+void coFileAccess::OnImplConstruct()
+{
+	impl = INVALID_HANDLE_VALUE;
 }

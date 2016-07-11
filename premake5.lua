@@ -94,4 +94,4 @@ workspace("core")
 	include("src/prebuild")
 	include("src/test_math")
 	include("src/test_container")
-
+	include("src/test_io")

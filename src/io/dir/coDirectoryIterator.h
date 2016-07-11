@@ -28,8 +28,9 @@ protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 private:
+	void OnImplConstruct();
+	void OnImplDestruct();
 	coResult OnImplInit(const InitConfig& _config);
-	void OnImplShutdown();
 
 	coDirectoryEntry entry;
 	void* impl;

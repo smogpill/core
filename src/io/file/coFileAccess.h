@@ -14,13 +14,14 @@ class coFileAccess final : public coObject
 public:
 	enum Mode
 	{
-		none,
 		read,
 		write
 	};
 	class InitConfig : public Super::InitConfig
 	{
 	public:
+		InitConfig();
+		Mode mode;
 		coConstString path;
 	};
 	coFileAccess();
@@ -37,8 +38,9 @@ protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 private:
+	void OnImplConstruct();
+	void OnImplDestruct();
 	coResult OnImplInit(const InitConfig& _config);
-	void OnImplShutdown();
 
 	Mode mode;
 	coDynamicString path;

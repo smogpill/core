@@ -37,4 +37,3 @@ public:
 
 #define coEXPECT(_cond_) coASSERT(_cond_)
 #define coEXPECT_FATAL(_cond_) coASSERT(_cond_)
-

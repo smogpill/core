@@ -4,6 +4,7 @@
 
 #include "lang/coCppExtensions.h"
 #include "debug/log/coAssert.h"
+#include "container/array/coArray.h"
 
 template <class T>
 class coConstArray
@@ -11,6 +12,7 @@ class coConstArray
 public:
 	coConstArray() : data(nullptr), count(0) {}
 	coConstArray(const T* _data, coUint32 _count) : data(_data), count(_count) {}
+	coConstArray(const coArray<T>& _) : data(_.data), count(_.count) {}
 	coConstArray(std::initializer_list<T> _l);
 	coFORCE_INLINE const T& operator[] (coUint32 _i) const { coASSERT(_i < count); return data[_i]; }
 

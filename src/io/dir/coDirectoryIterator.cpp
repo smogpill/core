@@ -7,12 +7,12 @@
 coDirectoryIterator::coDirectoryIterator()
 	: impl(nullptr)
 {
-
+	OnImplConstruct();
 }
 
 coDirectoryIterator::~coDirectoryIterator()
 {
-	OnImplShutdown();
+	OnImplDestruct();
 }
 
 coResult coDirectoryIterator::OnInit(const coObject::InitConfig& _config)

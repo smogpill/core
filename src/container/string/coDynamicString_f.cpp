@@ -21,12 +21,15 @@ coDynamicString& operator<<(coDynamicString& _this, coUint32 _a)
 void coNullTerminate(coDynamicString& _this)
 {
 	if (!coIsNullTerminated(_this))
-		coPushBack(_this, '\0');
+	{
+		coReserve(_this, _this.count + 1);
+		_this.data[_this.count] = '\0';
+	}
 }
 
 coBool coIsNullTerminated(const coDynamicString& _this)
 {
-	return _this.count > 0 && _this.data[_this.count - 1] == '\0';
+	return _this.capacity > _this.count && _this.data[_this.count] == '\0';
 }
 
 void coJoin(coDynamicString& _this, const coConstString& _a, const coConstString& _b, coChar _separator)

@@ -8,9 +8,9 @@
 #include "debug/log/coLog.h"
 #include "platform/coOs.h"
 
-coResult _coCloseDirectoryIteratorHandle(HANDLE _handle)
+coResult _coCloseDirectoryIteratorHandle(const HANDLE& _handle)
 {
-	if (_handle)
+	if (_handle != INVALID_HANDLE_VALUE)
 	{
 		const BOOL ret = ::FindClose(_handle);
 		if (ret == FALSE)
@@ -59,7 +59,6 @@ coBool _coAcceptEntry(const coDirectoryEntry& _entry)
 coResult coDirectoryIterator::OnImplInit(const InitConfig& _config)
 {
 	HANDLE& handle = static_cast<HANDLE&>(impl);
-	
 	if (_config.path.count == 0)
 	{
 		return true;
@@ -67,14 +66,12 @@ coResult coDirectoryIterator::OnImplInit(const InitConfig& _config)
 
 	coDynamicString searchPath(_config.path);
 	searchPath << "/*";
+	coNullTerminate(searchPath);
 
 	WIN32_FIND_DATAA data;
 	handle = ::FindFirstFileA(searchPath.data, &data);
-
 	if (handle == INVALID_HANDLE_VALUE)
 	{
-		handle = nullptr;
-
 		const DWORD lastError = ::GetLastError();
 		if (lastError == ERROR_FILE_NOT_FOUND || lastError == ERROR_NO_MORE_FILES)
 		{
@@ -100,11 +97,19 @@ coResult coDirectoryIterator::OnImplInit(const InitConfig& _config)
 	return true;
 }
 
-void coDirectoryIterator::OnImplShutdown()
+void coDirectoryIterator::OnImplConstruct()
+{
+	impl = INVALID_HANDLE_VALUE;
+}
+
+void coDirectoryIterator::OnImplDestruct()
 {
 	HANDLE& handle = static_cast<HANDLE&>(impl);
-	coCHECK(_coCloseDirectoryIteratorHandle(handle), nullptr);
-	handle = nullptr;
+	if (handle != INVALID_HANDLE_VALUE)
+	{
+		coCHECK(_coCloseDirectoryIteratorHandle(handle), nullptr);
+		handle = INVALID_HANDLE_VALUE;
+	}
 }
 
 coDirectoryIterator& coDirectoryIterator::operator++ ()
@@ -113,7 +118,7 @@ coDirectoryIterator& coDirectoryIterator::operator++ ()
 	coClear(entry.name);
 	entry.status = coPathStatus();
 	HANDLE& handle = static_cast<HANDLE&>(impl);
-	if (handle == nullptr)
+	if (handle == INVALID_HANDLE_VALUE)
 	{
 		coERROR("Attempt to increment an end iterator");
 		return *this;
@@ -141,7 +146,7 @@ coDirectoryIterator& coDirectoryIterator::operator++ ()
 				}
 				coCHECK(_coCloseDirectoryIteratorHandle(handle), nullptr);
 				entry = coDirectoryEntry();
-				handle = nullptr;
+				handle = INVALID_HANDLE_VALUE;
 				return *this;
 			}
 		}

@@ -4,6 +4,7 @@
 
 #include "container/array/coDynamicArray.h"
 #include "container/array/coArray_f.h"
+#include "container/array/coConstArray_f.h"
 #include "memory/allocator/coAllocator.h"
 #include "lang/coCppExtensions.h"
 
@@ -67,6 +68,15 @@ void coPushBackArray(coDynamicArray<T>& _this, const coConstArray<T>& _from)
 	coMemCopy(&_this.data[_this.count], _from.data, _from.count);
 	_this.count += _from.count;
 }
+// 
+// template <class T>
+// coDynamicArray<T>& coDynamicArray<T>::operator=(const coDynamicArray<T>& _other)
+// {
+// 	coReserve(*this, _other.count);
+// 	coMemCopy(data, _other.data, _other.count);
+// 	count = _other.count;
+// 	return *this;
+// }
 
 /*
 

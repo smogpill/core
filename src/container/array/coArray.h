@@ -2,7 +2,6 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include "container/array/coConstArray.h"
 #include "debug/log/coAssert.h"
 
 template <class T>
@@ -13,7 +12,6 @@ public:
 	coArray(T* _data, coUint32 _count) : data(_data), count(_count) {}
 	coFORCE_INLINE T& operator[] (coUint32 _i) { coASSERT(_i < count); return const_cast<T&>(data[_i]); }
 	coFORCE_INLINE const T& operator[] (coUint32 _i) const { coASSERT(_i < count); return data[_i]; }
-	coFORCE_INLINE operator const coConstArray<T>&() const { return reinterpret_cast<const coConstArray<T>&>(*this); }
 
 	T* data;
 	coUint32 count;
