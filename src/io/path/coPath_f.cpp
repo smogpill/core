@@ -4,42 +4,159 @@
 #include "io/path/coPath_f.h"
 #include "io/path/coPathStatus.h"
 #include "container/string/coDynamicString_f.h"
+#include "container/string/coChar_f.h"
 
-coResult coGetPathStatus(coPathStatus& _status, const coConstString& _path)
+void coNormalizePath(coDynamicString& _this)
 {
-	_status = coPathStatus();
+	if (_this.count == 0)
+		return;
 
-	if (_path.data == nullptr)
-	{
-		return true;
-	}
+	const coUint32 len = _this.count;
 
-	// Based on Boost::filesystem::operations.cpp::detail::status()
+	coChar* buf = new coChar[len];
+	coInt bufIndex = 0;
+	coInt lastSlashInBuf = -1;
+
+	for (coUint i = 0; i < len; ++i)
 	{
-		coDynamicString nullTerminatedPath(_path);
-		coNullTerminate(nullTerminatedPath);
-		const DWORD attributes = ::GetFileAttributesA(nullTerminatedPath.data);
-		if (attributes == INVALID_FILE_ATTRIBUTES)
+		const coChar c = _this[i];
+		switch (c)
 		{
-			const DWORD errval = ::GetLastError();
-			switch (errval)
+		case '/':
+		case '\\':
+		{
+			if (lastSlashInBuf != (bufIndex - 1))
 			{
-			case ERROR_FILE_NOT_FOUND:		_status.status = coPathStatus::Status::notFound; return true;
-			case ERROR_PATH_NOT_FOUND:		_status.status = coPathStatus::Status::notFound; return true;
-			default:						_status.status = coPathStatus::Status::error; return false;
+				buf[bufIndex] = '/';
+				lastSlashInBuf = bufIndex;
+				++bufIndex;
 			}
 		}
-
-		// Reparse point handling
-		if (attributes & FILE_ATTRIBUTE_REPARSE_POINT)
+		break;
+		case '.':
+		case ' ':
+		case ':':
 		{
-			_status.status = coPathStatus::Status::reparseFile;
-			return true;
+			buf[bufIndex] = c;
+			++bufIndex;
 		}
-
-		_status.status = (attributes & FILE_ATTRIBUTE_DIRECTORY) ?
-			coPathStatus::Status::directory : coPathStatus::Status::regularFile;
+		break;
+		default:
+		{
+			if (coIsAlphaNumeric(c))
+			{
+				buf[bufIndex] = c;
+				++bufIndex;
+			}
+		}
+		break;
+		}
 	}
 
+	// remove '/' when last character
+	if (bufIndex && buf[bufIndex - 1] == '/')
+		--bufIndex;
+
+	// Remove starting './'
+	if (bufIndex > 1 && buf[0] == '.' && buf[1] == '/')
+	{
+		buf += 2;
+		bufIndex -= 2;
+	}
+
+	_this = coConstString(buf, bufIndex);
+
+	delete[] buf;
+}
+
+coBool coIsPathNormalized(const coConstString& _this)
+{
+	const coUint count = _this.count;
+	if (count > 1)
+	{
+		if (_this[count - 1] == '/')
+			return false;
+	}
 	return true;
+}
+
+void coGetFileName(coConstString& _out, const coConstString& _this)
+{
+	coASSERT(coIsPathNormalized(_this));
+	coUint pos = coFindLastChar(_this, '/');
+	pos = (pos != _this.count) ? pos + 1 : 0;
+	coGetSubStringFromPos(_out, _this, pos);
+}
+
+void coGetBaseName(coConstString& _out, const coConstString& _this)
+{
+	coASSERT(coIsPathNormalized(_this));
+	if (!coIsDotOrDoubleDot(_this))
+	{
+		coGetFileName(_out, _this);
+		const coUint32 pos = coFindLastChar(_out, '.');
+		coGetSubStringFromSize(_out, _out, pos);
+	}
+	else
+	{
+		_out = coConstString();
+	}
+}
+
+void coGetExtension(coConstString& _out, const coConstString& _this)
+{
+	coASSERT(coIsPathNormalized(_this));
+	if (!coIsDotOrDoubleDot(_this))
+	{
+		const coUint32 pos = coFindLastChar(_this, '.');
+		coGetSubStringFromPos(_out, _this, pos);
+	}
+	else
+	{
+		_out = coConstString();
+	}
+}
+
+coBool coIsDot(const coConstString& _this)
+{
+	return _this.count == 1 && _this.data[0] == '.';
+}
+
+coBool coIsDoubleDot(const coConstString& _this)
+{
+	return _this.count == 2 && _this.data[0] == '.' && _this.data[1] == '.';
+}
+
+coBool coIsDotOrDoubleDot(const coConstString& _this)
+{
+	switch (_this.count)
+	{
+	case 1: return _this.data[0] == '.';
+	case 2: return _this.data[0] == '.' && _this.data[1] == '.';
+	default: return false;
+	}
+}
+
+coBool coIsDotHiddenPath(const coConstString& _this)
+{
+	return _this.count > 1
+		&& (_this.data[0] == '.')
+		&& (_this.data[1] != '.')
+		&& (coIsFileNameCompatible(_this.data[1]));
+}
+
+void coJoinPaths(coDynamicString& _out, const coConstString& _a, const coConstString& _b)
+{
+	if (_b.count == 0)
+	{
+		_out = _a;
+	}
+	else if (_a.count == 0 || coIsDot(_a))
+	{
+		_out = _b;
+	}
+	else
+	{
+		coJoin(_out, _a, _b, '/');
+	}
 }

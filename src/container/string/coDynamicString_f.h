@@ -9,3 +9,4 @@ coDynamicString& operator<<(coDynamicString& _this, const coConstString& _a);
 coDynamicString& operator<<(coDynamicString& _this, coUint32 _a);
 void coNullTerminate(coDynamicString& _this);
 coBool coIsNullTerminated(const coDynamicString& _this);
+void coJoin(coDynamicString& _this, const coConstString& _a, const coConstString& _b, coChar _separator);

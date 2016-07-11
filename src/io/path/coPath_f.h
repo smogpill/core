@@ -6,5 +6,16 @@
 
 class coPathStatus;
 class coConstString;
+class coDynamicString;
 
 coResult coGetPathStatus(coPathStatus& _status, const coConstString& _path);
+void coNormalizePath(coDynamicString& _this);
+coBool coIsPathNormalized(const coConstString& _s);
+void coGetFileName(coConstString& _out, const coConstString& _this);
+void coGetBaseName(coConstString& _out, const coConstString& _this);
+void coGetExtension(coConstString& _out, const coConstString& _this);
+coBool coIsDot(const coConstString& _this);
+coBool coIsDoubleDot(const coConstString& _this);
+coBool coIsDotOrDoubleDot(const coConstString& _this);
+coBool coIsDotHiddenPath(const coConstString& _this);
+void coJoinPaths(coDynamicString& _out, const coConstString& _a, const coConstString& _b);

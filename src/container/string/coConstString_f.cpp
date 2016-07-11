@@ -3,6 +3,8 @@
 #include "container/pch.h"
 #include "container/string/coConstString_f.h"
 #include "container/array/coDynamicArray_f.h"
+#include "container/array/coConstArray_f.h"
+#include "debug/log/coAssert.h"
 
 coBool operator==(const coConstString& _a, const coConstString& _b)
 {
@@ -48,4 +50,83 @@ void coSplit(coDynamicArray<coConstString>& _out, const coConstString& _input, c
 	}
 	if (i != startIndex)
 		coPushBack(_out, coConstString(&c[startIndex], i - startIndex));
+}
+
+void coGetSubStringFromPos(coConstString& _out, const coConstString& _a, coUint32 _pos)
+{
+	coASSERT(_pos <= _a.count);
+	_out.data = _a.data + _pos;
+	_out.count = _a.count - _pos;
+}
+void coGetSubStringFromSize(coConstString& _out, const coConstString& _a, coUint32 _size)
+{
+	coASSERT(_size <= _a.count);
+	_out.data = _a.data;
+	_out.count = _size < _a.count ? _size : _a.count;
+}
+
+void ccoGetSubStringAfterToken(coConstString& _out, const coConstString& _a, const coConstString& _token)
+{
+	coASSERT(_token.data >= _a.data && coEnd(_token) <= coEnd(_a));
+	_out.data = coEnd(_token);
+	_out.count = static_cast<coUint32>(coIntPtr(coEnd(_a)) - coIntPtr(_out.data));
+}
+
+coUint coFindFirstChar(const coConstString& _this, coChar _c)
+{
+	const coChar* s = _this.data;
+	for (coUint i = 0; i < _this.count; ++i)
+		if (s[i] == _c)
+			return i;
+	return _this.count;
+}
+
+coUint coFindLastChar(const coConstString& _this, coChar _c)
+{
+	const coChar* s = _this.data;
+	for (coInt i = _this.count - 1; i >= 0; --i)
+		if (s[i] == _c)
+			return i;
+	return _this.count;
+}
+
+coBool coAreMemoryOverlapping(const coConstString& _a, const coConstString& _b)
+{
+	const coChar* charMin = _a.data > _b.data ? _a.data : _b.data;
+	const coChar* charMax = coEnd(_a) < coEnd(_b) ? coEnd(_a) : coEnd(_b);
+	return charMin <= charMax;
+}
+
+void coLeftStrip(coConstString& _out, const coConstString& _s, const coConstString& _chars)
+{
+	coInt i;
+	for (i = 0; i < static_cast<coInt>(_s.count); ++i)
+	{
+		coUint j;
+		for (j = 0; j < _chars.count; ++j)
+		{
+			if (_s[i] == _chars[j])
+				break;
+		}
+		if (j == _chars.count)
+			break;
+	}
+	coGetSubStringFromPos(_out, _s, i);
+}
+
+void coRightStrip(coConstString& _out, const coConstString& _s, const coConstString& _chars)
+{
+	coInt i;
+	for (i = _s.count - 1; i >= 0; --i)
+	{
+		coUint j;
+		for (j = 0; j < _chars.count; ++j)
+		{
+			if (_s[i] == _chars[j])
+				break;
+		}
+		if (j == _chars.count)
+			break;
+	}
+	coGetSubStringFromSize(_out, _s, i + 1);
 }

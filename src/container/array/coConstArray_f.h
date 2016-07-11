@@ -11,13 +11,9 @@ coConstArray<T>::coConstArray(std::initializer_list<T> _l)
 {
 }
 
-template <class T>
-coFORCE_INLINE const T* coBegin(const coConstArray<T>& _a) { return _a.data; }
-template <class T>
-coFORCE_INLINE const T* coEnd(const coConstArray<T>& _a) { return _a.data + _a.count; }
+template <class T> coFORCE_INLINE const T* coBegin(const coConstArray<T>& _a) { return _a.data; }
+template <class T> coFORCE_INLINE const T* coEnd(const coConstArray<T>& _a) { return _a.data + _a.count; }
 
 // STD compat
-template <class T>
-coFORCE_INLINE const T* begin(const coConstArray<T> _a) { return coBegin(_a); }
-template <class T>
-coFORCE_INLINE const T* end(const coConstArray<T> _a) { return coEnd(_a); }
+template <class T> coFORCE_INLINE const T* begin(const coConstArray<T> _a) { return coBegin(_a); }
+template <class T> coFORCE_INLINE const T* end(const coConstArray<T> _a) { return coEnd(_a); }
