@@ -68,15 +68,22 @@ void coPushBackArray(coDynamicArray<T>& _this, const coConstArray<T>& _from)
 	coMemCopy(&_this.data[_this.count], _from.data, _from.count);
 	_this.count += _from.count;
 }
-// 
-// template <class T>
-// coDynamicArray<T>& coDynamicArray<T>::operator=(const coDynamicArray<T>& _other)
-// {
-// 	coReserve(*this, _other.count);
-// 	coMemCopy(data, _other.data, _other.count);
-// 	count = _other.count;
-// 	return *this;
-// }
+
+template <class T>
+coDynamicArray<T>::coDynamicArray(const coDynamicArray<T>& _)
+	: coDynamicArray()
+{
+	operator=(_);
+}
+
+template <class T>
+coDynamicArray<T>& coDynamicArray<T>::operator=(const coDynamicArray<T>& _)
+{
+	coReserve(*this, _.count);
+	coMemCopy(data, _.data, _.count);
+	count = _.count;
+	return *this;
+}
 
 /*
 

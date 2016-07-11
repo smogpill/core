@@ -18,6 +18,6 @@ public:
 	coAllocator* allocator;
 
 protected:
-	coDynamicArray<T>(const coDynamicArray<T>&) = delete;
-	coDynamicArray<T>& operator=(const coDynamicArray<T>&) = delete;
+	coDynamicArray(const coDynamicArray<T>&);
+	coDynamicArray<T>& operator=(const coDynamicArray<T>&);
 };
