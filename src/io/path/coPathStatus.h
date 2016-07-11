@@ -17,6 +17,8 @@ public:
 		reparseFile
 	};
 
+	coPathStatus() : status(Status::none) {}
+
 	coBool IsRegularFile() const { return status == Status::regularFile; }
 	coBool Exists() const { return status >= Status::regularFile; }
 
