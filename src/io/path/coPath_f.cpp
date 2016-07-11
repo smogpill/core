@@ -13,6 +13,7 @@ void coNormalizePath(coDynamicString& _this)
 
 	const coUint32 len = _this.count;
 
+	coTODO("Use better allocation.");
 	coChar* buf = new coChar[len];
 	coInt bufIndex = 0;
 	coInt lastSlashInBuf = -1;

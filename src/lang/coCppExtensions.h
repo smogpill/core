@@ -27,7 +27,7 @@ coFORCE_INLINE T& coBitCast(A& _a)
 #define coSTRINGIFY(_x_) _coSTRINGIFY(_x_)
 
 #ifdef coMSVC_COMPILER
-#define coPRAGMA_MESSAGE(_x_)	__pragma(message(__FILE__##"("## coLINE_STR ##"): "##_x_))
+#define coPRAGMA_MESSAGE(_x_)	__pragma(message(__FILE__ "("  coSTRINGIFY(__LINE__) "): " _x_))
 #define coNOEXCEPT				throw()
 #else
 #define coPRAGMA_MESSAGE(_x_)	_Pragma(_coSTRINGIFY(message "Warning: " _x_))
