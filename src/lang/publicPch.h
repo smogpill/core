@@ -7,6 +7,7 @@
 #include <xmmintrin.h>
 #include <type_traits>
 #include <limits>
+#include <new>
 
 #include "lang/types/coBaseTypes.h"
 #include "lang/coCompiler.h"
