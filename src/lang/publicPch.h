@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <xmmintrin.h>
 #include <type_traits>
+#include <limits>
 
 #include "lang/types/coBaseTypes.h"
 #include "lang/coCompiler.h"
