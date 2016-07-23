@@ -42,50 +42,16 @@ void coDeleteElementsAndClear(coArray<T>& _this)
 	coClear(_this);
 }
 
-// template <class T, class CompareFunctor>
-// void _coQuickSort(T* _data, CompareFunctor _cmp)
-// {
-// 	auto Partition = [&](coUint _l, coUint _r) -> coUint
-// 	{
-// 		const T& pivot = _this.data[_l];
-// 		coUint i = _l - 1;
-// 		coUint j = _r + 1;
-// 		for (;;)
-// 		{
-// 			do
-// 			{
-// 				++i;
-// 			} while (_cmp(_this.data[i], pivot));
-// 
-// 			do
-// 			{
-// 				--j;
-// 			} while (_cmp(pivot, _this.data[j]));
-// 
-// 			if (i >= j)
-// 				return j;
-// 
-// 			coSwap(_this.data[i], _this.data[j]);
-// 		}
-// 	};
-// 
-// 	if (_l < _r)
-// 	{
-// 		const coUint pivot = Partition(_l, _r);
-// 		QuickSort(_l, pivot);
-// 		QuickSort(pivot + 1, _r);
-// 	}
-// 
-// 	QuickSort(0, _this.count - 1);
-// }
-
 template <class T, class CompareFunctor>
 void coSort(coArray<T>& _this, CompareFunctor _cmp)
 {
 	if (_this.count == 0)
 		return;
 
-	// QuickSort algorithm
+	// QuickSort algorithm with:
+	// - Hoare Partitioning (faster);
+	// - Recursion removed;
+	// - Small stack size (to avoid dynamic allocs).
 
 	T* data = _this.data;
 	auto HoarePartition = [&](coUint _l, coUint _r) -> coUint
@@ -125,28 +91,28 @@ void coSort(coArray<T>& _this, CompareFunctor _cmp)
 		--top;
 
 		const coUint pivot = HoarePartition(l, r);
-		const coUint pl0 = l;
-		const coUint pr0 = pivot;
-		const coUint pl1 = pivot + 1;
-		const coUint pr1 = r;
-		const coUint sz0 = pr0 - pl0;
-		const coUint sz1 = pr1 - pl1;
+		const coUint l0 = l;
+		const coUint r0 = pivot;
+		const coUint l1 = pivot + 1;
+		const coUint r1 = r;
+		const coUint sz0 = r0 - l0;
+		const coUint sz1 = r1 - l1;
 		if (sz0 < sz1) // We want to process the smaller part first to ensure log(n) stack size.
 		{
 			if (sz1)
 			{
 				++top;
 				coASSERT(top < maxDepth);
-				leftStack[top] = pl1;
-				rightStack[top] = pr1;
+				leftStack[top] = l1;
+				rightStack[top] = r1;
 			}
 
 			if (sz0)
 			{
 				++top;
 				coASSERT(top < maxDepth);
-				leftStack[top] = pl0;
-				rightStack[top] = pr0;
+				leftStack[top] = l0;
+				rightStack[top] = r0;
 			}
 		}
 		else
@@ -155,108 +121,18 @@ void coSort(coArray<T>& _this, CompareFunctor _cmp)
 			{
 				++top;
 				coASSERT(top < maxDepth);
-				leftStack[top] = pl0;
-				rightStack[top] = pr0;
+				leftStack[top] = l0;
+				rightStack[top] = r0;
 			}
 			if (sz1)
 			{
 				++top;
 				coASSERT(top < maxDepth);
-				leftStack[top] = pl1;
-				rightStack[top] = pr1;
+				leftStack[top] = l1;
+				rightStack[top] = r1;
 			}
 		}
 	}
-	// 
-	// 	if (_l < _r)
-	// 	{
-	// 		const coUint pivot = Partition(_l, _r);
-	// 		QuickSort(_l, pivot);
-	// 		QuickSort(pivot + 1, _r);
-	// 	}
-
-
-	// QuickSort
-	// Public-domain C implementation by Darel Rex Finley.
-	// Pros:
-	// - Not recursive
-	// - Stack is small
-	// - Less swaps, less moves
-	// Cons: 
-	// - More comparisons
-	/*static const coUint maxLevels = 64;
-	coUint beginStack[maxLevels];
-	coUint endStack[maxLevels];
-	beginStack[0] = 0;
-	endStack[0] = _this.count;
-	T* data = _this.data;
-	for (coUint i = 0; i >= 0;)
-	{
-		coUint l = beginStack[i];
-		coUint r = endStack[i] - 1;
-		if (l < r)
-		{
-			const T& pivot = data[l];
-			while (l < r)
-			{
-				while (_cmp(pivot, data[r]) && l < r)
-					--r;
-				if (l < r)
-				{
-					data[l] = data[r];
-					++l;
-				}
-				while (_cmp(data[l], pivot) && l < r)
-					++l;
-				if (l < r)
-				{
-					data[r] = data[l];
-					--r;
-				}
-			}
-			data[l] = pivot;
-			beginStack[i + 1] = l + 1;
-			endStack[i + 1] = endStack[i];
-			endStack[i] = l;
-			++i;
-			if (endStack[i] - beginStack[i] > endStack[i - 1] - beginStack[i - 1])
-			{
-				coSwap(beginStack[i], beginStack[i - 1]);
-				coSwap(endStack[i], endStack[i - 1]);
-			}
-		}
-		else
-		{
-			--i;
-		}
-	}*/
-
-	/*auto Partition = [&](coUint _l, coUint _r) -> coUint
-	{
-		const T& pivot = _this.data[_l];
-		coUint i = _l - 1;
-		coUint j = _r + 1;
-		for (;;)
-		{
-			do
-			{
-				++i;
-			} while (_cmp(_this.data[i], pivot));
-
-			do
-			{
-				--j;
-			} while (_cmp(pivot, _this.data[j]));
-
-			if (i >= j)
-				return j;
-
-			coSwap(_this.data[i], _this.data[j]);
-		}
-	};
-
-	coDynamicArray<coUint> stack;
-	coResize(stack, _this.count);*/
 }
 
 template <class T>
