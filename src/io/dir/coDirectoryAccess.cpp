@@ -27,8 +27,7 @@ coDirectoryIterator coDirectoryAccess::Begin()
 	}
 }
 
-const coDirectoryIterator& coDirectoryAccess::End()
+coDirectoryIterator coDirectoryAccess::End()
 {
-	static const coDirectoryIterator it;
-	return it;
+	return coDirectoryIterator();
 }

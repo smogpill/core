@@ -4,6 +4,8 @@
 
 #include "debug/log/coAssert.h"
 
+template <class> class coConstArray;
+
 template <class T>
 class coArray
 {
@@ -12,6 +14,8 @@ public:
 	coArray(T* _data, coUint32 _count) : data(_data), count(_count) {}
 	coFORCE_INLINE T& operator[] (coUint32 _i) { coASSERT(_i < count); return const_cast<T&>(data[_i]); }
 	coFORCE_INLINE const T& operator[] (coUint32 _i) const { coASSERT(_i < count); return data[_i]; }
+
+	operator const coConstArray<T>&() { return reinterpret_cast<const coConstArray<T>&>(*this); }
 
 	T* data;
 	coUint32 count;

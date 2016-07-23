@@ -16,11 +16,11 @@ public:
 	};
 
 	coDirectoryIterator Begin();
-	const coDirectoryIterator& End();
+	coDirectoryIterator End();
 
 	// STD compat'
 	coFORCE_INLINE coDirectoryIterator begin() { return Begin(); }
-	coFORCE_INLINE const coDirectoryIterator& end() { return End(); }
+	coFORCE_INLINE coDirectoryIterator end() { return End(); }
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;

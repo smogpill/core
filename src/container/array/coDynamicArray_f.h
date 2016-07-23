@@ -77,12 +77,27 @@ coDynamicArray<T>::coDynamicArray(const coDynamicArray<T>& _)
 }
 
 template <class T>
-coDynamicArray<T>& coDynamicArray<T>::operator=(const coDynamicArray<T>& _)
+coDynamicArray<T>::coDynamicArray(coDynamicArray<T>&& _)
+	: Super(_)
+	, allocator(_.allocator)
+	, capacity(_.capacity)
+{
+	_.capacity = 0;
+}
+
+template <class T>
+coDynamicArray<T>& coDynamicArray<T>::operator=(const coConstArray<T>& _)
 {
 	coReserve(*this, _.count);
 	coMemCopy(data, _.data, _.count);
 	count = _.count;
 	return *this;
+}
+
+template <class T>
+coDynamicArray<T>& coDynamicArray<T>::operator=(const coDynamicArray<T>& _)
+{
+	return operator=(static_cast<const coConstArray<T>&>(_));
 }
 
 /*

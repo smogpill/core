@@ -8,6 +8,11 @@
 #include "debug/log/coLog.h"
 #include "platform/coOs.h"
 
+void* coDirectoryIterator::GetDefaultImpl()
+{
+	return INVALID_HANDLE_VALUE;
+}
+
 coResult _coCloseDirectoryIteratorHandle(const HANDLE& _handle)
 {
 	if (_handle != INVALID_HANDLE_VALUE)

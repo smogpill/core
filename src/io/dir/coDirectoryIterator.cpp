@@ -5,7 +5,7 @@
 #include "lang/result/coResult_f.h"
 
 coDirectoryIterator::coDirectoryIterator()
-	: impl(nullptr)
+	: impl(GetDefaultImpl())
 {
 	OnImplConstruct();
 }
@@ -13,6 +13,13 @@ coDirectoryIterator::coDirectoryIterator()
 coDirectoryIterator::~coDirectoryIterator()
 {
 	OnImplDestruct();
+}
+
+coDirectoryIterator::coDirectoryIterator(coDirectoryIterator&& _)
+	: entry(std::move(_.entry))
+	, impl(_.impl)
+{
+	_.impl = GetDefaultImpl();
 }
 
 coResult coDirectoryIterator::OnInit(const coObject::InitConfig& _config)

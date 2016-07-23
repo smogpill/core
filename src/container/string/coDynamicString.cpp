@@ -11,16 +11,32 @@ coDynamicString::coDynamicString(const coConstString& _s)
 	operator=(_s);
 }
 
+coDynamicString::coDynamicString(const coDynamicString& _)
+	: coDynamicString(static_cast<const coConstString&>(_))
+{
+
+}
+
 coDynamicString::coDynamicString(coAllocator& _allocator)
 	: coDynamicArray<coChar>(_allocator)
 {
 
 }
 
+coDynamicString::coDynamicString(coDynamicString&& _)
+	: Super(_)
+{
+
+}
+
+coDynamicString& coDynamicString::operator=(const coDynamicString& _s)
+{
+	Super::operator=(_s);
+	return *this;
+}
+
 coDynamicString& coDynamicString::operator=(const coConstString& _s)
 {
-	coReserve(*this, _s.count);
-	coMemCopy(data, _s.data, _s.count);
-	count = _s.count;
+	Super::operator=(_s);
 	return *this;
 }
