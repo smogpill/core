@@ -21,6 +21,7 @@ void coResize(A& _this, coUint32 _newCount)
 	if (_this.count != _newCount)
 	{
 		coReserve(_this, _newCount);
+		::new (&_this.data[_this.count]) A::ValueType[_newCount - _this.count];
 		_this.count = _newCount;
 	}
 }

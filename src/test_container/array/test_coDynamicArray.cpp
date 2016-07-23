@@ -2,17 +2,18 @@
 #include "test/unit/coTest.h"
 #include "container/array/coDynamicArray_f.h"
 #include "lang/reflect/coNumericLimits.h"
+#include "debug/log/coLog.h"
 
 coTEST(coDynamicArray, defaultValues)
 {
-	coDynamicArray<int> a;
+	coDynamicArray<coInt> a;
 	coEXPECT(a.allocator);
 	coEXPECT(a.count == 0);
 }
 
 coTEST(coDynamicArray, Reserve)
 {
-	coDynamicArray<int> a;
+	coDynamicArray<coInt> a;
 	coEXPECT(a.capacity == 0);
 	coReserve(a, 0);
 	coEXPECT(a.capacity == 0);
@@ -28,26 +29,57 @@ coTEST(coDynamicArray, Reserve)
 	coEXPECT(a.capacity == coNumericLimits<decltype(a.capacity)>::Max());*/
 }
 
+coTEST(coDynamicArray, initializerList)
+{
+	coTODO("initializer lists for coDynamicArrays");
+}
+
 coTEST(coDynamicArray, Resize)
 {
-	coDynamicArray<int> a;
-	coEXPECT(a.count == 0);
-	coResize(a, 0);
-	coEXPECT(a.count == 0);
-	coEXPECT(a.capacity == 0);
-	coResize(a, 5);
-	coEXPECT(a.count == 5);
-	coEXPECT(a.capacity >= a.count);
-	coResize(a, 3);
-	coEXPECT(a.count == 3);
-	coEXPECT(a.capacity >= a.count);
-	coResize(a, 0);
-	coEXPECT(a.count == 0);
-	coEXPECT(a.capacity >= a.count);
-	coResize(a, 7);
-	coEXPECT(a.count == 7);
-	coEXPECT(a.capacity >= a.count);
-	/*coResize(a, coNumericLimits<decltype(a.count)>::Max());
-	coEXPECT(a.count == coNumericLimits<decltype(a.count)>::Max());
-	coEXPECT(a.capacity >= a.count);*/
+	// Check sizes
+	{
+		coDynamicArray<coInt> a;
+		coEXPECT(a.count == 0);
+		coResize(a, 0);
+		coEXPECT(a.count == 0);
+		coEXPECT(a.capacity == 0);
+		coResize(a, 5);
+		coEXPECT(a.count == 5);
+		coEXPECT(a.capacity >= a.count);
+		coResize(a, 3);
+		coEXPECT(a.count == 3);
+		coEXPECT(a.capacity >= a.count);
+		coResize(a, 0);
+		coEXPECT(a.count == 0);
+		coEXPECT(a.capacity >= a.count);
+		coResize(a, 7);
+		coEXPECT(a.count == 7);
+		coEXPECT(a.capacity >= a.count);
+		/*coResize(a, coNumericLimits<decltype(a.count)>::Max());
+		coEXPECT(a.count == coNumericLimits<decltype(a.count)>::Max());
+		coEXPECT(a.capacity >= a.count);*/
+	}
+
+	// Check constructors
+	{
+		struct V
+		{
+			V()
+			{
+				static coUint v = 0;
+				x = v;
+				++v;
+			}
+			coUint x;
+		};
+		coDynamicArray<V> a;
+		coResize(a, 3);
+		coEXPECT(a.count == 3);
+		for (coUint i = 0; i < a.count; ++i)
+		{
+			const V& v = a[i];
+			coEXPECT(v.x == i);
+		}
+	}
 }
+
