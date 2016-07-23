@@ -25,6 +25,7 @@ coDynamicArray<T>::coDynamicArray(coAllocator& _allocator)
 template<class T>
 coDynamicArray<T>::~coDynamicArray()
 {
+	coASSERT(allocator);
 	allocator->Free(data);
 }
 
@@ -36,7 +37,7 @@ void coReserve(coDynamicArray<T>& _this, coUint32 _desiredCount)
 		const coUint32 clampedCapacity = _desiredCount >= 16u ? _desiredCount : 16u;
 		coASSERT(_this.allocator);
 		T* newBuffer = static_cast<T*>(_this.allocator->Allocate(clampedCapacity * sizeof(T)));
-		if (_this.data) // [opt] not using size directly not to break CPU's pipe too early
+		if (_this.data)
 		{
 			coMemCopy(newBuffer, _this.data, _this.count * sizeof(T));
 			_this.allocator->Free(_this.data);
@@ -56,17 +57,14 @@ void coPushBack(coDynamicArray<T>& _this, const T& _val)
 }
 
 template <class T>
-void coPushBackArray(coDynamicArray<T>& _this, const coArray<const T>& _from)
+void coPushBackArray(coDynamicArray<T>& _this, const coArray<const T>& _other)
 {
 	//static_assert(std::is_base_of<coArray<T>, A>::value, "_this should be an array");
-	const coUint32 desiredCount = _this.count + _from.count;
+	const coUint32 desiredCount = _this.count + _other.count;
 	if (desiredCount > _this.capacity)
-	{
-		const coUint32 newCapacity = desiredCount > 8u ? desiredCount : 8u;
-		coReserve(_this, newCapacity);
-	}
-	coMemCopy(&_this.data[_this.count], _from.data, _from.count);
-	_this.count += _from.count;
+		coReserve(_this, desiredCount);
+	coMemCopy(&_this.data[_this.count], _other.data, _other.count * sizeof(T));
+	_this.count = desiredCount;
 }
 
 template <class T>
@@ -84,27 +82,27 @@ coDynamicArray<T>::coDynamicArray(const coDynamicArray<T>& _)
 }
 
 template <class T>
-coDynamicArray<T>::coDynamicArray(coDynamicArray<T>&& _)
-	: Super(_)
-	, allocator(_.allocator)
-	, capacity(_.capacity)
+coDynamicArray<T>::coDynamicArray(coDynamicArray<T>&& _other)
+	: Super(_other)
+	, allocator(_other.allocator)
+	, capacity(_other.capacity)
 {
-	_.capacity = 0;
+	_other.capacity = 0;
 }
 
 template <class T>
-coDynamicArray<T>& coDynamicArray<T>::operator=(const coArray<const T>& _)
+coDynamicArray<T>& coDynamicArray<T>::operator=(const coArray<const T>& _other)
 {
-	coReserve(*this, _.count);
-	coMemCopy(data, _.data, _.count);
-	count = _.count;
+	coReserve(*this, _other.count);
+	coMemCopy(data, _other.data, _other.count * sizeof(T));
+	count = _other.count;
 	return *this;
 }
 
 template <class T>
-coDynamicArray<T>& coDynamicArray<T>::operator=(const coDynamicArray<T>& _)
+coDynamicArray<T>& coDynamicArray<T>::operator=(const coDynamicArray<T>& _other)
 {
-	return operator=(static_cast<const coArray<const T>&>(_));
+	return operator=(static_cast<const coArray<const T>&>(_other));
 }
 
 /*
