@@ -16,7 +16,7 @@ public:
 		coConstString filePath;
 	};
 
-	const coConstArray<coParsedType*>& getTypes() const { return parsedTypes; }
+	const coArray<coParsedType*>& getTypes() const { return parsedTypes; }
 	virtual coResult Parse(const ParseConfig& _config);
 	static coReflectParser* Create();
 

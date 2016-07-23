@@ -5,7 +5,7 @@
 #include "pattern/object/coObject.h"
 #include "container/string/coConstString.h"
 #include "container/array/coDynamicArray.h"
-#include "container/array/coConstArray.h"
+#include "container/array/coArray.h"
 
 class coType;
 

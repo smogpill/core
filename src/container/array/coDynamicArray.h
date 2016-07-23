@@ -17,8 +17,9 @@ public:
 	coUint32 capacity;
 	coAllocator* allocator;
 
-	coDynamicArray(const coDynamicArray<T>&);
+	explicit coDynamicArray(const coArray<T>&);
+	explicit coDynamicArray(const coDynamicArray<T>&);
 	coDynamicArray(coDynamicArray<T>&&);
-	coDynamicArray<T>& operator=(const coConstArray<T>&);
+	coDynamicArray<T>& operator=(const coArray<const T>&);
 	coDynamicArray<T>& operator=(const coDynamicArray<T>&);
 };

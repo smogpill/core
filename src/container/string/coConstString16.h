@@ -5,7 +5,7 @@
 
 #include "container/array/coConstArray.h"
 
-class coConstString16 : public coConstArray<coChar16>
+class coConstString16 : public coArray<const coChar16>
 {
 public:
 	coConstString16() = default;

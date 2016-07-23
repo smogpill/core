@@ -2,9 +2,9 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include "container/array/coConstArray.h"
+#include "container/array/coArray.h"
 
-class coConstString : public coConstArray<coChar>
+class coConstString : public coArray<const coChar>
 {
 public:
 	coConstString() = default;

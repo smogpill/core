@@ -4,13 +4,13 @@
 #include "container/string/coConstString.h"
 
 coConstString::coConstString(const coChar* _s)
-	: coConstArray(_s, _s ? static_cast<coUint32>(::strlen(_s)) : 0)
+	: coArray(_s, _s ? static_cast<coUint32>(::strlen(_s)) : 0)
 {
 
 }
 
 coConstString::coConstString(const coChar* _s, coUint32 _size)
-	: coConstArray(_s, _size)
+	: coArray(_s, _size)
 {
 
 }

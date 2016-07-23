@@ -5,6 +5,13 @@
 #include "memory/coMemory_f.h"
 #include "lang/coStdWrapper.h"
 
+template <class T>
+coArray<T>::coArray(std::initializer_list<T> _l)
+	: data(const_cast<T*>(_l.begin()))
+	, count(static_cast<coUint32>(_l.size()))
+{
+}
+
 template <class T> coFORCE_INLINE T* coBegin(coArray<T>& _a) { return _a.data; }
 template <class T> coFORCE_INLINE const T* coBegin(const coArray<T>& _a) { return _a.data; }
 template <class T> coFORCE_INLINE T* coEnd(coArray<T>& _a) { return _a.data + _a.count; }

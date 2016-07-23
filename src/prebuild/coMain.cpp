@@ -6,7 +6,7 @@
 #include "app/coProject_f.h"
 #include "lang/result/coResult_f.h"
 #include "container/array/coDynamicArray_f.h"
-#include "container/array/coConstArray.h"
+#include "container/array/coArray.h"
 #include "pattern/scope/coDefer.h"
 
 coResult InitArgParser(coCommandLineArgs& _argParser)

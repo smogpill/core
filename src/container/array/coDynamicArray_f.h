@@ -56,7 +56,7 @@ void coPushBack(coDynamicArray<T>& _this, const T& _val)
 }
 
 template <class T>
-void coPushBackArray(coDynamicArray<T>& _this, const coConstArray<T>& _from)
+void coPushBackArray(coDynamicArray<T>& _this, const coArray<const T>& _from)
 {
 	//static_assert(std::is_base_of<coArray<T>, A>::value, "_this should be an array");
 	const coUint32 desiredCount = _this.count + _from.count;
@@ -70,10 +70,17 @@ void coPushBackArray(coDynamicArray<T>& _this, const coConstArray<T>& _from)
 }
 
 template <class T>
-coDynamicArray<T>::coDynamicArray(const coDynamicArray<T>& _)
+coDynamicArray<T>::coDynamicArray(const coArray<T>& _)
 	: coDynamicArray()
 {
 	operator=(_);
+}
+
+template <class T>
+coDynamicArray<T>::coDynamicArray(const coDynamicArray<T>& _)
+	: coDynamicArray(static_cast<const coArray<T>&>(_))
+{
+
 }
 
 template <class T>
@@ -86,7 +93,7 @@ coDynamicArray<T>::coDynamicArray(coDynamicArray<T>&& _)
 }
 
 template <class T>
-coDynamicArray<T>& coDynamicArray<T>::operator=(const coConstArray<T>& _)
+coDynamicArray<T>& coDynamicArray<T>::operator=(const coArray<const T>& _)
 {
 	coReserve(*this, _.count);
 	coMemCopy(data, _.data, _.count);
@@ -97,7 +104,7 @@ coDynamicArray<T>& coDynamicArray<T>::operator=(const coConstArray<T>& _)
 template <class T>
 coDynamicArray<T>& coDynamicArray<T>::operator=(const coDynamicArray<T>& _)
 {
-	return operator=(static_cast<const coConstArray<T>&>(_));
+	return operator=(static_cast<const coArray<const T>&>(_));
 }
 
 /*

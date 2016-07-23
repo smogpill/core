@@ -36,7 +36,7 @@ coResult coClangReflectParser::Parse(const ParseConfig& _config)
 	coDynamicString filePath(_config.filePath);
 	coNullTerminate(filePath);
 	CXTranslationUnit translationUnit = nullptr;
-	const coConstArray<const coChar*> args = {"c++", "-std=c++11"};
+	const coArray<const coChar*> args = {"c++", "-std=c++11"};
 	translationUnit = clang_createTranslationUnitFromSourceFile(clangIndex, filePath.data, args.count, args.data, 0, nullptr);
 	coTRY(translationUnit, "Can't create translation unit from source file: " << filePath);
 	coDEFER() { clang_disposeTranslationUnit(translationUnit); };
