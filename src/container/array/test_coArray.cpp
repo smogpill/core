@@ -14,22 +14,19 @@ coTEST(coArray, sort)
 	}
 
 	{
-		coDynamicArray<coInt> a;
-		coPushBackArray(a, { 3, 1, 2 });
+		coDynamicArray<coInt> a({ 3, 1, 2 });
 		coSort<coInt>(a);
 		coEXPECT(coIsSorted(a));
 	}
 
 	{
-		coDynamicArray<coInt> a;
-		coPushBackArray(a, { 1, 2, 3 });
+		coDynamicArray<coInt> a({ 1, 2, 3 });
 		coSort<coInt>(a);
 		coEXPECT(coIsSorted(a));
 	}
 
 	{
-		coDynamicArray<coInt> a;
-		coPushBackArray(a, { 1, 1, 1 });
+		coDynamicArray<coInt> a({ 1, 1, 1 });
 		coSort<coInt>(a);
 		coEXPECT(coIsSorted(a));
 	}
