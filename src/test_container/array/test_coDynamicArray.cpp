@@ -31,7 +31,21 @@ coTEST(coDynamicArray, Reserve)
 
 coTEST(coDynamicArray, initializerList)
 {
-	coTODO("initializer lists for coDynamicArrays");
+	{
+		coDynamicArray<coUint> a({});
+		coEXPECT(a.count == 0);
+		coEXPECT(a.capacity == 0);
+	}
+
+	{
+		coDynamicArray<coUint> a({0, 1, 2});
+		coEXPECT(a.count == 3);
+		coEXPECT(a.capacity >= 3);
+		for (coUint i = 0; i < a.count; ++i)
+		{
+			coEXPECT(a[i] == i);
+		}
+	}
 }
 
 coTEST(coDynamicArray, Resize)

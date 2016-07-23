@@ -9,6 +9,7 @@ class coAllocator;
 template <class T>
 class coDynamicArray : public coArray<T>
 {
+	typedef coArray<T> Super;
 public:
 	coDynamicArray();
 	coDynamicArray(coAllocator& _allocator);
