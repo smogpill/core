@@ -84,12 +84,12 @@ void coSort(coArray<T>& _this, CompareFunctor _cmp)
 	coUint rightStack[maxDepth];
 	leftStack[0] = 0;
 	rightStack[0] = _this.count - 1;
-	coUint top = 0;
-	while (top)
+	coUint stackCount = 1;
+	while (stackCount)
 	{
-		const coUint l = leftStack[top];
-		const coUint r = rightStack[top];
-		--top;
+		--stackCount;
+		const coUint l = leftStack[stackCount];
+		const coUint r = rightStack[stackCount];
 
 		const coUint pivot = HoarePartition(l, r);
 		const coUint l0 = l;
@@ -102,35 +102,35 @@ void coSort(coArray<T>& _this, CompareFunctor _cmp)
 		{
 			if (sz1)
 			{
-				++top;
-				coASSERT(top < maxDepth);
-				leftStack[top] = l1;
-				rightStack[top] = r1;
+				coASSERT(stackCount < maxDepth);
+				leftStack[stackCount] = l1;
+				rightStack[stackCount] = r1;
+				++stackCount;
 			}
 
 			if (sz0)
 			{
-				++top;
-				coASSERT(top < maxDepth);
-				leftStack[top] = l0;
-				rightStack[top] = r0;
+				coASSERT(stackCount < maxDepth);
+				leftStack[stackCount] = l0;
+				rightStack[stackCount] = r0;
+				++stackCount;
 			}
 		}
 		else
 		{
 			if (sz0)
 			{
-				++top;
-				coASSERT(top < maxDepth);
-				leftStack[top] = l0;
-				rightStack[top] = r0;
+				coASSERT(stackCount < maxDepth);
+				leftStack[stackCount] = l0;
+				rightStack[stackCount] = r0;
+				++stackCount;
 			}
 			if (sz1)
 			{
-				++top;
-				coASSERT(top < maxDepth);
-				leftStack[top] = l1;
-				rightStack[top] = r1;
+				coASSERT(stackCount < maxDepth);
+				leftStack[stackCount] = l1;
+				rightStack[stackCount] = r1;
+				++stackCount;
 			}
 		}
 	}
