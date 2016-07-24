@@ -8,8 +8,11 @@ class coConstString16;
 
 class coDynamicString16 : public coDynamicArray<coWideChar>
 {
+	typedef coDynamicArray<coWideChar> Super;
 public:
 	coDynamicString16() = default;
 	coDynamicString16(coAllocator& _allocator);
 	coDynamicString16(const coConstString16& _other);
+
+	coDynamicString16& operator=(const coConstString16& _s);
 };

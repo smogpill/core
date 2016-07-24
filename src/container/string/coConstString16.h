@@ -6,10 +6,12 @@
 
 class coConstString16 : public coArray<const coWideChar>
 {
+	typedef coArray<const coWideChar> Super;
 public:
 	coConstString16() = default;
 	coConstString16(const coWideChar* _s);
 	coConstString16(const coWideChar* _s, coUint32 _size);
+	coConstString16(const Super& _);
 
 	static const coConstString16& GetEmpty();
 };

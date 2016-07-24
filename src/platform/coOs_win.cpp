@@ -3,6 +3,7 @@
 #include "platform/pch.h"
 #include "platform/coOs.h"
 #include "container/string/coDynamicString_f.h"
+#include "container/string/coConstString16.h"
 #include "debug/log/coLog.h"
 
 void coClearLastOsError()
@@ -21,10 +22,10 @@ void coDumpLastOsError(coDynamicString& _str)
 
 void coDumpOsError(coUint _osError, coDynamicString& _str)
 {
-	LPSTR str = nullptr;
-	const DWORD ret = ::FormatMessage(
+	LPWSTR str = nullptr;
+	const DWORD ret = ::FormatMessageW(
 		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-		nullptr, _osError, 0, (LPTSTR)&str, 0, nullptr);
+		nullptr, _osError, 0, str, 0, nullptr);
 
 	if (ret == 0)
 	{
@@ -32,7 +33,7 @@ void coDumpOsError(coUint _osError, coDynamicString& _str)
 		coERROR("::FormatMessage() failed: error id " << (coUint)err);
 	}
 
-	_str = str;
+	coSetFromWide(_str, coConstString16(str));
 
 	::LocalFree(str);
 }

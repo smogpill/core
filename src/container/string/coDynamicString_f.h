@@ -11,5 +11,5 @@ coDynamicString& operator<<(coDynamicString& _this, const coConstString& _a);
 coDynamicString& operator<<(coDynamicString& _this, coUint32 _a);
 void coNullTerminate(coDynamicString& _this);
 coBool coIsNullTerminated(const coDynamicString& _this);
-void coSetFromUTF16(coDynamicString& _this, const coConstString16& _other);
+void coSetFromWide(coDynamicString& _this, const coConstString16& _other);
 void coJoin(coDynamicString& _this, const coConstString& _a, const coConstString& _b, coChar _separator);

@@ -5,7 +5,14 @@
 #include "container/string/coDynamicString16.h"
 #include "container/string/coConstString.h"
 #include "container/string/coConstString16.h"
+#include "container/array/coDynamicArray_f.h"
 #include "lang/reflect/coNumericLimits.h"
+
+coDynamicString16& operator<<(coDynamicString16& _this, const coConstString16& _a)
+{
+	coPushBackArray(_this, _a);
+	return _this;
+}
 
 void coSetFromUTF8(coDynamicString16& _this, const coConstString& _other)
 {
@@ -13,4 +20,18 @@ void coSetFromUTF8(coDynamicString16& _this, const coConstString& _other)
 	std::wstring ws = conv16.from_bytes(_other.data, _other.data + _other.count);
 	coASSERT(ws.length() < coNumericLimits<decltype(_this.count)>::Max());
 	_this = coConstString16(ws.data(), static_cast<coUint32>(ws.length()));
+}
+
+void coNullTerminate(coDynamicString16& _this)
+{
+	if (!coIsNullTerminated(_this))
+	{
+		coReserve(_this, _this.count + 1);
+		_this.data[_this.count] = '\0';
+	}
+}
+
+coBool coIsNullTerminated(const coDynamicString16& _this)
+{
+	return _this.capacity > _this.count && _this.data[_this.count] == L'\0';
 }

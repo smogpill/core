@@ -3,5 +3,10 @@
 #pragma once
 
 class coDynamicString16;
+class coConstString16;
 class coConstString;
 
+coDynamicString16& operator<<(coDynamicString16& _this, const coConstString16& _a);
+void coSetFromUTF8(coDynamicString16& _this, const coConstString& _other);
+void coNullTerminate(coDynamicString16& _this);
+coBool coIsNullTerminated(const coDynamicString16& _this);

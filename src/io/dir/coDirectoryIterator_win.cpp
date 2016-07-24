@@ -7,6 +7,9 @@
 #include "lang/result/coResult_f.h"
 #include "debug/log/coLog.h"
 #include "platform/coOs.h"
+#include "container/string/coConstString16.h"
+#include "container/string/coDynamicString16.h"
+#include "container/string/coDynamicString16_f.h"
 
 void* coDirectoryIterator::GetDefaultImpl()
 {
@@ -29,9 +32,9 @@ coResult _coCloseDirectoryIteratorHandle(const HANDLE& _handle)
 	return true;
 }
 
-void _coConvert(coDirectoryEntry& _entry, const WIN32_FIND_DATAA& _data)
+void _coConvert(coDirectoryEntry& _entry, const WIN32_FIND_DATAW& _data)
 {
-	_entry.name = _data.cFileName;
+	coSetFromWide(_entry.name, coConstString16(_data.cFileName));
 	if (_data.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)
 	{
 		_entry.status.status = coPathStatus::Status::error;
@@ -69,12 +72,13 @@ coResult coDirectoryIterator::OnImplInit(const InitConfig& _config)
 		return true;
 	}
 
-	coDynamicString searchPath(_config.path);
-	searchPath << "/*";
+	coDynamicString16 searchPath;
+	coSetFromUTF8(searchPath, _config.path);
+	searchPath << L"/*";
 	coNullTerminate(searchPath);
 
-	WIN32_FIND_DATAA data;
-	handle = ::FindFirstFileA(searchPath.data, &data);
+	WIN32_FIND_DATAW data;
+	handle = ::FindFirstFileW(searchPath.data, &data);
 	if (handle == INVALID_HANDLE_VALUE)
 	{
 		const DWORD lastError = ::GetLastError();
@@ -133,10 +137,10 @@ coDirectoryIterator& coDirectoryIterator::operator++ ()
 	{
 		// Based on Boost::filesystem::operations.cpp::dir_itr_increment()
 		{
-			WIN32_FIND_DATAA data;
+			WIN32_FIND_DATAW data;
 
 			// Find next file
-			if (::FindNextFileA(handle, &data) != 0)
+			if (::FindNextFileW(handle, &data) != 0)
 			{
 				_coConvert(entry, data);
 			}

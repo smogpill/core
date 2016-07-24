@@ -7,6 +7,9 @@
 #include "debug/log/coLog.h"
 #include "platform/coOs.h"
 #include "lang/result/coResult_f.h"
+#include "container/string/coConstString16.h"
+#include "container/string/coDynamicString16.h"
+#include "container/string/coDynamicString16_f.h"
 
 coResult coFileAccess::GetSize8(coInt64& _size8) const
 {
@@ -144,9 +147,10 @@ coResult coFileAccess::OnImplInit(const InitConfig& /*_config*/)
 	// Flags and attributes
 	const DWORD flagsAndAttributes = (mode == coFileAccess::Mode::read) ? FILE_ATTRIBUTE_READONLY : FILE_ATTRIBUTE_TEMPORARY;
 
-	coDynamicString nullTerminated(path);
-	coNullTerminate(nullTerminated);
-	handle = ::CreateFileA(nullTerminated.data, openMode, FILE_SHARE_READ, nullptr, creationDisposition, flagsAndAttributes, nullptr);
+	coDynamicString16 p;
+	coSetFromUTF8(p, path);
+	coNullTerminate(p);
+	handle = ::CreateFileW(p.data, openMode, FILE_SHARE_READ, nullptr, creationDisposition, flagsAndAttributes, nullptr);
 	if (handle == INVALID_HANDLE_VALUE)
 	{
 		coDynamicString str;

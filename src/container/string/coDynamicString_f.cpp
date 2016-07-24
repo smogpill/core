@@ -52,7 +52,7 @@ void coJoin(coDynamicString& _this, const coConstString& _a, const coConstString
 	_this.count = newSize;
 }
 
-void coSetFromUTF16(coDynamicString& _this, const coConstString16& _other)
+void coSetFromWide(coDynamicString& _this, const coConstString16& _other)
 {
 	std::wstring_convert<std::codecvt<coWideChar, coChar, std::mbstate_t>, coWideChar> conv16;
 	std::string s = conv16.to_bytes(_other.data, _other.data + _other.count);
