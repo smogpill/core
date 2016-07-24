@@ -137,6 +137,7 @@ coResult coClangReflectParser::ParseType(const CXCursor& _cursor)
 	scope.curType = parsedType;
 	clang_visitChildren(_cursor, &ParseTypeChildrenVisitor, &scope);
 	coPushBack(parsedTypes, parsedType);
+	parsedType = nullptr; // Release from defer
 	return true;
 }
 
@@ -144,7 +145,8 @@ coResult coClangReflectParser::ParseField(coParsedField& _parsedField, const CXC
 {
 	coTRY(ParseSymbol(*_parsedField.field, _cursor), nullptr);
 	const CXType type = clang_getCursorType(_cursor);
-	const CXCursor typeCursor = clang_getTypeDeclaration(type);
+	const CXType canonicalType = clang_getCanonicalType(type);
+	const CXCursor typeCursor = clang_getTypeDeclaration(canonicalType);
 	const CXString typeSpelling = clang_getCursorSpelling(typeCursor);
 	_parsedField.typeName = clang_getCString(typeSpelling);
 	return true;
