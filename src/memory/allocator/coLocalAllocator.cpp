@@ -15,7 +15,7 @@ coLocalAllocator::coLocalAllocator(coUint32 _maxStackAlloc)
 	stackBuffer = static_cast<coByte*>(::alloca(maxStackAlloc));
 	coASSERT(stackBuffer);
 
-	coTODO("Check memory leaks");
+	coTODO("Check for memory leaks");
 }
 
 coLocalAllocator::~coLocalAllocator()
