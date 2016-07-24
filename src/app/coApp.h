@@ -15,6 +15,10 @@ public:
 
 	class InitConfig : public Super::InitConfig
 	{
+	public:
+		InitConfig();
+		const coChar** argv;
+		coUint nbArgs;
 	};
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;

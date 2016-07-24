@@ -42,13 +42,14 @@ public:
 	coResult Add(const ArgConfig& _argConfig);
 	coResult Parse(const coChar** args, coUint nbArgs);
 	coResult DumpHelp() const;
-	const Arg* GetArg(const coConstString& _name) const;
+	const coConstString& GetArgValue(const coConstString& _name) const;
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 private:
 	coResult ParseRawArg(const coConstString& _rawArg);
+	const Arg* GetArg(const coConstString& _name) const;
 
 	// Config
 	coDynamicString commandName;

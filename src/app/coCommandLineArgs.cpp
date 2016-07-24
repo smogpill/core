@@ -193,3 +193,12 @@ const coCommandLineArgs::Arg* coCommandLineArgs::GetArg(const coConstString& _na
 	}
 	return nullptr;
 }
+
+const coConstString& coCommandLineArgs::GetArgValue(const coConstString& _name) const
+{
+	const Arg* arg = GetArg(_name);
+	if (arg)
+		return arg->value;
+	else
+		return coConstString::GetEmpty();
+}

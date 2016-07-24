@@ -17,6 +17,13 @@ coApp::~coApp()
 	defaultLogHandler = nullptr;
 }
 
+coApp::InitConfig::InitConfig()
+	: argv(nullptr)
+	, nbArgs(0)
+{
+
+}
+
 coResult coApp::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);

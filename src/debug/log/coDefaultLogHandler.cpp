@@ -34,16 +34,20 @@ void coDefaultLogHandler::Log(_coLogType _type, const coConstString& _file, coUi
 	const coBool error = _type >= _coLogType::warning;
 
 	const coConstString& msg = _message.count ? _message : "<no message>";
+	coDynamicString outputMsg;
 	if (error)
 	{
-		coDynamicString s;
-		s << _file << "(" << _line << "): [" << tag << "] " << msg;
-		fwrite(s.data, sizeof(*s.data), s.count, stderr);
-		fprintf(stderr, "\n");
+		outputMsg << _file << "(" << _line << "): [" << tag << "] " << msg << "\n";
+		fwrite(outputMsg.data, sizeof(*outputMsg.data), outputMsg.count, stderr);
 	}
 	else
 	{
-		fwrite(msg.data, sizeof(*msg.data), msg.count, stdout);
-		fprintf(stdout, "\n");
+		outputMsg << msg << "\n";
+		fwrite(outputMsg.data, sizeof(*outputMsg.data), outputMsg.count, stdout);
 	}
+
+#ifdef coMSWINDOWS
+	coNullTerminate(outputMsg);
+	::OutputDebugStringA(outputMsg.data);
+#endif
 }

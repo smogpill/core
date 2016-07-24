@@ -4,6 +4,7 @@
 
 #include "app/coApp.h"
 #include "lang/result/coResult.h"
+#include "container/string/coDynamicString.h"
 
 class coReflectParser;
 
@@ -11,6 +12,10 @@ class coAppImpl : public coApp
 {
 	typedef coApp Super;
 public:
+	class InitConfig : public Super::InitConfig
+	{
+	public:
+	};
 	coAppImpl();
 	virtual ~coAppImpl();
 
@@ -19,5 +24,8 @@ protected:
 	virtual coResult OnStart() override;
 
 private:
+	coResult ParseArgs(const InitConfig& _config);
+
+	coDynamicString projectDir;
 	coReflectParser* parser;
 };
