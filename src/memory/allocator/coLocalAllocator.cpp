@@ -1,6 +1,5 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
-#pragma once
 #include "memory/pch.h"
 #include "memory/allocator/coLocalAllocator.h"
 #include "debug/log/coAssert.h"
@@ -8,11 +7,13 @@
 
 coLocalAllocator::coLocalAllocator(coUint32 _maxStackAlloc)
 	: stackBuffer(nullptr)
-	, stackAllocated(0)
+	, allocatedStackSize8(0)
 	, maxStackAlloc(_maxStackAlloc)
 {
 	coASSERT(maxStackAlloc < 16 * 1024); // safety
-	stackBuffer = static_cast<coByte*>(::alloca(maxStackAlloc));
+	coAllocator* stackAllocator = coAllocator::GetStack();
+	coASSERT(stackAllocator);
+	stackBuffer = static_cast<coByte*>(stackAllocator->Allocate(_maxStackAlloc));
 	coASSERT(stackBuffer);
 
 	coTODO("Check for memory leaks");
@@ -20,15 +21,17 @@ coLocalAllocator::coLocalAllocator(coUint32 _maxStackAlloc)
 
 coLocalAllocator::~coLocalAllocator()
 {
+	coAllocator* stackAllocator = coAllocator::GetStack();
+	stackAllocator->Free(stackBuffer);
 }
 
 void* coLocalAllocator::Allocate(coUint32 _size8)
 {
-	const coUint32 newStackAllocated = stackAllocated + _size8;
+	const coUint32 newStackAllocated = allocatedStackSize8 + _size8;
 	if (newStackAllocated <= maxStackAlloc)
 	{
-		void* p = stackBuffer + stackAllocated;
-		stackAllocated = newStackAllocated;
+		void* p = stackBuffer + allocatedStackSize8;
+		allocatedStackSize8 = newStackAllocated;
 		return p;
 	}
 	else

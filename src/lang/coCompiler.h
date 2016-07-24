@@ -13,6 +13,8 @@ public:
 #	ifdef _DEBUG
 #		define coDEBUG
 #	endif
+#elif defined(__clang__)
+#	define coCLANG_COMPILER
 #elif defined(__MINGW32__) || defined(__MINGW64__)
 #	define coGCC_COMPATIBLE_COMPILER
 #	define coMINGW_COMPILER
@@ -22,8 +24,6 @@ public:
 #	ifndef NDEBUG
 #		define coDEBUG
 #	endif
-#elif defined(__clang__)
-#	define coCLANG_COMPILER
 #else
 #	error "Unknown compiler"
 #endif

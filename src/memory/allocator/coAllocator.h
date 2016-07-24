@@ -14,6 +14,7 @@ public:
 	static coAllocator* GetHeap();
 	static coAllocator* GetDebug();
 	static coAllocator* GetFrame();
+	static coAllocator* GetStack();
 
 private:
 	static void Init();
@@ -21,5 +22,6 @@ private:
 	static coAllocator*	heap;
 	static coAllocator*	frame;
 	static coAllocator* debug;
+	static coAllocator* stack;
 	static bool initialized;
 };

@@ -39,7 +39,27 @@ coResult coProjectParser::OnInit(const coObject::InitConfig& _config)
 
 coResult coProjectParser::Parse(const ParseConfig& _config)
 {
+	coTRY(ParsePrecompileHeader(_config), nullptr);
 	coTRY(ParseSourceDir(_config.projectDir), nullptr);
+	return true;
+}
+
+coResult coProjectParser::ParsePrecompileHeader(const ParseConfig& _config)
+{
+	if (_config.precompiledHeaderRelativePath.count == 0)
+		return true;
+
+	coDynamicString pchPath;
+	coJoinPaths(pchPath, _config.projectDir, _config.precompiledHeaderRelativePath);
+	coPathStatus pathStatus;
+	coTRY(coGetPathStatus(pathStatus, pchPath), "Failed to get the path status of: " << pchPath);
+	if (pathStatus.Exists())
+	{
+		coReflectParser::ParseConfig config;
+		config.filePath = pchPath;
+		config.outPath = _config.outDir;
+		coTRY(sourceParser->ParsePrecompiledHeader(config), "Failed to parse the precompiled header: " << pchPath);
+	}
 	return true;
 }
 

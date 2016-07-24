@@ -20,6 +20,8 @@ public:
 		ParseConfig();
 
 		coConstString projectDir;
+		coConstString outDir;
+		coConstString precompiledHeaderRelativePath;
 	};
 
 	coProjectParser();
@@ -29,6 +31,7 @@ public:
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 private:
+	coResult ParsePrecompileHeader(const ParseConfig& _config);
 	coResult ParseSourceDir(const coConstString& _path);
 	coResult ParseSourceFile(const coConstString& _path);
 

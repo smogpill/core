@@ -14,6 +14,9 @@ class coClangReflectParser : public coReflectParser
 	typedef coReflectParser Super;
 public:
 	coClangReflectParser();
+	~coClangReflectParser();
+
+	virtual coResult ParsePrecompiledHeader(const ParseConfig& _config) override;
 	virtual coResult Parse(const ParseConfig& _config) override;
 
 protected:

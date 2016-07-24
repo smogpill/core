@@ -32,18 +32,36 @@ coResult coAppImpl::ParseArgs(const InitConfig& _config)
 		c.name = "projectDir";
 		coTRY(argParser.Add(c), nullptr);
 	}
+
+	{
+		coCommandLineArgs::ArgConfig c;
+		c.name = "outputDir";
+		coTRY(argParser.Add(c), nullptr);
+	}
 	
 	coTRY(argParser.Parse(_config.argv, _config.nbArgs), nullptr);
-	const coConstString& dir = argParser.GetArgValue("projectDir");
 
-	coTRY(dir.count, "Project path is empty");
+	// Project dir
+	{
+		const coConstString& dir = argParser.GetArgValue("projectDir");
+		coTRY(dir.count, "Project path is null");
+		coPathStatus pathStatus;
+		coTRY(coGetPathStatus(pathStatus, dir), "Failed to get the path status: " << dir);
+		coTRY(pathStatus.Exists(), "Path does not exist: " << dir);
+		coTRY(pathStatus.IsDirectory(), "Path is not a directory: " << dir);
+		projectDir = dir;
+	}
 
-	coPathStatus pathStatus;
-	coTRY(coGetPathStatus(pathStatus, dir), "Failed to get the path status: " << dir);
-	coTRY(pathStatus.Exists(), "Path does not exist: " << dir);
-	coTRY(pathStatus.IsDirectory(), "Path is not a directory: " << dir);
-
-	projectDir = dir;
+	// Output dir
+	{
+		const coConstString& dir = argParser.GetArgValue("outputDir");
+		coTRY(dir.count, "The output dir is null");
+		/*coPathStatus pathStatus;
+		coTRY(coGetPathStatus(pathStatus, dir), "Failed to get the path status: " << dir);
+		coTRY(pathStatus.Exists(), "Path does not exist: " << dir);
+		coTRY(pathStatus.IsDirectory(), "Path is not a directory: " << dir);*/
+		outputDir = dir;
+	}
 
 	return true;
 }
@@ -67,6 +85,8 @@ coResult coAppImpl::OnStart()
 {
 	coProjectParser::ParseConfig parseConfig;
 	parseConfig.projectDir = projectDir;
+	parseConfig.outDir = outputDir;
+	parseConfig.precompiledHeaderRelativePath = "pch.h";
 	coTRY(projectParser.Parse(parseConfig), "Failed to parse the project: "<<projectDir);
 	
 	return true;

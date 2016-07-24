@@ -16,6 +16,6 @@ public:
 	virtual void FreeAligned(void* _p) override;
 
 	coByte* stackBuffer;
-	coUint32 stackAllocated;
+	coUint32 allocatedStackSize8;
 	coUint32 maxStackAlloc;
 };

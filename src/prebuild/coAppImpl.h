@@ -26,5 +26,6 @@ private:
 	coResult ParseArgs(const InitConfig& _config);
 
 	coDynamicString projectDir;
+	coDynamicString outputDir;
 	coProjectParser projectParser;
 };

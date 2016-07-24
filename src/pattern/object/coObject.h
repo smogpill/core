@@ -9,7 +9,9 @@
 
 class coObject
 {
-	coDECLARE_ROOT_TYPE(coObject);
+	//coDECLARE_ROOT_TYPE(coObject);
+	coDECLARE_TYPE(coObject);
+	coDECLARE_REFLECTED(coObject);
 public:
 	enum class ObjectState : coUint8
 	{
