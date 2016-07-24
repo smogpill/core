@@ -3,7 +3,9 @@
 #include "container/pch.h"
 #include "container/string/coDynamicString_f.h"
 #include "container/string/coConstString.h"
+#include "container/string/coConstString16.h"
 #include "container/array/coDynamicArray_f.h"
+#include "lang/reflect/coNumericLimits.h"
 
 coDynamicString& operator<<(coDynamicString& _this, const coConstString& _a)
 {
@@ -48,4 +50,12 @@ void coJoin(coDynamicString& _this, const coConstString& _a, const coConstString
 	coMemCopy(&_this[stripped0.count + 1], stripped1.data, stripped1.count);
 	_this[newSize] = '\0';
 	_this.count = newSize;
+}
+
+void coSetFromUTF16(coDynamicString& _this, const coConstString16& _other)
+{
+	std::wstring_convert<std::codecvt<coWideChar, coChar, std::mbstate_t>, coWideChar> conv16;
+	std::string s = conv16.to_bytes(_other.data, _other.data + _other.count);
+	coASSERT(s.length() < coNumericLimits<decltype(_this.count)>::Max());
+	_this = coConstString(s.data(), static_cast<coUint32>(s.length()));
 }

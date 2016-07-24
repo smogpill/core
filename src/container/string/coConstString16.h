@@ -4,12 +4,12 @@
 
 #include "container/array/coConstArray.h"
 
-class coConstString16 : public coArray<const coChar16>
+class coConstString16 : public coArray<const coWideChar>
 {
 public:
 	coConstString16() = default;
-	coConstString16(const coChar16* _s);
-	coConstString16(const coChar16* _s, coUint32 _size);
+	coConstString16(const coWideChar* _s);
+	coConstString16(const coWideChar* _s, coUint32 _size);
 
 	static const coConstString16& GetEmpty();
 };

@@ -4,7 +4,7 @@
 #include "container/string/coDynamicString16.h"
 
 coDynamicString16::coDynamicString16(coAllocator& _allocator)
-	: coDynamicArray<coChar16>(_allocator)
+	: coDynamicArray<coWideChar>(_allocator)
 {
 
 }

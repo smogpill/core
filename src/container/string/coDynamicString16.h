@@ -4,9 +4,12 @@
 
 #include "container/array/coDynamicArray.h"
 
-class coDynamicString16 : public coDynamicArray<coChar16>
+class coConstString16;
+
+class coDynamicString16 : public coDynamicArray<coWideChar>
 {
 public:
 	coDynamicString16() = default;
 	coDynamicString16(coAllocator& _allocator);
+	coDynamicString16(const coConstString16& _other);
 };

@@ -3,13 +3,13 @@
 #include "container/pch.h"
 #include "container/string/coConstString16.h"
 
-coConstString16::coConstString16(const coChar16* _s)
+coConstString16::coConstString16(const coWideChar* _s)
 	: coArray(_s, _s ? static_cast<coUint32>(::wcslen(_s)) : 0)
 {
 
 }
 
-coConstString16::coConstString16(const coChar16* _s, coUint32 _size)
+coConstString16::coConstString16(const coWideChar* _s, coUint32 _size)
 	: coArray(_s, _size)
 {
 

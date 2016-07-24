@@ -19,7 +19,7 @@ typedef bool			coBool8;
 typedef uint32_t		coBool32;
 
 typedef char			coChar;
-typedef wchar_t			coChar16;
+typedef wchar_t			coWideChar;
 
 typedef uint8_t			coByte;
 

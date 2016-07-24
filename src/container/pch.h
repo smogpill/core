@@ -5,5 +5,11 @@
 #include "container/publicPCH.h"
 #include <string.h>
 #include <stdio.h>
-
-
+#ifdef coMSVC_COMPILER
+#	pragma warning(push)
+#	pragma warning(disable:4530)
+#endif
+#include <codecvt>
+#ifdef coMSVC_COMPILER
+#	pragma warning(pop)
+#endif
