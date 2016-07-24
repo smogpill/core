@@ -8,4 +8,6 @@ class coDefaultLogHandler : public coLogHandler
 {
 public:
 	virtual void Log(_coLogType _type, const coConstString& _file, coUint _line, const coConstString& _message) override;
+
+private:
 };

@@ -4,6 +4,7 @@
 #include "debug/log/coDefaultLogHandler.h"
 #include "container/string/coConstString_f.h"
 #include "container/string/coDynamicString_f.h"
+#include "memory/allocator/coLocalAllocator.h"
 
 void coDefaultLogHandler::Log(_coLogType _type, const coConstString& _file, coUint _line, const coConstString& _message)
 {
@@ -34,7 +35,8 @@ void coDefaultLogHandler::Log(_coLogType _type, const coConstString& _file, coUi
 	const coBool error = _type >= _coLogType::warning;
 
 	const coConstString& msg = _message.count ? _message : "<no message>";
-	coDynamicString outputMsg;
+	coLocalAllocator localAlloc(4048);
+	coDynamicString outputMsg(localAlloc);
 	if (error)
 	{
 		outputMsg << _file << "(" << _line << "): [" << tag << "] " << msg << "\n";
