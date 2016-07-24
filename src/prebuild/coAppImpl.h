@@ -5,8 +5,7 @@
 #include "app/coApp.h"
 #include "lang/result/coResult.h"
 #include "container/string/coDynamicString.h"
-
-class coReflectParser;
+#include "prebuild/parser/coProjectParser.h"
 
 class coAppImpl : public coApp
 {
@@ -27,5 +26,5 @@ private:
 	coResult ParseArgs(const InitConfig& _config);
 
 	coDynamicString projectDir;
-	coReflectParser* parser;
+	coProjectParser projectParser;
 };

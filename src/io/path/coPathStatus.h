@@ -20,6 +20,7 @@ public:
 	coPathStatus() : status(Status::none) {}
 
 	coBool IsRegularFile() const { return status == Status::regularFile; }
+	coBool IsDirectory() const { return status == Status::directory; }
 	coBool Exists() const { return status >= Status::regularFile; }
 
 	Status status;

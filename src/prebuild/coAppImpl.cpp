@@ -3,21 +3,18 @@
 #include "prebuild/pch.h"
 #include "prebuild/coAppImpl.h"
 #include "lang/result/coResult_f.h"
-#include "parser/reflect/coReflectParser.h"
 #include "io/path/coPathStatus.h"
 #include "io/path/coPath_f.h"
 #include "app/coCommandLineArgs.h"
 #include "app/coProject_f.h"
 
 coAppImpl::coAppImpl()
-	: parser(nullptr)
 {
 
 }
 
 coAppImpl::~coAppImpl()
 {
-	delete parser, parser = nullptr;
 }
 
 coResult coAppImpl::ParseArgs(const InitConfig& _config)
@@ -37,7 +34,16 @@ coResult coAppImpl::ParseArgs(const InitConfig& _config)
 	}
 	
 	coTRY(argParser.Parse(_config.argv, _config.nbArgs), nullptr);
-	projectDir = argParser.GetArgValue("projectDir");
+	const coConstString& dir = argParser.GetArgValue("projectDir");
+
+	coTRY(dir.count, "Project path is empty");
+
+	coPathStatus pathStatus;
+	coTRY(coGetPathStatus(pathStatus, dir), "Failed to get the path status: " << dir);
+	coTRY(pathStatus.Exists(), "Path does not exist: " << dir);
+	coTRY(pathStatus.IsDirectory(), "Path is not a directory: " << dir);
+
+	projectDir = dir;
 
 	return true;
 }
@@ -49,32 +55,19 @@ coResult coAppImpl::OnInit(const coObject::InitConfig& _config)
 
 	coTRY(ParseArgs(config), "Failed to parse args");
 
-	coTRY(projectDir.count, "Project path is empty");
-
-	coPathStatus pathStatus;
-	coTRY(coGetPathStatus(pathStatus, projectDir), "Failed to get the path status: " << projectDir);
-	coTRY(pathStatus.Exists(), "Path does not exist: " << projectDir);
-
-	coTRY(!parser, nullptr);
-	parser = coReflectParser::Create();
+	{
+		coProjectParser::InitConfig c;
+		coTRY(projectParser.Init(c), nullptr);
+	}
 
 	return true;
 }
 
 coResult coAppImpl::OnStart()
 {
-	coTRY(parser, nullptr);
-
-	{
-		coReflectParser::InitConfig config;
-		coTRY(parser->Init(config), nullptr);
-	}
-	
-	{
-		coReflectParser::ParseConfig config;
-		config.filePath = "J:/CODE/core/src/pattern/object/coObject.h";
-		coTRY(parser->Parse(config), nullptr);
-	}
+	coProjectParser::ParseConfig parseConfig;
+	parseConfig.projectDir = projectDir;
+	coTRY(projectParser.Parse(parseConfig), "Failed to parse the project: "<<projectDir);
 	
 	return true;
 }

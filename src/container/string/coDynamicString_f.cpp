@@ -45,11 +45,10 @@ void coJoin(coDynamicString& _this, const coConstString& _a, const coConstString
 	coLeftStrip(stripped1, _b, sep);
 	coUint32 newSize = stripped0.count + stripped1.count + sizeof(_separator);
 	coReserve(_this, newSize);
-	coMemCopy(&_this[0], stripped0.data, stripped0.count);
-	_this[stripped0.count] = _separator;
-	coMemCopy(&_this[stripped0.count + 1], stripped1.data, stripped1.count);
-	_this[newSize] = '\0';
 	_this.count = newSize;
+	coMemCopy(_this.data, stripped0.data, stripped0.count);
+	_this[stripped0.count] = _separator;
+	coMemCopy(&_this.data[stripped0.count + 1], stripped1.data, stripped1.count);
 }
 
 void coSetFromWide(coDynamicString& _this, const coConstString16& _other)
