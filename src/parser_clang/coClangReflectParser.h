@@ -36,6 +36,7 @@ private:
 	coResult ParseField(coParsedField& _parsedField, const CXCursor& _cursor);
 	coResult ParseType(const CXCursor& _cursor);
 	coResult ParseTypes(const CXCursor& _cursor);
+	static CXCursor FindAttribute(const CXCursor& _cursor, const coConstString& _attr);
 
 	static CXChildVisitResult ParseTypesVisitor(CXCursor _child, CXCursor _parent, CXClientData _clientData);
 	static CXChildVisitResult ParseTypeChildrenVisitor(CXCursor _child, CXCursor _parent, CXClientData _clientData);

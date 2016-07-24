@@ -5,15 +5,16 @@
 class coType;
 
 #ifdef coREFLECTION_PARSING
-#define coDECLARE_ATTRIBUTE(_attr_) struct coMETA(coAttribute##_attr_) _attribute_##__LINE__ {}
+#define _coUNIQUE(_unique_) _unique_
+#define coDEFINE_ATTRIBUTE(_attr_, ...) struct coMETA(__VA_ARGS__) _attribute_##_attr_ {}
 #else
-#define coDECLARE_ATTRIBUTE(_attr_)
+#define coDEFINE_ATTRIBUTE(_attr_, ...)
 #endif
 
 #define coDECLARE_TYPE(_type_) \
 	using Self = _type_
 
-#define coDECLARE_DERIVED(_super_) \
+#define coDECLARE_SUPER(_super_) \
 	using Super = _super_
 
 #define coDECLARE_ROOT_TYPE(_type_) \
@@ -21,9 +22,8 @@ class coType;
 
 #define coDECLARE_DERIVED_TYPE(_type_, _super_) \
 	coDECLARE_TYPE(_type_); \
-	coDECLARE_DERIVED(_super_)
+	coDECLARE_SUPER(_super_)
 
-#define coDECLARE_REFLECTED(_type_) \
-	coDECLARE_ATTRIBUTE(Reflected); \
-	struct h {}; \
+#define coDECLARE_REFLECTED() \
+	coDEFINE_ATTRIBUTE(Reflected, true); \
 	const coType* GetType() const

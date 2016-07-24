@@ -44,5 +44,5 @@ struct _coDeferFactory
 //#define _coDEFER_NAME() _defer_obj_ ## coSTRINGIFY(__LINE__)
 #define _coDEFER_NAME() CONCAT(_deferObj_, __LINE__)
 
-#define coDEFER_WITH_OBJ(...) _coDeferFactory()*[&]
-#define coDEFER(...) auto _coDEFER_NAME() = _coDeferFactory()*[&]
+#define coDEFER_WITH_OBJ() _coDeferFactory()*[&]
+#define coDEFER() auto _coDEFER_NAME() = _coDeferFactory()*[&]

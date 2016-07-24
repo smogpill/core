@@ -130,3 +130,18 @@ void coRightStrip(coConstString& _out, const coConstString& _s, const coConstStr
 	}
 	coGetSubStringFromSize(_out, _s, i + 1);
 }
+
+coBool coStartsWith(const coConstString& _this, const coConstString& _prefix)
+{
+	if (_this.count < _prefix.count)
+		return false;
+
+	const coChar* data = _this.data;
+	const coChar* prefixData = _prefix.data;
+	for (coUint i = 0; i < _prefix.count; ++i)
+	{
+		if (data[i] != prefixData[i])
+			return false;
+	}
+	return true;
+}

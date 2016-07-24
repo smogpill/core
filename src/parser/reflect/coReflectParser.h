@@ -10,7 +10,7 @@ class coParsedType;
 
 class coReflectParser : public coParser
 {
-	coDECLARE_DERIVED(coParser);
+	coDECLARE_SUPER(coParser);
 public:
 	class InitConfig : public Super::InitConfig
 	{

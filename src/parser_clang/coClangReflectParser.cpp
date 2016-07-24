@@ -122,10 +122,14 @@ CXChildVisitResult coClangReflectParser::ParseTypesVisitor(CXCursor _child, CXCu
 	case CXCursor_ClassDecl:
 	case CXCursor_StructDecl:
 	{
-		if (!_this->ParseType(_child))
+		const CXCursor reflectedAttr = FindAttribute(_child, "Reflected");
+		if (!clang_Cursor_isNull(reflectedAttr))
 		{
-			coERROR("Failed");
-			return CXChildVisitResult::CXChildVisit_Break;
+			if (!_this->ParseType(_child))
+			{
+				coERROR("Failed");
+				return CXChildVisitResult::CXChildVisit_Break;
+			}
 		}
 		break;
 	}
@@ -219,6 +223,7 @@ coResult coClangReflectParser::ParseField(coParsedField& _parsedField, const CXC
 	const CXType canonicalType = clang_getCanonicalType(type);
 	const CXCursor typeCursor = clang_getTypeDeclaration(canonicalType);
 	const CXString typeSpelling = clang_getCursorSpelling(typeCursor);
+	coDEFER() { clang_disposeString(typeSpelling); };
 	_parsedField.typeName = clang_getCString(typeSpelling);
 	return true;
 }
@@ -226,6 +231,7 @@ coResult coClangReflectParser::ParseField(coParsedField& _parsedField, const CXC
 coResult coClangReflectParser::ParseSymbol(coSymbol& _symbol, const CXCursor& _cursor)
 {
 	const CXString name = clang_getCursorSpelling(_cursor);
+	coDEFER() { clang_disposeString(name); };
 	_symbol.name = clang_getCString(name);
 
 	const CX_CXXAccessSpecifier access = clang_getCXXAccessSpecifier(_cursor);
@@ -246,4 +252,47 @@ coResult coClangReflectParser::ParseMethod(coParsedFunction& /*_function*/, cons
 
 	}
 	return true;
+}
+
+CXCursor coClangReflectParser::FindAttribute(const CXCursor& _cursor, const coConstString& _attr)
+{
+	switch (_cursor.kind)
+	{
+	case CXCursor_ClassDecl:
+	case CXCursor_StructDecl:
+	{
+		struct Result
+		{
+			Result(const coConstString& _structName) : cursor(clang_getNullCursor()), structName(_structName) {}
+			CXCursor cursor;
+			const coConstString& structName;
+		};
+		static const coConstString attributePrefix("_attribute_");
+		coDynamicString structName;
+		structName << attributePrefix;
+		structName << _attr;
+		Result result(structName);
+		auto AttributeVisitor = [](CXCursor _child, CXCursor /*_parent*/, CXClientData _clientData)
+		{
+			if (_child.kind == CXCursor_StructDecl)
+			{
+				CXString cursorStr = clang_getCursorDisplayName(_child);
+				coDEFER() { clang_disposeString(cursorStr); };
+				const coConstString name = clang_getCString(cursorStr);
+				Result* result = static_cast<Result*>(_clientData);
+				if (name == result->structName)
+				{
+					result->cursor = _child;
+					return CXChildVisit_Break;
+				}
+			}
+			return CXChildVisit_Continue;
+		};
+		clang_visitChildren(_cursor, AttributeVisitor, &result);
+		return result.cursor;
+		break;
+	}
+	}
+
+	return clang_getNullCursor();
 }
