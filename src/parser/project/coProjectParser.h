@@ -34,7 +34,6 @@ public:
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 private:
-	coResult ParsePrecompileHeader(const ParseConfig& _config);
 	coResult ParseSourceDir(coParsedProject& _out, const coConstString& _path);
 	coResult ParseSourceFile(coParsedProject& _out, const coConstString& _path);
 

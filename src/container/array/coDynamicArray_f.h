@@ -47,8 +47,8 @@ void coReserve(coDynamicArray<T>& _this, coUint32 _desiredCount)
 	}
 }
 
-template <class T>
-void coPushBack(coDynamicArray<T>& _this, const T& _val)
+template <class T, class U>
+void coPushBack(coDynamicArray<T>& _this, const U& _val)
 {
 	coUint32 newCount = _this.count + 1;
 	coReserve(_this, newCount);

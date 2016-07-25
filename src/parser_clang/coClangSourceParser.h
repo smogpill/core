@@ -16,7 +16,6 @@ public:
 	coClangSourceParser();
 	~coClangSourceParser();
 
-	virtual coResult ParsePrecompiledHeader(const ParseConfig& _config) override;
 	virtual coResult Parse(ParseResult& _result, const ParseConfig& _config) override;
 
 protected:
@@ -31,6 +30,9 @@ private:
 		ParseResult* result;
 		const CXCursor* cursor;
 	};
+	coResult InitCommonParseArgs(const InitConfig& _config);
+	coResult InitPrecompiledHeader(const InitConfig& _config);
+	coResult InitSourceParseArgs(const InitConfig& _config);
 	coResult ParseTypeChild(const ScopeInfo& scope, const CXCursor& _cursor);
 	coResult ParseMethod(coParsedFunction& _parsedFunction, const CXCursor& _cursor);
 	coResult ParseSymbol(coSymbol& _symbol, const CXCursor& _cursor);
@@ -43,4 +45,9 @@ private:
 	static CXChildVisitResult ParseTypeChildrenVisitor(CXCursor _child, CXCursor _parent, CXClientData _clientData);
 
 	CXIndex clangIndex;
+	coDynamicString outDir;
+	coDynamicString precompiledHeaderPath;
+	coDynamicArray<const coChar*> commonParseArgs;
+	coDynamicArray<const coChar*> sourceParseArgs;
+	coDynamicArray<coDynamicString*> stringBuffer;
 };

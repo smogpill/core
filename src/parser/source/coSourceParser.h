@@ -15,14 +15,15 @@ public:
 	class InitConfig : public Super::InitConfig
 	{
 	public:
+		coConstString precompiledHeaderSourcePath;
+		coArray<coConstString> includeDirs;
+		coConstString buildDir;
 	};
 	class ParseConfig
 	{
 	public:
 		ParseConfig();
 		coConstString filePath;
-		coConstString outPath;
-		coBool precompiledHeader;
 	};
 	class ParseResult
 	{

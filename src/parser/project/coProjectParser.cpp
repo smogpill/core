@@ -4,7 +4,9 @@
 #include "parser/project/coProjectParser.h"
 #include "parser/project/coParsedProject.h"
 #include "lang/result/coResult_f.h"
+#include "pattern/scope/coDefer.h"
 #include "io/dir/coDirectoryAccess.h"
+#include "io/dir/coDirectory_f.h"
 #include "io/path/coPath_f.h"
 #include "parser/source/coSourceParser.h"
 
@@ -28,37 +30,37 @@ coResult coProjectParser::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 
-	coTRY(!sourceParser, nullptr);
-	sourceParser = coSourceParser::Create();
-	{
-		coSourceParser::InitConfig config;
-		coTRY(sourceParser->Init(config), nullptr);
-	}
-
 	return true;
 }
 
 coResult coProjectParser::Parse(coParsedProject& _out, const ParseConfig& _config)
 {
-	coTRY(ParsePrecompileHeader(_config), nullptr);
-	coTRY(ParseSourceDir(_out, _config.projectDir), nullptr);
-	return true;
-}
+	coTRY(coCreateDirsIfMissing(_config.outDir), "Failed to create output directory: " << _config.outDir);
 
-coResult coProjectParser::ParsePrecompileHeader(const ParseConfig& _config)
-{
-	if (_config.precompiledHeaderRelativePath.count == 0)
-		return true;
-
+	// Build the PCH path
 	coDynamicString pchPath;
-	coJoinPaths(pchPath, _config.projectDir, _config.precompiledHeaderRelativePath);
-	if (coIsFile(pchPath))
+	if (_config.precompiledHeaderRelativePath != "")
 	{
-		coSourceParser::ParseConfig config;
-		config.filePath = pchPath;
-		config.outPath = _config.outDir;
-		coTRY(sourceParser->ParsePrecompiledHeader(config), "Failed to parse the precompiled header: " << pchPath);
+		coJoinPaths(pchPath, _config.projectDir, _config.precompiledHeaderRelativePath);
+		coTRY(coIsFile(pchPath), "Failed to find: " << pchPath);
 	}
+
+	// Init the parser
+	coTRY(!sourceParser, nullptr);
+	sourceParser = coSourceParser::Create();
+	coDEFER() { delete sourceParser; sourceParser = nullptr; };
+	{
+		coSourceParser::InitConfig config;
+		config.buildDir = _config.outDir;
+		config.precompiledHeaderSourcePath = pchPath;
+		coHACK("Hardcoded paths");
+		config.includeDirs = { "J:/CODE/core/src" };
+		coTRY(sourceParser->Init(config), nullptr);
+	}
+	
+	// Parse sources
+	coTRY(ParseSourceDir(_out, _config.projectDir), nullptr);
+
 	return true;
 }
 

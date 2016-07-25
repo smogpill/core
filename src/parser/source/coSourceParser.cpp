@@ -4,7 +4,6 @@
 #include "parser/source/coSourceParser.h"
 
 coSourceParser::ParseConfig::ParseConfig()
-	: precompiledHeader(false)
 {
 
 }
