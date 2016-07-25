@@ -6,4 +6,5 @@
 
 class coConstString;
 
-coResult coCreateDirsIfMissing(const coConstString& _path);
+coResult coCreateDir(const coConstString& _path);
+coResult coCreateDirsIfMissing(const coConstString& _rawPath);
