@@ -98,7 +98,7 @@ coResult coClangSourceParser::Parse(ParseResult& _result, const ParseConfig& _co
 	filePath = _config.filePath;
 	coNullTerminate(filePath);
 	CXTranslationUnit translationUnit = nullptr;
-	const coArray<const coChar*> args = {"-x", "c++", "-std=c++11", "-fms-compatibility-version=19", "-D", "coREFLECTION_PARSING", "-IJ:/CODE/core/src", "-include-pch", "J:/CODE/core/build/vs2015/reflect/pattern/pch.pch"};
+	const coArray<const coChar*> args = {"-x", "c++", "-std=c++11", "-fms-compatibility-version=19", "-D", "coREFLECTION_PARSING", "-IJ:/CODE/core/src", "-include-pch", "J:/CODE/core/build/clang/reflect/pattern/pch.pch"};
 	//translationUnit = clang_createTranslationUnitFromSourceFile(clangIndex, filePath.data, args.count, args.data, 0, nullptr);
 	const CXErrorCode error = clang_parseTranslationUnit2(clangIndex, filePath.data, args.data, args.count, nullptr, 0, CXTranslationUnit_SkipFunctionBodies | CXTranslationUnit_Incomplete, &translationUnit);
 	coTRY(error == CXError_Success, "Clang failed to parse the file: " << filePath);
