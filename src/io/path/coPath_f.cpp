@@ -5,6 +5,7 @@
 #include "io/path/coPathStatus.h"
 #include "container/string/coDynamicString_f.h"
 #include "container/string/coChar_f.h"
+#include "lang/result/coResult_f.h"
 
 void coNormalizePath(coDynamicString& _this)
 {
@@ -72,13 +73,20 @@ void coNormalizePath(coDynamicString& _this)
 
 coBool coIsPathNormalized(const coConstString& _this)
 {
-	const coUint count = _this.count;
-	if (count > 1)
+	coBool lastWasSeparator = false;
+	for (const coChar c : _this)
 	{
-		if (_this[count - 1] == '/')
+		if (c == '\\')
 			return false;
+
+		if (c == '/')
+		{
+			if (lastWasSeparator)
+				return false;
+			lastWasSeparator = true;
+		}
 	}
-	return true;
+	return !lastWasSeparator;
 }
 
 void coGetFileName(coConstString& _out, const coConstString& _this)
@@ -148,6 +156,8 @@ coBool coIsDotHiddenPath(const coConstString& _this)
 
 void coJoinPaths(coDynamicString& _out, const coConstString& _a, const coConstString& _b)
 {
+	coASSERT(coIsPathNormalized(_a));
+	coASSERT(coIsPathNormalized(_b));
 	if (_b.count == 0)
 	{
 		_out = _a;
@@ -160,4 +170,43 @@ void coJoinPaths(coDynamicString& _out, const coConstString& _a, const coConstSt
 	{
 		coJoin(_out, _a, _b, '/');
 	}
+}
+
+void coGetParentDir(coConstString& _out, const coConstString& _this)
+{
+	coASSERT(coIsPathNormalized(_this));
+	const coUint pos = coFindLastChar(_this, '/');
+	if (pos == _this.count)
+	{
+		_out = ".";
+	}
+	else
+	{
+		_out.data = _this.data;
+		_out.count = pos;
+	}
+}
+
+coBool coExists(const coConstString& _path)
+{
+	coASSERT(coIsPathNormalized(_path));
+	coPathStatus status;
+	coCHECK(coGetPathStatus(status, _path), nullptr);
+	return status.Exists();
+}
+
+coBool coIsDirectory(const coConstString& _path)
+{
+	coASSERT(coIsPathNormalized(_path));
+	coPathStatus status;
+	coCHECK(coGetPathStatus(status, _path), nullptr);
+	return status.IsDirectory();
+}
+
+coBool coIsFile(const coConstString& _path)
+{
+	coASSERT(coIsPathNormalized(_path));
+	coPathStatus status;
+	coCHECK(coGetPathStatus(status, _path), nullptr);
+	return status.IsRegularFile();
 }

@@ -52,9 +52,7 @@ coResult coProjectParser::ParsePrecompileHeader(const ParseConfig& _config)
 
 	coDynamicString pchPath;
 	coJoinPaths(pchPath, _config.projectDir, _config.precompiledHeaderRelativePath);
-	coPathStatus pathStatus;
-	coTRY(coGetPathStatus(pathStatus, pchPath), "Failed to get the path status of: " << pchPath);
-	if (pathStatus.Exists())
+	if (coIsFile(pchPath))
 	{
 		coSourceParser::ParseConfig config;
 		config.filePath = pchPath;

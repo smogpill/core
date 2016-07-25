@@ -9,11 +9,15 @@ class coConstString;
 class coDynamicString;
 
 coResult coGetPathStatus(coPathStatus& _status, const coConstString& _path);
+coBool coExists(const coConstString& _path);
+coBool coIsDirectory(const coConstString& _path);
+coBool coIsFile(const coConstString& _path);
 void coNormalizePath(coDynamicString& _this);
 coBool coIsPathNormalized(const coConstString& _s);
 void coGetFileName(coConstString& _out, const coConstString& _this);
 void coGetBaseName(coConstString& _out, const coConstString& _this);
 void coGetExtension(coConstString& _out, const coConstString& _this);
+void coGetParentDir(coConstString& _out, const coConstString& _this);
 coBool coIsDot(const coConstString& _this);
 coBool coIsDoubleDot(const coConstString& _this);
 coBool coIsDotOrDoubleDot(const coConstString& _this);

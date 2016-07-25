@@ -111,13 +111,11 @@ coResult coFileAccess::OnImplInit(const InitConfig& /*_config*/)
 	// Creation disposition
 	DWORD creationDisposition = 0;
 	{
-		coPathStatus pathStatus;
-		coGetPathStatus(pathStatus, path);
 		switch (mode)
 		{
 		case coFileAccess::Mode::read:
 		{
-			if (pathStatus.Exists())
+			if (coExists(path))
 			{
 				creationDisposition = OPEN_EXISTING;
 			}
@@ -130,7 +128,7 @@ coResult coFileAccess::OnImplInit(const InitConfig& /*_config*/)
 		break;
 		case coFileAccess::Mode::write:
 		{
-			if (pathStatus.Exists())
+			if (coExists(path))
 				creationDisposition = OPEN_EXISTING;
 			else
 				creationDisposition = CREATE_NEW;

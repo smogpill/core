@@ -44,24 +44,17 @@ coResult coAppImpl::ParseArgs(const InitConfig& _config)
 
 	// Project dir
 	{
-		const coConstString& dir = argParser.GetArgValue("projectDir");
-		coTRY(dir.count, "Project path is null");
-		coPathStatus pathStatus;
-		coTRY(coGetPathStatus(pathStatus, dir), "Failed to get the path status: " << dir);
-		coTRY(pathStatus.Exists(), "Path does not exist: " << dir);
-		coTRY(pathStatus.IsDirectory(), "Path is not a directory: " << dir);
-		projectDir = dir;
+		projectDir = argParser.GetArgValue("projectDir");
+		coNormalizePath(projectDir);
+		coTRY(projectDir.count, "Project path is null");
+		coTRY(coIsDirectory(projectDir), "Path is not a directory: " << projectDir);
 	}
 
 	// Output dir
 	{
-		const coConstString& dir = argParser.GetArgValue("outputDir");
-		coTRY(dir.count, "The output dir is null");
-		/*coPathStatus pathStatus;
-		coTRY(coGetPathStatus(pathStatus, dir), "Failed to get the path status: " << dir);
-		coTRY(pathStatus.Exists(), "Path does not exist: " << dir);
-		coTRY(pathStatus.IsDirectory(), "Path is not a directory: " << dir);*/
-		outputDir = dir;
+		outputDir = argParser.GetArgValue("outputDir");
+		coNormalizePath(outputDir);
+		coTRY(outputDir.count, "The output dir is null");
 	}
 
 	return true;
