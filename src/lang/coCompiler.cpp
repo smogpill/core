@@ -4,4 +4,4 @@
 #include "lang/pch.h"
 #include "lang/coCompiler.h"
 
-bool coConfig::breakOnError = false;
+bool coConfig::breakOnError = true;
