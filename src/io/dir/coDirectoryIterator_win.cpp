@@ -35,6 +35,7 @@ coResult _coCloseDirectoryIteratorHandle(const HANDLE& _handle)
 void _coConvert(coDirectoryEntry& _entry, const WIN32_FIND_DATAW& _data)
 {
 	coSetFromWide(_entry.name, coConstString16(_data.cFileName));
+	coASSERT(coIsPathNormalized(_entry.name));
 	if (_data.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)
 	{
 		_entry.status.status = coPathStatus::Status::error;
