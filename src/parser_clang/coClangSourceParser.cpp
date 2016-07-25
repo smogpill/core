@@ -14,6 +14,7 @@
 #include "memory/allocator/coLocalAllocator.h"
 #include "io/path/coPath_f.h"
 #include "io/path/coPathStatus.h"
+#include "io/dir/coDirectory_f.h"
 
 coSourceParser* coSourceParser::Create()
 {
@@ -42,6 +43,9 @@ coResult coClangSourceParser::OnInit(const coObject::InitConfig& _config)
 
 	coASSERT(!clangIndex);
 	clangIndex = clang_createIndex(1, 1);
+
+	buildDir = config.buildDir;
+	coTRY(coCreateDirsIfMissing(buildDir), "Failed to create the build directory: "<<buildDir);
 
 	coTRY(InitCommonParseArgs(config), nullptr);
 	if (config.precompiledHeaderSourcePath != "")
@@ -105,7 +109,7 @@ coResult coClangSourceParser::InitPrecompiledHeader(const InitConfig& _config)
 	{
 		coConstString baseName;
 		coGetBaseName(baseName, _config.precompiledHeaderSourcePath);
-		coJoinPaths(precompiledHeaderPath, outDir, baseName);
+		coJoinPaths(precompiledHeaderPath, buildDir, baseName);
 		precompiledHeaderPath << ".pch";
 		coNullTerminate(precompiledHeaderPath);
 	}

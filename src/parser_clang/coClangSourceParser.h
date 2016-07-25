@@ -45,7 +45,7 @@ private:
 	static CXChildVisitResult ParseTypeChildrenVisitor(CXCursor _child, CXCursor _parent, CXClientData _clientData);
 
 	CXIndex clangIndex;
-	coDynamicString outDir;
+	coDynamicString buildDir;
 	coDynamicString precompiledHeaderPath;
 	coDynamicArray<const coChar*> commonParseArgs;
 	coDynamicArray<const coChar*> sourceParseArgs;
