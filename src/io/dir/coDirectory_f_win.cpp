@@ -12,7 +12,7 @@ coResult coCreateDir(const coConstString& _path)
 	coSetFromUTF8(path, _path);
 	coNullTerminate(path);
 	const BOOL ret = ::CreateDirectoryW(path.data, NULL);
-	if (ret)
+	if (!ret)
 	{
 		coDynamicString s;
 		coDumpLastOsError(s);
