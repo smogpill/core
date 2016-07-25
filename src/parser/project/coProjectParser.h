@@ -5,7 +5,9 @@
 #include "pattern/object/coObject.h"
 #include "container/string/coConstString.h"
 
-class coReflectParser;
+class coSourceParser;
+class coParsedType;
+class coParsedProject;
 
 class coProjectParser : public coObject
 {
@@ -15,8 +17,9 @@ public:
 	{
 	public:
 	};
-	struct ParseConfig
+	class ParseConfig
 	{
+	public:
 		ParseConfig();
 
 		coConstString projectDir;
@@ -26,14 +29,14 @@ public:
 
 	coProjectParser();
 	virtual ~coProjectParser();
-	coResult Parse(const ParseConfig& _config);
+	coResult Parse(coParsedProject& _out, const ParseConfig& _config);
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 private:
 	coResult ParsePrecompileHeader(const ParseConfig& _config);
-	coResult ParseSourceDir(const coConstString& _path);
-	coResult ParseSourceFile(const coConstString& _path);
+	coResult ParseSourceDir(coParsedProject& _out, const coConstString& _path);
+	coResult ParseSourceFile(coParsedProject& _out, const coConstString& _path);
 
-	coReflectParser* sourceParser;
+	coSourceParser* sourceParser;
 };

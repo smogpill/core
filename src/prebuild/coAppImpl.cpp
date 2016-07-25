@@ -7,6 +7,7 @@
 #include "io/path/coPath_f.h"
 #include "app/coCommandLineArgs.h"
 #include "app/coProject_f.h"
+#include "parser/project/coParsedProject.h"
 
 coAppImpl::coAppImpl()
 {
@@ -87,7 +88,8 @@ coResult coAppImpl::OnStart()
 	parseConfig.projectDir = projectDir;
 	parseConfig.outDir = outputDir;
 	parseConfig.precompiledHeaderRelativePath = "pch.h";
-	coTRY(projectParser.Parse(parseConfig), "Failed to parse the project: "<<projectDir);
+	coParsedProject parsedProject;
+	coTRY(projectParser.Parse(parsedProject, parseConfig), "Failed to parse the project: "<<projectDir);
 	
 	return true;
 }

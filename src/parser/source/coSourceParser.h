@@ -8,7 +8,7 @@
 
 class coParsedType;
 
-class coReflectParser : public coParser
+class coSourceParser : public coParser
 {
 	coDECLARE_SUPER(coParser);
 public:
@@ -24,13 +24,17 @@ public:
 		coConstString outPath;
 		coBool precompiledHeader;
 	};
+	class ParseResult
+	{
+	public:
+		ParseResult();
+		coDynamicArray<coParsedType*>* parsedTypes;
+	};
 
-	const coArray<coParsedType*>& getTypes() const { return parsedTypes; }
 	virtual coResult ParsePrecompiledHeader(const ParseConfig& _config);
-	virtual coResult Parse(const ParseConfig& _config);
-	static coReflectParser* Create();
+	virtual coResult Parse(ParseResult& _result, const ParseConfig& _config);
+	static coSourceParser* Create();
 
 protected:
-	coReflectParser(){}
-	coDynamicArray<coParsedType*> parsedTypes;
+	coSourceParser(){}
 };

@@ -65,6 +65,13 @@ void coPushBackArray(coDynamicArray<T>& _this, const coArray<const T>& _other)
 		coReserve(_this, desiredCount);
 	coMemCopy(&_this.data[_this.count], _other.data, _other.count * sizeof(T));
 	_this.count = desiredCount;
+	
+}
+
+template <class T>
+void coPushBackArray(coDynamicArray<T>& _this, const coArray<T>& _other)
+{
+	coPushBackArray(_this, static_cast<const coArray<const T>&>(_other));
 }
 
 template <class T>

@@ -5,7 +5,7 @@
 #include "app/coApp.h"
 #include "lang/result/coResult.h"
 #include "container/string/coDynamicString.h"
-#include "prebuild/parser/coProjectParser.h"
+#include "parser/project/coProjectParser.h"
 
 class coAppImpl : public coApp
 {

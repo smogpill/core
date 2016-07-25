@@ -1,11 +1,12 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
-#include "prebuild/pch.h"
-#include "prebuild/parser/coProjectParser.h"
+#include "parser/pch.h"
+#include "parser/project/coProjectParser.h"
+#include "parser/project/coParsedProject.h"
 #include "lang/result/coResult_f.h"
 #include "io/dir/coDirectoryAccess.h"
 #include "io/path/coPath_f.h"
-#include "parser/reflect/coReflectParser.h"
+#include "parser/source/coSourceParser.h"
 
 coProjectParser::coProjectParser()
 	: sourceParser(nullptr)
@@ -28,19 +29,19 @@ coResult coProjectParser::OnInit(const coObject::InitConfig& _config)
 	coTRY(Super::OnInit(_config), nullptr);
 
 	coTRY(!sourceParser, nullptr);
-	sourceParser = coReflectParser::Create();
+	sourceParser = coSourceParser::Create();
 	{
-		coReflectParser::InitConfig config;
+		coSourceParser::InitConfig config;
 		coTRY(sourceParser->Init(config), nullptr);
 	}
 
 	return true;
 }
 
-coResult coProjectParser::Parse(const ParseConfig& _config)
+coResult coProjectParser::Parse(coParsedProject& _out, const ParseConfig& _config)
 {
 	coTRY(ParsePrecompileHeader(_config), nullptr);
-	coTRY(ParseSourceDir(_config.projectDir), nullptr);
+	coTRY(ParseSourceDir(_out, _config.projectDir), nullptr);
 	return true;
 }
 
@@ -55,7 +56,7 @@ coResult coProjectParser::ParsePrecompileHeader(const ParseConfig& _config)
 	coTRY(coGetPathStatus(pathStatus, pchPath), "Failed to get the path status of: " << pchPath);
 	if (pathStatus.Exists())
 	{
-		coReflectParser::ParseConfig config;
+		coSourceParser::ParseConfig config;
 		config.filePath = pchPath;
 		config.outPath = _config.outDir;
 		coTRY(sourceParser->ParsePrecompiledHeader(config), "Failed to parse the precompiled header: " << pchPath);
@@ -63,7 +64,7 @@ coResult coProjectParser::ParsePrecompileHeader(const ParseConfig& _config)
 	return true;
 }
 
-coResult coProjectParser::ParseSourceDir(const coConstString& _path)
+coResult coProjectParser::ParseSourceDir(coParsedProject& _out, const coConstString& _path)
 {
 	coDirectoryAccess dirAccess;
 	{
@@ -84,7 +85,7 @@ coResult coProjectParser::ParseSourceDir(const coConstString& _path)
 		{
 			coDynamicString p;
 			coJoinPaths(p, _path, e.name);
-			coTRY(ParseSourceDir(p), "Failed to parse the directory: " << p);
+			coTRY(ParseSourceDir(_out, p), "Failed to parse the directory: " << p);
 			break;
 		}
 		case coPathStatus::Status::regularFile:
@@ -95,7 +96,7 @@ coResult coProjectParser::ParseSourceDir(const coConstString& _path)
 			{
 				coDynamicString p;
 				coJoinPaths(p, _path, e.name);
-				coTRY(ParseSourceFile(p), "Failed to parse the source file: " << p);
+				coTRY(ParseSourceFile(_out, p), "Failed to parse the source file: " << p);
 			}
 			break;
 		}
@@ -105,10 +106,12 @@ coResult coProjectParser::ParseSourceDir(const coConstString& _path)
 	return true;
 }
 
-coResult coProjectParser::ParseSourceFile(const coConstString& _path)
+coResult coProjectParser::ParseSourceFile(coParsedProject& _out, const coConstString& _path)
 {
-	coReflectParser::ParseConfig config;
+	coSourceParser::ParseConfig config;
 	config.filePath = _path;
-	coTRY(sourceParser->Parse(config), nullptr);
+	coSourceParser::ParseResult result;
+	result.parsedTypes = &_out.parsedTypes;
+	coTRY(sourceParser->Parse(result, config), nullptr);
 	return true;
 }

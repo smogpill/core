@@ -1,13 +1,13 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "parser_clang/pch.h"
-#include "parser_clang/coClangReflectParser.h"
+#include "parser_clang/coClangSourceParser.h"
 #include "pattern/scope/coDefer.h"
 #include "lang/result/coResult_f.h"
 #include "lang/reflect/coType.h"
 #include "lang/reflect/coField.h"
-#include "parser/reflect/coParsedType.h"
-#include "parser/reflect/coParsedField.h"
+#include "parser/source/coParsedType.h"
+#include "parser/source/coParsedField.h"
 #include "container/string/coDynamicString_f.h"
 #include "container/array/coDynamicArray_f.h"
 #include "container/array/coConstArray_f.h"
@@ -15,18 +15,18 @@
 #include "io/path/coPath_f.h"
 #include "io/path/coPathStatus.h"
 
-coReflectParser* coReflectParser::Create()
+coSourceParser* coSourceParser::Create()
 {
-	return new coClangReflectParser();
+	return new coClangSourceParser();
 }
 
-coClangReflectParser::coClangReflectParser()
+coClangSourceParser::coClangSourceParser()
 	: clangIndex(nullptr)
 {
 
 }
 
-coClangReflectParser::~coClangReflectParser()
+coClangSourceParser::~coClangSourceParser()
 {
 	if (clangIndex)
 	{
@@ -34,7 +34,7 @@ coClangReflectParser::~coClangReflectParser()
 	}
 }
 
-coResult coClangReflectParser::OnInit(const coObject::InitConfig& _config)
+coResult coClangSourceParser::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 	//const InitConfig& config = static_cast<const InitConfig&>(_config);
@@ -44,7 +44,7 @@ coResult coClangReflectParser::OnInit(const coObject::InitConfig& _config)
 	return true;
 }
 
-coResult coClangReflectParser::ParsePrecompiledHeader(const ParseConfig& _config)
+coResult coClangSourceParser::ParsePrecompiledHeader(const ParseConfig& _config)
 {
 	coTRY(Super::ParsePrecompiledHeader(_config), nullptr);
 	coLocalAllocator localAllocator(2048);
@@ -89,9 +89,9 @@ coResult coClangReflectParser::ParsePrecompiledHeader(const ParseConfig& _config
 	return true;
 }
 
-coResult coClangReflectParser::Parse(const ParseConfig& _config)
+coResult coClangSourceParser::Parse(ParseResult& _result, const ParseConfig& _config)
 {
-	coTRY(Super::Parse(_config), nullptr);
+	coTRY(Super::Parse(_result, _config), nullptr);
 	coLocalAllocator localAllocator(2048);
 
 	coDynamicString filePath(localAllocator);
@@ -105,14 +105,18 @@ coResult coClangReflectParser::Parse(const ParseConfig& _config)
 	coTRY(translationUnit, "Can't create translation unit from source file: " << filePath);
 	coDEFER() { clang_disposeTranslationUnit(translationUnit); };
 	CXCursor cursor = clang_getTranslationUnitCursor(translationUnit);
-	coTRY(ParseTypes(cursor), "Failed to parse types");
+
+	if (_result.parsedTypes)
+	{
+		coTRY(ParseTypes(_result, cursor), "Failed to parse types");
+	}
 	return true;
 }
 
-CXChildVisitResult coClangReflectParser::ParseTypesVisitor(CXCursor _child, CXCursor /*_parent*/, CXClientData _clientData)
+CXChildVisitResult coClangSourceParser::ParseTypesVisitor(CXCursor _child, CXCursor /*_parent*/, CXClientData _clientData)
 {
 	const ScopeInfo* scope = static_cast<const ScopeInfo*>(_clientData);
-	coClangReflectParser* _this = scope->parser;
+	coClangSourceParser* _this = scope->parser;
 	const coBool definition = clang_isCursorDefinition(_child) != 0;
 	if (!definition)
 		return CXChildVisitResult::CXChildVisit_Continue;
@@ -125,7 +129,8 @@ CXChildVisitResult coClangReflectParser::ParseTypesVisitor(CXCursor _child, CXCu
 		const CXCursor reflectedAttr = FindAttribute(_child, "Reflected");
 		if (!clang_Cursor_isNull(reflectedAttr))
 		{
-			if (!_this->ParseType(_child))
+			coASSERT(scope->result);
+			if (!_this->ParseType(*scope->result, _child))
 			{
 				coERROR("Failed");
 				return CXChildVisitResult::CXChildVisit_Break;
@@ -137,11 +142,11 @@ CXChildVisitResult coClangReflectParser::ParseTypesVisitor(CXCursor _child, CXCu
 	return CXChildVisitResult::CXChildVisit_Continue;
 }
 
-CXChildVisitResult coClangReflectParser::ParseTypeChildrenVisitor(CXCursor _child, CXCursor /*_parent*/, CXClientData _clientData)
+CXChildVisitResult coClangSourceParser::ParseTypeChildrenVisitor(CXCursor _child, CXCursor /*_parent*/, CXClientData _clientData)
 {
 	const ScopeInfo* scope = static_cast<const ScopeInfo*>(_clientData);
 	coASSERT(scope);
-	coClangReflectParser* _this = scope->parser;
+	coClangSourceParser* _this = scope->parser;
 	if (!_this->ParseTypeChild(*scope, _child))
 	{
 		coERROR("Failed to parse type child");
@@ -151,7 +156,7 @@ CXChildVisitResult coClangReflectParser::ParseTypeChildrenVisitor(CXCursor _chil
 	return CXChildVisitResult::CXChildVisit_Continue;
 }
 
-coResult coClangReflectParser::ParseTypeChild(const ScopeInfo& scope, const CXCursor& _cursor)
+coResult coClangSourceParser::ParseTypeChild(const ScopeInfo& scope, const CXCursor& _cursor)
 {
 	coTRY(scope.curType, nullptr);
 	switch (_cursor.kind)
@@ -193,15 +198,17 @@ coResult coClangReflectParser::ParseTypeChild(const ScopeInfo& scope, const CXCu
 	return true;
 }
 
-coResult coClangReflectParser::ParseTypes(const CXCursor& _cursor)
+coResult coClangSourceParser::ParseTypes(ParseResult& _result, const CXCursor& _cursor)
 {
+	coASSERT(_result.parsedTypes);
 	ScopeInfo scope;
 	scope.parser = this;
+	scope.result = &_result;
 	clang_visitChildren(_cursor, &ParseTypesVisitor, &scope);
 	return true;
 }
 
-coResult coClangReflectParser::ParseType(const CXCursor& _cursor)
+coResult coClangSourceParser::ParseType(ParseResult& _result, const CXCursor& _cursor)
 {
 	coParsedType* parsedType = new coParsedType();
 	coDEFER() { delete parsedType; };
@@ -211,12 +218,12 @@ coResult coClangReflectParser::ParseType(const CXCursor& _cursor)
 	scope.parser = this;
 	scope.curType = parsedType;
 	clang_visitChildren(_cursor, &ParseTypeChildrenVisitor, &scope);
-	coPushBack(parsedTypes, parsedType);
+	coPushBack(*_result.parsedTypes, parsedType);
 	parsedType = nullptr; // Release from defer
 	return true;
 }
 
-coResult coClangReflectParser::ParseField(coParsedField& _parsedField, const CXCursor& _cursor)
+coResult coClangSourceParser::ParseField(coParsedField& _parsedField, const CXCursor& _cursor)
 {
 	coTRY(ParseSymbol(*_parsedField.field, _cursor), nullptr);
 	const CXType type = clang_getCursorType(_cursor);
@@ -228,7 +235,7 @@ coResult coClangReflectParser::ParseField(coParsedField& _parsedField, const CXC
 	return true;
 }
 
-coResult coClangReflectParser::ParseSymbol(coSymbol& _symbol, const CXCursor& _cursor)
+coResult coClangSourceParser::ParseSymbol(coSymbol& _symbol, const CXCursor& _cursor)
 {
 	const CXString name = clang_getCursorSpelling(_cursor);
 	coDEFER() { clang_disposeString(name); };
@@ -240,7 +247,7 @@ coResult coClangReflectParser::ParseSymbol(coSymbol& _symbol, const CXCursor& _c
 	return true;
 }
 
-coResult coClangReflectParser::ParseMethod(coParsedFunction& /*_function*/, const CXCursor& _cursor)
+coResult coClangSourceParser::ParseMethod(coParsedFunction& /*_function*/, const CXCursor& _cursor)
 {
 	const coBool staticMethod = clang_CXXMethod_isStatic(_cursor) != 0;
 	if (staticMethod)
@@ -254,7 +261,7 @@ coResult coClangReflectParser::ParseMethod(coParsedFunction& /*_function*/, cons
 	return true;
 }
 
-CXCursor coClangReflectParser::FindAttribute(const CXCursor& _cursor, const coConstString& _attr)
+CXCursor coClangSourceParser::FindAttribute(const CXCursor& _cursor, const coConstString& _attr)
 {
 	switch (_cursor.kind)
 	{
