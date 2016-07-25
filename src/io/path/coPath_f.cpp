@@ -59,14 +59,15 @@ void coNormalizePath(coDynamicString& _this)
 	if (bufIndex && buf[bufIndex - 1] == '/')
 		--bufIndex;
 
+	coUint startIndex = 0;
 	// Remove starting './'
 	if (bufIndex > 1 && buf[0] == '.' && buf[1] == '/')
 	{
-		buf += 2;
+		startIndex = 2;
 		bufIndex -= 2;
 	}
 
-	_this = coConstString(buf, bufIndex);
+	_this = coConstString(buf + startIndex, bufIndex);
 
 	delete[] buf;
 }
@@ -76,14 +77,17 @@ coBool coIsPathNormalized(const coConstString& _this)
 	coBool lastWasSeparator = false;
 	for (const coChar c : _this)
 	{
-		if (c == '\\')
-			return false;
-
-		if (c == '/')
+		switch (c)
 		{
+		case '\\':
+			return false;
+		case '/':
 			if (lastWasSeparator)
 				return false;
 			lastWasSeparator = true;
+			break;
+		default:
+			lastWasSeparator = false;
 		}
 	}
 	return !lastWasSeparator;
@@ -117,8 +121,10 @@ void coGetExtension(coConstString& _out, const coConstString& _this)
 	coASSERT(coIsPathNormalized(_this));
 	if (!coIsDotOrDoubleDot(_this))
 	{
-		const coUint32 pos = coFindLastChar(_this, '.');
-		coGetSubStringFromPos(_out, _this, pos);
+		coConstString fileName;
+		coGetFileName(fileName, _this);
+		const coUint32 pos = coFindLastChar(fileName, '.');
+		coGetSubStringFromPos(_out, fileName, pos);
 	}
 	else
 	{
