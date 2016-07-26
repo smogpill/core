@@ -24,6 +24,8 @@ protected:
 
 private:
 	coResult ParseArgs(const InitConfig& _config);
+	coResult ParseProject(coParsedProject& _parsedProject);
+	coResult GenerateProject(const coParsedProject& _parsedProject);
 
 	coDynamicString projectDir;
 	coDynamicString outputDir;

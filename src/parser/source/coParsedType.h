@@ -4,15 +4,16 @@
 
 #include "container/array/coDynamicArray.h"
 #include "container/string/coDynamicString.h"
+#include "pattern/object/coObject.h"
 
 class coType;
 class coParsedField;
 
-class coParsedType
+class coParsedType : public coObject
 {
 public:
 	coParsedType();
-	~coParsedType();
+	virtual ~coParsedType();
 
 	coType* type;
 	coDynamicArray<coParsedField*> parsedFields;

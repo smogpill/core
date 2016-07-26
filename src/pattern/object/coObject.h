@@ -15,9 +15,9 @@ class coObject
 public:
 	enum class ObjectState : coUint8
 	{
-		NONE,
-		INITIALIZED,
-		STARTED
+		none,
+		initialized,
+		started
 	};
 
 	class InitConfig
@@ -35,6 +35,8 @@ public:
 	void Stop();
 	const coConstString& GetDebugName() const;
 	void SetDebugName(const coConstString& _s);
+	coBool IsInitialized() const { return objectState == ObjectState::initialized; }
+	coBool IsStarted() const { return objectState == ObjectState::started; }
 
 protected:
 	virtual coResult OnInit(const InitConfig& _config);

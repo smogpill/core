@@ -5,38 +5,38 @@
 #include "lang/result/coResult_f.h"
 
 coObject::coObject()
-	: objectState(ObjectState::NONE)
+	: objectState(ObjectState::none)
 {
 
 }
 
 coResult coObject::Init(const InitConfig& _config)
 {
-	if (objectState >= ObjectState::INITIALIZED)
+	if (objectState >= ObjectState::initialized)
 		return true;
 
 	coTRY(OnInit(_config), "Init failed");
-	objectState = ObjectState::INITIALIZED;
+	objectState = ObjectState::initialized;
 	return true;
 }
 
 coResult coObject::Start()
 {
-	if (objectState >= ObjectState::STARTED)
+	if (objectState >= ObjectState::started)
 		return true;
 
 	coTRY(OnStart(), "Start failed");
-	objectState = ObjectState::STARTED;
+	objectState = ObjectState::started;
 	return true;
 }
 
 void coObject::Stop()
 {
-	if (objectState < ObjectState::STARTED)
+	if (objectState < ObjectState::started)
 		return;
 
 	OnStop();
-	objectState = ObjectState::INITIALIZED;
+	objectState = ObjectState::initialized;
 }
 
 coResult coObject::OnInit(const InitConfig& _config)
