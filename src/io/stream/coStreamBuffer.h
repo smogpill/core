@@ -49,19 +49,16 @@ protected:
 	coBool isConst;
 };
 
-//-------------------------------------------------------
 inline coBool coStreamBuffer::Refill()
 {
 	return (this->*refill)();
 }
 
-//-------------------------------------------------------
 inline coInt64 coStreamBuffer::GetPos() const
 {
 	return windowPos + (cursor - windowBegin);
 }
 
-//-------------------------------------------------------
 inline coUint coStreamBuffer::Write(coByte _v)
 {
 	if (cursor != windowEnd); // likely
@@ -75,7 +72,6 @@ inline coUint coStreamBuffer::Write(coByte _v)
 	return 1;
 }
 
-//-------------------------------------------------------
 inline coUint coStreamBuffer::Read(coByte& _v)
 {
 	if (cursor != windowEnd); // likely
