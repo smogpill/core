@@ -3,6 +3,6 @@
 #pragma once
 
 template <class T> coFORCE_INLINE auto begin(T& _this) -> decltype(coBegin(_this)) { return coBegin(_this); }
-template <class T> coFORCE_INLINE auto begin(const T& _this) -> decltype(coBegin(_this)) { return coBegin(_this); }
+template <class T> coFORCE_INLINE auto cbegin(const T& _this) -> decltype(coBegin(_this)) { return coBegin(_this); }
 template <class T> coFORCE_INLINE auto end(T& _this) -> decltype(coEnd(_this)) { return coEnd(_this); }
-template <class T> coFORCE_INLINE auto end(const T& _this) -> decltype(coEnd(_this)) { return coEnd(_this); }
+template <class T> coFORCE_INLINE auto cend(const T& _this) -> decltype(coEnd(_this)) { return coEnd(_this); }
