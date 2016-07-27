@@ -12,7 +12,7 @@ coArray<T>::coArray(std::initializer_list<T> _l)
 {
 }
 
-#define coARRAY_SIZE(_array_) (sizeof(_array_) / sizeof(_array[0]))
+#define coARRAY_SIZE(_array_) (sizeof(_array_) / sizeof(_array_[0]))
 
 template <class T> coFORCE_INLINE T* coBegin(coArray<T>& _a) { return _a.data; }
 template <class T> coFORCE_INLINE const T* coBegin(const coArray<T>& _a) { return _a.data; }
