@@ -162,7 +162,7 @@ coResult coFileAccess::OnImplInit(const InitConfig& /*_config*/)
 
 void coFileAccess::OnImplDestruct()
 {
-	HANDLE& handle = static_cast<HANDLE>(impl);
+	HANDLE& handle = static_cast<HANDLE&>(impl);
 	if (handle != INVALID_HANDLE_VALUE)
 	{
 		const BOOL res = ::CloseHandle(handle);
@@ -179,4 +179,19 @@ void coFileAccess::OnImplDestruct()
 void coFileAccess::OnImplConstruct()
 {
 	impl = INVALID_HANDLE_VALUE;
+}
+
+coResult coFileAccess::Flush()
+{
+	coTRY(mode == Mode::write, nullptr);
+	HANDLE& handle = static_cast<HANDLE&>(impl);
+	const BOOL res = ::FlushFileBuffers(handle);
+	if (res == FALSE)
+	{
+		coDynamicString s;
+		coDumpLastOsError(s);
+		coERROR("Failed to flush the file " << GetDebugName() << "("<<s<<")");
+		return false;
+	}
+	return true;
 }
