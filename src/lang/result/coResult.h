@@ -38,6 +38,14 @@ public:
 		success = _b;
 	}
 
+	coFORCE_INLINE void operator&= (coBool _b)
+	{
+#ifdef coDEBUG
+		tested = false;
+#endif
+		success &= _b;
+	}
+
 	coBool success;
 #ifdef coDEBUG
 	mutable coBool tested;
