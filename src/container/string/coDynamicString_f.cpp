@@ -16,7 +16,7 @@ coDynamicString& operator<<(coDynamicString& _this, const coConstString& _a)
 coDynamicString& operator<<(coDynamicString& _this, coUint32 _a)
 {
 	coChar s[16];
-	::sprintf_s(s, 16, "%u", _a);
+	::sprintf_s(s, coARRAY_SIZE(s), "%u", _a);
 	return _this << coConstString(s);
 }
 
