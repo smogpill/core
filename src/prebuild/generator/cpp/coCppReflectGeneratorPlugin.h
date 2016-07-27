@@ -6,6 +6,7 @@
 
 class coParsedProject;
 class coParsedType;
+class coDynamicString;
 
 class coCppReflectGeneratorPlugin : public coProjectGeneratorPlugin
 {
@@ -18,7 +19,7 @@ protected:
 
 private:
 	coResult GenerateTypes(const coParsedProject& _parsedProject);
-	coResult GenerateType(const coParsedType& _parsedType);
+	coResult GenerateType(coDynamicString& _outPath, const coParsedType& _parsedType);
 
 	coDynamicString genDir;
 };

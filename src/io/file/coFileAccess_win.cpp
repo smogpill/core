@@ -32,41 +32,6 @@ coResult coFileAccess::GetSize8(coInt64& _size8) const
 	return true;
 }
 
-coResult coFileAccess::Write(const coByte* _data, coUint _size8)
-{
-	HANDLE& handle = static_cast<HANDLE&>(impl);
-	coTRY(handle != INVALID_HANDLE_VALUE, nullptr);
-	DWORD writtenSize8 = 0;
-	const BOOL res = ::WriteFile(handle, _data, _size8, &writtenSize8, nullptr);
-	if (res == FALSE)
-	{
-		coDynamicString str;
-		coDumpLastOsError(str);
-		coERROR("Failed to write to the file " << GetDebugName() << ": " << str);
-		return false;
-	}
-	coTRY(_size8 == writtenSize8, nullptr);
-	return true;
-}
-
-coResult coFileAccess::Read(coUint& _readSize8, coByte* _data, coUint _size8)
-{
-	HANDLE& handle = static_cast<HANDLE&>(impl);
-	coTRY(handle != INVALID_HANDLE_VALUE, nullptr);
-	_readSize8 = 0;
-	DWORD readSize8 = 0;
-	const BOOL res = ::ReadFile(handle, _data, _size8, &readSize8, nullptr);
-	if (res == FALSE)
-	{
-		coDynamicString str;
-		coDumpLastOsError(str);
-		coERROR("Failed to read from the file " << GetDebugName() << ": " << str);
-		return false;
-	}
-	_readSize8 = readSize8;
-	return true;
-}
-
 coResult coFileAccess::GetTime(coUint64& _creationTime, coUint64& _lastAccessTime, coUint64& _lastWriteTime) const
 {
 	const HANDLE& handle = static_cast<const HANDLE&>(impl);
@@ -179,19 +144,4 @@ void coFileAccess::OnImplDestruct()
 void coFileAccess::OnImplConstruct()
 {
 	impl = INVALID_HANDLE_VALUE;
-}
-
-coResult coFileAccess::Flush()
-{
-	coTRY(mode == Mode::write, nullptr);
-	HANDLE& handle = static_cast<HANDLE&>(impl);
-	const BOOL res = ::FlushFileBuffers(handle);
-	if (res == FALSE)
-	{
-		coDynamicString s;
-		coDumpLastOsError(s);
-		coERROR("Failed to flush the file " << GetDebugName() << "("<<s<<")");
-		return false;
-	}
-	return true;
 }

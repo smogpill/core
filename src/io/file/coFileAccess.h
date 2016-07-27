@@ -31,10 +31,7 @@ public:
 	coResult GetSize8(coInt64& _size8) const;
 	Mode GetMode() const { return mode; }
 	const coConstString& GetName() const;
-	coResult Write(const coByte* _data, coUint _size8);
-	coResult Read(coUint& _readSize8, coByte* _data, coUint _size8);
 	coResult GetTime(coUint64& _creationTime, coUint64& _lastAccessTime, coUint64& _lastWriteTime) const;
-	coResult Flush();
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;

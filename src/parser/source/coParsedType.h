@@ -18,4 +18,5 @@ public:
 	coType* type;
 	coDynamicArray<coParsedField*> parsedFields;
 	coDynamicString superTypeName;
+	coDynamicString sourcePath;
 };

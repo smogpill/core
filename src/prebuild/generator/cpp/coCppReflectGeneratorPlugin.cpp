@@ -6,8 +6,9 @@
 #include "lang/result/coResult_f.h"
 #include "lang/reflect/coType.h"
 #include "io/path/coPath_f.h"
-#include "io/file/coFileAccess.h"
+#include "io/file/coFileStreamBuffer.h"
 #include "io/dir/coDirectory_f.h"
+#include "io/stream/coStringOutputStream.h"
 #include "parser/project/coParsedProject.h"
 #include "parser/source/coParsedType.h"
 #include "memory/allocator/coLocalAllocator.h"
@@ -38,15 +39,50 @@ coResult coCppReflectGeneratorPlugin::Generate(const coParsedProject& _parsedPro
 
 coResult coCppReflectGeneratorPlugin::GenerateTypes(const coParsedProject& _parsedProject)
 {
+	coLocalAllocator localAllocator(4048);
+
+	// Paths
+	coDynamicString cppPath(localAllocator);
+	{
+		coJoinPaths(cppPath, genDir, "allTypes.cpp");
+		coASSERT(coIsPathNormalized(cppPath));
+	}
+
+	coFileStreamBuffer streamBuffer;
+	{
+		coFileStreamBuffer::InitConfig c;
+		c.path = cppPath;
+		c.mode = coFileStreamBuffer::write;
+		coTRY(streamBuffer.Init(c), "Failed to open for writing: " << streamBuffer.GetDebugName());
+	}
+
+	coStringOutputStream stream;
+	{
+		coStringOutputStream::InitConfig c;
+		c.buffer = &streamBuffer;
+		coTRY(stream.Init(c), nullptr);
+	}
+
+	stream << "// Generated\n";
+	stream << "#include \"" << projectGenerator->GetPrecompiledHeaderRelativepath() << "\"\n";
+	stream << "\n";
+
+	coDynamicString cxxPath(localAllocator);
+
 	for (const coParsedType* parsedType : _parsedProject.parsedTypes)
 	{
 		coASSERT(parsedType);
-		coTRY(GenerateType(*parsedType), "Failed to generate type: " << parsedType->GetDebugName());
+		coTRY(GenerateType(cxxPath, *parsedType), "Failed to generate type: " << parsedType->GetDebugName());
+		stream << "#include \"" << cxxPath << "\"\n";
 	}
+
+	stream.Flush();
+	coTRY(stream.GetResult(), "Failed to write to stream: " << stream.GetDebugName());
+
 	return true;
 }
 
-coResult coCppReflectGeneratorPlugin::GenerateType(const coParsedType& _parsedType)
+coResult coCppReflectGeneratorPlugin::GenerateType(coDynamicString& _outPath, const coParsedType& _parsedType)
 {
 	const coType* type = _parsedType.type;
 	coASSERT(type);
@@ -55,23 +91,35 @@ coResult coCppReflectGeneratorPlugin::GenerateType(const coParsedType& _parsedTy
 	coLocalAllocator localAllocator(4048);
 
 	// Paths
-	coDynamicString cxxPath(localAllocator);
 	{
 		coDynamicString commonPath(localAllocator);
 		coJoinPaths(commonPath, genDir, type->name);
 
 		// Cxx path
-		cxxPath << commonPath << ".cxx";
-		coASSERT(coIsPathNormalized(cxxPath));
+		_outPath << commonPath << ".cxx";
+		coASSERT(coIsPathNormalized(_outPath));
 	}
 
-	coFileAccess cxxAccess;
+	coFileStreamBuffer streamBuffer;
 	{
-		coFileAccess::InitConfig config;
-		config.mode = coFileAccess::write;
-		config.path = cxxPath;
-		coTRY(cxxAccess.Init(config), "Failed to open for writing: "<<cxxAccess.GetDebugName());
+		coFileStreamBuffer::InitConfig c;
+		c.path = _outPath;
+		c.mode = coFileStreamBuffer::write;
+		coTRY(streamBuffer.Init(c), "Failed to open for writing: " << streamBuffer.GetDebugName());
 	}
+
+	coStringOutputStream stream;
+	{
+		coStringOutputStream::InitConfig c;
+		c.buffer = &streamBuffer;
+		coTRY(stream.Init(c), nullptr);
+	}
+
+	stream << "// Generated\n";
+	stream << "#include \"" << _parsedType.sourcePath << "\"\n";
+
+	stream.Flush();
+	coTRY(stream.GetResult(), "Failed to write to stream: "<<stream.GetDebugName());
 
 	return true;
 }

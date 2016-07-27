@@ -11,7 +11,7 @@ public:
 	coStreamBuffer();
 	virtual ~coStreamBuffer();
 
-	coResult GetResult() const { return result; }
+	coResult GetResult() const;
 	virtual void Reset();
 	virtual void Flush();
 
@@ -26,15 +26,15 @@ public:
 	coUint Read(coByte& _v);
 	coUint Read(coByte* _data, coUint _size8);
 
-	coByte* begin() const { return cursor; }
+	/*coByte* begin() const { return cursor; }
 	const coByte* cbegin() const { return cursor; }
 	coByte* end() const { return windowEnd; }
-	const coByte* cend() const { return windowEnd; }
+	const coByte* cend() const { return windowEnd; }*/
 
 	coBool Refill();
 
 protected:
-	typedef coBool(coStreamBuffer::*RefillFunc) ();
+	typedef coBool (coStreamBuffer::*RefillFunc) ();
 
 	coBool RefillError();
 

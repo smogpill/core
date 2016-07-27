@@ -116,6 +116,11 @@ coStringOutputStream& coStringOutputStream::operator<< (const coConstString& _s)
 	return *this;
 }
 
+coStringOutputStream& coStringOutputStream::operator<<(const coChar* _s)
+{
+	return operator<<(coConstString(_s));
+}
+
 coStringOutputStream& coStringOutputStream::operator<< (const void* _v)
 {
 	coChar s[32];

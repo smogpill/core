@@ -10,6 +10,12 @@ class coFileStreamBuffer : public coStreamBuffer
 {
 	coDECLARE_SUPER(coStreamBuffer);
 public:
+	enum Mode
+	{
+		read,
+		write
+	};
+
 	coFileStreamBuffer();
 	~coFileStreamBuffer();
 
@@ -17,7 +23,8 @@ public:
 	{
 	public:
 		InitConfig();
-		coFileAccess* fileAccess;
+		coConstString path;
+		Mode mode;
 	};
 
 	virtual void Reset() override;
@@ -29,7 +36,14 @@ protected:
 private:
 	coBool RefillRead();
 	coBool RefillWrite();
+	void OnImplConstruct();
+	void OnImplDestruct();
+	coResult OnImplInit(const InitConfig& _config);
+	coResult ImplWrite(const coByte* _data, coUint _size8);
+	coResult ImplRead(coUint& _readSize8, coByte* _data, coUint _size8);
+	coResult ImplFlush();
 
-	coFileAccess* fileAccess;
+	Mode mode;
 	coDynamicArray<coByte> buffer;
+	void* impl;
 };

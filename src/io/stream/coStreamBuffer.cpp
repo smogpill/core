@@ -44,6 +44,14 @@ void coStreamBuffer::Reset()
 #endif
 }
 
+coResult coStreamBuffer::GetResult() const
+{
+#ifdef coDEBUG
+	result.tested = true;
+#endif
+	return result;
+}
+
 void coStreamBuffer::Flush()
 {
 

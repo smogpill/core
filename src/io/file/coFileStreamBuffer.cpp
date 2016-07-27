@@ -6,15 +6,25 @@
 #include "lang/result/coResult_f.h"
 #include "lang/reflect/coNumericLimits.h"
 
-coFileStreamBuffer::coFileStreamBuffer()
-	: fileAccess(nullptr)
-{
+const coUint co_bufferSize8 = 65536;
 
+coFileStreamBuffer::coFileStreamBuffer()
+	: mode(Mode::read)
+	, impl(nullptr)
+{
+	OnImplConstruct();
 }
 
 coFileStreamBuffer::~coFileStreamBuffer()
 {
 	Flush();
+	OnImplDestruct();
+}
+
+coFileStreamBuffer::InitConfig::InitConfig()
+	: mode(Mode::read)
+{
+
 }
 
 coResult coFileStreamBuffer::OnInit(const coObject::InitConfig& _config)
@@ -22,10 +32,38 @@ coResult coFileStreamBuffer::OnInit(const coObject::InitConfig& _config)
 	coTRY(Super::OnInit(_config), nullptr);
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
 
-	fileAccess = config.fileAccess;
-	coTRY(fileAccess, nullptr);
+	if (config.debugName == "")
+		SetDebugName(config.path);
 
+	mode = config.mode;
 
+	coTRY(OnImplInit(config), nullptr);
+
+	coResize(buffer, co_bufferSize8);
+
+	windowBegin = buffer.data;
+	windowEnd = coEnd(buffer);
+	cursor = windowBegin;
+
+	switch (mode)
+	{
+	case coFileAccess::Mode::read:
+	{
+		refill = static_cast<RefillFunc>(&coFileStreamBuffer::RefillRead);
+	}
+	break;
+	case coFileAccess::Mode::write:
+	{
+		refill = static_cast<RefillFunc>(&coFileStreamBuffer::RefillWrite);
+	}
+	break;
+	default:
+	{
+		coERROR("File access not supported for streaming: " << mode);
+		SetErrorMode();
+	}
+	break;
+	}
 
 	return true;
 }
@@ -40,18 +78,15 @@ void coFileStreamBuffer::Reset()
 void coFileStreamBuffer::Flush()
 {
 	Super::Flush();
-	if (fileAccess)
+	if (mode == coFileAccess::Mode::write)
 	{
-		const coFileAccess::Mode mode = fileAccess->GetMode();
-		if (mode == coFileAccess::Mode::write)
+		if (cursor != windowBegin)
 		{
 			coASSERT(cursor - windowBegin < coNumericLimits<coUint>::Max());
 			const coUint remainingSize8 = static_cast<coUint>(cursor - windowBegin);
-			result &= fileAccess->Write(buffer.data, remainingSize8);
+			result &= ImplWrite(buffer.data, remainingSize8);
 			cursor = windowBegin;
 		}
-
-		result &= fileAccess->Flush();
 	}
 }
 
@@ -59,14 +94,14 @@ coBool coFileStreamBuffer::RefillRead()
 {
 	cursor = windowBegin;
 	coUint readSize8;
-	if (fileAccess->Read(readSize8, buffer.data, buffer.count))
+	if (ImplRead(readSize8, buffer.data, buffer.count))
 	{
 		windowEnd = windowBegin + readSize8;
 		return true;
 	}
 	else
 	{
-		coERROR("Failed to read more data from the file " << fileAccess->GetDebugName());
+		coERROR("Failed to read more data from the file " << GetDebugName());
 		SetErrorMode();
 		return false;
 	}
@@ -75,13 +110,13 @@ coBool coFileStreamBuffer::RefillRead()
 coBool coFileStreamBuffer::RefillWrite()
 {
 	cursor = windowBegin;
-	if (fileAccess->Write(buffer.data, buffer.count))
+	if (ImplWrite(buffer.data, buffer.count))
 	{
 		return true;
 	}
 	else
 	{
-		coERROR("Failed to write data to the file " << fileAccess->GetDebugName());
+		coERROR("Failed to write data to the file " << GetDebugName());
 		SetErrorMode();
 		return false;
 	}

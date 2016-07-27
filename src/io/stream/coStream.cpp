@@ -20,6 +20,10 @@ coStream::InitConfig::InitConfig()
 coResult coStream::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
+	const InitConfig& config = static_cast<const InitConfig&>(_config);
+
+	buffer = config.buffer;
+	coTRY(buffer, nullptr);
 	return true;
 }
 
@@ -27,6 +31,12 @@ void coStream::Clear()
 {
 	if (buffer)
 		buffer->Reset();
+}
+
+void coStream::Flush()
+{
+	if (buffer)
+		buffer->Flush();
 }
 
 coResult coStream::GetResult() const

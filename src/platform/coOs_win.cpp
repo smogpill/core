@@ -6,6 +6,11 @@
 #include "container/string/coConstString16.h"
 #include "debug/log/coLog.h"
 
+coBool coLastOsErrorExists()
+{
+	return ::GetLastError() != 0;
+}
+
 void coClearLastOsError()
 {
 	::SetLastError(0);

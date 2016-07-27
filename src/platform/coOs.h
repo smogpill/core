@@ -4,6 +4,7 @@
 
 class coDynamicString;
 
+coBool coLastOsErrorExists();
 void coClearLastOsError();
 void coDumpLastOsError(coDynamicString& _str);
 void coDumpOsError(coUint _osError, coDynamicString& _str);

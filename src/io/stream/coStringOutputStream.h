@@ -24,6 +24,7 @@ public:
 	coStringOutputStream& operator<<(coFloat);
 	coStringOutputStream& operator<<(coFloat64);
 	coStringOutputStream& operator<<(const coConstString&);
+	coStringOutputStream& operator<<(const coChar*);
 	coStringOutputStream& operator<<(const void*);
 	coStringOutputStream& operator<<(coNullPtr);
 };

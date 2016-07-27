@@ -21,6 +21,7 @@ public:
 	virtual void Clear();
 	coResult GetResult() const;
 	coStreamBuffer* GetBuffer() const { return buffer; }
+	void Flush();
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
