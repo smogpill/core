@@ -26,4 +26,6 @@ class coType;
 
 #define coDECLARE_REFLECTED() \
 	coDEFINE_ATTRIBUTE(Reflected, true); \
-	const coType* GetType() const
+public: \
+	const coType* GetType() const; \
+private:
