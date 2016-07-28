@@ -5,12 +5,14 @@
 #include "prebuild/generator/coProjectGenerator.h"
 #include "lang/result/coResult_f.h"
 #include "lang/reflect/coType.h"
+#include "lang/reflect/coField.h"
 #include "io/path/coPath_f.h"
 #include "io/file/coFileStreamBuffer.h"
 #include "io/dir/coDirectory_f.h"
 #include "io/stream/coStringOutputStream.h"
 #include "parser/project/coParsedProject.h"
 #include "parser/source/coParsedType.h"
+#include "parser/source/coParsedField.h"
 #include "memory/allocator/coLocalAllocator.h"
 
 static const coConstString co_genPath = "gen";
@@ -117,9 +119,76 @@ coResult coCppReflectGeneratorPlugin::GenerateType(coDynamicString& _outPath, co
 
 	stream << "// Generated\n";
 	stream << "#include \"" << _parsedType.sourcePath << "\"\n";
+	stream << "\n";
+
+	stream << "coType* co_CreateType()\n";
+	stream << "{\n";
+	
+	coTRY(WriteParsedType(stream, _parsedType, "\t"), "Failed to write type: "<<_parsedType.GetDebugName());
+
+	stream << "\treturn type;\n";
+	stream << "}\n";
 
 	stream.Flush();
 	coTRY(stream.GetResult(), "Failed to write to stream: "<<stream.GetDebugName());
 
+	return true;
+}
+
+coResult coCppReflectGeneratorPlugin::WriteSymbol(coStringOutputStream& _stream, const coSymbol& _symbol, const coConstString& _indentation)
+{
+	_stream << _indentation << "// Symbol\n";
+	_stream << _indentation << "type->id = 0;\n";
+	_stream << _indentation << "type->name = \"" << _symbol.name << "\";\n";
+	_stream << _indentation << "type->symbolFlags = 0;\n";
+	_stream << _indentation << "\n";
+	return true;
+}
+
+coResult coCppReflectGeneratorPlugin::WriteParsedType(coStringOutputStream& _stream, const coParsedType& _parsedType, const coConstString& _indentation)
+{
+	const coType* type = _parsedType.type;
+	coASSERT(type);
+
+	_stream << _indentation << "coType* type = new coType();\n";
+	_stream << _indentation << "\n";
+
+	// Symbol
+	coTRY(WriteSymbol(_stream, *type, "\t"), nullptr);
+
+	// Type
+	_stream << _indentation << "// Type\n";
+	_stream << _indentation << "type->size8 = sizeof(" << type->name << ");\n";
+	_stream << _indentation << "type->super = nullptr;\n";
+	_stream << _indentation << "\n";
+
+	// Fields
+	if (_parsedType.parsedFields.count)
+	{
+		_stream << _indentation << "// Fields\n";
+		_stream << _indentation << "coReserve(type->fields, " << _parsedType.parsedFields.count << ");\n";
+		_stream << _indentation << "\n";
+		for (const coParsedField* parsedField : _parsedType.parsedFields)
+		{
+			coASSERT(parsedField);
+			coTRY(WriteParsedField(_stream, *parsedField, _indentation), "Failed to write field: "<<parsedField->field->name);
+		}
+	}
+
+	return true;
+}
+
+coResult coCppReflectGeneratorPlugin::WriteParsedField(coStringOutputStream& _stream, const coParsedField& _parsedField, const coConstString& _indentation)
+{
+	const coField* field = _parsedField.field;
+	coASSERT(field);
+	_stream << _indentation << "// " << field->name << "\n";
+	_stream << _indentation << "{\n";
+	coDynamicString blockIndent = _indentation;
+	blockIndent << "\t";
+	coTRY(WriteSymbol(_stream, *field, blockIndent), nullptr);
+	_stream << _indentation << "}\n";
+	_stream << _indentation << "\n";
+	coASSERT(field);
 	return true;
 }

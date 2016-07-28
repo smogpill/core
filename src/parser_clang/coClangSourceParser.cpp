@@ -282,7 +282,7 @@ coResult coClangSourceParser::ParseSymbol(coSymbol& _symbol, const CXCursor& _cu
 
 	const CX_CXXAccessSpecifier access = clang_getCXXAccessSpecifier(_cursor);
 	if (access == CX_CXXPublic)
-		_symbol.symbolFlags |= coType::PUBLIC;
+		_symbol.symbolFlags |= coType::public_;
 	return true;
 }
 
