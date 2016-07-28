@@ -76,7 +76,7 @@ end
 
 workspace("core")
 	coSetSolutionDefaults()
-	includedirs { "src" }
+	includedirs { "src", "build/gen" }
 
 	include("src/lang")
 	include("src/debug")

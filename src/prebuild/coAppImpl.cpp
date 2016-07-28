@@ -109,8 +109,13 @@ coResult coAppImpl::OnInit(const coObject::InitConfig& _config)
 coResult coAppImpl::OnStart()
 {
 	coParsedProject parsedProject;
+	coINFO("Parsing project...");
 	coTRY(ParseProject(parsedProject), "Failed to parse the project: "<<projectRelativePath);
+	coINFO("Parsing project done.");
+	coINFO("Generating source files...");
 	coTRY(GenerateProject(parsedProject), "Failed to generate the project: " << projectRelativePath);
+	coINFO("Generating source files done.");
+
 	return true;
 }
 

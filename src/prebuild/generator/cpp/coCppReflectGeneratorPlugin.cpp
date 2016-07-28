@@ -51,7 +51,7 @@ coResult coCppReflectGeneratorPlugin::GenerateTypes(const coParsedProject& _pars
 	// Paths
 	coDynamicString cppPath(localAllocator);
 	{
-		coJoinPaths(cppPath, projectGenDir, "allTypes.cpp");
+		coJoinPaths(cppPath, projectGenDir, "allTypes.cxx");
 		coASSERT(coIsPathNormalized(cppPath));
 	}
 
@@ -71,7 +71,7 @@ coResult coCppReflectGeneratorPlugin::GenerateTypes(const coParsedProject& _pars
 	}
 
 	stream << "// Generated\n";
-	stream << "#include \"" << projectGenerator->GetPrecompiledHeaderRelativePath() << "\"\n";
+	//stream << "#include \"" << projectGenerator->GetPrecompiledHeaderRelativePath() << "\"\n";
 	stream << "\n";
 
 	coDynamicString cxxPath(localAllocator);
@@ -142,6 +142,9 @@ coResult coCppReflectGeneratorPlugin::GenerateType(coDynamicString& _relativePat
 
 	stream << "\treturn type;\n";
 	stream << "}\n";
+	stream << "\n";
+
+	stream << "const coType* " << type->name << "::GetType() const { return nullptr; }\n";
 
 	stream.Flush();
 	coTRY(stream.GetResult(), "Failed to write to stream: "<<stream.GetDebugName());

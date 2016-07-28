@@ -35,5 +35,5 @@ public:
 #define coTEST(_testCaseName_, _testName_) _coTEST(_testCaseName_, _testName_, coTest)
 #define coFIXTURE_TEST(_fixtureClassName_, _testName_) _coTEST(_fixtureClassName_, _testName_, _fixtureClassName_)
 
-#define coEXPECT(_cond_) coASSERT(_cond_)
-#define coEXPECT_FATAL(_cond_) coASSERT(_cond_)
+#define coEXPECT(_cond_) coSAFE_SCOPE( if(!(_cond_) && coReturnTrue()){ coBREAK(); } )
+

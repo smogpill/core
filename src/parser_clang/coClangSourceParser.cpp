@@ -102,6 +102,7 @@ coResult coClangSourceParser::InitPrecompiledHeader(const InitConfig& _config)
 	coDynamicString filePath(localAllocator);
 	{
 		filePath = _config.precompiledHeaderSourcePath;
+		coTRY(coIsFile(filePath), "Not a file: " << filePath);
 		coNullTerminate(filePath);
 	}
 

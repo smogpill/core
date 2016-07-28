@@ -41,6 +41,7 @@ void coObject::Stop()
 
 coResult coObject::OnInit(const InitConfig& _config)
 {
+	(void)_config;
 #ifdef coDEBUG
 	debugName = _config.debugName;
 #endif
@@ -67,6 +68,7 @@ const coConstString& coObject::GetDebugName() const
 
 void coObject::SetDebugName(const coConstString& _s)
 {
+	(void)_s;
 #ifdef coDEBUG
 	debugName = _s;
 #endif
