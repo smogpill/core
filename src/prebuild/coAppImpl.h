@@ -27,7 +27,9 @@ private:
 	coResult ParseProject(coParsedProject& _parsedProject);
 	coResult GenerateProject(const coParsedProject& _parsedProject);
 
-	coDynamicString projectDir;
-	coDynamicString outputDir;
+	coDynamicString srcReferenceDir;
+	coDynamicString outReferenceDir;
+	coDynamicString projectRelativePath;
+	coDynamicString pchRelativePath;
 	coProjectParser projectParser;
 };

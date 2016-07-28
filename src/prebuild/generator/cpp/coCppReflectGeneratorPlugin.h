@@ -23,9 +23,10 @@ protected:
 private:
 	coResult GenerateTypes(const coParsedProject& _parsedProject);
 	coResult GenerateType(coDynamicString& _outPath, const coParsedType& _parsedType);
-	coResult WriteSymbol(coStringOutputStream& _stream, const coSymbol& _symbol, const coConstString& _indentation);
+	coResult WriteSymbol(coStringOutputStream& _stream, const coSymbol& _symbol, const coConstString& _indentation, const coConstString& _prefix);
 	coResult WriteParsedType(coStringOutputStream& _stream, const coParsedType& _parsedType, const coConstString& _indentation);
 	coResult WriteParsedField(coStringOutputStream& _stream, const coParsedField& _parsedField, const coConstString& _indentation);
 
-	coDynamicString genDir;
+	coDynamicString projectGenDir;
+	coDynamicString typesGenDir;
 };

@@ -11,8 +11,6 @@
 #include "app/coProject_f.h"
 #include "parser/project/coParsedProject.h"
 
-const coConstString co_pchPath = "pch.h";
-
 coAppImpl::coAppImpl()
 {
 
@@ -34,31 +32,60 @@ coResult coAppImpl::ParseArgs(const InitConfig& _config)
 
 	{
 		coCommandLineArgs::ArgConfig c;
-		c.name = "projectDir";
+		c.name = "srcReferenceDir";
 		coTRY(argParser.Add(c), nullptr);
 	}
 
 	{
 		coCommandLineArgs::ArgConfig c;
-		c.name = "outputDir";
+		c.name = "outReferenceDir";
+		coTRY(argParser.Add(c), nullptr);
+	}
+
+	{
+		coCommandLineArgs::ArgConfig c;
+		c.name = "projectRelativePath";
+		coTRY(argParser.Add(c), nullptr);
+	}
+
+	{
+		coCommandLineArgs::ArgConfig c;
+		c.name = "pchRelativePath";
+		//c.optional = true;
 		coTRY(argParser.Add(c), nullptr);
 	}
 	
 	coTRY(argParser.Parse(_config.argv, _config.nbArgs), nullptr);
 
-	// Project dir
+	// Src reference dir
 	{
-		projectDir = argParser.GetArgValue("projectDir");
-		coNormalizePath(projectDir);
-		coTRY(projectDir.count, "Project path is null");
-		coTRY(coIsDirectory(projectDir), "Path is not a directory: " << projectDir);
+		srcReferenceDir = argParser.GetArgValue("srcReferenceDir");
+		coNormalizePath(srcReferenceDir);
+		coTRY(srcReferenceDir.count, "Src reference dir is null");
+		coTRY(coIsDirectory(srcReferenceDir), "Path is not a directory: " << srcReferenceDir);
 	}
 
-	// Output dir
+	// Out reference dir
 	{
-		outputDir = argParser.GetArgValue("outputDir");
-		coNormalizePath(outputDir);
-		coTRY(outputDir.count, "The output dir is null");
+		outReferenceDir = argParser.GetArgValue("outReferenceDir");
+		coNormalizePath(outReferenceDir);
+		coTRY(outReferenceDir.count, "The out reference dir is null");
+	}
+
+	// Project path
+	{
+		projectRelativePath = argParser.GetArgValue("projectRelativePath");
+		coNormalizePath(projectRelativePath);
+		coTRY(projectRelativePath.count, "The project path is null");
+	}
+
+	// Pch path
+	{
+		pchRelativePath = argParser.GetArgValue("pchRelativePath");
+		if (pchRelativePath != "")
+		{
+			coNormalizePath(pchRelativePath);
+		}
 	}
 
 	return true;
@@ -82,18 +109,19 @@ coResult coAppImpl::OnInit(const coObject::InitConfig& _config)
 coResult coAppImpl::OnStart()
 {
 	coParsedProject parsedProject;
-	coTRY(ParseProject(parsedProject), "Failed to parse the project: "<<projectDir);
-	coTRY(GenerateProject(parsedProject), "Failed to generate the project: " << projectDir);
+	coTRY(ParseProject(parsedProject), "Failed to parse the project: "<<projectRelativePath);
+	coTRY(GenerateProject(parsedProject), "Failed to generate the project: " << projectRelativePath);
 	return true;
 }
 
 coResult coAppImpl::ParseProject(coParsedProject& _parsedProject)
 {
 	coProjectParser::ParseConfig parseConfig;
-	parseConfig.projectDir = projectDir;
-	parseConfig.outDir = outputDir;
-	parseConfig.precompiledHeaderRelativePath = co_pchPath;
-	coTRY(projectParser.Parse(_parsedProject, parseConfig), "Failed to parse the project: " << projectDir);
+	parseConfig.srcReferenceDir = srcReferenceDir;
+	parseConfig.outReferenceDir = outReferenceDir;
+	parseConfig.projectRelativePath = projectRelativePath;
+	parseConfig.precompiledHeaderPath = pchRelativePath;
+	coTRY(projectParser.Parse(_parsedProject, parseConfig), "Failed to parse the project: " << projectRelativePath);
 
 	return true;
 }
@@ -108,10 +136,15 @@ coResult coAppImpl::GenerateProject(const coParsedProject& _parsedProject)
 
 	coProjectGenerator projectGenerator;
 	{
+		coHACK("hard coded paths");
 		coProjectGenerator::InitConfig c;
-		c.projectDir = projectDir;
+		c.outReferenceDir = outReferenceDir;
+		c.projectRelativePath = projectRelativePath;
+		c.srcReferenceDir = srcReferenceDir;
+		c.precompiledHeaderRelativePath = pchRelativePath;
+		/*c.projectDir = projectDir;
 		c.outDir = outputDir;
-		c.precompiledHeaderRelativePath = co_pchPath;
+		c.precompiledHeaderPath = co_pchPath;*/
 		c.plugins = {&cppReflectPlugin};
 		coTRY(projectGenerator.Init(c), "Failed to init the project generator.");
 	}

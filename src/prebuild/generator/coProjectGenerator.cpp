@@ -23,15 +23,25 @@ coResult coProjectGenerator::OnInit(const coObject::InitConfig& _config)
 		plugin->_SetProjectGenerator(*this);
 	}
 
-	// Check project dir
-	projectDir = config.projectDir;
-	coTRY(coIsPathNormalized(projectDir), nullptr);
-	coTRY(coIsDirectory(projectDir), "Not a dir: " << projectDir);
+	outReferenceDir = config.outReferenceDir;
+	coTRY(coIsPathNormalized(outReferenceDir), nullptr);
+	coTRY(coCreateDirsIfMissing(outReferenceDir), "Failed to create the output directory: " << outReferenceDir);
+	srcReferenceDir = config.srcReferenceDir;
+	coTRY(coIsPathNormalized(srcReferenceDir), nullptr);
+	coTRY(coIsDirectory(srcReferenceDir), "The source reference path is not a directory: " << srcReferenceDir);
+	projectRelativePath = config.projectRelativePath;
+	coTRY(coIsPathNormalized(projectRelativePath), nullptr);
+	precompiledHeaderRelativePath = config.precompiledHeaderRelativePath;
 
-	// Check out dir
-	outDir = config.outDir;
-	coTRY(coIsPathNormalized(outDir), nullptr);
-	coTRY(coCreateDirsIfMissing(outDir), "Failed to create the output directory: " << outDir);
+	// Check project dir
+// 	projectDir = config.projectDir;
+// 	coTRY(coIsPathNormalized(projectDir), nullptr);
+// 	coTRY(coIsDirectory(projectDir), "Not a dir: " << projectDir);
+// 
+// 	// Check out dir
+// 	outDir = config.outDir;
+// 	coTRY(coIsPathNormalized(outDir), nullptr);
+// 	coTRY(coCreateDirsIfMissing(outDir), "Failed to create the output directory: " << outDir);
 
 	// Check precompiled header
 	precompiledHeaderRelativePath = config.precompiledHeaderRelativePath;

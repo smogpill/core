@@ -15,23 +15,26 @@ public:
 	{
 	public:
 		InitConfig();
-		coConstString projectDir;
-		coConstString outDir;
+		coConstString outReferenceDir;
+		coConstString srcReferenceDir;
+		coConstString projectRelativePath;
 		coConstString precompiledHeaderRelativePath;
 		coArray<coProjectGeneratorPlugin*> plugins;
 	};
 
 	coResult Generate(const coParsedProject& _parsedProject);
 
-	const coConstString& GetProjectDir() const { return projectDir; }
-	const coConstString& GetOutDir() const { return outDir; }
-	const coConstString& GetPrecompiledHeaderRelativepath() const { return precompiledHeaderRelativePath; }
+	const coConstString& GetPrecompiledHeaderRelativePath() const { return precompiledHeaderRelativePath; }
+	const coConstString& GetOutReferenceDir() const { return outReferenceDir; }
+	const coConstString& GetSrcReferenceDir() const { return srcReferenceDir; }
+	const coConstString& GetProjectRelativePath() const { return projectRelativePath; }
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
-	coDynamicString projectDir;
-	coDynamicString outDir;
+	coDynamicString outReferenceDir;
+	coDynamicString srcReferenceDir;
+	coDynamicString projectRelativePath;
 	coDynamicString precompiledHeaderRelativePath;
 	coDynamicArray<coProjectGeneratorPlugin*> plugins;
 };

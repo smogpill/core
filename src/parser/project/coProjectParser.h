@@ -22,9 +22,10 @@ public:
 	public:
 		ParseConfig();
 
-		coConstString projectDir;
-		coConstString outDir;
-		coConstString precompiledHeaderRelativePath;
+		coConstString srcReferenceDir;
+		coConstString outReferenceDir;
+		coConstString projectRelativePath;
+		coConstString precompiledHeaderPath;
 	};
 
 	coProjectParser();
@@ -34,8 +35,10 @@ public:
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 private:
-	coResult ParseSourceDir(coParsedProject& _out, const coConstString& _path);
-	coResult ParseSourceFile(coParsedProject& _out, const coConstString& _path);
+	coResult ParseSourceDir(coParsedProject& _out, const ParseConfig& _config, const coConstString& _relativePath);
+	coResult ParseSourceFile(coParsedProject& _out, const ParseConfig& _config, const coConstString& _relativePath);
 
+	coDynamicString srcProjectDir;
+	coDynamicString outProjectDir;
 	coSourceParser* sourceParser;
 };

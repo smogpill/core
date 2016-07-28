@@ -9,6 +9,7 @@
 #include "io/dir/coDirectory_f.h"
 #include "io/path/coPath_f.h"
 #include "parser/source/coSourceParser.h"
+#include "parser/source/coParsedType.h"
 
 coProjectParser::coProjectParser()
 	: sourceParser(nullptr)
@@ -35,13 +36,19 @@ coResult coProjectParser::OnInit(const coObject::InitConfig& _config)
 
 coResult coProjectParser::Parse(coParsedProject& _out, const ParseConfig& _config)
 {
-	coTRY(coCreateDirsIfMissing(_config.outDir), "Failed to create output directory: " << _config.outDir);
+	coTRY(coIsPathNormalized(_config.srcReferenceDir), nullptr);
+	coJoinPaths(srcProjectDir, _config.srcReferenceDir, _config.projectRelativePath);
+	coTRY(coIsDirectory(srcProjectDir), "Failed to find the project source dir: " << srcProjectDir);
+
+	coTRY(coIsPathNormalized(_config.outReferenceDir), nullptr);
+	coJoinPaths(outProjectDir, _config.outReferenceDir, _config.projectRelativePath);
+	coTRY(coCreateDirsIfMissing(outProjectDir), "Failed to create output directory: " << outProjectDir);
 
 	// Build the PCH path
 	coDynamicString pchPath;
-	if (_config.precompiledHeaderRelativePath != "")
+	if (_config.precompiledHeaderPath != "")
 	{
-		coJoinPaths(pchPath, _config.projectDir, _config.precompiledHeaderRelativePath);
+		coJoinPaths(pchPath, _config.srcReferenceDir, _config.precompiledHeaderPath);
 		coTRY(coIsFile(pchPath), "Failed to find: " << pchPath);
 	}
 
@@ -51,26 +58,28 @@ coResult coProjectParser::Parse(coParsedProject& _out, const ParseConfig& _confi
 	coDEFER() { delete sourceParser; sourceParser = nullptr; };
 	{
 		coSourceParser::InitConfig config;
-		config.buildDir = _config.outDir;
+		config.buildDir = outProjectDir;
 		config.precompiledHeaderSourcePath = pchPath;
-		coHACK("Hardcoded paths");
-		config.includeDirs = { "J:/CODE/core/src" };
+		config.includeDirs = { _config.srcReferenceDir };
 		coTRY(sourceParser->Init(config), nullptr);
 	}
 	
 	// Parse sources
-	coTRY(ParseSourceDir(_out, _config.projectDir), nullptr);
+	coTRY(ParseSourceDir(_out, _config, _config.projectRelativePath), nullptr);
 
 	return true;
 }
 
-coResult coProjectParser::ParseSourceDir(coParsedProject& _out, const coConstString& _path)
+coResult coProjectParser::ParseSourceDir(coParsedProject& _out, const ParseConfig& _config, const coConstString& _relativePath)
 {
+	coDynamicString absolutePath;
+	coJoinPaths(absolutePath, _config.srcReferenceDir, _relativePath);
+
 	coDirectoryAccess dirAccess;
 	{
 		coDirectoryAccess::InitConfig c;
-		c.path = _path;
-		coTRY(dirAccess.Init(c), "Failed to access:" << _path);
+		c.path = absolutePath;
+		coTRY(dirAccess.Init(c), "Failed to access:" << absolutePath);
 	}
 
 	for (const auto& e : dirAccess)
@@ -84,8 +93,8 @@ coResult coProjectParser::ParseSourceDir(coParsedProject& _out, const coConstStr
 		case coPathStatus::Status::directory:
 		{
 			coDynamicString p;
-			coJoinPaths(p, _path, e.name);
-			coTRY(ParseSourceDir(_out, p), "Failed to parse the directory: " << p);
+			coJoinPaths(p, _relativePath, e.name);
+			coTRY(ParseSourceDir(_out, _config, p), "Failed to parse the directory: " << p);
 			break;
 		}
 		case coPathStatus::Status::regularFile:
@@ -95,8 +104,8 @@ coResult coProjectParser::ParseSourceDir(coParsedProject& _out, const coConstStr
 			if (ext == ".h")
 			{
 				coDynamicString p;
-				coJoinPaths(p, _path, e.name);
-				coTRY(ParseSourceFile(_out, p), "Failed to parse the source file: " << p);
+				coJoinPaths(p, _relativePath, e.name);
+				coTRY(ParseSourceFile(_out, _config, p), "Failed to parse the source file: " << p);
 			}
 			break;
 		}
@@ -106,12 +115,21 @@ coResult coProjectParser::ParseSourceDir(coParsedProject& _out, const coConstStr
 	return true;
 }
 
-coResult coProjectParser::ParseSourceFile(coParsedProject& _out, const coConstString& _path)
+coResult coProjectParser::ParseSourceFile(coParsedProject& _out, const ParseConfig& _config, const coConstString& _relativePath)
 {
+	coDynamicString absolutePath;
+	coJoinPaths(absolutePath, _config.srcReferenceDir, _relativePath);
+
 	coSourceParser::ParseConfig config;
-	config.filePath = _path;
+	config.filePath = absolutePath;
 	coSourceParser::ParseResult result;
-	result.parsedTypes = &_out.parsedTypes;
+	coDynamicArray<coParsedType*> parsedTypes;
+	result.parsedTypes = &parsedTypes;
 	coTRY(sourceParser->Parse(result, config), nullptr);
+	for (coParsedType* parsedType : parsedTypes)
+	{
+		parsedType->sourcePath = _relativePath;
+	}
+	coPushBackArray(_out.parsedTypes, parsedTypes);
 	return true;
 }

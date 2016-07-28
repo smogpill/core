@@ -89,7 +89,7 @@ coResult coFileStreamBuffer::OnImplInit(const InitConfig& _config)
 	{
 		coDynamicString str;
 		coDumpLastOsError(str);
-		coERROR("Failed to open the file: " << str);
+		coERROR("Failed to open the file: " << _config.path << " (" << str << ")");
 		return false;
 	}
 	coClearLastOsError(); // CreateFile can generate errors even if it succeeds (by design).

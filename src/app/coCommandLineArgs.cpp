@@ -83,11 +83,12 @@ coResult coCommandLineArgs::ParseRawArg(const coConstString& _rawArg)
 	if (isOption)
 	{
 		const coBool isLongName = _rawArg[1] == '-';
-		coConstString rawArgPrefixRemoved = isLongName ? &_rawArg[2] : &_rawArg[1];
+		coConstString rawArgPrefixRemoved;
+		coLeftStrip(rawArgPrefixRemoved, _rawArg, "-");
 
 		coDynamicArray<coConstString> tokens;
 		coSplit(tokens, rawArgPrefixRemoved, "=");
-		coTRY(tokens.count >= 1, "Invalid option: " << _rawArg);
+		coTRY(tokens.count >= 1 && tokens.count <= 2, "Invalid option: " << _rawArg);
 
 		// Find the corresponding arg def
 		const ArgConfig* foundConfig = nullptr;
