@@ -49,3 +49,5 @@ private:
 	coDynamicString debugName;
 #endif
 };
+
+coDynamicString& operator<<(coDynamicString& _s, const coObject& _o);

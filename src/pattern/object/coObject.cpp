@@ -3,6 +3,7 @@
 #include "pattern/pch.h"
 #include "pattern/object/coObject.h"
 #include "lang/result/coResult_f.h"
+#include "lang/reflect/coType.h"
 
 coObject::coObject()
 	: objectState(ObjectState::none)
@@ -72,4 +73,26 @@ void coObject::SetDebugName(const coConstString& _s)
 #ifdef coDEBUG
 	debugName = _s;
 #endif
+}
+
+coDynamicString& operator<<(coDynamicString& _s, const coObject& _o)
+{
+	const coConstString& debugName = _o.GetDebugName();
+	if (debugName != "")
+	{
+		_s << debugName;
+	}
+	else
+	{
+		const coType* type = _o.GetType();
+		if (type)
+		{
+			_s << "<" << type->name << ">";
+		}
+		else
+		{
+			_s << "<unknown>";
+		}
+	}
+	return _s;
 }

@@ -25,9 +25,11 @@ public:
 	coResult Generate(const coParsedProject& _parsedProject);
 
 	const coConstString& GetPrecompiledHeaderRelativePath() const { return precompiledHeaderRelativePath; }
+	const coArray<coDynamicString*> GetGeneratedEntryPaths() const { return generatedEntryPaths; }
 	const coConstString& GetOutReferenceDir() const { return outReferenceDir; }
 	const coConstString& GetSrcReferenceDir() const { return srcReferenceDir; }
 	const coConstString& GetProjectRelativePath() const { return projectRelativePath; }
+	void AddGeneratedEntryPath(const coConstString& _path);
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
@@ -37,4 +39,5 @@ protected:
 	coDynamicString projectRelativePath;
 	coDynamicString precompiledHeaderRelativePath;
 	coDynamicArray<coProjectGeneratorPlugin*> plugins;
+	coDynamicArray<coDynamicString*> generatedEntryPaths;
 };

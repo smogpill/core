@@ -57,10 +57,21 @@ coResult coProjectGenerator::OnInit(const coObject::InitConfig& _config)
 coResult coProjectGenerator::Generate(const coParsedProject& _parsedProject)
 {
 	coASSERT(IsInitialized());
+	coASSERT(generatedEntryPaths.count == 0);
 
 	for (coProjectGeneratorPlugin* plugin : plugins)
 	{
 		coTRY(plugin->Generate(_parsedProject), "Failed to generate using the plugin: "<<plugin->GetDebugName());
 	}
+
+	coDeleteElementsAndClear(generatedEntryPaths);
+	
 	return true;
+}
+
+void coProjectGenerator::AddGeneratedEntryPath(const coConstString& _path)
+{
+	coDynamicString* path = new coDynamicString();
+	*path = _path;
+	coPushBack(generatedEntryPaths, path);
 }

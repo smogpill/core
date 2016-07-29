@@ -3,7 +3,8 @@
 #include "prebuild/pch.h"
 #include "prebuild/coAppImpl.h"
 #include "prebuild/generator/coProjectGenerator.h"
-#include "prebuild/generator/cpp/coCppReflectGeneratorPlugin.h"
+#include "prebuild/generator/plugins/coCppTypesGeneratorPlugin.h"
+#include "prebuild/generator/plugins/coMainEntryPointGeneratorPlugin.h"
 #include "lang/result/coResult_f.h"
 #include "io/path/coPathStatus.h"
 #include "io/path/coPath_f.h"
@@ -133,10 +134,16 @@ coResult coAppImpl::ParseProject(coParsedProject& _parsedProject)
 
 coResult coAppImpl::GenerateProject(const coParsedProject& _parsedProject)
 {
-	coCppReflectGeneratorPlugin cppReflectPlugin;
+	coCppTypesGeneratorPlugin cppTypesPlugin;
 	{
-		coCppReflectGeneratorPlugin::InitConfig c;
-		coTRY(cppReflectPlugin.Init(c), "Failed to init the plugin: "<<cppReflectPlugin.GetDebugName());
+		coCppTypesGeneratorPlugin::InitConfig c;
+		coTRY(cppTypesPlugin.Init(c), "Failed to init the plugin: " << cppTypesPlugin);
+	}
+
+	coMainEntryPointGeneratorPlugin mainEntryPointPlugin;
+	{
+		coMainEntryPointGeneratorPlugin::InitConfig c;
+		coTRY(mainEntryPointPlugin.Init(c), "Failed to init the plugin: " << mainEntryPointPlugin);
 	}
 
 	coProjectGenerator projectGenerator;
@@ -150,7 +157,7 @@ coResult coAppImpl::GenerateProject(const coParsedProject& _parsedProject)
 		/*c.projectDir = projectDir;
 		c.outDir = outputDir;
 		c.precompiledHeaderPath = co_pchPath;*/
-		c.plugins = {&cppReflectPlugin};
+		c.plugins = {&cppTypesPlugin, &mainEntryPointPlugin};
 		coTRY(projectGenerator.Init(c), "Failed to init the project generator.");
 	}
 	

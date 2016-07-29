@@ -1,7 +1,7 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "prebuild/pch.h"
-#include "prebuild/generator/cpp/coCppReflectGeneratorPlugin.h"
+#include "prebuild/generator/plugins/coCppTypesGeneratorPlugin.h"
 #include "prebuild/generator/coProjectGenerator.h"
 #include "lang/result/coResult_f.h"
 #include "lang/reflect/coType.h"
@@ -18,14 +18,14 @@
 static const coConstString co_genPath = "gen";
 static const coConstString co_typesPath = "types";
 
-coResult coCppReflectGeneratorPlugin::OnInit(const coObject::InitConfig& _config)
+coResult coCppTypesGeneratorPlugin::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 
 	return true;
 }
 
-coResult coCppReflectGeneratorPlugin::Generate(const coParsedProject& _parsedProject)
+coResult coCppTypesGeneratorPlugin::Generate(const coParsedProject& _parsedProject)
 {
 	coTRY(Super::Generate(_parsedProject), nullptr);
 
@@ -44,21 +44,24 @@ coResult coCppReflectGeneratorPlugin::Generate(const coParsedProject& _parsedPro
 	return true;
 }
 
-coResult coCppReflectGeneratorPlugin::GenerateTypes(const coParsedProject& _parsedProject)
+coResult coCppTypesGeneratorPlugin::GenerateTypes(const coParsedProject& _parsedProject)
 {
 	coLocalAllocator localAllocator(4048);
 
 	// Paths
-	coDynamicString cppPath(localAllocator);
+	coDynamicString mainCxxAbsolutePath(localAllocator);
+	coDynamicString mainCxxRelativePath(localAllocator);
 	{
-		coJoinPaths(cppPath, projectGenDir, "allTypes.cxx");
-		coASSERT(coIsPathNormalized(cppPath));
+		coJoinPaths(mainCxxRelativePath, projectGenerator->GetProjectRelativePath(), "allTypes.cxx");
+		coASSERT(coIsPathNormalized(mainCxxRelativePath));
+		coJoinPaths(mainCxxAbsolutePath, projectGenerator->GetOutReferenceDir(), mainCxxRelativePath);
+		coASSERT(coIsPathNormalized(mainCxxAbsolutePath));
 	}
 
 	coFileStreamBuffer streamBuffer;
 	{
 		coFileStreamBuffer::InitConfig c;
-		c.path = cppPath;
+		c.path = mainCxxAbsolutePath;
 		c.mode = coFileStreamBuffer::write;
 		coTRY(streamBuffer.Init(c), "Failed to open for writing: " << streamBuffer.GetDebugName());
 	}
@@ -86,10 +89,12 @@ coResult coCppReflectGeneratorPlugin::GenerateTypes(const coParsedProject& _pars
 	stream.Flush();
 	coTRY(stream.GetResult(), "Failed to write to stream: " << stream.GetDebugName());
 
+	projectGenerator->AddGeneratedEntryPath(mainCxxRelativePath);
+
 	return true;
 }
 
-coResult coCppReflectGeneratorPlugin::GenerateType(coDynamicString& _relativePath, const coParsedType& _parsedType)
+coResult coCppTypesGeneratorPlugin::GenerateType(coDynamicString& _relativePath, const coParsedType& _parsedType)
 {
 	const coType* type = _parsedType.type;
 	coASSERT(type);
@@ -147,12 +152,12 @@ coResult coCppReflectGeneratorPlugin::GenerateType(coDynamicString& _relativePat
 	stream << "const coType* " << type->name << "::GetType() const { return nullptr; }\n";
 
 	stream.Flush();
-	coTRY(stream.GetResult(), "Failed to write to stream: "<<stream.GetDebugName());
+	coTRY(stream.GetResult(), "Failed to write to stream: "<<stream);
 
 	return true;
 }
 
-coResult coCppReflectGeneratorPlugin::WriteSymbol(coStringOutputStream& _stream, const coSymbol& _symbol, const coConstString& _indentation, const coConstString& _prefix)
+coResult coCppTypesGeneratorPlugin::WriteSymbol(coStringOutputStream& _stream, const coSymbol& _symbol, const coConstString& _indentation, const coConstString& _prefix)
 {
 	_stream << _indentation << _prefix << "id = 0;\n";
 	_stream << _indentation << _prefix << "name = \"" << _symbol.name << "\";\n";
@@ -160,7 +165,7 @@ coResult coCppReflectGeneratorPlugin::WriteSymbol(coStringOutputStream& _stream,
 	return true;
 }
 
-coResult coCppReflectGeneratorPlugin::WriteParsedType(coStringOutputStream& _stream, const coParsedType& _parsedType, const coConstString& _indentation)
+coResult coCppTypesGeneratorPlugin::WriteParsedType(coStringOutputStream& _stream, const coParsedType& _parsedType, const coConstString& _indentation)
 {
 	const coType* type = _parsedType.type;
 	coASSERT(type);
@@ -188,7 +193,7 @@ coResult coCppReflectGeneratorPlugin::WriteParsedType(coStringOutputStream& _str
 	return true;
 }
 
-coResult coCppReflectGeneratorPlugin::WriteParsedField(coStringOutputStream& _stream, const coParsedField& _parsedField, const coConstString& _indentation)
+coResult coCppTypesGeneratorPlugin::WriteParsedField(coStringOutputStream& _stream, const coParsedField& _parsedField, const coConstString& _indentation)
 {
 	coLocalAllocator localAllocator(2048);
 

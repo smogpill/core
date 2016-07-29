@@ -11,7 +11,7 @@ class coDynamicString;
 class coStringOutputStream;
 class coSymbol;
 
-class coCppReflectGeneratorPlugin : public coProjectGeneratorPlugin
+class coCppTypesGeneratorPlugin : public coProjectGeneratorPlugin
 {
 	coDECLARE_SUPER(coProjectGeneratorPlugin);
 public:
