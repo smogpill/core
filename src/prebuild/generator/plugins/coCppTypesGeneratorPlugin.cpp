@@ -173,6 +173,7 @@ coResult coCppTypesGeneratorPlugin::WriteParsedType(coStringOutputStream& _strea
 	_stream << _indentation << "coType* type = new coType();\n";
 	coTRY(WriteSymbol(_stream, *type, "\t", "type->"), nullptr);
 	_stream << _indentation << "type->size8 = sizeof(" << type->name << ");\n";
+	_stream << _indentation << "type->alignment8 = alignof(" << type->name << ");\n";
 	_stream << _indentation << "type->super = nullptr;\n";
 
 	_stream << _indentation << "\n";

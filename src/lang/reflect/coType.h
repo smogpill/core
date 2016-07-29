@@ -16,6 +16,7 @@ public:
 	virtual ~coType();
 
 	coUint32 size8;
+	coUint32 alignment8;
 	coType* super;
 	CreateFunc* createFunc;
 	coDynamicArray<coField*> fields;

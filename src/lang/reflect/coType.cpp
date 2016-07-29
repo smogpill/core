@@ -9,6 +9,7 @@
 
 coType::coType()
 	: size8(0)
+	, alignment8(0)
 	, super(nullptr)
 	, createFunc(nullptr)
 {
