@@ -24,8 +24,17 @@ class coType;
 	coDECLARE_TYPE(_type_); \
 	coDECLARE_SUPER(_super_)
 
+#define _coDECLARE_REFLECTED_SHARED() \
+	coDEFINE_ATTRIBUTE(Reflected, true)
+
+#define coDECLARE_REFLECTED_NO_VIRTUAL() \
+	_coDECLARE_REFLECTED_SHARED(); \
+	public: \
+		const coType* GetType() const; \
+	private:
+
 #define coDECLARE_REFLECTED() \
-	coDEFINE_ATTRIBUTE(Reflected, true); \
-public: \
-	const coType* GetType() const; \
-private:
+	_coDECLARE_REFLECTED_SHARED(); \
+	public: \
+		virtual const coType* GetType() const; \
+	private:
