@@ -62,6 +62,7 @@ coResult coProjectParser::Parse(coParsedProject& _out, const ParseConfig& _confi
 		config.buildDir = outProjectDir;
 		config.precompiledHeaderSourcePath = pchPath;
 		coHACK("Direct assignation seems to fail in release for some reason.");
+		// Seems to be a bug with VS2015 : https://social.msdn.microsoft.com/Forums/expression/en-US/9c58a750-b424-4d65-bf99-b7a29d0e3965/initializer-list-bug-in-vc-2015-the-following-program-crashes-in-64bit-release-optimized?forum=vcgeneral
 		//config.includeDirs = { _config.srcReferenceDir };
 		coDynamicArray<coConstString> includeDirs;
 		coPushBack(includeDirs, _config.srcReferenceDir);

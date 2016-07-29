@@ -158,6 +158,7 @@ coResult coAppImpl::GenerateProject(const coParsedProject& _parsedProject)
 		c.outDir = outputDir;
 		c.precompiledHeaderPath = co_pchPath;*/
 		coHACK("Direct assignation seems to fail in release for some reason.");
+		// Seems to be a bug with VS2015 : https://social.msdn.microsoft.com/Forums/expression/en-US/9c58a750-b424-4d65-bf99-b7a29d0e3965/initializer-list-bug-in-vc-2015-the-following-program-crashes-in-64bit-release-optimized?forum=vcgeneral
 		//c.plugins = {&cppTypesPlugin, &mainEntryPointPlugin};
 		coDynamicArray<coProjectGeneratorPlugin*> a;
 		coPushBack(a, &cppTypesPlugin);
