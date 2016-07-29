@@ -40,6 +40,11 @@ coTEST(coPath_f, coNormalizePath)
 	coEXPECT(p == "c:/chicken/small.jpeg");
 	coEXPECT(coIsPathNormalized(p));
 
+	p = "/";
+	coNormalizePath(p);
+	coEXPECT(p == "/");
+	coEXPECT(coIsPathNormalized(p));
+
 	p = "./";
 	coNormalizePath(p);
 	coEXPECT(p == ".");
@@ -58,6 +63,11 @@ coTEST(coPath_f, coNormalizePath)
 	p = "./chicken.jpeg";
 	coNormalizePath(p);
 	coEXPECT(p == "chicken.jpeg");
+	coEXPECT(coIsPathNormalized(p));
+
+	p = "c:/chicken_burger.jpeg";
+	coNormalizePath(p);
+	coEXPECT(p == "c:/chicken_burger.jpeg");
 	coEXPECT(coIsPathNormalized(p));
 }
 

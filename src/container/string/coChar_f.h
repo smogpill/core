@@ -16,7 +16,8 @@ enum _coCharCategory : coUint16
 	_coCharCategory_rawdel = 1 << 9,		// {}[]#<>%:;?*+-/^&|~!=,"'
 	_coCharCategory_punct = 1 << 10,	// `$@()
 	_coCharCategory_xupper = _coCharCategory_xletter | _coCharCategory_upper,
-	_coCharCategory_xlower = _coCharCategory_xletter | _coCharCategory_lower
+	_coCharCategory_xlower = _coCharCategory_xletter | _coCharCategory_lower,
+	_coCharCategory_letter = _coCharCategory_upper | _coCharCategory_lower,
 };
 
 extern const coUint16 _coCharCategoryTable[256];
@@ -27,13 +28,13 @@ coFORCE_INLINE coBool coIsVerticalWhitespace(coChar _c) { return (_coCharCategor
 coFORCE_INLINE coBool coIsWhitespace(coChar _c) { return (_coCharCategoryTable[_c] & (_coCharCategory_horzws | _coCharCategory_vertws | _coCharCategory_space)) != 0; }
 coFORCE_INLINE coBool coIsIdentifierHeadCompatible(coChar _c) { return (_coCharCategoryTable[_c] & (_coCharCategory_upper | _coCharCategory_lower | _coCharCategory_under)) != 0; }
 coFORCE_INLINE coBool coIsIdentifierBodyCompatible(coChar _c) { return (_coCharCategoryTable[_c] & (_coCharCategory_upper | _coCharCategory_lower | _coCharCategory_digit | _coCharCategory_under)) != 0; }
-coFORCE_INLINE coBool coIsFileNameCompatible(coChar _c) { return (_coCharCategoryTable[_c] & (_coCharCategory_under | _coCharCategory_xletter | _coCharCategory_space | _coCharCategory_digit | _coCharCategory_period)) != 0; }
+coFORCE_INLINE coBool coIsFileNameCompatible(coChar _c) { return (_coCharCategoryTable[_c] & (_coCharCategory_under | _coCharCategory_letter | _coCharCategory_space | _coCharCategory_digit | _coCharCategory_period)) != 0; }
 coFORCE_INLINE coBool coIsDigit(coChar _c) { return (_coCharCategoryTable[_c] & _coCharCategory_digit) != 0; }
 coFORCE_INLINE coBool coIsDigitOrPeriod(coChar _c) { return (_coCharCategoryTable[_c] & (_coCharCategory_digit | _coCharCategory_period)) != 0; }
 coFORCE_INLINE coBool coIsLowerCase(coChar _c) { return (_coCharCategoryTable[_c] & _coCharCategory_lower) != 0; }
 coFORCE_INLINE coBool coIsUpperCase(coChar _c) { return (_coCharCategoryTable[_c] & _coCharCategory_upper) != 0; }
 coFORCE_INLINE coBool coIsLetter(coChar _c) { return (_coCharCategoryTable[_c] & (_coCharCategory_upper | _coCharCategory_lower)) != 0; }
-coFORCE_INLINE coBool coIsAlphaNumeric(coChar _c) { return (_coCharCategoryTable[_c] & (_coCharCategory_digit | _coCharCategory_upper | _coCharCategory_lower)) != 0; }
+coFORCE_INLINE coBool coIsAlphaNumeric(coChar _c) { return (_coCharCategoryTable[_c] & (_coCharCategory_digit | _coCharCategory_letter)) != 0; }
 coFORCE_INLINE coBool coIsHexDigit(coChar _c) { return (_coCharCategoryTable[_c] & (_coCharCategory_digit | _coCharCategory_xletter)) != 0; }
 
 coFORCE_INLINE coChar coToLowerCase(coChar _c)

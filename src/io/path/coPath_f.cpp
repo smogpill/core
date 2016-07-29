@@ -27,7 +27,7 @@ void coNormalizePath(coDynamicString& _this)
 		case '/':
 		case '\\':
 		{
-			if (lastSlashInBuf != (bufIndex - 1))
+			if (bufIndex == 0 || lastSlashInBuf != (bufIndex - 1))
 			{
 				buf[bufIndex] = '/';
 				lastSlashInBuf = bufIndex;
@@ -45,7 +45,7 @@ void coNormalizePath(coDynamicString& _this)
 		break;
 		default:
 		{
-			if (coIsAlphaNumeric(c))
+			if (coIsFileNameCompatible(c))
 			{
 				buf[bufIndex] = c;
 				++bufIndex;
@@ -56,7 +56,7 @@ void coNormalizePath(coDynamicString& _this)
 	}
 
 	// remove '/' when last character
-	if (bufIndex && buf[bufIndex - 1] == '/')
+	if (bufIndex > 1 && buf[bufIndex - 1] == '/')
 		--bufIndex;
 
 	coUint startIndex = 0;
@@ -90,7 +90,7 @@ coBool coIsPathNormalized(const coConstString& _this)
 			lastWasSeparator = false;
 		}
 	}
-	return !lastWasSeparator;
+	return _this.count == 1 || !lastWasSeparator;
 }
 
 void coGetFileName(coConstString& _out, const coConstString& _this)
