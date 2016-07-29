@@ -3,6 +3,7 @@
 #pragma once
 
 #include "lang/coCppExtensions.h"
+#include "math/matrix/coMat3.h"
 #include "math/matrix/coMat4.h"
 #include "math/vector/coFloatx3.h"
 #include "math/vector/coFloatx4_f.h"
