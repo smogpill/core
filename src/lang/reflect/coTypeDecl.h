@@ -33,7 +33,7 @@ class coType;
 		const coType* GetType() const; \
 	private:
 
-#define coDECLARE_REFLECTED() \
+#define coDECLARE_REFLECTED_VIRTUAL() \
 	_coDECLARE_REFLECTED_SHARED(); \
 	public: \
 		virtual const coType* GetType() const; \
