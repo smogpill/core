@@ -16,6 +16,19 @@
 #include "io/path/coPathStatus.h"
 #include "io/dir/coDirectory_f.h"
 
+static coConstString co_GetClangErrorString(CXErrorCode _errorCode)
+{
+	switch (_errorCode)
+	{
+	case CXError_Success: return "";
+	case CXError_Failure: return "Generic error, no further details are available.";
+	case CXError_Crashed: return "Libclang crashed while performing the requested operation.";
+	case CXError_InvalidArguments: return "The function detected that the arguments violate the function contract.";
+	case CXError_ASTReadError: return "An AST deserialization error has occurred.";
+	default: return "Unknown error code";
+	}
+}
+
 coSourceParser* coSourceParser::Create()
 {
 	return new coClangSourceParser();
@@ -65,6 +78,7 @@ coResult coClangSourceParser::InitCommonParseArgs(const InitConfig& _config)
 	{
 		coDynamicString* s = new coDynamicString();
 		coPushBack(stringBuffer, s);
+		coTRY(includeDir != "", "Null include dir specified.");
 		*s = "-I";
 		*s << includeDir;
 		coNullTerminate(*s);
@@ -118,13 +132,13 @@ coResult coClangSourceParser::InitPrecompiledHeader(const InitConfig& _config)
 	// Parse
 	{
 		CXTranslationUnit translationUnit = nullptr;
-		//translationUnit = clang_createTranslationUnitFromSourceFile(clangIndex, filePath.data, args.count, args.data, 0, nullptr);
+		//translationUnit = clang_createTranslationUnitFromSourceFile(clangIndex, filePath.data, commonParseArgs.count, commonParseArgs.data, 0, nullptr);
 		const CXErrorCode parseError = clang_parseTranslationUnit2(clangIndex, filePath.data, commonParseArgs.data, commonParseArgs.count, nullptr, 0, CXTranslationUnit_SkipFunctionBodies | CXTranslationUnit_Incomplete, &translationUnit);
-		coTRY(parseError == CXError_Success, "Clang failed to parse the file: " << filePath);
+		coTRY(parseError == CXError_Success, "Clang failed to parse the file: " << filePath << " (libclang: "<< co_GetClangErrorString(parseError) << ")");
 		coTRY(translationUnit, "Can't create translation unit from source file: " << filePath);
 		coDEFER() { clang_disposeTranslationUnit(translationUnit); };
 		const CXSaveError saveError = static_cast<CXSaveError>(clang_saveTranslationUnit(translationUnit, precompiledHeaderPath.data, 0));
-		coTRY(parseError == CXSaveError_None, "Clang failed to save the file: " << precompiledHeaderPath.data);
+		coTRY(saveError == CXSaveError_None, "Clang failed to save the file: " << precompiledHeaderPath.data);
 	}
 
 	return true;
@@ -139,9 +153,9 @@ coResult coClangSourceParser::Parse(ParseResult& _result, const ParseConfig& _co
 	filePath = _config.filePath;
 	coNullTerminate(filePath);
 	CXTranslationUnit translationUnit = nullptr;
-	//translationUnit = clang_createTranslationUnitFromSourceFile(clangIndex, filePath.data, args.count, args.data, 0, nullptr);
+	//translationUnit = clang_createTranslationUnitFromSourceFile(clangIndex, filePath.data, sourceParseArgs.count, sourceParseArgs.data, 0, nullptr);
 	const CXErrorCode error = clang_parseTranslationUnit2(clangIndex, filePath.data, sourceParseArgs.data, sourceParseArgs.count, nullptr, 0, CXTranslationUnit_SkipFunctionBodies | CXTranslationUnit_Incomplete, &translationUnit);
-	coTRY(error == CXError_Success, "Clang failed to parse the file: " << filePath);
+	coTRY(error == CXError_Success, "Clang failed to parse the file: " << filePath << " (libclang: " << co_GetClangErrorString(error) << ")");
 	coTRY(translationUnit, "Can't create translation unit from source file: " << filePath);
 	coDEFER() { clang_disposeTranslationUnit(translationUnit); };
 	CXCursor cursor = clang_getTranslationUnitCursor(translationUnit);

@@ -10,6 +10,7 @@
 #include "io/path/coPath_f.h"
 #include "parser/source/coSourceParser.h"
 #include "parser/source/coParsedType.h"
+#include "container/array/coDynamicArray_f.h"
 
 coProjectParser::coProjectParser()
 	: sourceParser(nullptr)
@@ -60,7 +61,11 @@ coResult coProjectParser::Parse(coParsedProject& _out, const ParseConfig& _confi
 		coSourceParser::InitConfig config;
 		config.buildDir = outProjectDir;
 		config.precompiledHeaderSourcePath = pchPath;
-		config.includeDirs = { _config.srcReferenceDir };
+		coHACK("Direct assignation seems to fail in release for some reason.");
+		//config.includeDirs = { _config.srcReferenceDir };
+		coDynamicArray<coConstString> includeDirs;
+		coPushBack(includeDirs, _config.srcReferenceDir);
+		config.includeDirs = includeDirs;
 		coTRY(sourceParser->Init(config), nullptr);
 	}
 	

@@ -157,7 +157,12 @@ coResult coAppImpl::GenerateProject(const coParsedProject& _parsedProject)
 		/*c.projectDir = projectDir;
 		c.outDir = outputDir;
 		c.precompiledHeaderPath = co_pchPath;*/
-		c.plugins = {&cppTypesPlugin, &mainEntryPointPlugin};
+		coHACK("Direct assignation seems to fail in release for some reason.");
+		//c.plugins = {&cppTypesPlugin, &mainEntryPointPlugin};
+		coDynamicArray<coProjectGeneratorPlugin*> a;
+		coPushBack(a, &cppTypesPlugin);
+		coPushBack(a, &mainEntryPointPlugin);
+		c.plugins = a;
 		coTRY(projectGenerator.Init(c), "Failed to init the project generator.");
 	}
 	
