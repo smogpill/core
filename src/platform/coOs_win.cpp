@@ -30,7 +30,7 @@ void coDumpOsError(coUint _osError, coDynamicString& _str)
 	LPWSTR str = nullptr;
 	const DWORD ret = ::FormatMessageW(
 		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-		nullptr, _osError, 0, str, 0, nullptr);
+		nullptr, _osError, 0, (LPTSTR)&str, 0, nullptr);
 
 	if (ret == 0)
 	{
