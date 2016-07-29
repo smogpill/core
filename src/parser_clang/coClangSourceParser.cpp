@@ -180,14 +180,19 @@ CXChildVisitResult coClangSourceParser::ParseTypesVisitor(CXCursor _child, CXCur
 	case CXCursor_ClassDecl:
 	case CXCursor_StructDecl:
 	{
-		const CXCursor reflectedAttr = FindAttribute(_child, "Reflected");
-		if (!clang_Cursor_isNull(reflectedAttr))
+		const CXSourceLocation location = clang_getCursorLocation(_child);
+		if (clang_Location_isFromMainFile(location))
 		{
-			coASSERT(scope->result);
-			if (!_this->ParseType(*scope->result, _child))
+			const CXCursor reflectedAttr = FindAttribute(_child, "Reflected");
+			if (!clang_Cursor_isNull(reflectedAttr))
 			{
-				coERROR("Failed");
-				return CXChildVisitResult::CXChildVisit_Break;
+				coASSERT(scope->result);
+
+				if (!_this->ParseType(*scope->result, _child))
+				{
+					coERROR("Failed");
+					return CXChildVisitResult::CXChildVisit_Break;
+				}
 			}
 		}
 		break;
