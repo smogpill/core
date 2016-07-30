@@ -4,12 +4,11 @@
 
 #include "prebuild/generator/coProjectGeneratorPlugin.h"
 
-
 class coMainEntryPointGeneratorPlugin : public coProjectGeneratorPlugin
 {
 	coDECLARE_SUPER(coProjectGeneratorPlugin);
 public:
-	virtual coResult Generate(const coParsedProject& _parsedProject);
+	virtual coResult Generate(const coParsedProject& _parsedProject) override;
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
