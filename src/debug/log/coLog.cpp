@@ -5,7 +5,7 @@
 #include "debug/log/coLogHandler.h"
 #include "container/string/coDynamicString_f.h"
 
-void _coLog(_coLogType _type, const coConstString& _file, coUint _line, const coConstString& _message)
+void coLog(coLogType _type, const coConstString& _file, coUint _line, const coConstString& _message)
 {
 	coLogHandler* handler = coLogHandler::instance;
 	if (handler)

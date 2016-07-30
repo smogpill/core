@@ -6,19 +6,19 @@
 
 class coConstString;
 
-enum class _coLogType
+enum class coLogType
 {
 	info,
 	warning,
 	error
 };
 
-void _coLog(_coLogType _type, const coConstString& _file, coUint _line, const coConstString& _message);
+void coLog(coLogType _type, const coConstString& _file, coUint _line, const coConstString& _message);
 coDynamicString& _coGetTempLogString();
 
-#define coINFO(_message_) _coLog(_coLogType::info, __FILE__, __LINE__, _coGetTempLogString() << _message_)
-#define coWARN(_message_) _coLog(_coLogType::warning, __FILE__, __LINE__, _coGetTempLogString() << _message_)
-#define coERROR(_message_) _coLog(_coLogType::error, __FILE__, __LINE__, _coGetTempLogString() << _message_)
+#define coINFO(_message_) coLog(coLogType::info, __FILE__, __LINE__, _coGetTempLogString() << _message_)
+#define coWARN(_message_) coLog(coLogType::warning, __FILE__, __LINE__, _coGetTempLogString() << _message_)
+#define coERROR(_message_) coLog(coLogType::error, __FILE__, __LINE__, _coGetTempLogString() << _message_)
 #define coWARN_NOT_AVAILABLE() coSAFE_SCOPE( coERROR("<not available>"); )
 #define coWARN_NOT_TESTED() coWARN("<not tested>")
 #define coWARN_NOT_OPTIMIZED() coWARN("<not optimized>")

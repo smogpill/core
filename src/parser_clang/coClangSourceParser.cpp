@@ -55,7 +55,7 @@ coResult coClangSourceParser::OnInit(const coObject::InitConfig& _config)
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
 
 	coASSERT(!clangIndex);
-	clangIndex = clang_createIndex(1, 1);
+	clangIndex = clang_createIndex(1, 0);
 
 	buildDir = config.buildDir;
 	coTRY(coCreateDirsIfMissing(buildDir), "Failed to create the build directory: "<<buildDir);
@@ -137,6 +137,7 @@ coResult coClangSourceParser::InitPrecompiledHeader(const InitConfig& _config)
 		coTRY(parseError == CXError_Success, "Clang failed to parse the file: " << filePath << " (libclang: "<< co_GetClangErrorString(parseError) << ")");
 		coTRY(translationUnit, "Can't create translation unit from source file: " << filePath);
 		coDEFER() { clang_disposeTranslationUnit(translationUnit); };
+		coTRY(DisplayDiagnostics(translationUnit), "Failed to display clang diagnostics");
 		const CXSaveError saveError = static_cast<CXSaveError>(clang_saveTranslationUnit(translationUnit, precompiledHeaderPath.data, 0));
 		coTRY(saveError == CXSaveError_None, "Clang failed to save the file: " << precompiledHeaderPath.data);
 	}
@@ -158,6 +159,7 @@ coResult coClangSourceParser::Parse(ParseResult& _result, const ParseConfig& _co
 	coTRY(error == CXError_Success, "Clang failed to parse the file: " << filePath << " (libclang: " << co_GetClangErrorString(error) << ")");
 	coTRY(translationUnit, "Can't create translation unit from source file: " << filePath);
 	coDEFER() { clang_disposeTranslationUnit(translationUnit); };
+	coTRY(DisplayDiagnostics(translationUnit), "Failed to display clang diagnostics");
 	CXCursor cursor = clang_getTranslationUnitCursor(translationUnit);
 
 	if (_result.parsedTypes)
@@ -361,4 +363,56 @@ CXCursor coClangSourceParser::FindAttribute(const CXCursor& _cursor, const coCon
 	}
 
 	return clang_getNullCursor();
+}
+
+coResult coClangSourceParser::DisplayDiagnostics(const CXTranslationUnit& _translationUnit) const
+{
+	const coUint nbDiagnostics = clang_getNumDiagnostics(_translationUnit);
+	for (coUint i = 0; i < nbDiagnostics; ++i)
+	{
+		CXDiagnostic diag = clang_getDiagnostic(_translationUnit, i);
+		coDEFER() { clang_disposeDiagnostic(diag); };
+
+		const CXDiagnosticSeverity severity = clang_getDiagnosticSeverity(diag);
+		if (severity == CXDiagnostic_Ignored)
+			continue;
+
+		// Get source location
+		CXSourceLocation location = clang_getDiagnosticLocation(diag);
+		CXFile file;
+		coUint line;
+		clang_getFileLocation(location, &file, &line, nullptr, nullptr);
+
+		// Get file name
+		CXString fileName_cx = clang_getFileName(file);
+		coDEFER() { clang_disposeString(fileName_cx); };
+		const coConstString fileName = clang_getCString(fileName_cx);
+
+		// Get message
+		CXString message_cx = clang_getDiagnosticSpelling(diag);
+		coDEFER() { clang_disposeString(message_cx); };
+		const coConstString message = clang_getCString(message_cx);
+
+		// Log type
+		coLogType logType;
+		switch (severity)
+		{
+		case CXDiagnostic_Ignored:
+			coASSERT(false);
+			logType = coLogType::error;
+			break;
+		case CXDiagnostic_Note:
+			logType = coLogType::info;
+			break;
+		case CXDiagnostic_Warning:
+			logType = coLogType::warning;
+			break;
+		default:
+			logType = coLogType::error;
+			break;
+		}
+
+		coLog(logType, fileName, line, message);
+	}
+	return true;
 }

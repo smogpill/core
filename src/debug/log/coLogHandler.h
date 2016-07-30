@@ -13,5 +13,5 @@ class coLogHandler
 public:
 	virtual ~coLogHandler() {}
 
-	virtual void Log(_coLogType _type, const coConstString& _file, coUint _line, const coConstString& _message) = 0;
+	virtual void Log(coLogType _type, const coConstString& _file, coUint _line, const coConstString& _message) = 0;
 };

@@ -6,24 +6,24 @@
 #include "container/string/coDynamicString_f.h"
 #include "memory/allocator/coLocalAllocator.h"
 
-void coDefaultLogHandler::Log(_coLogType _type, const coConstString& _file, coUint _line, const coConstString& _message)
+void coDefaultLogHandler::Log(coLogType _type, const coConstString& _file, coUint _line, const coConstString& _message)
 {
 	coConstString tag;
 	switch (_type)
 	{
-	case _coLogType::info:
+	case coLogType::info:
 	{
-		tag = "Info";
+		tag = "info";
 		break;
 	}
-	case _coLogType::warning:
+	case coLogType::warning:
 	{
-		tag = "Warning";
+		tag = "warning";
 		break;
 	}
-	case _coLogType::error:
+	case coLogType::error:
 	{
-		tag = "Error";
+		tag = "error";
 		break;
 	}
 	default:
@@ -32,14 +32,14 @@ void coDefaultLogHandler::Log(_coLogType _type, const coConstString& _file, coUi
 	}
 	}
 
-	const coBool error = _type >= _coLogType::warning;
+	const coBool error = _type >= coLogType::warning;
 
 	const coConstString& msg = _message.count ? _message : "<no message>";
 	coLocalAllocator localAlloc(4048);
 	coDynamicString outputMsg(localAlloc);
 	if (error)
 	{
-		outputMsg << _file << "(" << _line << "): [" << tag << "] " << msg << "\n";
+		outputMsg << _file << "(" << _line << "): " << tag << ": " << msg << "\n";
 		fwrite(outputMsg.data, sizeof(*outputMsg.data), outputMsg.count, stderr);
 	}
 	else
