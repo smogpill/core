@@ -6,6 +6,8 @@
 
 class coMat4
 {
+	coDECLARE_TYPE(coMat4);
+	coDECLARE_REFLECTED_NO_VIRTUAL();
 public:
 	coFloatx4 c0;
 	coFloatx4 c1;

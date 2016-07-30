@@ -6,6 +6,8 @@
 
 class coMat3
 {
+	coDECLARE_TYPE(coMat3);
+	coDECLARE_REFLECTED_NO_VIRTUAL();
 public:
 	coFloatx3 c0;
 	coFloatx3 c1;

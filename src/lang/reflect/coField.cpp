@@ -5,6 +5,7 @@
 
 coField::coField()
 	: type(nullptr)
+	, offset8(0)
 {
 
 }

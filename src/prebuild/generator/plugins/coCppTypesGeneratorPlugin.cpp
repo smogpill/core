@@ -83,7 +83,7 @@ coResult coCppTypesGeneratorPlugin::GenerateTypes(const coParsedProject& _parsed
 	{
 		coASSERT(parsedType);
 		coTRY(GenerateType(cxxPath, *parsedType), "Failed to generate type: " << parsedType->GetDebugName());
-		stream << "#include \"" << cxxPath << "\"\n";
+		WriteInclude(stream, cxxPath);
 	}
 
 	stream.Flush();
@@ -131,16 +131,18 @@ coResult coCppTypesGeneratorPlugin::GenerateType(coDynamicString& _relativePath,
 		coTRY(stream.Init(c), nullptr);
 	}
 
-	stream << "// Generated\n";
-	stream << "#include \"" << _parsedType.sourcePath << "\"\n";
-	stream << "#include \"lang/reflect/coType.h\"\n";
+	stream << "// GENERATED\n";
+	WriteInclude(stream, _parsedType.sourcePath);
+	WriteInclude(stream, "lang/reflect/coType.h");
 	if (_parsedType.parsedFields.count)
 	{
-		stream << "#include \"lang/reflect/coField.h\"\n";
+		WriteInclude(stream, "lang/reflect/coField.h");
+		WriteInclude(stream, "lang/reflect/coField_f.h");
 	}
+	WriteInclude(stream, "container/string/coDynamicString_f.h");
 	stream << "\n";
 
-	stream << "coType* co_CreateType()\n";
+	stream << "coType* co_Create_" << type->name << "()\n";
 	stream << "{\n";
 	
 	coTRY(WriteParsedType(stream, _parsedType, "\t"), "Failed to write type: "<<_parsedType.GetDebugName());
@@ -179,22 +181,40 @@ coResult coCppTypesGeneratorPlugin::WriteParsedType(coStringOutputStream& _strea
 	_stream << _indentation << "\n";
 
 	// Fields
-	if (_parsedType.parsedFields.count)
 	{
-		_stream << _indentation << "// Fields\n";
-		_stream << _indentation << "coReserve(type->fields, " << _parsedType.parsedFields.count << ");\n";
-		_stream << _indentation << "\n";
+		coUint nbPublicFields = 0;
 		for (const coParsedField* parsedField : _parsedType.parsedFields)
 		{
 			coASSERT(parsedField);
-			coTRY(WriteParsedField(_stream, *parsedField, _indentation), "Failed to write field: "<<parsedField->field->name);
+			const coField* field = parsedField->field;
+			if (field->symbolFlags & coSymbol::public_)
+			{
+				++nbPublicFields;
+			}
+		}
+
+		if (nbPublicFields)
+		{
+			_stream << _indentation << "// Fields\n";
+			_stream << _indentation << "coReserve(type->fields, " << nbPublicFields << ");\n";
+			_stream << _indentation << "\n";
+			for (const coParsedField* parsedField : _parsedType.parsedFields)
+			{
+				coASSERT(parsedField);
+				const coField* field = parsedField->field;
+				coASSERT(field);
+				if (field->symbolFlags & coSymbol::public_)
+				{
+					coTRY(WriteParsedField(_stream, _parsedType, *parsedField, _indentation), "Failed to write field: " << parsedField->field->name);
+				}
+			}
 		}
 	}
 
 	return true;
 }
 
-coResult coCppTypesGeneratorPlugin::WriteParsedField(coStringOutputStream& _stream, const coParsedField& _parsedField, const coConstString& _indentation)
+coResult coCppTypesGeneratorPlugin::WriteParsedField(coStringOutputStream& _stream, const coParsedType& _parsedType, const coParsedField& _parsedField, const coConstString& _indentation)
 {
 	coLocalAllocator localAllocator(2048);
 
@@ -208,6 +228,7 @@ coResult coCppTypesGeneratorPlugin::WriteParsedField(coStringOutputStream& _stre
 	_stream << blockIndent << "coField* field = new coField();\n";
 	coTRY(WriteSymbol(_stream, *field, blockIndent, "field->"), nullptr);
 	_stream << blockIndent << "field->type = nullptr;\n";
+	_stream << blockIndent << "field->offset8 = static_cast<decltype(field->offset8)>(coGetFieldOffset<" << _parsedType.type->name << ">(&" << _parsedType.type->name << "::" << field->name << "));\n";
 
 	_stream << blockIndent << "\n";
 	_stream << blockIndent << "coPushBack(type->fields, field);\n";
@@ -215,4 +236,10 @@ coResult coCppTypesGeneratorPlugin::WriteParsedField(coStringOutputStream& _stre
 	_stream << _indentation << "\n";
 	coASSERT(field);
 	return true;
+}
+
+void coCppTypesGeneratorPlugin::WriteInclude(coStringOutputStream& _stream, const coConstString& _path)
+{
+	coASSERT(coIsPathNormalized(_path));
+	_stream << "#include \"" << _path << "\"\n";
 }
