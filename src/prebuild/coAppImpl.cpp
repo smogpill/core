@@ -148,7 +148,6 @@ coResult coAppImpl::GenerateProject(const coParsedProject& _parsedProject)
 
 	coProjectGenerator projectGenerator;
 	{
-		coHACK("hard coded paths");
 		coProjectGenerator::InitConfig c;
 		c.outReferenceDir = outReferenceDir;
 		c.projectRelativePath = projectRelativePath;
