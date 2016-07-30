@@ -2,6 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "prebuild/pch.h"
 #include "prebuild/generator/plugins/coCppTypesGeneratorPlugin.h"
+#include "prebuild/generator/plugins/coCppGeneratorUtils.h"
 #include "prebuild/generator/coProjectGenerator.h"
 #include "lang/result/coResult_f.h"
 #include "lang/reflect/coType.h"
@@ -73,8 +74,7 @@ coResult coCppTypesGeneratorPlugin::GenerateTypes(const coParsedProject& _parsed
 		coTRY(stream.Init(c), nullptr);
 	}
 
-	stream << "// Generated\n";
-	//stream << "#include \"" << projectGenerator->GetPrecompiledHeaderRelativePath() << "\"\n";
+	coWriteHeader(stream);
 	stream << "\n";
 
 	coDynamicString cxxPath(localAllocator);
@@ -83,7 +83,7 @@ coResult coCppTypesGeneratorPlugin::GenerateTypes(const coParsedProject& _parsed
 	{
 		coASSERT(parsedType);
 		coTRY(GenerateType(cxxPath, *parsedType), "Failed to generate type: " << parsedType->GetDebugName());
-		WriteInclude(stream, cxxPath);
+		coWriteInclude(stream, cxxPath);
 	}
 
 	stream.Flush();
@@ -131,15 +131,15 @@ coResult coCppTypesGeneratorPlugin::GenerateType(coDynamicString& _relativePath,
 		coTRY(stream.Init(c), nullptr);
 	}
 
-	stream << "// GENERATED\n";
-	WriteInclude(stream, _parsedType.sourcePath);
-	WriteInclude(stream, "lang/reflect/coType.h");
+	coWriteHeader(stream);
+	coWriteInclude(stream, _parsedType.sourcePath);
+	coWriteInclude(stream, "lang/reflect/coType.h");
 	if (_parsedType.parsedFields.count)
 	{
-		WriteInclude(stream, "lang/reflect/coField.h");
-		WriteInclude(stream, "lang/reflect/coField_f.h");
+		coWriteInclude(stream, "lang/reflect/coField.h");
+		coWriteInclude(stream, "lang/reflect/coField_f.h");
 	}
-	WriteInclude(stream, "container/string/coDynamicString_f.h");
+	coWriteInclude(stream, "container/string/coDynamicString_f.h");
 	stream << "\n";
 	stream << "coType* " << type->name << "::staticType = nullptr;\n";
 	stream << "const coType* " << type->name << "::GetType() const { return staticType; }\n";
@@ -239,8 +239,3 @@ coResult coCppTypesGeneratorPlugin::WriteParsedField(coStringOutputStream& _stre
 	return true;
 }
 
-void coCppTypesGeneratorPlugin::WriteInclude(coStringOutputStream& _stream, const coConstString& _path)
-{
-	coASSERT(coIsPathNormalized(_path));
-	_stream << "#include \"" << _path << "\"\n";
-}

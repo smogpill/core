@@ -2,6 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "prebuild/pch.h"
 #include "prebuild/generator/plugins/coMainEntryPointGeneratorPlugin.h"
+#include "prebuild/generator/plugins/coCppGeneratorUtils.h"
 #include "prebuild/generator/coProjectGenerator.h"
 #include "lang/result/coResult_f.h"
 #include "io/path/coPath_f.h"
@@ -56,7 +57,7 @@ coResult coMainEntryPointGeneratorPlugin::GenerateCpp()
 		coTRY(stream.Init(c), nullptr);
 	}
 
-	stream << "// Generated\n";
+	coWriteHeader(stream);
 	for (const coDynamicString* path : projectGenerator->GetGeneratedEntryPaths())
 	{
 		coASSERT(path);
@@ -64,7 +65,7 @@ coResult coMainEntryPointGeneratorPlugin::GenerateCpp()
 		coGetExtension(ext, *path);
 		if (ext == ".cxx")
 		{
-			stream << "#include \"" << *path << "\"\n";
+			coWriteInclude(stream, *path);
 		}
 	}
 
