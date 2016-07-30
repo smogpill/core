@@ -10,10 +10,8 @@ struct coNestedReflectedCheck
 
 class coType;
 
-template <class T>
-coInt32 _coTestNestedReflectedAttribute(typename T::_attribute_Reflected*);
-template <class>
-coInt8 _coTestNestedReflectedAttribute(...);
+template <class T> coInt32 _coTestNestedReflectedAttribute(typename T::_attribute_Reflected*);
+template <class> coInt8 _coTestNestedReflectedAttribute(...);
 
 template <class T, coBool>
 struct _coTypeOf
