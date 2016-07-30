@@ -2,6 +2,7 @@ baseAbsPath = os.getcwd()
 srcAbsPath = baseAbsPath .. "/src"
 externalAbsPath = baseAbsPath .. "/external"
 buildPath = "build/" .. _ACTION
+genAbsPath = baseAbsPath .. "/build/gen"
 buildAbsPath = baseAbsPath .. "/" .. buildPath
 versionMajor = 0
 versionMinor = 0
@@ -63,6 +64,8 @@ function coSetProjectDefaults(_name, _params)
 	--vpaths { ["*"] = _projectDir }
 	defines { "coPROJECT_NAME=".._name }
 	language "C++"
+
+	prebuildcommands{"$(OutputPath)prebuild_dist.exe '" .. srcAbsPath .. "' '" .. genAbsPath .. "' '" .. _name .. "' '".. _name .."/pch.h''"}
 	
 	if _params then
 		if _params.kind then
