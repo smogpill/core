@@ -8,17 +8,18 @@
 class coField;
 class coFunction;
 
+typedef void* (*coCreateFunc)();
+
 class coType : public coSymbol
 {
 public:
-	typedef void* CreateFunc();
 	coType();
 	virtual ~coType();
 
 	coUint32 size8;
 	coUint32 alignment8;
 	coType* super;
-	CreateFunc* createFunc;
+	coCreateFunc createFunc;
 	coDynamicArray<coField*> fields;
 	coDynamicArray<coFunction*> functions;
 };

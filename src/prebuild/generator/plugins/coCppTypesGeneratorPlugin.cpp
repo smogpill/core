@@ -178,6 +178,7 @@ coResult coCppTypesGeneratorPlugin::WriteParsedType(coStringOutputStream& _strea
 	_stream << _indentation << "type->size8 = sizeof(" << type->name << ");\n";
 	_stream << _indentation << "type->alignment8 = alignof(" << type->name << ");\n";
 	_stream << _indentation << "type->super = nullptr;\n";
+	_stream << _indentation << "type->createFunc = []() -> void* { return new " << type->name << "(); };\n";
 
 	_stream << _indentation << "\n";
 
