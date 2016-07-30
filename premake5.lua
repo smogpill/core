@@ -60,7 +60,10 @@ function coSetProjectDefaults(_name, _params)
 	location (buildAbsPath.."/projects")
 	projectDir = "src/".._name
 	files { "**.cpp", "**.h"}
-	coSetPCH(projectDir, _name, "pch")
+	if os.isfile("pch.h") then
+		coSetPCH(projectDir, _name, "pch")
+	end
+	
 	--vpaths { ["*"] = _projectDir }
 	defines { "coPROJECT_NAME=".._name }
 	language "C++"
