@@ -65,7 +65,9 @@ function coSetProjectDefaults(_name, _params)
 	defines { "coPROJECT_NAME=".._name }
 	language "C++"
 
-	prebuildcommands{"$(OutputPath)prebuild_dist.exe '" .. srcAbsPath .. "' '" .. genAbsPath .. "' '" .. _name .. "' '".. _name .."/pch.h''"}
+	if os.isfile("reflect.cpp") then
+		prebuildcommands{"$(OutputPath)prebuild_dist.exe '" .. srcAbsPath .. "' '" .. genAbsPath .. "' '" .. _name .. "' '".. _name .."/pch.h''"}
+	end
 	
 	if _params then
 		if _params.kind then
