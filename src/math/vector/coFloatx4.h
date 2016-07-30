@@ -6,7 +6,6 @@
 
 class alignas(16) coFloatx4
 {
-	coDECLARE_TYPE(coFloatx4);
 	coDECLARE_REFLECTED_NO_VIRTUAL();
 public:
 	coFloat x;

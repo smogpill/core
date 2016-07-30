@@ -6,7 +6,6 @@
 
 class alignas(16) coInt32x4
 {
-	coDECLARE_TYPE(coInt32x4);
 	coDECLARE_REFLECTED_NO_VIRTUAL();
 public:
 	coInt32 x;

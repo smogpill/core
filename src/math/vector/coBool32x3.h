@@ -6,7 +6,6 @@
 
 class alignas(16) coBool32x3
 {
-	coDECLARE_TYPE(coBool32x3);
 	coDECLARE_REFLECTED_NO_VIRTUAL();
 public:
 	coBool32 x;

@@ -11,7 +11,7 @@ class coParsedProject;
 
 class coProjectParser : public coObject
 {
-	coDECLARE_DERIVED_TYPE(coProjectParser, coObject);
+	coDECLARE_SUPER(coObject);
 public:
 	class InitConfig : public Super::InitConfig
 	{

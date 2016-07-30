@@ -13,29 +13,24 @@ class coType;
 #define coDEFINE_ATTRIBUTE(_attr_, ...)
 #endif
 
-#define coDECLARE_TYPE(_type_) \
-	using Self = _type_
-
 #define coDECLARE_SUPER(_super_) \
+	private: \
 	using Super = _super_
 
-#define coDECLARE_ROOT_TYPE(_type_) \
-	coDECLARE_TYPE(_type_)
-
-#define coDECLARE_DERIVED_TYPE(_type_, _super_) \
-	coDECLARE_TYPE(_type_); \
-	coDECLARE_SUPER(_super_)
-
 #define _coDECLARE_REFLECTED_SHARED() \
-	coDEFINE_ATTRIBUTE(Reflected, true)
+	coDEFINE_ATTRIBUTE(Reflected, true); \
+	static coType* CreateType(); \
+	static coType* staticType
 
 #define coDECLARE_REFLECTED_NO_VIRTUAL() \
+	private: \
 	_coDECLARE_REFLECTED_SHARED(); \
 	public: \
 		const coType* GetType() const; \
 	private:
 
 #define coDECLARE_REFLECTED_VIRTUAL() \
+	private: \
 	_coDECLARE_REFLECTED_SHARED(); \
 	public: \
 		virtual const coType* GetType() const; \

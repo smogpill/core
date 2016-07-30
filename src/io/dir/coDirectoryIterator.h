@@ -9,7 +9,7 @@
 
 class coDirectoryIterator : public coObject
 {
-	coDECLARE_DERIVED_TYPE(coDirectoryIterator, coObject);
+	coDECLARE_SUPER(coObject);
 public:
 	class InitConfig : public Super::InitConfig
 	{

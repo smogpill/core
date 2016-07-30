@@ -10,7 +10,6 @@ class coConstString;
 
 class coFileAccess final : public coObject
 {
-	coDECLARE_TYPE(coFileAccess);
 	coDECLARE_SUPER(coObject);
 public:
 	enum Mode

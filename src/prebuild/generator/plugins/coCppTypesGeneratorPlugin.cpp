@@ -141,8 +141,11 @@ coResult coCppTypesGeneratorPlugin::GenerateType(coDynamicString& _relativePath,
 	}
 	WriteInclude(stream, "container/string/coDynamicString_f.h");
 	stream << "\n";
+	stream << "coType* " << type->name << "::staticType = nullptr;\n";
+	stream << "const coType* " << type->name << "::GetType() const { return staticType; }\n";
+	stream << "\n";
 
-	stream << "coType* co_Create_" << type->name << "()\n";
+	stream << "coType* " << type->name << "::CreateType()\n";
 	stream << "{\n";
 	
 	coTRY(WriteParsedType(stream, _parsedType, "\t"), "Failed to write type: "<<_parsedType.GetDebugName());
@@ -150,8 +153,6 @@ coResult coCppTypesGeneratorPlugin::GenerateType(coDynamicString& _relativePath,
 	stream << "\treturn type;\n";
 	stream << "}\n";
 	stream << "\n";
-
-	stream << "const coType* " << type->name << "::GetType() const { return nullptr; }\n";
 
 	stream.Flush();
 	coTRY(stream.GetResult(), "Failed to write to stream: "<<stream);
