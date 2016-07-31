@@ -4,7 +4,7 @@
 #include "lang/reflect/coSymbol.h"
 
 coSymbol::coSymbol()
-	: id(0)
+	: hash(0)
 	, symbolFlags(0)
 {
 

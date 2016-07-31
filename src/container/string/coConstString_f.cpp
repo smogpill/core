@@ -5,6 +5,7 @@
 #include "container/array/coDynamicArray_f.h"
 #include "container/array/coConstArray_f.h"
 #include "debug/log/coAssert.h"
+#include "math/hash/coHash_f.h"
 
 coBool operator==(const coConstString& _a, const coConstString& _b)
 {
@@ -144,4 +145,14 @@ coBool coStartsWith(const coConstString& _this, const coConstString& _prefix)
 			return false;
 	}
 	return true;
+}
+
+coUint32 coHash32(const coConstString& _this)
+{
+	return coHash32(_this.data, _this.count);
+}
+
+coUint64 coHash64(const coConstString& _this)
+{
+	return coHash64(_this.data, _this.count);
 }

@@ -17,3 +17,5 @@ coBool coAreMemoryOverlapping(const coConstString& _a, const coConstString& _b);
 void coLeftStrip(coConstString& _out, const coConstString& _s, const coConstString& _chars);
 void coRightStrip(coConstString& _out, const coConstString& _s, const coConstString& _chars);
 coBool coStartsWith(const coConstString& _this, const coConstString& _prefix);
+coUint32 coHash32(const coConstString& _this);
+coUint64 coHash64(const coConstString& _this);

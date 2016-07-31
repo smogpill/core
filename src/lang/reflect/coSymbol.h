@@ -16,7 +16,7 @@ public:
 		static_ = 1<<4
 	};
 	coSymbol();
-	coUint64 id;
+	coUint32 hash;
 	coUint8 symbolFlags;
 	coDynamicString name;
 };
