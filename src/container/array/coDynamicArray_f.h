@@ -29,12 +29,14 @@ coDynamicArray<T>::~coDynamicArray()
 	allocator->Free(data);
 }
 
+coUint32 _coComputeBestArrayCapacity(coUint32 _capacity);
+
 template <class T>
 void coReserve(coDynamicArray<T>& _this, coUint32 _desiredCount)
 {
 	if (_desiredCount > _this.capacity)
 	{
-		const coUint32 clampedCapacity = _desiredCount >= 16u ? _desiredCount : 16u;
+		const coUint32 clampedCapacity = _coComputeBestArrayCapacity(_desiredCount);
 		coASSERT(_this.allocator);
 		T* newBuffer = static_cast<T*>(_this.allocator->Allocate(clampedCapacity * sizeof(T)));
 		if (_this.data)
