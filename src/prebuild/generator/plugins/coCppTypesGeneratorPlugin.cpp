@@ -134,28 +134,84 @@ coResult coCppTypesGeneratorPlugin::GenerateType(coDynamicString& _relativePath,
 	coWriteHeader(stream);
 	coWriteInclude(stream, _parsedType.sourcePath);
 	coWriteInclude(stream, "lang/reflect/coType.h");
+	coWriteInclude(stream, "lang/reflect/coTypeBuilder.h");
 	if (_parsedType.parsedFields.count)
 	{
 		coWriteInclude(stream, "lang/reflect/coField.h");
 		coWriteInclude(stream, "lang/reflect/coField_f.h");
 	}
+	coWriteInclude(stream, "lang/result/coResult.h");
 	coWriteInclude(stream, "container/string/coDynamicString_f.h");
 	stream << "\n";
-	stream << "coType* " << type->name << "::staticType = nullptr;\n";
-	stream << "\n";
-
-	stream << "coType* " << type->name << "::CreateType()\n";
-	stream << "{\n";
-	
-	coTRY(WriteParsedType(stream, _parsedType, "\t"), "Failed to write type: "<<_parsedType.GetDebugName());
-
-	stream << "\treturn type;\n";
-	stream << "}\n";
-	stream << "\n";
+	coTRY(WriteTypeBuilderDeclaration(stream, _parsedType), nullptr);
+	coTRY(WriteInitTypeFunc(stream, _parsedType), nullptr);
+	coTRY(WriteLinkTypeFunc(stream, _parsedType), nullptr);
+	coTRY(WriteGetStaticTypeFunc(stream, _parsedType), nullptr);
 
 	stream.Flush();
 	coTRY(stream.GetResult(), "Failed to write to stream: "<<stream);
 
+	return true;
+}
+
+coResult coCppTypesGeneratorPlugin::WriteInitTypeFunc(coStringOutputStream& _stream, const coParsedType& _parsedType)
+{
+	const coType* type = _parsedType.type;
+	coASSERT(type);
+	coASSERT(type->name != nullptr);
+	_stream << "coResult " << type->name << "_typeBuilder::OnInitType()\n";
+	_stream << "{\n";
+	coTRY(WriteParsedType(_stream, _parsedType, "\t"), "Failed to write type: " << _parsedType.GetDebugName());
+	_stream << "\treturn true;\n";
+	_stream << "}\n";
+	_stream << "\n";
+	return true;
+}
+
+coResult coCppTypesGeneratorPlugin::WriteLinkTypeFunc(coStringOutputStream& _stream, const coParsedType& _parsedType)
+{
+	const coType* type = _parsedType.type;
+	coASSERT(type);
+	coASSERT(type->name != nullptr);
+	_stream << "coResult " << type->name << "_typeBuilder::OnLinkType()\n";
+	_stream << "{\n";
+	if (_parsedType.superTypeName != "")
+	{
+		_stream << "\t" << type->name << "::staticType->super = " << _parsedType.superTypeName << "::staticType;\n";
+		_stream << "\n";
+	}
+	_stream << "\treturn true;\n";
+	_stream << "}\n";
+	_stream << "\n";
+	return true;
+}
+
+coResult coCppTypesGeneratorPlugin::WriteTypeBuilderDeclaration(coStringOutputStream& _stream, const coParsedType& _parsedType)
+{
+	const coType* type = _parsedType.type;
+	coASSERT(type);
+
+	_stream << "class " << type->name << "_typeBuilder : public coTypeBuilder\n";
+	_stream << "{\n";
+	_stream << "public:\n";
+	_stream << "\tvirtual coResult OnInitType() override;\n";
+	_stream << "\tvirtual coResult OnLinkType() override;\n";
+	_stream << "};\n";
+	_stream << type->name << "_typeBuilder co_typeBuilder_" << type->name << ";\n";
+	_stream << "\n";
+	return true;
+}
+
+coResult coCppTypesGeneratorPlugin::WriteGetStaticTypeFunc(coStringOutputStream& _stream, const coParsedType& _parsedType)
+{
+	const coType* type = _parsedType.type;
+	coASSERT(type);
+
+	_stream << "const coType* " << type->name << "::GetStaticType()\n";
+	_stream << "{\n";
+	_stream << "\treturn co_typeBuilder_" << type->name << ".GetType();\n";
+	_stream << "}\n";
+	_stream << "\n";
 	return true;
 }
 
@@ -172,7 +228,6 @@ coResult coCppTypesGeneratorPlugin::WriteParsedType(coStringOutputStream& _strea
 	const coType* type = _parsedType.type;
 	coASSERT(type);
 
-	_stream << _indentation << "coType* type = new coType();\n";
 	coTRY(WriteSymbol(_stream, *type, "\t", "type->"), nullptr);
 	_stream << _indentation << "type->size8 = sizeof(" << type->name << ");\n";
 	_stream << _indentation << "type->alignment8 = alignof(" << type->name << ");\n";
