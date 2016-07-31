@@ -36,16 +36,16 @@ void coReserve(coDynamicArray<T>& _this, coUint32 _desiredCount)
 {
 	if (_desiredCount > _this.capacity)
 	{
-		const coUint32 clampedCapacity = _coComputeBestArrayCapacity(_desiredCount);
+		const coUint32 bestCapacity = _coComputeBestArrayCapacity(_desiredCount);
 		coASSERT(_this.allocator);
-		T* newBuffer = static_cast<T*>(_this.allocator->Allocate(clampedCapacity * sizeof(T)));
+		T* newBuffer = static_cast<T*>(_this.allocator->Allocate(bestCapacity * sizeof(T)));
 		if (_this.data)
 		{
 			coMemCopy(newBuffer, _this.data, _this.count * sizeof(T));
 			_this.allocator->Free(_this.data);
 		}
 		_this.data = newBuffer;
-		_this.capacity = clampedCapacity;
+		_this.capacity = bestCapacity;
 	}
 }
 
