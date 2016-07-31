@@ -26,12 +26,12 @@ class coType;
 	private: \
 	_coDECLARE_REFLECTED_SHARED(); \
 	public: \
-		const coType* GetType() const; \
+		const coType* GetType() const { return staticType; } \
 	private:
 
 #define coDECLARE_REFLECTED_VIRTUAL() \
 	private: \
 	_coDECLARE_REFLECTED_SHARED(); \
 	public: \
-		virtual const coType* GetType() const; \
+		virtual const coType* GetType() const { return staticType; } \
 	private:

@@ -142,7 +142,6 @@ coResult coCppTypesGeneratorPlugin::GenerateType(coDynamicString& _relativePath,
 	coWriteInclude(stream, "container/string/coDynamicString_f.h");
 	stream << "\n";
 	stream << "coType* " << type->name << "::staticType = nullptr;\n";
-	stream << "const coType* " << type->name << "::GetType() const { return staticType; }\n";
 	stream << "\n";
 
 	stream << "coType* " << type->name << "::CreateType()\n";
