@@ -11,5 +11,6 @@ public:
 	coBool32 x;
 	coBool32 y;
 	coBool32 z;
+private:
 	coBool32 pad;
 };
