@@ -13,7 +13,6 @@ class coTestRegistry
 public:
 	void Add(const _coTestInfo& _info);
 	void RunAllTests();
-	static void CreateInstanceIfMissing();
 private:
 	coDynamicArray<const _coTestInfo*> testInfos;
 };

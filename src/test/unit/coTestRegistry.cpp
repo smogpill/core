@@ -25,11 +25,3 @@ void coTestRegistry::RunAllTests()
 		delete test;
 	}
 }
-
-void coTestRegistry::CreateInstanceIfMissing()
-{
-	if (instance == nullptr)
-	{
-		instance = new coTestRegistry();
-	}
-}
