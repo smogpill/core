@@ -1,3 +1,3 @@
 coSetProjectDefaults("test_math")
 kind "ConsoleApp"
-links {"test", "container", "memory", "lang", "math"}
+links {"container", "test", "memory", "lang", "math"}

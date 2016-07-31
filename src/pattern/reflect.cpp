@@ -1,3 +1,5 @@
 #include "pattern/pch.h"
 
-#include "pattern/allGen.cxx"
+#ifdef coREFLECT_ENABLED
+#	include "pattern/allGen.cxx"
+#endif

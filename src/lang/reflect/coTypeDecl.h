@@ -22,16 +22,22 @@ class coType;
 	static coType* CreateType(); \
 	static coType* staticType
 
+#ifdef coREFLECT_ENABLED
+#define _coSTATIC_TYPE_ACCESS() staticType
+#else
+#define _coSTATIC_TYPE_ACCESS() nullptr
+#endif
+
 #define coDECLARE_REFLECTED_NO_VIRTUAL() \
 	private: \
 	_coDECLARE_REFLECTED_SHARED(); \
 	public: \
-		const coType* GetType() const { return staticType; } \
+		const coType* GetType() const { return _coSTATIC_TYPE_ACCESS(); } \
 	private:
 
 #define coDECLARE_REFLECTED_VIRTUAL() \
 	private: \
 	_coDECLARE_REFLECTED_SHARED(); \
 	public: \
-		virtual const coType* GetType() const { return staticType; } \
+		virtual const coType* GetType() const { return _coSTATIC_TYPE_ACCESS(); } \
 	private:

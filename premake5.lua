@@ -26,9 +26,9 @@ function coSetSolutionDefaults()
 	filter { "gmake" }
 		buildoptions { "-Wno-reorder", "-Wno-deprecated" }
 		includedirs { gmakeIncludeDir }
-	filter { "configurations:debug" }
+	filter { "configurations:debug or prebuildDebug" }
 		targetsuffix "_d"
-	filter { "configurations:release" }
+	filter { "configurations:release or prebuildRelease" }
 		optimize "On"
 		flags { "OptimizeSpeed", "NoFramePointer"}
 	filter { "vs*" }
@@ -51,7 +51,7 @@ function coSetPCH(_dir, _projectName, _fileName)
 	--]]
 end
 
-function coSetProjectDefaults(_name, _params)
+function coSetProjectDefaults(_name)
 	project(_name)
 	filter {}
 
@@ -60,6 +60,8 @@ function coSetProjectDefaults(_name, _params)
 	location (buildAbsPath.."/projects")
 	projectDir = "src/".._name
 	files { "**.cpp", "**.h"}
+
+	-- Precompiled header
 	if os.isfile("pch.h") then
 		coSetPCH(projectDir, _name, "pch")
 	end
@@ -68,22 +70,18 @@ function coSetProjectDefaults(_name, _params)
 	defines { "coPROJECT_NAME=".._name }
 	language "C++"
 
+	-- Reflection
 	if os.isfile("reflect.cpp") then
-		prebuildcommands{"$(OutputPath)prebuild_dist.exe '" .. srcAbsPath .. "' '" .. genAbsPath .. "' '" .. _name .. "' '".. _name .."/pch.h''"}
-	end
-	
-	if _params then
-		if _params.kind then
-			kind(_params.kind)
-		end
-		if _params.links then
-			links {_params.links}
-		end
+		filter "debug or release"
+			prebuildcommands{"$(OutputPath)prebuild_dist.exe '" .. srcAbsPath .. "' '" .. genAbsPath .. "' '" .. _name .. "' '".. _name .."/pch.h''"}
+			defines {"coREFLECT_ENABLED"}
+		filter {}
 	end
 end
 
 workspace("core")
 	coSetSolutionDefaults()
+	configurations {"prebuildDebug", "prebuildRelease"}
 	includedirs { "src", "build/gen" }
 
 	include("src/lang")

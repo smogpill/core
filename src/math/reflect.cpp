@@ -1,3 +1,5 @@
 #include "math/pch.h"
 
-#include "math/allGen.cxx"
+#ifdef coREFLECT_ENABLED
+#	include "math/allGen.cxx"
+#endif
