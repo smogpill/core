@@ -71,12 +71,13 @@ function coSetProjectDefaults(_name)
 	language "C++"
 
 	-- Reflection
-	if os.isfile("reflect.cpp") then
-		filter "debug or release"
+	filter "debug or release"
+		if os.isfile("reflect.cpp") then
 			prebuildcommands{"$(OutputPath)prebuild_dist.exe '" .. srcAbsPath .. "' '" .. genAbsPath .. "' '" .. _name .. "' '".. _name .."/pch.h''"}
-			defines {"coREFLECT_ENABLED"}
-		filter {}
-	end
+		end
+		defines {"coREFLECT_ENABLED"}
+	filter {}
+	
 end
 
 workspace("core")

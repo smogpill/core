@@ -5,9 +5,10 @@
 
 class coType;
 
-class coTypeBuilder
+class coFORCE_SYMBOL_INCLUSION_ATTRIBUTE coTypeBuilder
 {
 public:
+	coTypeBuilder();
 	virtual ~coTypeBuilder();
 
 	coResult InitType();
@@ -15,8 +16,8 @@ public:
 	const coType* GetType() const { return type; }
 
 protected:
-	virtual coResult OnInitType() { return nullptr; }
-	virtual coResult OnLinkType() { return true; }
+	virtual coResult OnInitType() = 0;
+	virtual coResult OnLinkType() = 0;
 
 	coType* type;
 };

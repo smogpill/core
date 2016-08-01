@@ -135,6 +135,7 @@ coResult coCppTypesGeneratorPlugin::GenerateType(coDynamicString& _relativePath,
 	coWriteInclude(stream, _parsedType.sourcePath);
 	coWriteInclude(stream, "lang/reflect/coType.h");
 	coWriteInclude(stream, "lang/reflect/coTypeBuilder.h");
+	coWriteInclude(stream, "lang/reflect/coTypeAutoRegistrator.h");
 	if (_parsedType.parsedFields.count)
 	{
 		coWriteInclude(stream, "lang/reflect/coField.h");
@@ -198,6 +199,7 @@ coResult coCppTypesGeneratorPlugin::WriteTypeBuilderDeclaration(coStringOutputSt
 	_stream << "\tvirtual coResult OnLinkType() override;\n";
 	_stream << "};\n";
 	_stream << type->name << "_typeBuilder co_typeBuilder_" << type->name << ";\n";
+	_stream << "coTypeAutoRegistrator co_typeAutoRegistrator_" << type->name << "(co_typeBuilder_" << type->name << ");\n";
 	_stream << "\n";
 	return true;
 }

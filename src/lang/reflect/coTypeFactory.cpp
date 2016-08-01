@@ -34,3 +34,8 @@ coResult coTypeFactory::InitTypes()
 	}
 	return true;
 }
+
+void coTypeFactory::Add(coTypeBuilder& _builder)
+{
+	coPushBack(typeBuilders, &_builder);
+}

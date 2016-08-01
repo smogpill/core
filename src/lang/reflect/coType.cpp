@@ -17,8 +17,8 @@ coType::coType()
 
 coType::~coType()
 {
-	for (auto* p : fields)
+	for (coField* p : fields)
 		delete p;
-	for (auto* p : functions)
+	for (auto p : functions)
 		delete p;
 }

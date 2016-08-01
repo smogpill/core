@@ -6,12 +6,11 @@
 
 class coType;
 
-#ifdef coREFLECTION_PARSING
-#define _coUNIQUE(_unique_) _unique_
+//#ifdef coREFLECTION_PARSING
 #define coDEFINE_ATTRIBUTE(_attr_, ...) struct coMETA(__VA_ARGS__) _attribute_##_attr_ {}
-#else
+/*#else
 #define coDEFINE_ATTRIBUTE(_attr_, ...)
-#endif
+#endif*/
 
 #define coDECLARE_SUPER(_super_) \
 	private: \
@@ -24,12 +23,14 @@ class coType;
 #endif
 
 #define _coDECLARE_REFLECTED_SHARED() \
-	coDEFINE_ATTRIBUTE(Reflected, true); \
-	_coDECLARE_GET_STATIC_TYPE()
+	coDEFINE_ATTRIBUTE(Reflected); \
+	public: \
+		_coDECLARE_GET_STATIC_TYPE(); \
+	private:
 
 #define coDECLARE_REFLECTED_NO_VIRTUAL() \
 	private: \
-	_coDECLARE_REFLECTED_SHARED(); \
+		_coDECLARE_REFLECTED_SHARED(); \
 	public: \
 		const coType* GetType() const { return GetStaticType(); } \
 	private:

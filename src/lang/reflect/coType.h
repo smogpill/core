@@ -14,7 +14,7 @@ class coType : public coSymbol
 {
 public:
 	coType();
-	virtual ~coType();
+	~coType();
 
 	coUint32 size8;
 	coUint32 alignment8;

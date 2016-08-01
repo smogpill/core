@@ -38,12 +38,9 @@ coResult coApp::OnInit(const coObject::InitConfig& _config)
 	coLogHandler::instance = defaultLogHandler;
 
 	if (!coTypeFactory::instance)
-	{
 		coTypeFactory::instance = new coTypeFactory();
-		coTypeFactory* typeFactory = coTypeFactory::instance;
-		coTypeFactory::InitConfig c;
-		coTRY(typeFactory->Init(c), "Failed to init the type factory.");
-	}
+	coTypeFactory::InitConfig c;
+	coTRY(coTypeFactory::instance->Init(c), "Failed to init the type factory.");
 
 	coTRY(!coTypeRegistry::instance, nullptr);
 	coTypeRegistry::instance = new coTypeRegistry();

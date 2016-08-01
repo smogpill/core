@@ -2,33 +2,23 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-/*template <class T>
-struct coNestedReflectedCheck
-{
-
-};*/
-
 class coType;
 
-template <class T> coInt32 _coTestNestedReflectedAttribute(typename T::_attribute_Reflected*);
-template <class> coInt8 _coTestNestedReflectedAttribute(...);
-
-template <class T, coBool>
-struct _coTypeOf
+struct _coNoReflectType
 {
-	static const coType* Get() { return nullptr; }
+	static const coType* GetStaticType() { return nullptr; }
 };
 
-template <class T>
-struct _coTypeOf<T, true>
-{
-	static const coType* Get() { return T::staticType; }
-};
+template <class T, class = std::void_t<>>
+struct _coReflectCheck : std::false_type {};
+
+template <typename T>
+struct _coReflectCheck<T, std::void_t<typename T::_attribute_Reflected>> : std::true_type {};
 
 template <class T>
 const coType* coGetType()
 {
-	return _coTypeOf<T, sizeof(decltype(_coTestNestedReflectedAttribute<T>(0))) == sizeof(coInt32)>::Get();
+	return std::conditional<_coReflectCheck<T>::value, T, _coNoReflectType>::type::GetStaticType();
 }
 
 template <>
@@ -36,12 +26,6 @@ const coType* coGetType<coBool>()
 {
 	return nullptr;
 }
-
-
-// coBool coIsSuper(const coType& _this, const coType& _derived)
-// {
-// 
-// }
 
 template <class T, class U>
 coBool coIsTypeCompatible(const U&)
