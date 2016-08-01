@@ -22,7 +22,7 @@ const coType* coGetType()
 }
 
 template <>
-const coType* coGetType<coBool>()
+inline const coType* coGetType<coBool>()
 {
 	return nullptr;
 }

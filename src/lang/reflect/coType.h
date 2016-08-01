@@ -18,7 +18,7 @@ public:
 
 	coUint32 size8;
 	coUint32 alignment8;
-	coType* super;
+	const coType* super;
 	coCreateFunc createFunc;
 	coDynamicArray<coField*> fields;
 	coDynamicArray<coFunction*> functions;

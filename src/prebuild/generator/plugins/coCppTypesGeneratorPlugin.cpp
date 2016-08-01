@@ -134,6 +134,8 @@ coResult coCppTypesGeneratorPlugin::GenerateType(coDynamicString& _relativePath,
 	coWriteHeader(stream);
 	coWriteInclude(stream, _parsedType.sourcePath);
 	coWriteInclude(stream, "lang/reflect/coType.h");
+	coWriteInclude(stream, "lang/reflect/coType_f.h");
+	coWriteInclude(stream, "lang/result/coResult_f.h");
 	coWriteInclude(stream, "lang/reflect/coTypeBuilder.h");
 	coWriteInclude(stream, "lang/reflect/coTypeAutoRegistrator.h");
 	if (_parsedType.parsedFields.count)
@@ -178,7 +180,8 @@ coResult coCppTypesGeneratorPlugin::WriteLinkTypeFunc(coStringOutputStream& _str
 	_stream << "{\n";
 	if (_parsedType.superTypeName != "")
 	{
-		_stream << "\t" << type->name << "::staticType->super = " << _parsedType.superTypeName << "::staticType;\n";
+		_stream << "\tcoTRY(type, nullptr);\n";
+		_stream << "\ttype->super = coGetType<" << _parsedType.superTypeName << ">();\n";
 		_stream << "\n";
 	}
 	_stream << "\treturn true;\n";

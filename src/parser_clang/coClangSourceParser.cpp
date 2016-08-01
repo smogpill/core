@@ -224,8 +224,22 @@ coResult coClangSourceParser::ParseTypeChild(const ScopeInfo& scope, const CXCur
 	{
 	case CXCursor_StructDecl:
 	{
-		int x = 0;
-		++x;
+		coTODO("Parse attributes");
+		break;
+	}
+	case CXCursor_TypeAliasDecl:
+	{
+		CXString name_cx = clang_getCursorSpelling(_cursor);
+		coDEFER() { clang_disposeString(name_cx); };
+		const coConstString name = clang_getCString(name_cx);
+		if (name == "Super")
+		{
+			CXType type = clang_getCursorType(_cursor);
+			type = clang_getCanonicalType(type);
+			CXString spelling_cx = clang_getTypeSpelling(type);
+			coDEFER() { clang_disposeString(spelling_cx); };
+			scope.curType->superTypeName = clang_getCString(spelling_cx);
+		}
 		break;
 	}
 	case CXCursor_FieldDecl:
