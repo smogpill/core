@@ -9,7 +9,7 @@ public:
 };
 
 #if defined(_MSC_VER)
-#define coMSVC_COMPILER
+#	define coMSVC_COMPILER
 #	ifdef _DEBUG
 #		define coDEBUG
 #	endif
@@ -26,6 +26,10 @@ public:
 #	endif
 #else
 #	error "Unknown compiler"
+#endif
+
+#if defined(_WIN64) || defined(__x86_64__) || defined(__LP64__)
+#	define co64
 #endif
 
 #ifdef coMSVC_COMPILER
