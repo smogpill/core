@@ -39,3 +39,9 @@ coFORCE_INLINE T& coBitCast(A& _a)
 #else
 #	define coMETA(...)
 #endif
+
+#ifdef coMSVC_COMPILER
+#	define coFORCE_SYMBOL_INCLUSION_ATTRIBUTE __declspec(dllexport)
+#else
+#	define coFORCE_SYMBOL_INCLUSION_ATTRIBUTE __attribute__ ((used))
+#endif
