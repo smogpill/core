@@ -14,7 +14,6 @@
 
 coAppImpl::coAppImpl()
 {
-
 }
 
 coAppImpl::~coAppImpl()
