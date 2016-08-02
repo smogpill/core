@@ -16,8 +16,8 @@ public:
 	const coType* GetType() const { return type; }
 
 protected:
-	virtual coResult OnInitType() = 0;
-	virtual coResult OnLinkType() = 0;
+	virtual coResult OnInitType() { return true; }
+	virtual coResult OnLinkType() { return true; }
 
 	coType* type;
 };

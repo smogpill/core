@@ -8,8 +8,8 @@ class alignas(16) coBool32x4
 {
 	coDECLARE_REFLECTED_NO_VIRTUAL();
 public:
-	coBool32 x;
-	coBool32 y;
-	coBool32 z;
-	coBool32 w;
+	coUint32 x;
+	coUint32 y;
+	coUint32 z;
+	coUint32 w;
 };

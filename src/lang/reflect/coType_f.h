@@ -21,11 +21,28 @@ const coType* coGetType()
 	return std::conditional<_coReflectCheck<T>::value, T, _coNoReflectType>::type::GetStaticType();
 }
 
-template <>
-inline const coType* coGetType<coBool>()
-{
-	return nullptr;
-}
+#define coDECLARE_BASIC_TYPE(_type_) \
+	const coType* _coGetStaticType_##_type_(); \
+	template <> \
+	inline const coType* coGetType<_type_>() \
+	{ \
+		return _coGetStaticType_##_type_(); \
+	}
+
+coDECLARE_BASIC_TYPE(coBool);
+coDECLARE_BASIC_TYPE(coChar);
+coDECLARE_BASIC_TYPE(coWideChar);
+coDECLARE_BASIC_TYPE(coInt8);
+coDECLARE_BASIC_TYPE(coInt16);
+coDECLARE_BASIC_TYPE(coInt32);
+coDECLARE_BASIC_TYPE(coInt64);
+coDECLARE_BASIC_TYPE(coUint8);
+coDECLARE_BASIC_TYPE(coUint16);
+coDECLARE_BASIC_TYPE(coUint32);
+coDECLARE_BASIC_TYPE(coUint64);
+coDECLARE_BASIC_TYPE(coFloat);
+coDECLARE_BASIC_TYPE(coFloat64);
+coDECLARE_BASIC_TYPE(coNullPtr);
 
 template <class T, class U>
 coBool coIsTypeCompatible(const U&)
