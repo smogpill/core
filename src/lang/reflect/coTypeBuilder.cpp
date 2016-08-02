@@ -36,6 +36,12 @@ coTypeBuilder::~coTypeBuilder()
 	delete type;
 }
 
+void coTypeBuilder::Clear()
+{
+	delete type;
+	type = nullptr;
+}
+
 coResult coTypeBuilder::InitType()
 {
 	coASSERT(!type);

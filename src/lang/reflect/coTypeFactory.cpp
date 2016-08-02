@@ -9,6 +9,16 @@
 
 coDEFINE_SINGLETON(coTypeFactory);
 
+coTypeFactory::~coTypeFactory()
+{
+	coClear(types);
+	for (coTypeBuilder* builder : typeBuilders)
+	{
+		coASSERT(builder);
+		builder->Clear();
+	}
+}
+
 coResult coTypeFactory::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);

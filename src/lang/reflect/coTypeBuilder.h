@@ -11,6 +11,7 @@ public:
 	coTypeBuilder();
 	virtual ~coTypeBuilder();
 
+	void Clear();
 	coResult InitType();
 	coResult LinkType();
 	const coType* GetType() const { return type; }

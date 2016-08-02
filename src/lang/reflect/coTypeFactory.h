@@ -15,6 +15,7 @@ class coTypeFactory : public coObject
 	coDECLARE_SINGLETON(coTypeFactory);
 	coDECLARE_SUPER(coObject);
 public:
+	virtual ~coTypeFactory();
 	void Add(coTypeBuilder& _builder);
 
 protected:
