@@ -1,7 +1,7 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "prebuild/pch.h"
-#include "prebuild/coAppImpl.h"
+#include "prebuild/coPrebuildApp.h"
 #include "prebuild/generator/coProjectGenerator.h"
 #include "prebuild/generator/plugins/coCppTypesGeneratorPlugin.h"
 #include "prebuild/generator/plugins/coMainEntryPointGeneratorPlugin.h"
@@ -12,15 +12,15 @@
 #include "app/coProject_f.h"
 #include "parser/project/coParsedProject.h"
 
-coAppImpl::coAppImpl()
+coPrebuildApp::coPrebuildApp()
 {
 }
 
-coAppImpl::~coAppImpl()
+coPrebuildApp::~coPrebuildApp()
 {
 }
 
-coResult coAppImpl::ParseArgs(const InitConfig& _config)
+coResult coPrebuildApp::ParseArgs(const InitConfig& _config)
 {
 	coCommandLineArgs argParser;
 
@@ -91,7 +91,7 @@ coResult coAppImpl::ParseArgs(const InitConfig& _config)
 	return true;
 }
 
-coResult coAppImpl::OnInit(const coObject::InitConfig& _config)
+coResult coPrebuildApp::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
@@ -106,7 +106,7 @@ coResult coAppImpl::OnInit(const coObject::InitConfig& _config)
 	return true;
 }
 
-coResult coAppImpl::OnStart()
+coResult coPrebuildApp::OnStart()
 {
 	coParsedProject parsedProject;
 	coINFO("Parsing project...");
@@ -119,7 +119,7 @@ coResult coAppImpl::OnStart()
 	return true;
 }
 
-coResult coAppImpl::ParseProject(coParsedProject& _parsedProject)
+coResult coPrebuildApp::ParseProject(coParsedProject& _parsedProject)
 {
 	coProjectParser::ParseConfig parseConfig;
 	parseConfig.srcReferenceDir = srcReferenceDir;
@@ -131,7 +131,7 @@ coResult coAppImpl::ParseProject(coParsedProject& _parsedProject)
 	return true;
 }
 
-coResult coAppImpl::GenerateProject(const coParsedProject& _parsedProject)
+coResult coPrebuildApp::GenerateProject(const coParsedProject& _parsedProject)
 {
 	coCppTypesGeneratorPlugin cppTypesPlugin;
 	{

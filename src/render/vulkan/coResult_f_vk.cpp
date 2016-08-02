@@ -2,9 +2,8 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "render/pch.h"
 #include "render/vulkan/coResult_f_vk.h"
-#include "container/string/coConstString.h"
 
-const coChar* coGetVulkanResultString(VkResult _result)
+const coChar* coGetVulkanResultString(const VkResult& _result)
 {
 	switch (_result)
 	{

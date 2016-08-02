@@ -7,7 +7,7 @@
 #include "container/string/coDynamicString.h"
 #include "parser/project/coProjectParser.h"
 
-class coAppImpl : public coApp
+class coPrebuildApp : public coApp
 {
 	typedef coApp Super;
 public:
@@ -15,8 +15,8 @@ public:
 	{
 	public:
 	};
-	coAppImpl();
-	virtual ~coAppImpl();
+	coPrebuildApp();
+	virtual ~coPrebuildApp();
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
