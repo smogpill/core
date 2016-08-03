@@ -3,7 +3,9 @@
 #include "render/pch.h"
 #include "render/coRenderer.h"
 #include "render/vulkan/coResult_f_vk.h"
+#include "render/vulkan/coMessageHandler_vk.h"
 #include "lang/result/coResult_f.h"
+#include "pattern/scope/coDefer.h"
 #include "container/array/coArray_f.h"
 
 class coRendererInfo_vk
@@ -11,15 +13,17 @@ class coRendererInfo_vk
 public:
 	coRendererInfo_vk()
 		: instance_vk(VK_NULL_HANDLE)
-		, enableValidationLayers(false)
+		, enableDebug(false)
+		, messageHandler_vk(nullptr)
 	{
 #ifdef coDEBUG
-		enableValidationLayers = true;
+		enableDebug = true;
 #endif
 	}
 	VkInstance instance_vk;
 	VkAllocationCallbacks allocator_vk;
-	coBool enableValidationLayers;
+	coBool enableDebug;
+	coMessageHandler_vk* messageHandler_vk;
 };
 
 static coResult coGetNbAvailableExtensions(coUint32& _nbExtensions)
@@ -142,7 +146,7 @@ coResult coRenderer::OnImplInit(const InitConfig& /*_config*/)
 	{
 		// Set extensions
 		{
-			if (info_vk->enableValidationLayers)
+			if (info_vk->enableDebug)
 			{
 				coPushBack(requestedExtensions, "VK_EXT_debug_report");
 			}
@@ -152,9 +156,9 @@ coResult coRenderer::OnImplInit(const InitConfig& /*_config*/)
 		}
 
 		// Set layers
-		if (info_vk->enableValidationLayers)
+		if (info_vk->enableDebug)
 		{
-			if (info_vk->enableValidationLayers)
+			if (info_vk->enableDebug)
 			{
 				coPushBack(requestedLayers, "VK_LAYER_LUNARG_standard_validation");
 			}
@@ -171,5 +175,15 @@ coResult coRenderer::OnImplInit(const InitConfig& /*_config*/)
 	// Instance
 	coASSERT(info_vk->instance_vk == VK_NULL_HANDLE);
 	coTRY_vk(vkCreateInstance(&createInfo, nullptr, &info_vk->instance_vk), "Failed to create Vulkan instance.");
+
+	if (info_vk->enableDebug)
+	{
+		coMessageHandler_vk* p = new coMessageHandler_vk();
+		coDEFER() { delete p; };
+		coMessageHandler_vk::InitConfig c;
+		c.instance_vk = &info_vk->instance_vk;
+		coTRY(p->Init(c), "Failed to init the message handler.");
+		coSwap(info_vk->messageHandler_vk, p);
+	}
 	return true;
 }
