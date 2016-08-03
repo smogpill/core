@@ -4,8 +4,7 @@
 #include "render/coRenderer.h"
 #include "render/vulkan/coResult_f_vk.h"
 #include "lang/result/coResult_f.h"
-
-const coArray<const coChar*> co_defaultRequestedValidationLayers = { "VK_LAYER_LUNARG_standard_validation" };
+#include "container/array/coArray_f.h"
 
 class coRendererInfo_vk
 {
@@ -23,15 +22,13 @@ public:
 	coBool enableValidationLayers;
 };
 
-/*
 static coResult coGetNbAvailableExtensions(coUint32& _nbExtensions)
 {
 	_nbExtensions = 0;
 	coTRY_vk(vkEnumerateInstanceExtensionProperties(nullptr, &_nbExtensions, nullptr), "Failed to get the extension count.");
 	return true;
-}*/
+}
 
-/*
 static coResult coGetAvailableExtensions(coDynamicArray<VkExtensionProperties>& _extensions)
 {
 	coUint32 nbExtensions = 0;
@@ -39,7 +36,34 @@ static coResult coGetAvailableExtensions(coDynamicArray<VkExtensionProperties>& 
 	coResize(_extensions, nbExtensions);
 	coTRY_vk(vkEnumerateInstanceExtensionProperties(nullptr, &nbExtensions, _extensions.data), "Failed to get the extension properties");
 	return true;
-}*/
+}
+
+static coResult coCheckIfExtensionsAreAvailable(const coArray<const coChar*>& _requestedExtensions)
+{
+	coDynamicArray<VkExtensionProperties> availableExtensions;
+	coTRY(coGetAvailableExtensions(availableExtensions), "Failed to get available extensions");
+
+	coBool missingExtensions = false;
+	for (const coConstString& requested : _requestedExtensions)
+	{
+		coBool found = false;
+		for (const VkExtensionProperties& available : availableExtensions)
+		{
+			if (requested == available.extensionName)
+			{
+				found = true;
+				break;
+			}
+		}
+		if (!found)
+		{
+			coWARN("Vulkan extension not available: " << requested);
+			missingExtensions = true;
+		}
+	}
+
+	return !missingExtensions;
+}
 
 static coResult coGetNbAvailableLayers(coUint32& _nbLayers)
 {
@@ -53,7 +77,7 @@ static coResult coGetAvailableLayers(coDynamicArray<VkLayerProperties>& _validat
 	coUint32 nbLayers;
 	coTRY(coGetNbAvailableLayers(nbLayers), nullptr);
 	coResize(_validationLayers, nbLayers);
-	coTRY_vk(vkEnumerateInstanceLayerProperties(&nbLayers, _validationLayers.data), "Failed to get the layer count.");
+	coTRY_vk(vkEnumerateInstanceLayerProperties(&nbLayers, _validationLayers.data), "Failed to get available layers.");
 	return true;
 }
 
@@ -113,12 +137,31 @@ coResult coRenderer::OnImplInit(const InitConfig& /*_config*/)
 
 	// Instance create info
 	VkInstanceCreateInfo createInfo = {};
+	coDynamicArray<const coChar*> requestedLayers;
+	coDynamicArray<const coChar*> requestedExtensions;
 	{
-		// Set layers
-		if (info_vk->enableValidationLayers && coCheckIfLayersAreAvailable(co_defaultRequestedValidationLayers))
+		// Set extensions
 		{
-			createInfo.enabledLayerCount = co_defaultRequestedValidationLayers.count;
-			createInfo.ppEnabledLayerNames = co_defaultRequestedValidationLayers.data;
+			if (info_vk->enableValidationLayers)
+			{
+				coPushBack(requestedExtensions, "VK_EXT_debug_report");
+			}
+			coTRY(coCheckIfExtensionsAreAvailable(requestedExtensions), nullptr);
+			createInfo.enabledExtensionCount = requestedExtensions.count;
+			createInfo.ppEnabledExtensionNames = requestedExtensions.data;
+		}
+
+		// Set layers
+		if (info_vk->enableValidationLayers)
+		{
+			if (info_vk->enableValidationLayers)
+			{
+				coPushBack(requestedLayers, "VK_LAYER_LUNARG_standard_validation");
+			}
+
+			coTRY(coCheckIfLayersAreAvailable(requestedLayers), nullptr);
+			createInfo.enabledLayerCount = requestedLayers.count;
+			createInfo.ppEnabledLayerNames = requestedLayers.data;
 		}
 
 		createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
