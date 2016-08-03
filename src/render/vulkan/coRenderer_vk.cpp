@@ -6,27 +6,10 @@
 #include "render/vulkan/coMessageHandler_vk.h"
 #include "render/vulkan/coExtensions_f_vk.h"
 #include "render/vulkan/coLayers_f_vk.h"
+#include "render/vulkan/coRendererInfo_vk.h"
 #include "lang/result/coResult_f.h"
 #include "pattern/scope/coDefer.h"
 #include "container/array/coArray_f.h"
-
-class coRendererInfo_vk
-{
-public:
-	coRendererInfo_vk()
-		: instance_vk(VK_NULL_HANDLE)
-		, enableDebug(false)
-		, messageHandler_vk(nullptr)
-	{
-#ifdef coDEBUG
-		enableDebug = true;
-#endif
-	}
-	VkInstance instance_vk;
-	VkAllocationCallbacks allocator_vk;
-	coBool enableDebug;
-	coMessageHandler_vk* messageHandler_vk;
-};
 
 void coRenderer::OnImplConstruct()
 {
@@ -36,6 +19,8 @@ void coRenderer::OnImplConstruct()
 void coRenderer::OnImplDestruct()
 {
 	coRendererInfo_vk* info_vk = static_cast<coRendererInfo_vk*>(impl);
+	delete info_vk->messageHandler_vk;
+	info_vk->messageHandler_vk = nullptr;
 	vkDestroyInstance(info_vk->instance_vk, nullptr);
 	delete info_vk;
 }
