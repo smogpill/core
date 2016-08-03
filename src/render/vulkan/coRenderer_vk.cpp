@@ -4,6 +4,8 @@
 #include "render/coRenderer.h"
 #include "render/vulkan/coResult_f_vk.h"
 #include "render/vulkan/coMessageHandler_vk.h"
+#include "render/vulkan/coExtensions_f_vk.h"
+#include "render/vulkan/coLayers_f_vk.h"
 #include "lang/result/coResult_f.h"
 #include "pattern/scope/coDefer.h"
 #include "container/array/coArray_f.h"
@@ -25,92 +27,6 @@ public:
 	coBool enableDebug;
 	coMessageHandler_vk* messageHandler_vk;
 };
-
-static coResult coGetNbAvailableExtensions(coUint32& _nbExtensions)
-{
-	_nbExtensions = 0;
-	coTRY_vk(vkEnumerateInstanceExtensionProperties(nullptr, &_nbExtensions, nullptr), "Failed to get the extension count.");
-	return true;
-}
-
-static coResult coGetAvailableExtensions(coDynamicArray<VkExtensionProperties>& _extensions)
-{
-	coUint32 nbExtensions = 0;
-	coTRY(coGetNbAvailableExtensions(nbExtensions), nullptr);
-	coResize(_extensions, nbExtensions);
-	coTRY_vk(vkEnumerateInstanceExtensionProperties(nullptr, &nbExtensions, _extensions.data), "Failed to get the extension properties");
-	return true;
-}
-
-static coResult coCheckIfExtensionsAreAvailable(const coArray<const coChar*>& _requestedExtensions)
-{
-	coDynamicArray<VkExtensionProperties> availableExtensions;
-	coTRY(coGetAvailableExtensions(availableExtensions), "Failed to get available extensions");
-
-	coBool missingExtensions = false;
-	for (const coConstString& requested : _requestedExtensions)
-	{
-		coBool found = false;
-		for (const VkExtensionProperties& available : availableExtensions)
-		{
-			if (requested == available.extensionName)
-			{
-				found = true;
-				break;
-			}
-		}
-		if (!found)
-		{
-			coWARN("Vulkan extension not available: " << requested);
-			missingExtensions = true;
-		}
-	}
-
-	return !missingExtensions;
-}
-
-static coResult coGetNbAvailableLayers(coUint32& _nbLayers)
-{
-	_nbLayers = 0;
-	coTRY_vk(vkEnumerateInstanceLayerProperties(&_nbLayers, nullptr), "Failed to get the layer count.");
-	return true;
-}
-
-static coResult coGetAvailableLayers(coDynamicArray<VkLayerProperties>& _validationLayers)
-{
-	coUint32 nbLayers;
-	coTRY(coGetNbAvailableLayers(nbLayers), nullptr);
-	coResize(_validationLayers, nbLayers);
-	coTRY_vk(vkEnumerateInstanceLayerProperties(&nbLayers, _validationLayers.data), "Failed to get available layers.");
-	return true;
-}
-
-static coResult coCheckIfLayersAreAvailable(const coArray<const coChar*>& _requestedLayers)
-{
-	coDynamicArray<VkLayerProperties> availableLayers;
-	coTRY(coGetAvailableLayers(availableLayers), "Failed to get available layers");
-
-	coBool missingLayers = false;
-	for (const coConstString& requested : _requestedLayers)
-	{
-		coBool found = false;
-		for (const VkLayerProperties& available : availableLayers)
-		{
-			if (requested == available.layerName)
-			{
-				found = true;
-				break;
-			}
-		}
-		if (!found)
-		{
-			coWARN("Vulkan layer not available: "<<requested);
-			missingLayers = true;
-		}
-	}
-
-	return !missingLayers;
-}
 
 void coRenderer::OnImplConstruct()
 {
@@ -150,7 +66,7 @@ coResult coRenderer::OnImplInit(const InitConfig& /*_config*/)
 			{
 				coPushBack(requestedExtensions, "VK_EXT_debug_report");
 			}
-			coTRY(coCheckIfExtensionsAreAvailable(requestedExtensions), nullptr);
+			coTRY(coCheckIfExtensionsAreAvailable_vk(requestedExtensions), nullptr);
 			createInfo.enabledExtensionCount = requestedExtensions.count;
 			createInfo.ppEnabledExtensionNames = requestedExtensions.data;
 		}
@@ -163,7 +79,7 @@ coResult coRenderer::OnImplInit(const InitConfig& /*_config*/)
 				coPushBack(requestedLayers, "VK_LAYER_LUNARG_standard_validation");
 			}
 
-			coTRY(coCheckIfLayersAreAvailable(requestedLayers), nullptr);
+			coTRY(coCheckIfLayersAreAvailable_vk(requestedLayers), nullptr);
 			createInfo.enabledLayerCount = requestedLayers.count;
 			createInfo.ppEnabledLayerNames = requestedLayers.data;
 		}
