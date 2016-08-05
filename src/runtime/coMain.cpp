@@ -16,6 +16,7 @@ coResult Main(coInt nbArgs, const coChar** argv)
 	coTRY(app.Init(config), nullptr);
 
 	coTRY(app.Start(), nullptr);
+	app.Stop();
 
 	return true;
 }
