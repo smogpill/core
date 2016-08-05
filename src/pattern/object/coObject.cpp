@@ -11,6 +11,11 @@ coObject::coObject()
 
 }
 
+coObject::~coObject()
+{
+	coASSERT(!IsStarted());
+}
+
 coResult coObject::Init(const InitConfig& _config)
 {
 	if (objectState >= ObjectState::initialized)

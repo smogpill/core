@@ -26,7 +26,7 @@ public:
 	};
 
 	coObject();
-	virtual ~coObject() {}
+	virtual ~coObject();
 
 	coResult Init(const InitConfig& _config);
 	coResult Start();
