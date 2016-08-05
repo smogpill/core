@@ -77,6 +77,12 @@ void coPushBackArray(coDynamicArray<T>& _this, const coArray<T>& _other)
 }
 
 template <class T>
+void coSwap(coDynamicArray<T>& _this, coDynamicArray<T>& _other)
+{
+	coSwapMemory(_this, _other);
+}
+
+template <class T>
 coDynamicArray<T>::coDynamicArray(const coArray<T>& _)
 	: coDynamicArray()
 {

@@ -35,3 +35,8 @@ coBool coIsNullTerminated(const coDynamicString16& _this)
 {
 	return _this.capacity > _this.count && _this.data[_this.count] == L'\0';
 }
+
+void coSwap(coDynamicString16& _this, coDynamicString16& _other)
+{
+	coSwapMemory(_this, _other);
+}

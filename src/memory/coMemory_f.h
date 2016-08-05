@@ -40,10 +40,10 @@ coFORCE_INLINE void coSwap(T& _a, T& _b)
 }
 
 template <typename T>
-coFORCE_INLINE void swapMemory(T& _a, T& _b)
+coFORCE_INLINE void coSwapMemory(T& _a, T& _b)
 {
 	coByte tmp[sizeof(T)];
-	coMemCopy(tmp, sizeof(tmp), &_a, sizeof(_a));
-	coMemCopy(&_a, sizeof(_a), &_b, sizeof(_b));
-	coMemCopy(&_b, sizeof(_b), tmp, sizeof(tmp));
+	coMemCopy(tmp, &_a, sizeof(_a));
+	coMemCopy(&_a, &_b, sizeof(_b));
+	coMemCopy(&_b, tmp, sizeof(tmp));
 }

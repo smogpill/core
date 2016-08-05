@@ -58,3 +58,8 @@ void coSetFromWide(coDynamicString& _this, const coConstString16& _other)
 	coASSERT(s.length() < coNumericLimits<decltype(_this.count)>::Max());
 	_this = coConstString(s.data(), static_cast<coUint32>(s.length()));
 }
+
+void coSwap(coDynamicString& _this, coDynamicString& _other)
+{
+	coSwapMemory(_this, _other);
+}
