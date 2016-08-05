@@ -2,17 +2,30 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include "container/array/coDynamicArray.h"
+#include "pattern/object/coObject.h"
 
 class coMessageHandler_vk;
 class coLayerManager_vk;
 class coDevice_vk;
 class coExtensionManager_vk;
 
-class coRendererInfo_vk
+class coRenderContext_vk : public coObject
 {
+	coDECLARE_SUPER(coObject);
 public:
-	coRendererInfo_vk();
+	coRenderContext_vk();
+	virtual ~coRenderContext_vk();
+
+protected:
+	virtual coResult OnInit(const coObject::InitConfig& _config) override;
+
+private:
+	coResult InitLayers();
+	coResult InitExtensions();
+	coResult InitInstance();
+	coResult InitMessageHandler();
+	coResult InitDevices();
+
 	VkInstance instance_vk;
 	VkAllocationCallbacks allocator_vk;
 	coBool enableDebug;
