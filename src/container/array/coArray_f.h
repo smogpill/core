@@ -50,6 +50,24 @@ void coDeleteElementsAndClear(coArray<T>& _this)
 	coClear(_this);
 }
 
+template <class T>
+coUint32 coFind(const coArray<T>& _this, const T& _val)
+{
+	coUint32 i = 0;
+	for (; i < _this.count; ++i)
+	{
+		if (_this[i] == _val)
+			return i;
+	}
+	return i;
+}
+
+template <class T>
+coBool coContains(const coArray<T>& _this, const T& _val)
+{
+	return coFind(_this, _val) != _this.count;
+}
+
 template <class T, class CompareFunctor>
 void coSort(coArray<T>& _this, CompareFunctor _cmp)
 {
