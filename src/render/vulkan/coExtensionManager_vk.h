@@ -11,9 +11,9 @@ public:
 	virtual ~coExtensionManager_vk();
 
 	coResult AddRequested(const coConstString& _extension);
-	coBool IsRequested(const coConstString& _extension);
-	coResult GetAllRequested(coDynamicArray<const coChar*>& _extensions);
-	coBool IsSupported(const coConstString& _extension);
+	coBool IsRequested(const coConstString& _extension) const;
+	coResult GetAllRequested(coDynamicArray<const coChar*>& _extensions) const;
+	coBool IsSupported(const coConstString& _extension) const;
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;

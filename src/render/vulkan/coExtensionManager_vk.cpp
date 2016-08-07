@@ -20,46 +20,46 @@ coResult coExtensionManager_vk::OnInit(const coObject::InitConfig& _config)
 
 coResult coExtensionManager_vk::InitSupportedExtensions()
 {
-	coUint32 nbExtensions = 0;
-	coTRY_vk(vkEnumerateInstanceExtensionProperties(nullptr, &nbExtensions, nullptr), "Failed to get the supported extension count.");
-	coResize(supportedExtensions, nbExtensions);
+	coUint32 nb = 0;
+	coTRY_vk(vkEnumerateInstanceExtensionProperties(nullptr, &nb, nullptr), "Failed to get the supported extension count.");
+	coResize(supportedExtensions, nb);
 	coTRY_vk(vkEnumerateInstanceExtensionProperties(nullptr, &supportedExtensions.count, supportedExtensions.data), "Failed to get supported extensions.");
-	coTRY(supportedExtensions.count == nbExtensions, nullptr);
+	coTRY(supportedExtensions.count == nb, nullptr);
 	return true;
 }
 
-coBool coExtensionManager_vk::IsSupported(const coConstString& _layer)
+coBool coExtensionManager_vk::IsSupported(const coConstString& _extension) const
 {
 	for (const VkExtensionProperties& supportedExtension : supportedExtensions)
 	{
-		if (_layer == supportedExtension.extensionName)
+		if (_extension == supportedExtension.extensionName)
 			return true;
 	}
 	return false;
 }
 
-coBool coExtensionManager_vk::IsRequested(const coConstString& _layer)
+coBool coExtensionManager_vk::IsRequested(const coConstString& _extension) const
 {
 	for (const coDynamicString* s : requestedExtensions)
 	{
 		coASSERT(s);
-		if (*s == _layer)
+		if (*s == _extension)
 			return true;
 	}
 	return false;
 }
 
-coResult coExtensionManager_vk::AddRequested(const coConstString& _extensionName)
+coResult coExtensionManager_vk::AddRequested(const coConstString& _extension)
 {
-	coTRY(IsSupported(_extensionName), "Layer not supported: " << _extensionName);
-	coTRY(!IsRequested(_extensionName), "Layer already requested: " << _extensionName);
-	coDynamicString* extension = new coDynamicString(_extensionName);
+	coTRY(IsSupported(_extension), "Layer not supported: " << _extension);
+	coTRY(!IsRequested(_extension), "Layer already requested: " << _extension);
+	coDynamicString* extension = new coDynamicString(_extension);
 	coNullTerminate(*extension);
 	coPushBack(requestedExtensions, extension);
 	return true;
 }
 
-coResult coExtensionManager_vk::GetAllRequested(coDynamicArray<const coChar*>& _layers)
+coResult coExtensionManager_vk::GetAllRequested(coDynamicArray<const coChar*>& _layers) const
 {
 	coClear(_layers);
 	for (const coDynamicString* s : requestedExtensions)

@@ -11,9 +11,9 @@ public:
 	virtual ~coLayerManager_vk();
 
 	coResult AddRequested(const coConstString& _layer);
-	coBool IsRequested(const coConstString& _layer);
-	coResult GetAllRequested(coDynamicArray<const coChar*>& _layers);
-	coBool IsSupported(const coConstString& _layer);
+	coBool IsRequested(const coConstString& _layer) const;
+	coResult GetAllRequested(coDynamicArray<const coChar*>& _layers) const;
+	coBool IsSupported(const coConstString& _layer) const;
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;

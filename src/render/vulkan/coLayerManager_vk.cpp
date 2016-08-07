@@ -5,6 +5,7 @@
 #include "render/vulkan/coResult_f_vk.h"
 #include "lang/result/coResult.h"
 #include "lang/result/coResult_f.h"
+#include "container/array/coDynamicArray_f.h"
 
 coLayerManager_vk::~coLayerManager_vk()
 {
@@ -21,15 +22,15 @@ coResult coLayerManager_vk::OnInit(const coObject::InitConfig& _config)
 
 coResult coLayerManager_vk::InitSupportedLayers()
 {
-	coUint32 nbLayers = 0;
-	coTRY_vk(vkEnumerateInstanceLayerProperties(&nbLayers, nullptr), "Failed to get the supported layer count.");
-	coResize(supportedLayers, nbLayers);
+	coUint32 nb = 0;
+	coTRY_vk(vkEnumerateInstanceLayerProperties(&nb, nullptr), "Failed to get the supported layer count.");
+	coResize(supportedLayers, nb);
 	coTRY_vk(vkEnumerateInstanceLayerProperties(&supportedLayers.count, supportedLayers.data), "Failed to get supported layers.");
-	coTRY(supportedLayers.count == nbLayers, nullptr);
+	coTRY(supportedLayers.count == nb, nullptr);
 	return true;
 }
 
-coBool coLayerManager_vk::IsSupported(const coConstString& _layer)
+coBool coLayerManager_vk::IsSupported(const coConstString& _layer) const
 {
 	for (const VkLayerProperties& supportedLayer : supportedLayers)
 	{
@@ -39,7 +40,7 @@ coBool coLayerManager_vk::IsSupported(const coConstString& _layer)
 	return false;
 }
 
-coBool coLayerManager_vk::IsRequested(const coConstString& _layer)
+coBool coLayerManager_vk::IsRequested(const coConstString& _layer) const
 {
 	for (const coDynamicString* s : requestedLayers)
 	{
@@ -60,7 +61,7 @@ coResult coLayerManager_vk::AddRequested(const coConstString& _layerName)
 	return true;
 }
 
-coResult coLayerManager_vk::GetAllRequested(coDynamicArray<const coChar*>& _layers)
+coResult coLayerManager_vk::GetAllRequested(coDynamicArray<const coChar*>& _layers) const
 {
 	coClear(_layers);
 	for (const coDynamicString* s : requestedLayers)

@@ -6,10 +6,12 @@
 #include "render/vulkan/coMessageHandler_vk.h"
 #include "render/vulkan/coExtensionManager_vk.h"
 #include "render/vulkan/coLayerManager_vk.h"
-#include "render/vulkan/coDevice_vk.h"
+#include "render/vulkan/coPhysicalDevice_vk.h"
+#include "render/vulkan/coLogicalDevice_vk.h"
 #include "debug/log/coLog.h"
 #include "lang/result/coResult_f.h"
 #include "pattern/scope/coDefer.h"
+#include "container/array/coDynamicArray_f.h"
 
 coRenderContext_vk::coRenderContext_vk()
 	: instance_vk(VK_NULL_HANDLE)
@@ -25,9 +27,12 @@ coRenderContext_vk::coRenderContext_vk()
 
 coRenderContext_vk::~coRenderContext_vk()
 {
-	for (coDevice_vk* device : devices)
-		delete device;
-	coClear(devices);
+	for (auto p : logicalDevices)
+		delete p;
+	coClear(logicalDevices);
+	for (auto p : physicalDevices)
+		delete p;
+	coClear(physicalDevices);
 	delete messageHandler_vk;
 	vkDestroyInstance(instance_vk, nullptr);
 	delete extensionManager_vk;
@@ -67,9 +72,15 @@ coResult coRenderContext_vk::InitExtensions()
 	coDEFER() { delete manager; };
 	coExtensionManager_vk::InitConfig c;
 	coTRY(manager->Init(c), "Failed to init the extension manager.");
+	coTRY(manager->AddRequested(VK_KHR_SURFACE_EXTENSION_NAME), nullptr);
+#ifdef coMSWINDOWS
+	coTRY(manager->AddRequested(VK_KHR_WIN32_SURFACE_EXTENSION_NAME), nullptr);
+#else
+#	error Platform not yet supported for surfaces.
+#endif
 	if (enableDebug)
 	{
-		coCHECK(manager->AddRequested("VK_EXT_debug_report"), "Failed to add extension, ignored.");
+		coCHECK(manager->AddRequested(VK_EXT_DEBUG_REPORT_EXTENSION_NAME), "Failed to add extension, ignored.");
 	}
 	coSwap(extensionManager_vk, manager);
 	return true;
@@ -131,29 +142,38 @@ coResult coRenderContext_vk::InitMessageHandler()
 coResult coRenderContext_vk::InitDevices()
 {
 	coTRY(instance_vk, nullptr);
-	coTRY(devices.count == 0, nullptr);
+	coTRY(logicalDevices.count == 0, nullptr);
 
-	coDynamicArray<VkPhysicalDevice> availableDevices;
-	coTRY(coGetPhysicalDevices_vk(availableDevices, instance_vk), "Failed to retrieve available physical devices");
-	coTRY(availableDevices.count > 0, "Failed to find any available physical device.");
+	coTRY(coGetPhysicalDevices(physicalDevices, instance_vk), "Failed to retrieve the supported physical devices.");
+	coTRY(physicalDevices.count > 0, "Failed to find any supported physical device.");
 
-	for (const VkPhysicalDevice& physicalDevice : availableDevices)
+	for (coPhysicalDevice_vk* physicalDevice : physicalDevices)
 	{
-		coDevice_vk* device = new coDevice_vk();
-		coDEFER() { delete device; };
-		coDevice_vk::InitConfig c;
+		coTRY(physicalDevice, nullptr);
+
+		if (!physicalDevice->IsExtensionSupported(VK_KHR_SWAPCHAIN_EXTENSION_NAME))
+		{
+			coWARN("The physical device does not support swap chain, ignoring it: " << *physicalDevice);
+			continue;
+		}
+
+		coLogicalDevice_vk* logicalDevice = new coLogicalDevice_vk();
+		coDEFER() { delete logicalDevice; };
+		coLogicalDevice_vk::InitConfig c;
 		c.physicalDevice_vk = physicalDevice;
 		c.layerManager_vk = layerManager_vk;
-		coTRY(device->Init(c), "Failed to init the device: " << *device);
+		coTRY(logicalDevice->Init(c), "Failed to init the device: " << *logicalDevice);
+		
+		coTRY(logicalDevice->AddRequestedExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME), nullptr);
 		coUint32 score = 0;
-		coTRY(device->GetScore(score), "Failed to get the device score");
+		coTRY(logicalDevice->GetScore(score), "Failed to get the device score");
 		if (score > 0)
 		{
-			coPushBack(devices, device);
-			device = nullptr;
+			coPushBack(logicalDevices, logicalDevice);
+			logicalDevice = nullptr;
 		}
 	}
 
-	coTRY(devices.count > 0, "Failed to find any acceptable device.");
+	coTRY(logicalDevices.count > 0, "Failed to find any acceptable device.");
 	return true;
 }

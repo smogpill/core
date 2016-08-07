@@ -6,7 +6,8 @@
 
 class coMessageHandler_vk;
 class coLayerManager_vk;
-class coDevice_vk;
+class coPhysicalDevice_vk;
+class coLogicalDevice_vk;
 class coExtensionManager_vk;
 
 class coRenderContext_vk : public coObject
@@ -15,6 +16,8 @@ class coRenderContext_vk : public coObject
 public:
 	coRenderContext_vk();
 	virtual ~coRenderContext_vk();
+
+	const VkInstance& GetVkInstance() const { return instance_vk; }
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
@@ -32,5 +35,6 @@ private:
 	coMessageHandler_vk* messageHandler_vk;
 	coLayerManager_vk* layerManager_vk;
 	coExtensionManager_vk* extensionManager_vk;
-	coDynamicArray<coDevice_vk*> devices;
+	coDynamicArray<coPhysicalDevice_vk*> physicalDevices;
+	coDynamicArray<coLogicalDevice_vk*> logicalDevices;
 };
