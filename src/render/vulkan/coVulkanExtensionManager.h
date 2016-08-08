@@ -4,11 +4,11 @@
 
 #include "pattern/object/coObject.h"
 
-class coExtensionManager_vk : public coObject
+class coVulkanExtensionManager : public coObject
 {
 	coDECLARE_SUPER(coObject);
 public:
-	virtual ~coExtensionManager_vk();
+	virtual ~coVulkanExtensionManager();
 
 	coResult AddRequested(const coConstString& _extension);
 	coBool IsRequested(const coConstString& _extension) const;

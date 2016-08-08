@@ -1,19 +1,19 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "render/pch.h"
-#include "render/vulkan/coDeviceMemory_vk.h"
-#include "render/vulkan/coLogicalDevice_vk.h"
-#include "render/vulkan/coResult_f_vk.h"
+#include "render/vulkan/coVulkanDeviceMemory.h"
+#include "render/vulkan/coVulkanLogicalDevice.h"
+#include "render/vulkan/coVulkanResult_f.h"
 #include "lang/result/coResult_f.h"
 
-coDeviceMemory_vk::coDeviceMemory_vk()
+coVulkanDeviceMemory::coVulkanDeviceMemory()
 	: deviceMemory_vk(VK_NULL_HANDLE)
 	, logicalDevice_vk(nullptr)
 {
 
 }
 
-coDeviceMemory_vk::~coDeviceMemory_vk()
+coVulkanDeviceMemory::~coVulkanDeviceMemory()
 {
 	if (deviceMemory_vk != VK_NULL_HANDLE)
 	{
@@ -21,14 +21,14 @@ coDeviceMemory_vk::~coDeviceMemory_vk()
 	}
 }
 
-coDeviceMemory_vk::InitConfig::InitConfig()
+coVulkanDeviceMemory::InitConfig::InitConfig()
 	: device_vk(nullptr)
 	, size(0)
 {
 
 }
 
-coResult coDeviceMemory_vk::OnInit(const coObject::InitConfig& _config)
+coResult coVulkanDeviceMemory::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
@@ -40,6 +40,6 @@ coResult coDeviceMemory_vk::OnInit(const coObject::InitConfig& _config)
 	allocInfo.allocationSize = config.size;
 	allocInfo.memoryTypeIndex = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
 
-	coTRY_vk(vkAllocateMemory(logicalDevice_vk->GetVkDevice(), &allocInfo, nullptr, &deviceMemory_vk), "Failed to allocate memory");
+	coVULKAN_TRY(vkAllocateMemory(logicalDevice_vk->GetVkDevice(), &allocInfo, nullptr, &deviceMemory_vk), "Failed to allocate memory");
 	return true;
 }

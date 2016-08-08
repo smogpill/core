@@ -5,9 +5,9 @@
 #include "pattern/object/coObject.h"
 #include "math/vector/coInt32x3.h"
 
-class coLogicalDevice_vk;
+class coVulkanLogicalDevice;
 
-class coImage_vk : public coObject
+class coVulkanImage : public coObject
 {
 	coDECLARE_SUPER(coObject);
 public:
@@ -21,7 +21,7 @@ public:
 	{
 	public:
 		InitConfig();
-		coLogicalDevice_vk* device_vk;
+		coVulkanLogicalDevice* device_vk;
 		coInt32x3 size;
 		coUint32 arraySize;
 		VkDeviceMemory deviceMemory_vk;
@@ -30,8 +30,8 @@ public:
 		//coBool cpuReadAccess;
 		Type type;
 	};
-	coImage_vk();
-	virtual ~coImage_vk();
+	coVulkanImage();
+	virtual ~coVulkanImage();
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
@@ -39,7 +39,7 @@ protected:
 private:
 	static coResult ComputeImageType(VkImageType& _out, const InitConfig& _config);
 
-	coLogicalDevice_vk* device_vk;
+	coVulkanLogicalDevice* device_vk;
 	VkDeviceMemory deviceMemory_vk;
 	VkImage image_vk;
 };

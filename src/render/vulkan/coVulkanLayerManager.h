@@ -4,11 +4,11 @@
 
 #include "pattern/object/coObject.h"
 
-class coLayerManager_vk : public coObject
+class coVulkanLayerManager : public coObject
 {
 	coDECLARE_SUPER(coObject);
 public:
-	virtual ~coLayerManager_vk();
+	virtual ~coVulkanLayerManager();
 
 	coResult AddRequested(const coConstString& _layer);
 	coBool IsRequested(const coConstString& _layer) const;

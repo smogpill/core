@@ -2,21 +2,20 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include "pattern/object/coObject.h"
-#include "lang/reflect/coTypeDecl.h"
+#include "render/coSurface.h"
 
-class coRenderer : public coObject
+class coVulkanSurface final : public coSurface
 {
-	coDECLARE_SUPER(coObject);
+	coDECLARE_SUPER(coSurface);
 public:
-	class InitConfig : public Super::InitConfig
-	{
-	public:
-	};
+	coVulkanSurface();
+	~coVulkanSurface();
 
-	coRenderer();
-	virtual ~coRenderer();
+	const VkSurfaceKHR& GetVkSurfaceKHR() const { return surface_vk; }
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
+
+private:
+	VkSurfaceKHR surface_vk;
 };

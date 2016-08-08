@@ -33,7 +33,8 @@ public:
 #endif
 
 #ifdef coMSVC_COMPILER
-#	pragma warning (disable:4577) // warning C4577: 'noexcept' used with no exception handling mode specified; termination on exception is not guaranteed. 
+#	pragma warning(disable:4577) // warning C4577: 'noexcept' used with no exception handling mode specified; termination on exception is not guaranteed. 
+#	pragma warning(disable:4324) // warning C4324: structure was padded due to alignment specifier.
 #endif
 
 inline void _coReturnVoid(int) {}  // to avoid some gcc warnings with the comma operator

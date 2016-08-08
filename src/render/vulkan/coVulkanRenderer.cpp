@@ -1,7 +1,7 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "render/pch.h"
-#include "render/vulkan/coRenderContext_vk.h"
+#include "render/vulkan/coVulkanRenderer.h"
 #include "render/vulkan/coVulkanResult_f.h"
 #include "render/vulkan/coVulkanMessageHandler.h"
 #include "render/vulkan/coVulkanExtensionManager.h"
@@ -13,7 +13,7 @@
 #include "pattern/scope/coDefer.h"
 #include "container/array/coDynamicArray_f.h"
 
-coRenderContext_vk::coRenderContext_vk()
+coVulkanRenderer::coVulkanRenderer()
 	: instance_vk(VK_NULL_HANDLE)
 	, enableDebug(false)
 	, messageHandler_vk(nullptr)
@@ -25,7 +25,7 @@ coRenderContext_vk::coRenderContext_vk()
 #endif
 }
 
-coRenderContext_vk::~coRenderContext_vk()
+coVulkanRenderer::~coVulkanRenderer()
 {
 	for (auto p : logicalDevices)
 		delete p;
@@ -39,20 +39,19 @@ coRenderContext_vk::~coRenderContext_vk()
 	delete layerManager_vk;
 }
 
-coResult coRenderContext_vk::OnInit(const coObject::InitConfig& _config)
+coResult coVulkanRenderer::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
-
+	//const InitConfig& config = static_cast<const InitConfig&>(_config);
 	coTRY(InitLayers(), "Failed to init layers.");
 	coTRY(InitExtensions(), "Failed to init extensions.");
 	coTRY(InitInstance(), "Failed to init the Vulkan instance.");
 	coTRY(InitMessageHandler(), "Failed to init the message handler.");
 	coTRY(InitDevices(), "Failed to init the devices");
-
 	return true;
 }
 
-coResult coRenderContext_vk::InitLayers()
+coResult coVulkanRenderer::InitLayers()
 {
 	coVulkanLayerManager* manager = new coVulkanLayerManager();
 	coDEFER() { delete manager; };
@@ -66,7 +65,7 @@ coResult coRenderContext_vk::InitLayers()
 	return true;
 }
 
-coResult coRenderContext_vk::InitExtensions()
+coResult coVulkanRenderer::InitExtensions()
 {
 	coVulkanExtensionManager* manager = new coVulkanExtensionManager();
 	coDEFER() { delete manager; };
@@ -86,7 +85,7 @@ coResult coRenderContext_vk::InitExtensions()
 	return true;
 }
 
-coResult coRenderContext_vk::InitInstance()
+coResult coVulkanRenderer::InitInstance()
 {
 	// Application Info
 	VkApplicationInfo appInfo = {};
@@ -125,7 +124,7 @@ coResult coRenderContext_vk::InitInstance()
 	return true;
 }
 
-coResult coRenderContext_vk::InitMessageHandler()
+coResult coVulkanRenderer::InitMessageHandler()
 {
 	if (enableDebug)
 	{
@@ -139,7 +138,7 @@ coResult coRenderContext_vk::InitMessageHandler()
 	return true;
 }
 
-coResult coRenderContext_vk::InitDevices()
+coResult coVulkanRenderer::InitDevices()
 {
 	coTRY(instance_vk, nullptr);
 	coTRY(logicalDevices.count == 0, nullptr);
@@ -163,7 +162,7 @@ coResult coRenderContext_vk::InitDevices()
 		c.physicalDevice_vk = physicalDevice;
 		c.layerManager_vk = layerManager_vk;
 		coTRY(logicalDevice->Init(c), "Failed to init the device: " << *logicalDevice);
-		
+
 		coTRY(logicalDevice->AddRequestedExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME), nullptr);
 		coUint32 score = 0;
 		coTRY(logicalDevice->GetScore(score), "Failed to get the device score");

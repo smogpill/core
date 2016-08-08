@@ -4,9 +4,9 @@
 
 #include "pattern/object/coObject.h"
 
-class coRenderContext_vk;
+class coRenderer;
 
-class coSurface_vk : public coObject
+class coSurface : public coObject
 {
 	coDECLARE_SUPER(coObject);
 public:
@@ -14,21 +14,19 @@ public:
 	{
 	public:
 		InitConfig();
-#ifdef VK_USE_PLATFORM_WIN32_KHR
+#ifdef coMSWINDOWS
 		HWND hwnd;
 #endif
-		coRenderContext_vk* renderContext_vk;
+		coRenderer* renderer;
 	};
 
-	coSurface_vk();
-	virtual ~coSurface_vk();
+	coSurface();
+	virtual ~coSurface() {}
 
-	const VkSurfaceKHR& GetVkSurfaceKHR() const { return surface_vk; }
-	
+	coRenderer* GetRenderer() const { return renderer; }
+
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
-private:
-	coRenderContext_vk* renderContext_vk;
-	VkSurfaceKHR surface_vk;
+	coRenderer* renderer;
 };

@@ -5,6 +5,7 @@
 #include "app/coApp.h"
 
 class coRenderer;
+class coWindow;
 
 class coRuntimeApp : public coApp
 {
@@ -17,5 +18,6 @@ protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 private:
+	coWindow* window;
 	coRenderer* renderer;
 };

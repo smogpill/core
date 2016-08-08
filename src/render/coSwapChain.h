@@ -3,8 +3,11 @@
 #pragma once
 
 #include "pattern/object/coObject.h"
+#include "math/vector/coInt32x2.h"
 
-class coMessageHandler_vk : public coObject
+class coSurface;
+
+class coSwapChain : public coObject
 {
 	coDECLARE_SUPER(coObject);
 public:
@@ -12,14 +15,17 @@ public:
 	{
 	public:
 		InitConfig();
-		const VkInstance* instance_vk;
+		coSurface* surface;
+		coSwapChain* oldSwapChain;
+		coInt32x2 size;
+		coUint32 nbImages;
 	};
-	coMessageHandler_vk();
-	virtual ~coMessageHandler_vk();
+
+	coSwapChain();
+	virtual ~coSwapChain() {}
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
-	const VkInstance* instance_vk;
-	VkDebugReportCallbackEXT callback_vk;
+	coSurface* surface;
 };

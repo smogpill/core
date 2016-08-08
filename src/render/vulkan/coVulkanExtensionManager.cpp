@@ -1,34 +1,34 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "render/pch.h"
-#include "render/vulkan/coExtensionManager_vk.h"
-#include "render/vulkan/coResult_f_vk.h"
+#include "render/vulkan/coVulkanExtensionManager.h"
+#include "render/vulkan/coVulkanResult_f.h"
 #include "lang/result/coResult_f.h"
 
-coExtensionManager_vk::~coExtensionManager_vk()
+coVulkanExtensionManager::~coVulkanExtensionManager()
 {
 	for (auto p : requestedExtensions)
 		delete p;
 }
 
-coResult coExtensionManager_vk::OnInit(const coObject::InitConfig& _config)
+coResult coVulkanExtensionManager::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 	coTRY(InitSupportedExtensions(), "Failed to init supported layers");
 	return true;
 }
 
-coResult coExtensionManager_vk::InitSupportedExtensions()
+coResult coVulkanExtensionManager::InitSupportedExtensions()
 {
 	coUint32 nb = 0;
-	coTRY_vk(vkEnumerateInstanceExtensionProperties(nullptr, &nb, nullptr), "Failed to get the supported extension count.");
+	coVULKAN_TRY(vkEnumerateInstanceExtensionProperties(nullptr, &nb, nullptr), "Failed to get the supported extension count.");
 	coResize(supportedExtensions, nb);
-	coTRY_vk(vkEnumerateInstanceExtensionProperties(nullptr, &supportedExtensions.count, supportedExtensions.data), "Failed to get supported extensions.");
+	coVULKAN_TRY(vkEnumerateInstanceExtensionProperties(nullptr, &supportedExtensions.count, supportedExtensions.data), "Failed to get supported extensions.");
 	coTRY(supportedExtensions.count == nb, nullptr);
 	return true;
 }
 
-coBool coExtensionManager_vk::IsSupported(const coConstString& _extension) const
+coBool coVulkanExtensionManager::IsSupported(const coConstString& _extension) const
 {
 	for (const VkExtensionProperties& supportedExtension : supportedExtensions)
 	{
@@ -38,7 +38,7 @@ coBool coExtensionManager_vk::IsSupported(const coConstString& _extension) const
 	return false;
 }
 
-coBool coExtensionManager_vk::IsRequested(const coConstString& _extension) const
+coBool coVulkanExtensionManager::IsRequested(const coConstString& _extension) const
 {
 	for (const coDynamicString* s : requestedExtensions)
 	{
@@ -49,7 +49,7 @@ coBool coExtensionManager_vk::IsRequested(const coConstString& _extension) const
 	return false;
 }
 
-coResult coExtensionManager_vk::AddRequested(const coConstString& _extension)
+coResult coVulkanExtensionManager::AddRequested(const coConstString& _extension)
 {
 	coTRY(IsSupported(_extension), "Layer not supported: " << _extension);
 	coTRY(!IsRequested(_extension), "Layer already requested: " << _extension);
@@ -59,7 +59,7 @@ coResult coExtensionManager_vk::AddRequested(const coConstString& _extension)
 	return true;
 }
 
-coResult coExtensionManager_vk::GetAllRequested(coDynamicArray<const coChar*>& _layers) const
+coResult coVulkanExtensionManager::GetAllRequested(coDynamicArray<const coChar*>& _layers) const
 {
 	coClear(_layers);
 	for (const coDynamicString* s : requestedExtensions)

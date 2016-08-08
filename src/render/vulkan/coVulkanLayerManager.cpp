@@ -1,36 +1,36 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "render/pch.h"
-#include "render/vulkan/coLayerManager_vk.h"
-#include "render/vulkan/coResult_f_vk.h"
+#include "render/vulkan/coVulkanLayerManager.h"
+#include "render/vulkan/coVulkanResult_f.h"
 #include "lang/result/coResult.h"
 #include "lang/result/coResult_f.h"
 #include "container/array/coDynamicArray_f.h"
 
-coLayerManager_vk::~coLayerManager_vk()
+coVulkanLayerManager::~coVulkanLayerManager()
 {
 	for (auto p : requestedLayers)
 		delete p;
 }
 
-coResult coLayerManager_vk::OnInit(const coObject::InitConfig& _config)
+coResult coVulkanLayerManager::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 	coTRY(InitSupportedLayers(), "Failed to init supported layers");
 	return true;
 }
 
-coResult coLayerManager_vk::InitSupportedLayers()
+coResult coVulkanLayerManager::InitSupportedLayers()
 {
 	coUint32 nb = 0;
-	coTRY_vk(vkEnumerateInstanceLayerProperties(&nb, nullptr), "Failed to get the supported layer count.");
+	coVULKAN_TRY(vkEnumerateInstanceLayerProperties(&nb, nullptr), "Failed to get the supported layer count.");
 	coResize(supportedLayers, nb);
-	coTRY_vk(vkEnumerateInstanceLayerProperties(&supportedLayers.count, supportedLayers.data), "Failed to get supported layers.");
+	coVULKAN_TRY(vkEnumerateInstanceLayerProperties(&supportedLayers.count, supportedLayers.data), "Failed to get supported layers.");
 	coTRY(supportedLayers.count == nb, nullptr);
 	return true;
 }
 
-coBool coLayerManager_vk::IsSupported(const coConstString& _layer) const
+coBool coVulkanLayerManager::IsSupported(const coConstString& _layer) const
 {
 	for (const VkLayerProperties& supportedLayer : supportedLayers)
 	{
@@ -40,7 +40,7 @@ coBool coLayerManager_vk::IsSupported(const coConstString& _layer) const
 	return false;
 }
 
-coBool coLayerManager_vk::IsRequested(const coConstString& _layer) const
+coBool coVulkanLayerManager::IsRequested(const coConstString& _layer) const
 {
 	for (const coDynamicString* s : requestedLayers)
 	{
@@ -51,7 +51,7 @@ coBool coLayerManager_vk::IsRequested(const coConstString& _layer) const
 	return false;
 }
 
-coResult coLayerManager_vk::AddRequested(const coConstString& _layerName)
+coResult coVulkanLayerManager::AddRequested(const coConstString& _layerName)
 {
 	coTRY(IsSupported(_layerName), "Layer not supported: " << _layerName);
 	coTRY(!IsRequested(_layerName), "Layer already requested: " << _layerName);
@@ -61,7 +61,7 @@ coResult coLayerManager_vk::AddRequested(const coConstString& _layerName)
 	return true;
 }
 
-coResult coLayerManager_vk::GetAllRequested(coDynamicArray<const coChar*>& _layers) const
+coResult coVulkanLayerManager::GetAllRequested(coDynamicArray<const coChar*>& _layers) const
 {
 	coClear(_layers);
 	for (const coDynamicString* s : requestedLayers)

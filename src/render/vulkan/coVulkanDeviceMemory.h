@@ -4,9 +4,9 @@
 
 #include "pattern/object/coObject.h"
 
-class coLogicalDevice_vk;
+class coVulkanLogicalDevice;
 
-class coDeviceMemory_vk : public coObject
+class coVulkanDeviceMemory : public coObject
 {
 	coDECLARE_SUPER(coObject);
 public:
@@ -23,16 +23,16 @@ public:
 		InitConfig();
 		coUint64 size;
 		Type type;
-		coLogicalDevice_vk* device_vk;
+		coVulkanLogicalDevice* device_vk;
 	};
 
-	coDeviceMemory_vk();
-	virtual ~coDeviceMemory_vk();
+	coVulkanDeviceMemory();
+	virtual ~coVulkanDeviceMemory();
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 private:
-	coLogicalDevice_vk* logicalDevice_vk;
+	coVulkanLogicalDevice* logicalDevice_vk;
 	VkDeviceMemory deviceMemory_vk;
 };

@@ -3,20 +3,23 @@
 #pragma once
 
 #include "pattern/object/coObject.h"
-#include "lang/reflect/coTypeDecl.h"
 
-class coRenderer : public coObject
+class coVulkanMessageHandler : public coObject
 {
 	coDECLARE_SUPER(coObject);
 public:
 	class InitConfig : public Super::InitConfig
 	{
 	public:
+		InitConfig();
+		const VkInstance* instance_vk;
 	};
-
-	coRenderer();
-	virtual ~coRenderer();
+	coVulkanMessageHandler();
+	virtual ~coVulkanMessageHandler();
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
+
+	const VkInstance* instance_vk;
+	VkDebugReportCallbackEXT callback_vk;
 };

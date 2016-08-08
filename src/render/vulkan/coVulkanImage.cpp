@@ -1,12 +1,12 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "render/pch.h"
-#include "render/vulkan/coImage_vk.h"
-#include "render/vulkan/coLogicalDevice_vk.h"
-#include "render/vulkan/coResult_f_vk.h"
+#include "render/vulkan/coVulkanImage.h"
+#include "render/vulkan/coVulkanLogicalDevice.h"
+#include "render/vulkan/coVulkanResult_f.h"
 #include "lang/result/coResult_f.h"
 
-coImage_vk::coImage_vk()
+coVulkanImage::coVulkanImage()
 	: image_vk(VK_NULL_HANDLE)
 	, device_vk(nullptr)
 	, deviceMemory_vk(VK_NULL_HANDLE)
@@ -14,7 +14,7 @@ coImage_vk::coImage_vk()
 
 }
 
-coImage_vk::InitConfig::InitConfig()
+coVulkanImage::InitConfig::InitConfig()
 	: device_vk(nullptr)
 	, size(0)
 	, type(Type::default)
@@ -25,7 +25,7 @@ coImage_vk::InitConfig::InitConfig()
 
 }
 
-coImage_vk::~coImage_vk()
+coVulkanImage::~coVulkanImage()
 {
 	if (image_vk != VK_NULL_HANDLE)
 	{
@@ -35,7 +35,7 @@ coImage_vk::~coImage_vk()
 	}
 }
 
-coResult coImage_vk::OnInit(const coObject::InitConfig& _config)
+coResult coVulkanImage::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
@@ -60,11 +60,11 @@ coResult coImage_vk::OnInit(const coObject::InitConfig& _config)
 	createInfo.flags = 0;
 
 	coASSERT(device_vk->GetVkDevice() != VK_NULL_HANDLE);
-	coTRY_vk(vkCreateImage(device_vk->GetVkDevice(), &createInfo, nullptr, &image_vk), "Failed to create image.");
+	coVULKAN_TRY(vkCreateImage(device_vk->GetVkDevice(), &createInfo, nullptr, &image_vk), "Failed to create image.");
 	return true;
 }
 
-coResult coImage_vk::ComputeImageType(VkImageType& _out, const InitConfig& _config)
+coResult coVulkanImage::ComputeImageType(VkImageType& _out, const InitConfig& _config)
 {
 	coTRY(_config.size.x > 0, nullptr);
 	coTRY(_config.size.y > 0, nullptr);

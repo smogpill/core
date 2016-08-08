@@ -5,22 +5,17 @@
 #include "lang/result/coResult_f.h"
 
 coRenderer::coRenderer()
-	: impl(nullptr)
 {
-	OnImplConstruct();
 }
 
 coRenderer::~coRenderer()
 {
-	OnImplDestruct();
 }
 
 coResult coRenderer::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
-	const InitConfig& config = static_cast<const InitConfig&>(_config);
-
-	coTRY(OnImplInit(config), "Implementation failed to initialize");
+	//const InitConfig& config = static_cast<const InitConfig&>(_config);
 
 	return true;
 }

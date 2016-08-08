@@ -1,7 +1,7 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "render/pch.h"
-#include "render/vulkan/coResult_f_vk.h"
+#include "render/vulkan/coVulkanResult_f.h"
 
 const coChar* coGetVulkanResultString(const VkResult& _result)
 {

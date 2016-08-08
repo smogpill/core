@@ -1,9 +1,9 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "render/pch.h"
-#include "render/vulkan/coPhysicalDevice_vk.h"
-#include "render/vulkan/coSurface_vk.h"
-#include "render/vulkan/coResult_f_vk.h"
+#include "render/vulkan/coVulkanPhysicalDevice.h"
+#include "render/vulkan/coVulkanSurface.h"
+#include "render/vulkan/coVulkanResult_f.h"
 #include "lang/result/coResult.h"
 #include "lang/result/coResult_f.h"
 #include "pattern/scope/coDefer.h"
@@ -12,7 +12,7 @@
 coResult coGetNbPhysicalDevices_vk(coUint32& _nb, const VkInstance& _instance_vk)
 {
 	_nb = 0;
-	coTRY_vk(vkEnumeratePhysicalDevices(_instance_vk, &_nb, nullptr), "Failed to count physical devices.");
+	coVULKAN_TRY(vkEnumeratePhysicalDevices(_instance_vk, &_nb, nullptr), "Failed to count physical devices.");
 	return true;
 }
 
@@ -21,11 +21,11 @@ coResult coGetPhysicalDevices_vk(coDynamicArray<VkPhysicalDevice>& _out, const V
 	coUint32 nb;
 	coTRY(coGetNbPhysicalDevices_vk(nb, _instance_vk), nullptr);
 	coResize(_out, nb);
-	coTRY_vk(vkEnumeratePhysicalDevices(_instance_vk, &nb, _out.data), "Failed to retrieve the available physical devices");
+	coVULKAN_TRY(vkEnumeratePhysicalDevices(_instance_vk, &nb, _out.data), "Failed to retrieve the available physical devices");
 	return true;
 }
 
-coResult coGetPhysicalDevices(coDynamicArray<coPhysicalDevice_vk*>& _out, const VkInstance& _instance_vk)
+coResult coGetPhysicalDevices(coDynamicArray<coVulkanPhysicalDevice*>& _out, const VkInstance& _instance_vk)
 {
 	coClear(_out);
 	coDynamicArray<VkPhysicalDevice> supportedPhysicalDevices;
@@ -33,9 +33,9 @@ coResult coGetPhysicalDevices(coDynamicArray<coPhysicalDevice_vk*>& _out, const 
 	coReserve(_out, supportedPhysicalDevices.count);
 	for (const VkPhysicalDevice& d : supportedPhysicalDevices)
 	{
-		coPhysicalDevice_vk* physicalDevice = new coPhysicalDevice_vk();
+		coVulkanPhysicalDevice* physicalDevice = new coVulkanPhysicalDevice();
 		coDEFER() { delete physicalDevice; };
-		coPhysicalDevice_vk::InitConfig c;
+		coVulkanPhysicalDevice::InitConfig c;
 		c.physicalDevice_vk = d;
 		coTRY(physicalDevice->Init(c), "Failed to init the physical device: " << *physicalDevice);
 		coPushBack(_out, physicalDevice);
@@ -44,20 +44,20 @@ coResult coGetPhysicalDevices(coDynamicArray<coPhysicalDevice_vk*>& _out, const 
 	return true;
 }
 
-coPhysicalDevice_vk::coPhysicalDevice_vk()
+coVulkanPhysicalDevice::coVulkanPhysicalDevice()
 	: physicalDevice_vk(VK_NULL_HANDLE)
 	, props_vk({})
 {
 
 }
 
-coPhysicalDevice_vk::InitConfig::InitConfig()
+coVulkanPhysicalDevice::InitConfig::InitConfig()
 	: physicalDevice_vk(VK_NULL_HANDLE)
 {
 
 }
 
-coResult coPhysicalDevice_vk::OnInit(const coObject::InitConfig& _config)
+coResult coVulkanPhysicalDevice::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
@@ -69,7 +69,7 @@ coResult coPhysicalDevice_vk::OnInit(const coObject::InitConfig& _config)
 	return true;
 }
 
-coResult coPhysicalDevice_vk::InitQueueFamilyProperties()
+coResult coVulkanPhysicalDevice::InitQueueFamilyProperties()
 {
 	coTRY(queueFamilyProperties.count == 0, nullptr);
 	coUint32 nb = 0;
@@ -80,32 +80,32 @@ coResult coPhysicalDevice_vk::InitQueueFamilyProperties()
 	return true;
 }
 
-coResult coPhysicalDevice_vk::InitSupportedExtensions()
+coResult coVulkanPhysicalDevice::InitSupportedExtensions()
 {
 	coTRY(supportedExtensions.count == 0, nullptr);
 	coUint32 nbExtensions = 0;
-	coTRY_vk(vkEnumerateDeviceExtensionProperties(physicalDevice_vk, nullptr, &nbExtensions, nullptr), "Failed to get the device extensions count.");
+	coVULKAN_TRY(vkEnumerateDeviceExtensionProperties(physicalDevice_vk, nullptr, &nbExtensions, nullptr), "Failed to get the device extensions count.");
 	coResize(supportedExtensions, nbExtensions);
-	coTRY_vk(vkEnumerateDeviceExtensionProperties(physicalDevice_vk, nullptr, &supportedExtensions.count, supportedExtensions.data), "Failed to get the device extensions.");
+	coVULKAN_TRY(vkEnumerateDeviceExtensionProperties(physicalDevice_vk, nullptr, &supportedExtensions.count, supportedExtensions.data), "Failed to get the device extensions.");
 	coTRY(supportedExtensions.count == nbExtensions, nullptr);
 	return true;
 }
 
-coResult coPhysicalDevice_vk::InitProps()
+coResult coVulkanPhysicalDevice::InitProps()
 {
 	vkGetPhysicalDeviceProperties(physicalDevice_vk, &props_vk);
 	return true;
 }
 
-coBool coPhysicalDevice_vk::SupportsSurface(coUint queueFamilyIndex, const coSurface_vk& _surface_vk) const
+coBool coVulkanPhysicalDevice::SupportsSurface(coUint queueFamilyIndex, const coVulkanSurface& _surface_vk) const
 {
 	coASSERT(physicalDevice_vk != VK_NULL_HANDLE);
 	VkBool32 supported_vk = VK_FALSE;
-	coTRY_vk(vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice_vk, queueFamilyIndex, _surface_vk.GetVkSurfaceKHR(), &supported_vk), "vkGetPhysicalDeviceSurfaceSupportKHR failed.");
+	coVULKAN_TRY(vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice_vk, queueFamilyIndex, _surface_vk.GetVkSurfaceKHR(), &supported_vk), "vkGetPhysicalDeviceSurfaceSupportKHR failed.");
 	return supported_vk == VK_TRUE;
 }
 
-coBool coPhysicalDevice_vk::IsExtensionSupported(const coConstString& _extension) const
+coBool coVulkanPhysicalDevice::IsExtensionSupported(const coConstString& _extension) const
 {
 	for (const VkExtensionProperties& e : supportedExtensions)
 	{

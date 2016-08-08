@@ -1,14 +1,14 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "render/pch.h"
-#include "render/vulkan/coLogicalDevice_vk.h"
-#include "render/vulkan/coPhysicalDevice_vk.h"
-#include "render/vulkan/coResult_f_vk.h"
-#include "render/vulkan/coLayerManager_vk.h"
-#include "render/vulkan/coSurface_vk.h"
+#include "render/vulkan/coVulkanLogicalDevice.h"
+#include "render/vulkan/coVulkanPhysicalDevice.h"
+#include "render/vulkan/coVulkanResult_f.h"
+#include "render/vulkan/coVulkanLayerManager.h"
+#include "render/vulkan/coVulkanSurface.h"
 #include "lang/result/coResult_f.h"
 
-coLogicalDevice_vk::coLogicalDevice_vk()
+coVulkanLogicalDevice::coVulkanLogicalDevice()
 	: physicalDevice_vk(nullptr)
 	, logicalDevice_vk(VK_NULL_HANDLE)
 	, graphicsQueue_vk(VK_NULL_HANDLE)
@@ -20,14 +20,14 @@ coLogicalDevice_vk::coLogicalDevice_vk()
 
 }
 
-coLogicalDevice_vk::~coLogicalDevice_vk()
+coVulkanLogicalDevice::~coVulkanLogicalDevice()
 {
 	vkDestroyDevice(logicalDevice_vk, nullptr);
 	for (auto p : requestedExtensions)
 		delete p;
 }
 
-coLogicalDevice_vk::InitConfig::InitConfig()
+coVulkanLogicalDevice::InitConfig::InitConfig()
 	: physicalDevice_vk(VK_NULL_HANDLE)
 	, layerManager_vk(nullptr)
 	, surface_vk(nullptr)
@@ -35,7 +35,7 @@ coLogicalDevice_vk::InitConfig::InitConfig()
 
 }
 
-coResult coLogicalDevice_vk::OnInit(const coObject::InitConfig& _config)
+coResult coVulkanLogicalDevice::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
@@ -47,7 +47,7 @@ coResult coLogicalDevice_vk::OnInit(const coObject::InitConfig& _config)
 	return true;
 }
 
-coResult coLogicalDevice_vk::OnStart()
+coResult coVulkanLogicalDevice::OnStart()
 {
 	coTRY(Super::OnStart(), nullptr);
 
@@ -56,7 +56,7 @@ coResult coLogicalDevice_vk::OnStart()
 	return true;
 }
 
-void coLogicalDevice_vk::OnStop()
+void coVulkanLogicalDevice::OnStop()
 {
 	graphicsQueue_vk = VK_NULL_HANDLE;
 	presentQueue_vk = VK_NULL_HANDLE;
@@ -66,7 +66,7 @@ void coLogicalDevice_vk::OnStop()
 	Super::OnStop();
 }
 
-coResult coLogicalDevice_vk::InitQueueFamilyIndices(coSurface_vk* _surface_vk)
+coResult coVulkanLogicalDevice::InitQueueFamilyIndices(coVulkanSurface* _surface_vk)
 {
 	graphicsFamilyIndex = -1;
 	presentFamilyIndex = -1;
@@ -98,7 +98,7 @@ coResult coLogicalDevice_vk::InitQueueFamilyIndices(coSurface_vk* _surface_vk)
 	return true;
 }
 
-coResult coLogicalDevice_vk::InitLogicalDevice()
+coResult coVulkanLogicalDevice::InitLogicalDevice()
 {
 	coTRY(graphicsFamilyIndex >= 0, nullptr);
 	VkDeviceQueueCreateInfo queueCreateInfo = {};
@@ -135,7 +135,7 @@ coResult coLogicalDevice_vk::InitLogicalDevice()
 	return true;
 }
 
-coResult coLogicalDevice_vk::InitQueues()
+coResult coVulkanLogicalDevice::InitQueues()
 {
 	coTRY(queues.count == 0, nullptr);
 
@@ -162,7 +162,7 @@ coResult coLogicalDevice_vk::InitQueues()
 	return true;
 }
 
-coResult coLogicalDevice_vk::GetScore(coUint32& _out) const
+coResult coVulkanLogicalDevice::GetScore(coUint32& _out) const
 {
 	_out = 0;
 
@@ -178,15 +178,17 @@ coResult coLogicalDevice_vk::GetScore(coUint32& _out) const
 	if (graphicsFamilyIndex < 0)
 		return true;
 
+	_out = 1;
+
 	if (presentFamilyIndex < 0)
 		return true;
 
-	_out = 1;
+	++_out;
 
 	return true;
 }
 
-coResult coLogicalDevice_vk::AddRequestedExtension(const coConstString& _extension)
+coResult coVulkanLogicalDevice::AddRequestedExtension(const coConstString& _extension)
 {
 	coTRY(physicalDevice_vk->IsExtensionSupported(_extension), "Device extension not supported: " << _extension);
 	coTRY(!IsExtensionRequested(_extension), "Device extension already requested: " << _extension);
@@ -196,7 +198,7 @@ coResult coLogicalDevice_vk::AddRequestedExtension(const coConstString& _extensi
 	return true;
 }
 
-coResult coLogicalDevice_vk::IsExtensionRequested(const coConstString& _extension) const
+coResult coVulkanLogicalDevice::IsExtensionRequested(const coConstString& _extension) const
 {
 	for (const coDynamicString* s : requestedExtensions)
 	{
@@ -207,7 +209,7 @@ coResult coLogicalDevice_vk::IsExtensionRequested(const coConstString& _extensio
 	return false;
 }
 
-coResult coLogicalDevice_vk::GetAllRequestedExtensions(coDynamicArray<const coChar*>& _extensions) const
+coResult coVulkanLogicalDevice::GetAllRequestedExtensions(coDynamicArray<const coChar*>& _extensions) const
 {
 	coClear(_extensions);
 	for (const coDynamicString* s : requestedExtensions)
@@ -218,8 +220,8 @@ coResult coLogicalDevice_vk::GetAllRequestedExtensions(coDynamicArray<const coCh
 	return true;
 }
 
-coResult coLogicalDevice_vk::WaitIdle()
+coResult coVulkanLogicalDevice::WaitIdle()
 {
-	coTRY_vk(vkDeviceWaitIdle(logicalDevice_vk), "Wait device for idle failed.");
+	coVULKAN_TRY(vkDeviceWaitIdle(logicalDevice_vk), "Wait device for idle failed.");
 	return true;
 }

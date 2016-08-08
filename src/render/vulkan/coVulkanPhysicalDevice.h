@@ -4,9 +4,9 @@
 
 #include "pattern/object/coObject.h"
 
-class coSurface_vk;
+class coVulkanSurface;
 
-class coPhysicalDevice_vk : public coObject
+class coVulkanPhysicalDevice : public coObject
 {
 	coDECLARE_SUPER(coObject);
 public:
@@ -16,14 +16,14 @@ public:
 		InitConfig();
 		VkPhysicalDevice physicalDevice_vk;
 	};
-	coPhysicalDevice_vk();
+	coVulkanPhysicalDevice();
 
 	const coArray<VkQueueFamilyProperties>& GetQueueFamilyProperties() const { return queueFamilyProperties; }
 	const coArray<VkExtensionProperties>&  GetSupportedExtensions() const { return supportedExtensions; }
 	const VkPhysicalDevice& GetVkPhysicalDevice() const { return physicalDevice_vk; }
 	const VkPhysicalDeviceProperties& GetProperties() const { return props_vk; }
 	coBool IsExtensionSupported(const coConstString& _extension) const;
-	coBool SupportsSurface(coUint queueFamilyIndex, const coSurface_vk& _surface_vk) const;
+	coBool SupportsSurface(coUint queueFamilyIndex, const coVulkanSurface& _surface_vk) const;
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
@@ -39,4 +39,4 @@ private:
 	VkPhysicalDeviceProperties props_vk;
 };
 
-coResult coGetPhysicalDevices(coDynamicArray<coPhysicalDevice_vk*>& _out, const VkInstance& _instance_vk);
+coResult coGetPhysicalDevices(coDynamicArray<coVulkanPhysicalDevice*>& _out, const VkInstance& _instance_vk);

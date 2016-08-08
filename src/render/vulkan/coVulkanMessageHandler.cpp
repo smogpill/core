@@ -1,8 +1,8 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "render/pch.h"
-#include "render/vulkan/coMessageHandler_vk.h"
-#include "render/vulkan/coResult_f_vk.h"
+#include "render/vulkan/coVulkanMessageHandler.h"
+#include "render/vulkan/coVulkanResult_f.h"
 #include "debug/log/coLog.h"
 #include "lang/result/coResult_f.h"
 #include "memory/allocator/coLocalAllocator.h"
@@ -34,20 +34,20 @@ static VkBool32 coDebugCallback_vk(VkDebugReportFlagsEXT _flags, VkDebugReportOb
 	return VK_FALSE;
 }
 
-coMessageHandler_vk::InitConfig::InitConfig()
+coVulkanMessageHandler::InitConfig::InitConfig()
 	: instance_vk(VK_NULL_HANDLE)
 {
 
 }
 
-coMessageHandler_vk::coMessageHandler_vk()
+coVulkanMessageHandler::coVulkanMessageHandler()
 	: instance_vk(VK_NULL_HANDLE)
 	, callback_vk(VK_NULL_HANDLE)
 {
 
 }
 
-coMessageHandler_vk::~coMessageHandler_vk()
+coVulkanMessageHandler::~coVulkanMessageHandler()
 {
 	if (callback_vk != VK_NULL_HANDLE)
 	{
@@ -57,7 +57,7 @@ coMessageHandler_vk::~coMessageHandler_vk()
 	}
 }
 
-coResult coMessageHandler_vk::OnInit(const coObject::InitConfig& _config)
+coResult coVulkanMessageHandler::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
@@ -71,6 +71,6 @@ coResult coMessageHandler_vk::OnInit(const coObject::InitConfig& _config)
 	createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
 	createInfo.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT | VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT | VK_DEBUG_REPORT_INFORMATION_BIT_EXT | VK_DEBUG_REPORT_DEBUG_BIT_EXT;
 	createInfo.pfnCallback = (PFN_vkDebugReportCallbackEXT)coDebugCallback_vk;
-	coTRY_vk(createFunc(*instance_vk, &createInfo, nullptr, &callback_vk), "Failed to create the message handler callback");
+	coVULKAN_TRY(createFunc(*instance_vk, &createInfo, nullptr, &callback_vk), "Failed to create the message handler callback");
 	return true;
 }

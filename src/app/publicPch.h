@@ -3,6 +3,7 @@
 #pragma once
 
 #include "lang/publicPch.h"
+#include "platform/publicPch.h"
 #include "memory/publicPch.h"
 #include "container/publicPch.h"
 #include "pattern/publicPch.h"
