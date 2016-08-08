@@ -4,10 +4,3 @@
 
 #include "render/publicPch.h"
 #include "platform/coOsHeaders.h"
-#ifdef coMSWINDOWS
-#	define VK_USE_PLATFORM_WIN32_KHR
-#else
-#	error Platform not supported
-#endif
-#include <vulkan/vulkan.h>
-

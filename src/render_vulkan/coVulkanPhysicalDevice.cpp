@@ -1,9 +1,9 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
-#include "render/pch.h"
-#include "render/vulkan/coVulkanPhysicalDevice.h"
-#include "render/vulkan/coVulkanSurface.h"
-#include "render/vulkan/coVulkanResult_f.h"
+#include "render_vulkan/pch.h"
+#include "render_vulkan/coVulkanPhysicalDevice.h"
+#include "render_vulkan/coVulkanSurface.h"
+#include "render_vulkan/coVulkanResult_f.h"
 #include "lang/result/coResult.h"
 #include "lang/result/coResult_f.h"
 #include "pattern/scope/coDefer.h"

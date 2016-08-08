@@ -1,12 +1,12 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
-#include "render/pch.h"
+#include "render_vulkan/pch.h"
 #include "render/coSwapChain.h"
-#include "render/vulkan/coVulkanSwapChain.h"
-#include "render/vulkan/coVulkanResult_f.h"
-#include "render/vulkan/coVulkanSurface.h"
-#include "render/vulkan/coVulkanLogicalDevice.h"
-#include "render/vulkan/coVulkanPhysicalDevice.h"
+#include "render_vulkan/coVulkanSwapChain.h"
+#include "render_vulkan/coVulkanResult_f.h"
+#include "render_vulkan/coVulkanSurface.h"
+#include "render_vulkan/coVulkanLogicalDevice.h"
+#include "render_vulkan/coVulkanPhysicalDevice.h"
 #include "lang/result/coResult_f.h"
 #include "lang/reflect/coNumericLimits.h"
 #include "math/scalar/coUint32_f.h"
