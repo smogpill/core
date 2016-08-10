@@ -101,7 +101,7 @@ coResult coVulkanLogicalDevice::InitLogicalDevice()
 	coTRY(queueIds[QueueType::graphics] >= 0, nullptr);
 	VkDeviceQueueCreateInfo queueCreateInfo = {};
 	queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-	queueCreateInfo.queueFamilyIndex = GetFamilyIndex(QueueType::graphics);
+	queueCreateInfo.queueFamilyIndex = GetQueueFamilyIndex(GetQueueId(QueueType::graphics));
 	queueCreateInfo.queueCount = 1;
 	coFloat priority = 1.0f;
 	queueCreateInfo.pQueuePriorities = &priority;
@@ -133,9 +133,9 @@ coResult coVulkanLogicalDevice::InitLogicalDevice()
 	return true;
 }
 
-coInt32 coVulkanLogicalDevice::GetFamilyIndex(QueueType _type) const
+coInt32 coVulkanLogicalDevice::GetQueueFamilyIndex(coInt64 _queueId)
 {
-	return coCastWithOverflowCheck<coInt32>(queueIds[_type]);
+	return coCastWithOverflowCheck<coInt32>(_queueId);
 }
 
 coResult coVulkanLogicalDevice::InitQueues()

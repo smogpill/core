@@ -37,7 +37,7 @@ public:
 	const VkDevice& GetVkDevice() const { return logicalDevice_vk; }
 	coVulkanPhysicalDevice* GetPhysicalDevice() const { return physicalDevice_vk; }
 	coInt64 GetQueueId(QueueType _type) const { return queueIds[_type]; }
-	coInt32 GetFamilyIndex(QueueType _type) const;
+	static coInt32 GetQueueFamilyIndex(coInt64 _queueId);
 	coResult WaitForIdle();
 	
 protected:

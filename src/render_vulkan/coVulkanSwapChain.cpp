@@ -77,8 +77,8 @@ coResult coVulkanSwapChain::OnInit(const coObject::InitConfig& _config)
 	createInfo.imageArrayLayers = 1;
 	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-	const coInt32 graphicsFamilyIndex = vulkanLogicalDevice->GetFamilyIndex(coVulkanLogicalDevice::graphics);
-	const coInt32 presentFamilyIndex = vulkanLogicalDevice->GetFamilyIndex(coVulkanLogicalDevice::present);
+	const coInt32 graphicsFamilyIndex = coVulkanLogicalDevice::GetQueueFamilyIndex(vulkanLogicalDevice->GetQueueId(coVulkanLogicalDevice::graphics));
+	const coInt32 presentFamilyIndex = coVulkanLogicalDevice::GetQueueFamilyIndex(vulkanLogicalDevice->GetQueueId(coVulkanLogicalDevice::present));
 	coTRY(graphicsFamilyIndex != -1, nullptr);
 	coTRY(presentFamilyIndex != -1, nullptr);
 	coDynamicArray<coUint32> queueFamilyIndices;
