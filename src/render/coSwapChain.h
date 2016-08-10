@@ -6,6 +6,7 @@
 #include "math/vector/coInt32x2.h"
 
 class coSurface;
+class coLogicalDevice;
 
 class coSwapChain : public coObject
 {
@@ -15,6 +16,7 @@ public:
 	{
 	public:
 		InitConfig();
+		coLogicalDevice* logicalDevice;
 		coSurface* surface;
 		coSwapChain* oldSwapChain;
 		coInt32x2 size;

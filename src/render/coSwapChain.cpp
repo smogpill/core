@@ -14,6 +14,7 @@ coSwapChain::InitConfig::InitConfig()
 	, oldSwapChain(nullptr)
 	, size(0)
 	, nbImages(2)
+	, logicalDevice(nullptr)
 {
 
 }

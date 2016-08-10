@@ -2,16 +2,22 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include "pattern/object/coObject.h"
+#include "render/coLogicalDevice.h"
 
 class coVulkanLayerManager;
 class coVulkanSurface;
 class coVulkanPhysicalDevice;
 
-class coVulkanLogicalDevice : public coObject
+class coVulkanLogicalDevice : public coLogicalDevice
 {
-	coDECLARE_SUPER(coObject);
+	coDECLARE_SUPER(coLogicalDevice);
 public:
+	enum QueueType
+	{
+		graphics,
+		present,
+		count
+	};
 	class InitConfig : public Super::InitConfig
 	{
 	public:
@@ -26,13 +32,13 @@ public:
 	coResult AddRequestedExtension(const coConstString& _extension);
 	coResult IsExtensionRequested(const coConstString& _extension) const;
 	coResult GetScore(coUint32& _out) const;
-	const VkQueue& GetGraphicsQueue() const { return graphicsQueue_vk; }
-	const VkQueue& GetPresentQueue() const { return presentQueue_vk; }
+	//const VkQueue& GetGraphicsQueue() const { return graphicsQueue_vk; }
+	//const VkQueue& GetPresentQueue() const { return presentQueue_vk; }
 	const VkDevice& GetVkDevice() const { return logicalDevice_vk; }
 	coVulkanPhysicalDevice* GetPhysicalDevice() const { return physicalDevice_vk; }
-	coInt32 GetGraphicsFamilyIndex() const { return graphicsFamilyIndex; }
-	coInt32 GetPresentFamilyIndex() const { return presentFamilyIndex; }
-	coResult WaitIdle();
+	coInt64 GetQueueId(QueueType _type) const { return queueIds[_type]; }
+	coInt32 GetFamilyIndex(QueueType _type) const;
+	coResult WaitForIdle();
 	
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
@@ -47,11 +53,8 @@ private:
 
 	coVulkanPhysicalDevice* physicalDevice_vk;
 	VkDevice logicalDevice_vk;
-	coInt32 graphicsFamilyIndex;
-	coInt32 presentFamilyIndex;
+	coInt64 queueIds[QueueType::count];
+	//VkQueue queues_vk[QueueType::count];
 	coDynamicArray<coDynamicString*> requestedExtensions;
-	coDynamicArray<VkQueue> queues;
-	VkQueue graphicsQueue_vk;
-	VkQueue presentQueue_vk;
 	coVulkanLayerManager* layerManager_vk;
 };

@@ -13,7 +13,7 @@
 
 coVulkanSwapChain::coVulkanSwapChain()
 	: swapChain_vk(VK_NULL_HANDLE)
-	, logicalDevice(nullptr)
+	, vulkanLogicalDevice(nullptr)
 {
 
 }
@@ -22,9 +22,9 @@ coVulkanSwapChain::~coVulkanSwapChain()
 {
 	if (swapChain_vk != VK_NULL_HANDLE)
 	{
-		coASSERT(logicalDevice);
-		coASSERT(logicalDevice->GetVkDevice() != VK_NULL_HANDLE);
-		vkDestroySwapchainKHR(logicalDevice->GetVkDevice(), swapChain_vk, nullptr);
+		coASSERT(vulkanLogicalDevice);
+		coASSERT(vulkanLogicalDevice->GetVkDevice() != VK_NULL_HANDLE);
+		vkDestroySwapchainKHR(vulkanLogicalDevice->GetVkDevice(), swapChain_vk, nullptr);
 	}
 }
 
@@ -32,7 +32,9 @@ coResult coVulkanSwapChain::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
-	coVulkanPhysicalDevice* physicalDevice_vk = logicalDevice->GetPhysicalDevice();
+	vulkanLogicalDevice = static_cast<coVulkanLogicalDevice*>(config.logicalDevice);
+	coTRY(vulkanLogicalDevice, nullptr);
+	coVulkanPhysicalDevice* physicalDevice_vk = vulkanLogicalDevice->GetPhysicalDevice();
 	coTRY(physicalDevice_vk, nullptr);
 
 	coVulkanSurface* surface_vk = static_cast<coVulkanSurface*>(config.surface);
@@ -75,8 +77,8 @@ coResult coVulkanSwapChain::OnInit(const coObject::InitConfig& _config)
 	createInfo.imageArrayLayers = 1;
 	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-	const coInt32 graphicsFamilyIndex = logicalDevice->GetGraphicsFamilyIndex();
-	const coInt32 presentFamilyIndex = logicalDevice->GetPresentFamilyIndex();
+	const coInt32 graphicsFamilyIndex = vulkanLogicalDevice->GetFamilyIndex(coVulkanLogicalDevice::graphics);
+	const coInt32 presentFamilyIndex = vulkanLogicalDevice->GetFamilyIndex(coVulkanLogicalDevice::present);
 	coTRY(graphicsFamilyIndex != -1, nullptr);
 	coTRY(presentFamilyIndex != -1, nullptr);
 	coDynamicArray<coUint32> queueFamilyIndices;
@@ -95,7 +97,7 @@ coResult coVulkanSwapChain::OnInit(const coObject::InitConfig& _config)
 	createInfo.oldSwapchain = oldSwapChain_vk ? oldSwapChain_vk->swapChain_vk : VK_NULL_HANDLE;
 
 	coTRY(swapChain_vk == VK_NULL_HANDLE, nullptr);
-	coVULKAN_TRY(vkCreateSwapchainKHR(logicalDevice->GetVkDevice(), &createInfo, nullptr, &swapChain_vk), "Failed to create swap chain.");
+	coVULKAN_TRY(vkCreateSwapchainKHR(vulkanLogicalDevice->GetVkDevice(), &createInfo, nullptr, &swapChain_vk), "Failed to create swap chain.");
 
 	return true;
 }
@@ -105,8 +107,8 @@ coResult coVulkanSwapChain::GetFormats(coDynamicArray<VkSurfaceFormatKHR>& _out)
 {
 	coClear(_out);
 
-	coTRY(logicalDevice, nullptr);
-	coVulkanPhysicalDevice* physicalDevice = logicalDevice->GetPhysicalDevice();
+	coTRY(vulkanLogicalDevice, nullptr);
+	coVulkanPhysicalDevice* physicalDevice = vulkanLogicalDevice->GetPhysicalDevice();
 	coTRY(physicalDevice, nullptr);
 
 	const VkPhysicalDevice& physicalDevice_vk = physicalDevice->GetVkPhysicalDevice();
@@ -126,8 +128,8 @@ coResult coVulkanSwapChain::GetPresentModes(coDynamicArray<VkPresentModeKHR>& _o
 {
 	coClear(_out);
 
-	coTRY(logicalDevice, nullptr);
-	coVulkanPhysicalDevice* physicalDevice = logicalDevice->GetPhysicalDevice();
+	coTRY(vulkanLogicalDevice, nullptr);
+	coVulkanPhysicalDevice* physicalDevice = vulkanLogicalDevice->GetPhysicalDevice();
 	coTRY(physicalDevice, nullptr);
 
 	const VkPhysicalDevice& physicalDevice_vk = physicalDevice->GetVkPhysicalDevice();

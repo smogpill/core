@@ -4,26 +4,20 @@
 
 #include "pattern/object/coObject.h"
 
-class coRenderer;
+class coLogicalDevice : public coObject
+{
+	coDECLARE_SUPER(coObject);
+public:
+	class InitConfig : public Super::InitConfig
+	{
+	public:
+	};
 
-// class coLogicalDevice : public coObject
-// {
-// 	coDECLARE_SUPER(coObject);
-// public:
-// 	class InitConfig : public Super::InitConfig
-// 	{
-// 	public:
-// 	};
-// 
-// 	coLogicalDevice();
-// 	virtual ~coLogicalDevice();
-// 
-// protected:
-// 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
-// 	void OnImplConstruct();
-// 	void OnImplDestruct();
-// 	coResult OnImplInit(const InitConfig& _config);
-// 
-// private:
-// 	void* impl;
-// };
+	//coLogicalDevice();
+	virtual ~coLogicalDevice() {}
+
+protected:
+	//virtual coResult OnInit(const coObject::InitConfig& _config) override;
+
+private:
+};

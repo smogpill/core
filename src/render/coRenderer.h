@@ -5,6 +5,8 @@
 #include "pattern/object/coObject.h"
 #include "lang/reflect/coTypeDecl.h"
 
+class coLogicalDevice;
+
 class coRenderer : public coObject
 {
 	coDECLARE_SUPER(coObject);
@@ -16,6 +18,8 @@ public:
 
 	coRenderer();
 	virtual ~coRenderer();
+
+	virtual coLogicalDevice* GetBestLogicalDeviceForSwapChain() const { return nullptr; }
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;

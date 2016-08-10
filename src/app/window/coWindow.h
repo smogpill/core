@@ -32,6 +32,7 @@ public:
 	ShowState GetShowState() const { return showState; }
 	coResult SetForeground();
 	coResult SetFocus();
+	void* GetImpl() const { return impl; }
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;

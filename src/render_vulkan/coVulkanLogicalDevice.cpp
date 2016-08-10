@@ -7,14 +7,13 @@
 #include "render_vulkan/coVulkanLayerManager.h"
 #include "render_vulkan/coVulkanSurface.h"
 #include "lang/result/coResult_f.h"
+#include "lang/reflect/coNumericLimits.h"
 
 coVulkanLogicalDevice::coVulkanLogicalDevice()
 	: physicalDevice_vk(nullptr)
 	, logicalDevice_vk(VK_NULL_HANDLE)
-	, graphicsQueue_vk(VK_NULL_HANDLE)
-	, presentQueue_vk(VK_NULL_HANDLE)
-	, graphicsFamilyIndex(-1)
-	, presentFamilyIndex(-1)
+	//, queues_vk{ VK_NULL_HANDLE }
+	, queueIds{ -1 }
 	, layerManager_vk(nullptr)
 {
 
@@ -58,9 +57,8 @@ coResult coVulkanLogicalDevice::OnStart()
 
 void coVulkanLogicalDevice::OnStop()
 {
-	graphicsQueue_vk = VK_NULL_HANDLE;
-	presentQueue_vk = VK_NULL_HANDLE;
-	coClear(queues);
+// 	for (VkQueue& queue_vk : queues_vk)
+// 		queue_vk = VK_NULL_HANDLE;
 	vkDestroyDevice(logicalDevice_vk, nullptr);
 	logicalDevice_vk = VK_NULL_HANDLE;
 	Super::OnStop();
@@ -68,8 +66,8 @@ void coVulkanLogicalDevice::OnStop()
 
 coResult coVulkanLogicalDevice::InitQueueFamilyIndices(coVulkanSurface* _surface_vk)
 {
-	graphicsFamilyIndex = -1;
-	presentFamilyIndex = -1;
+	for (auto& index : queueIds)
+		index = -1;
 
 	const coArray<VkQueueFamilyProperties>& queueFamilyProps = physicalDevice_vk->GetQueueFamilyProperties();
 	for (coUint i = 0; i < queueFamilyProps.count; ++i)
@@ -77,18 +75,18 @@ coResult coVulkanLogicalDevice::InitQueueFamilyIndices(coVulkanSurface* _surface
 		const VkQueueFamilyProperties& prop = queueFamilyProps[i];
 		if (prop.queueCount > 0)
 		{
-			if (graphicsFamilyIndex == -1 && prop.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+			if (queueIds[QueueType::graphics] == -1 && prop.queueFlags & VK_QUEUE_GRAPHICS_BIT)
 			{
-				graphicsFamilyIndex = i;
+				queueIds[QueueType::graphics] = i;
 			}
 
 			if (_surface_vk)
 			{
-				if (presentFamilyIndex == -1)
+				if (queueIds[QueueType::present] == -1)
 				{
 					if (physicalDevice_vk->SupportsSurface(i, *_surface_vk))
 					{
-						presentFamilyIndex = i;
+						queueIds[QueueType::present] = i;
 					}
 				}
 			}
@@ -100,10 +98,10 @@ coResult coVulkanLogicalDevice::InitQueueFamilyIndices(coVulkanSurface* _surface
 
 coResult coVulkanLogicalDevice::InitLogicalDevice()
 {
-	coTRY(graphicsFamilyIndex >= 0, nullptr);
+	coTRY(queueIds[QueueType::graphics] >= 0, nullptr);
 	VkDeviceQueueCreateInfo queueCreateInfo = {};
 	queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-	queueCreateInfo.queueFamilyIndex = graphicsFamilyIndex;
+	queueCreateInfo.queueFamilyIndex = GetFamilyIndex(QueueType::graphics);
 	queueCreateInfo.queueCount = 1;
 	coFloat priority = 1.0f;
 	queueCreateInfo.pQueuePriorities = &priority;
@@ -135,29 +133,34 @@ coResult coVulkanLogicalDevice::InitLogicalDevice()
 	return true;
 }
 
+coInt32 coVulkanLogicalDevice::GetFamilyIndex(QueueType _type) const
+{
+	return coCastWithOverflowCheck<coInt32>(queueIds[_type]);
+}
+
 coResult coVulkanLogicalDevice::InitQueues()
 {
-	coTRY(queues.count == 0, nullptr);
-
-	// Get unique queue families
-	coDynamicArray<coInt32> uniqueQueueFamilies;
-	if (graphicsFamilyIndex != -1 && !coContains(uniqueQueueFamilies, graphicsFamilyIndex))
-		coPushBack(uniqueQueueFamilies, graphicsFamilyIndex);
-	if (presentFamilyIndex != -1 && !coContains(uniqueQueueFamilies, presentFamilyIndex))
-		coPushBack(uniqueQueueFamilies, presentFamilyIndex);
-
-	// Get queues
-	for (coInt32 index : uniqueQueueFamilies)
-	{
-		coTRY(index >= 0, nullptr);
-		VkQueue queue_vk;
-		vkGetDeviceQueue(logicalDevice_vk, index, 0, &queue_vk);
-		coPushBack(queues, queue_vk);
-		if (index == graphicsFamilyIndex)
-			graphicsQueue_vk = queue_vk;
-		if (index == presentFamilyIndex)
-			presentQueue_vk = queue_vk;
-	}
+// 
+// 	// Get unique queue families
+// 	coDynamicArray<coInt32> uniqueQueueFamilies;
+// 	for (const auto& index : queueFamilyIndices)
+// 	{
+// 		if (index != -1 && !coContains(uniqueQueueFamilies, index))
+// 			coPushBack(uniqueQueueFamilies, index);
+// 	}
+// 	
+// 	// Get queues
+// 	for (coInt32 index : uniqueQueueFamilies)
+// 	{
+// 		coTRY(index >= 0, nullptr);
+// 		VkQueue queue_vk;
+// 		vkGetDeviceQueue(logicalDevice_vk, index, 0, &queue_vk);
+// 		coPushBack(queues_vk, queue_vk);
+// 		if (index == graphicsFamilyIndex)
+// 			graphicsQueue_vk = queue_vk;
+// 		if (index == presentFamilyIndex)
+// 			presentQueue_vk = queue_vk;
+// 	}
 	
 	return true;
 }
@@ -175,12 +178,12 @@ coResult coVulkanLogicalDevice::GetScore(coUint32& _out) const
 		return true;
 	}
 
-	if (graphicsFamilyIndex < 0)
+	if (queueIds[QueueType::graphics] < 0)
 		return true;
 
 	_out = 1;
 
-	if (presentFamilyIndex < 0)
+	if (queueIds[QueueType::present] < 0)
 		return true;
 
 	++_out;
@@ -220,7 +223,7 @@ coResult coVulkanLogicalDevice::GetAllRequestedExtensions(coDynamicArray<const c
 	return true;
 }
 
-coResult coVulkanLogicalDevice::WaitIdle()
+coResult coVulkanLogicalDevice::WaitForIdle()
 {
 	coVULKAN_TRY(vkDeviceWaitIdle(logicalDevice_vk), "Wait device for idle failed.");
 	return true;

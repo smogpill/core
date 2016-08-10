@@ -24,5 +24,5 @@ private:
 	coResult SelectExtent(VkExtent2D& _out, const VkSurfaceCapabilitiesKHR& _capabilities, const VkExtent2D& _requested);
 
 	VkSwapchainKHR swapChain_vk;
-	coVulkanLogicalDevice* logicalDevice;
+	coVulkanLogicalDevice* vulkanLogicalDevice;
 };

@@ -6,6 +6,8 @@
 
 class coRenderer;
 class coWindow;
+class coSurface;
+class coSwapChain;
 
 class coRuntimeApp : public coApp
 {
@@ -20,4 +22,6 @@ protected:
 private:
 	coWindow* window;
 	coRenderer* renderer;
+	coSurface* surface;
+	coSwapChain* swapChain;
 };
