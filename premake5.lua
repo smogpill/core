@@ -10,32 +10,11 @@ versionBuild = 0
 
 function coSetSolutionDefaults()
 	configurations {"debug", "release"}
-	architecture "x86_64"
 	location(buildPath)
 	objdir(buildPath .. "/obj")
 	libdirs { buildPath .. "/bin" }
 	targetdir(buildPath .. "/bin")
 	defines { "coVERSION_MAJOR="..versionMajor, "coVERSION_MINOR="..versionMinor, "coVERSION_BUILD="..versionBuild }
-	rtti "Off"
-	exceptionhandling "Off"
-	vectorextensions "SSE2"
-	warnings "Extra"
-	floatingpoint "Fast"
-	editandcontinue "Off"
-	flags { "Symbols", "NoMinimalRebuild", "FatalWarnings", "C++14", "MultiProcessorCompile" }
-	filter { "gmake" }
-		buildoptions { "-Wno-reorder", "-Wno-deprecated" }
-		includedirs { gmakeIncludeDir }
-	filter { "configurations:debug or prebuildDebug" }
-		targetsuffix "_d"
-	filter { "configurations:release or prebuildRelease" }
-		optimize "On"
-		flags { "OptimizeSpeed", "NoFramePointer"}
-	filter { "vs*" }
-		defines { "_HAS_EXCEPTIONS=0" }
-		--flags { "StaticRuntime" }
-		linkoptions { "/ENTRY:mainCRTStartup" }
-	filter {}
 end
 
 function coSetPCH(_dir, _projectName, _fileName)
@@ -53,6 +32,29 @@ end
 
 function coSetProjectDefaults(_name)
 	project(_name)
+	filter {}
+
+	architecture "x86_64"
+	rtti "Off"
+	exceptionhandling "Off"
+	vectorextensions "SSE2"
+	warnings "Extra"
+	floatingpoint "Fast"
+	editandcontinue "Off"
+
+	flags { "Symbols", "NoMinimalRebuild", "FatalWarnings", "C++14", "MultiProcessorCompile" }
+	filter { "gmake" }
+		buildoptions { "-Wno-reorder", "-Wno-deprecated" }
+		includedirs { gmakeIncludeDir }
+	filter { "configurations:debug or prebuildDebug" }
+		targetsuffix "_d"
+	filter { "configurations:release or prebuildRelease" }
+		optimize "On"
+		flags { "OptimizeSpeed", "NoFramePointer"}
+	filter { "vs*" }
+		defines { "_HAS_EXCEPTIONS=0" }
+		--flags { "StaticRuntime" }
+		linkoptions { "/ENTRY:mainCRTStartup" }
 	filter {}
 
 	-- Defaults
@@ -77,7 +79,32 @@ function coSetProjectDefaults(_name)
 		end
 		defines {"coREFLECT_ENABLED"}
 	filter {}
+end
+
+function coSetShaderProjectDefaults(_name)
+	project(_name)
+	filter {}
+
+	-- Defaults
+	kind "StaticLib"
+	location (buildAbsPath.."/projects")
+	projectDir = "src/".._name
+	files { "**.vert", "**.frag"}
 	
+	defines { "coPROJECT_NAME=".._name }
+	--language "C++" -- We don't have better here
+
+	---[[
+	shaderOutPath = "$(OutDir)/shaders/%{file.name}.spv"
+	filter 'files:**.vert or **.frag'
+		buildmessage 'Compiling %{file.relpath}'
+		buildcommands
+		{
+			'$(VULKAN_SDK)/Bin/glslangValidator.exe -V -o "'..shaderOutPath ..'" %{file.relpath}'
+		}
+		buildoutputs { shaderOutPath }
+	filter {}
+	--]]
 end
 
 workspace("core")
@@ -101,6 +128,7 @@ workspace("core")
 	include("src/prebuild")
 	include("src/render")
 	include("src/render_vulkan")
+	include("src/shader")
 	include("src/runtime")
 	include("src/test_math")
 	include("src/test_container")
