@@ -46,3 +46,20 @@ coResult coVulkanShader::OnInit(const coObject::InitConfig& _config)
 	coVULKAN_TRY(vkCreateShaderModule(device_vk, &createInfo, nullptr, &shaderModule_vk), "Failed to create the vulkan shader module.");
 	return true;
 }
+
+VkShaderStageFlagBits coVulkanShader::GetVkShaderStageFlagBits() const
+{
+	VkShaderStageFlagBits stages_vk;
+	switch (stage)
+	{
+	case Stage::vertex: stages_vk = VK_SHADER_STAGE_VERTEX_BIT; break;
+	case Stage::tesselationControl: stages_vk = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT; break;
+	case Stage::tesselationEvaluation: stages_vk = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT; break;
+	case Stage::geometry: stages_vk = VK_SHADER_STAGE_GEOMETRY_BIT; break;
+	case Stage::fragment: stages_vk = VK_SHADER_STAGE_FRAGMENT_BIT; break;
+	case Stage::compute: stages_vk = VK_SHADER_STAGE_COMPUTE_BIT; break;
+	default: stages_vk = static_cast<VkShaderStageFlagBits>(0); break;
+	}
+
+	return stages_vk;
+}

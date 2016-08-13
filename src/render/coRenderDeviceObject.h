@@ -2,31 +2,25 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include "render/coRenderDeviceObject.h"
-#include "math/vector/coInt32x2.h"
+#include "pattern/object/coObject.h"
 
-class coSurface;
 class coLogicalDevice;
 
-class coSwapChain : public coRenderDeviceObject
+class coRenderDeviceObject : public coObject
 {
-	coDECLARE_SUPER(coRenderDeviceObject);
+	coDECLARE_SUPER(coObject);
 public:
 	class InitConfig : public Super::InitConfig
 	{
 	public:
 		InitConfig();
-		coSurface* surface;
-		coSwapChain* oldSwapChain;
-		coInt32x2 size;
-		coUint32 nbImages;
+		coLogicalDevice* logicalDevice;
 	};
 
-	coSwapChain();
-	virtual ~coSwapChain() {}
+	coRenderDeviceObject();
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
-	coSurface* surface;
+	coLogicalDevice* logicalDevice;
 };

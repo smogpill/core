@@ -2,15 +2,14 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include "math/vector/coFloatx3.h"
+#include "math/vector/coInt32x2.h"
 
-class coAabb
+class coInt32x2Rect
 {
 	coDECLARE_REFLECTED_NO_VIRTUAL();
 public:
-	coAabb() : min(0.0f), max(0.0f) {}
-	coAabb(const coFloatx3& _min, const coFloatx3& _max) : min(_min), max(_max) {}
-
-	coFloatx3 min;
-	coFloatx3 max;
+	coInt32x2Rect() : pos(0), size(0) {}
+	coInt32x2Rect(const coInt32x2& _pos, const coInt32x2& _size) : pos(_pos), size(_size) {}
+	coInt32x2 pos;
+	coInt32x2 size;
 };

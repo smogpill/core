@@ -13,7 +13,6 @@
 
 coVulkanSwapChain::coVulkanSwapChain()
 	: swapChain_vk(VK_NULL_HANDLE)
-	, vulkanLogicalDevice(nullptr)
 {
 
 }
@@ -22,9 +21,9 @@ coVulkanSwapChain::~coVulkanSwapChain()
 {
 	if (swapChain_vk != VK_NULL_HANDLE)
 	{
-		coASSERT(vulkanLogicalDevice);
-		coASSERT(vulkanLogicalDevice->GetVkDevice() != VK_NULL_HANDLE);
-		vkDestroySwapchainKHR(vulkanLogicalDevice->GetVkDevice(), swapChain_vk, nullptr);
+		const VkDevice& device_vk = GetVkDevice();
+		coASSERT(device_vk != VK_NULL_HANDLE);
+		vkDestroySwapchainKHR(device_vk, swapChain_vk, nullptr);
 	}
 }
 
@@ -32,20 +31,23 @@ coResult coVulkanSwapChain::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
-	vulkanLogicalDevice = static_cast<coVulkanLogicalDevice*>(config.logicalDevice);
-	coTRY(vulkanLogicalDevice, nullptr);
-	coVulkanPhysicalDevice* physicalDevice_vk = vulkanLogicalDevice->GetPhysicalDevice();
-	coTRY(physicalDevice_vk, nullptr);
 
-	coVulkanSurface* surface_vk = static_cast<coVulkanSurface*>(config.surface);
-	coTRY(surface_vk, nullptr);
+	coVulkanLogicalDevice* vulkanLogicalDevice = static_cast<coVulkanLogicalDevice*>(logicalDevice);
+	coTRY(vulkanLogicalDevice, nullptr);
+	const VkDevice& device_vk = vulkanLogicalDevice->GetVkDevice();
+	coTRY(device_vk != VK_NULL_HANDLE, nullptr);
+	const VkPhysicalDevice& physicalDevice_vk = GetVkPhysicalDevice();
+	coTRY(physicalDevice_vk != VK_NULL_HANDLE, nullptr);
+
+	const VkSurfaceKHR& surface_vk = GetVkSurfaceKHR();
+	coTRY(surface_vk != VK_NULL_HANDLE, nullptr);
 
 	VkSurfaceCapabilitiesKHR capabilities;
-	coVULKAN_TRY(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice_vk->GetVkPhysicalDevice(), surface_vk->GetVkSurfaceKHR(), &capabilities), "Failed to get surface capabilities");
+	coVULKAN_TRY(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice_vk, surface_vk, &capabilities), "Failed to get surface capabilities");
 
 	VkSwapchainCreateInfoKHR createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-	createInfo.surface = surface_vk->GetVkSurfaceKHR();
+	createInfo.surface = surface_vk;
 
 	// Select format
 	{
@@ -97,7 +99,7 @@ coResult coVulkanSwapChain::OnInit(const coObject::InitConfig& _config)
 	createInfo.oldSwapchain = oldSwapChain_vk ? oldSwapChain_vk->swapChain_vk : VK_NULL_HANDLE;
 
 	coTRY(swapChain_vk == VK_NULL_HANDLE, nullptr);
-	coVULKAN_TRY(vkCreateSwapchainKHR(vulkanLogicalDevice->GetVkDevice(), &createInfo, nullptr, &swapChain_vk), "Failed to create swap chain.");
+	coVULKAN_TRY(vkCreateSwapchainKHR(GetVkDevice(), &createInfo, nullptr, &swapChain_vk), "Failed to create swap chain.");
 
 	return true;
 }
@@ -107,19 +109,16 @@ coResult coVulkanSwapChain::GetFormats(coDynamicArray<VkSurfaceFormatKHR>& _out)
 {
 	coClear(_out);
 
-	coTRY(vulkanLogicalDevice, nullptr);
-	coVulkanPhysicalDevice* physicalDevice = vulkanLogicalDevice->GetPhysicalDevice();
-	coTRY(physicalDevice, nullptr);
-
-	const VkPhysicalDevice& physicalDevice_vk = physicalDevice->GetVkPhysicalDevice();
-	coVulkanSurface* surface_vk = static_cast<coVulkanSurface*>(surface);
-	const VkSurfaceKHR& surface_vk_vk = surface_vk->GetVkSurfaceKHR();
+	const VkPhysicalDevice& physicalDevice_vk = GetVkPhysicalDevice();
+	coTRY(physicalDevice_vk != VK_NULL_HANDLE, nullptr);
+	const VkSurfaceKHR& surface_vk = GetVkSurfaceKHR();
+	coTRY(surface_vk != VK_NULL_HANDLE, nullptr);
 
 	coUint32 nb;
-	coVULKAN_TRY(vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice_vk, surface_vk_vk, &nb, nullptr), "Failed to retrieve the supported formats count.");
+	coVULKAN_TRY(vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice_vk, surface_vk, &nb, nullptr), "Failed to retrieve the supported formats count.");
 
 	coResize(_out, nb);
-	coVULKAN_TRY(vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice_vk, surface_vk_vk, &_out.count, _out.data), "Failed to retrieve the supported formats.");
+	coVULKAN_TRY(vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice_vk, surface_vk, &_out.count, _out.data), "Failed to retrieve the supported formats.");
 	coTRY(_out.count == nb, nullptr);
 	return true;
 }
@@ -128,19 +127,16 @@ coResult coVulkanSwapChain::GetPresentModes(coDynamicArray<VkPresentModeKHR>& _o
 {
 	coClear(_out);
 
-	coTRY(vulkanLogicalDevice, nullptr);
-	coVulkanPhysicalDevice* physicalDevice = vulkanLogicalDevice->GetPhysicalDevice();
-	coTRY(physicalDevice, nullptr);
-
-	const VkPhysicalDevice& physicalDevice_vk = physicalDevice->GetVkPhysicalDevice();
-	coVulkanSurface* surface_vk = static_cast<coVulkanSurface*>(surface);
-	const VkSurfaceKHR& surface_vk_vk = surface_vk->GetVkSurfaceKHR();
+	const VkPhysicalDevice& physicalDevice_vk = GetVkPhysicalDevice();
+	coTRY(physicalDevice_vk != VK_NULL_HANDLE, nullptr);
+	const VkSurfaceKHR& surface_vk = GetVkSurfaceKHR();
+	coTRY(surface_vk != VK_NULL_HANDLE, nullptr);
 
 	coUint32 nb;
-	coVULKAN_TRY(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice_vk, surface_vk_vk, &nb, nullptr), "Failed to retrieve the present modes count.");
+	coVULKAN_TRY(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice_vk, surface_vk, &nb, nullptr), "Failed to retrieve the present modes count.");
 
 	coResize(_out, nb);
-	coVULKAN_TRY(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice_vk, surface_vk_vk, &_out.count, _out.data), "Failed to retrieve the present modes.");
+	coVULKAN_TRY(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice_vk, surface_vk, &_out.count, _out.data), "Failed to retrieve the present modes.");
 	coTRY(_out.count == nb, nullptr);
 	return true;
 }
@@ -208,4 +204,26 @@ coResult coVulkanSwapChain::SelectExtent(VkExtent2D& _out, const VkSurfaceCapabi
 	}
 
 	return true;
+}
+
+const VkDevice& coVulkanSwapChain::GetVkDevice() const
+{
+	const coVulkanLogicalDevice* vulkanLogicalDevice = static_cast<const coVulkanLogicalDevice*>(logicalDevice);
+	static VkDevice nullDevice_vk = VK_NULL_HANDLE;
+	return vulkanLogicalDevice ? vulkanLogicalDevice->GetVkDevice() : nullDevice_vk;
+}
+
+const VkPhysicalDevice& coVulkanSwapChain::GetVkPhysicalDevice() const
+{
+	const coVulkanLogicalDevice* vulkanLogicalDevice = static_cast<const coVulkanLogicalDevice*>(logicalDevice);
+	coVulkanPhysicalDevice* vulkanPhysicalDevice = vulkanLogicalDevice ? vulkanLogicalDevice->GetPhysicalDevice() : nullptr;
+	static VkPhysicalDevice nullPhysicalDevice_vk = VK_NULL_HANDLE;
+	return vulkanPhysicalDevice ? vulkanPhysicalDevice->GetVkPhysicalDevice() : nullPhysicalDevice_vk;
+}
+
+const VkSurfaceKHR& coVulkanSwapChain::GetVkSurfaceKHR() const
+{
+	coVulkanSurface* vulkanSurface = static_cast<coVulkanSurface*>(surface);
+	static VkSurfaceKHR nullSurface_vk = VK_NULL_HANDLE;
+	return vulkanSurface ? vulkanSurface->GetVkSurfaceKHR() : nullSurface_vk;
 }

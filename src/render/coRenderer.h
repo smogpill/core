@@ -3,7 +3,6 @@
 #pragma once
 
 #include "pattern/object/coObject.h"
-#include "lang/reflect/coTypeDecl.h"
 
 class coLogicalDevice;
 

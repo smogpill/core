@@ -4,17 +4,17 @@
 
 #include "lang/reflect/coTypeDecl.h"
 
-class alignas(16) coFloatx3
+class alignas(16) coFloatx2
 {
 	coDECLARE_REFLECTED_NO_VIRTUAL();
 public:
-	coFORCE_INLINE coFloatx3() {}
-	coFORCE_INLINE coFloatx3(coFloat _xyz) : x(_xyz), y(_xyz), z(_xyz) {}
-	coFORCE_INLINE coFloatx3(coFloat _x, coFloat _y, coFloat _z) : x(_x), y(_y), z(_z) {}
+	coFORCE_INLINE coFloatx2(){}
+	coFORCE_INLINE coFloatx2(coFloat _xy) : x(_xy), y(_xy) {}
+	coFORCE_INLINE coFloatx2(coFloat _x, coFloat _y) : x(_x), y(_y) {}
 
 	coFloat x;
 	coFloat y;
-	coFloat z;
 private:
-	coFloat pad;
+	coFloat pad0;
+	coFloat pad1;
 };

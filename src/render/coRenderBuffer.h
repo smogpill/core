@@ -2,13 +2,11 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include "pattern/object/coObject.h"
+#include "render/coRenderDeviceObject.h"
 
-class coLogicalDevice;
-
-class coRenderBuffer : public coObject
+class coRenderBuffer : public coRenderDeviceObject
 {
-	coDECLARE_SUPER(coObject);
+	coDECLARE_SUPER(coRenderDeviceObject);
 public:
 	enum Usage
 	{
@@ -20,7 +18,6 @@ public:
 	{
 	public:
 		InitConfig();
-		coLogicalDevice* logicalDevice;
 		coUint32 size8;
 		coUint32 usage;
 		coBool shared;
@@ -30,6 +27,5 @@ public:
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
-	coLogicalDevice* logicalDevice;
 	coUint32 size8;
 };

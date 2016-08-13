@@ -4,8 +4,6 @@
 
 #include "render/coSwapChain.h"
 
-class coVulkanLogicalDevice;
-
 class coVulkanSwapChain final : public coSwapChain
 {
 	coDECLARE_SUPER(coSwapChain);
@@ -22,7 +20,9 @@ private:
 	coResult SelectFormat(VkSurfaceFormatKHR& _out, const VkSurfaceFormatKHR& _requested);
 	coResult SelectPresentMode(VkPresentModeKHR& _out, const VkPresentModeKHR& _requested);
 	coResult SelectExtent(VkExtent2D& _out, const VkSurfaceCapabilitiesKHR& _capabilities, const VkExtent2D& _requested);
+	const VkDevice& GetVkDevice() const;
+	const VkPhysicalDevice& GetVkPhysicalDevice() const;
+	const VkSurfaceKHR& GetVkSurfaceKHR() const;
 
 	VkSwapchainKHR swapChain_vk;
-	coVulkanLogicalDevice* vulkanLogicalDevice;
 };

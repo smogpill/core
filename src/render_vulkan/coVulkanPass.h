@@ -2,22 +2,22 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include "render/coShader.h"
+#include "render/coRenderPass.h"
 
-class coVulkanShader : public coShader
+class coVulkanPass : public coRenderPass
 {
-	coDECLARE_SUPER(coShader);
+	coDECLARE_SUPER(coRenderPass);
 public:
-	coVulkanShader();
-	virtual ~coVulkanShader();
+	coVulkanPass();
+	virtual ~coVulkanPass();
 
-	VkShaderStageFlagBits GetVkShaderStageFlagBits() const;
-	const VkShaderModule& GetVkShaderModule() const { return shaderModule_vk; }
+	const VkRenderPass& GetVkRenderPass() const { return renderPass_vk; }
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 private:
 	const VkDevice& GetVkDevice() const;
-	VkShaderModule shaderModule_vk;
+
+	VkRenderPass renderPass_vk;
 };

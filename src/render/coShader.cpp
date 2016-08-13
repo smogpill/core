@@ -5,15 +5,15 @@
 #include "lang/result/coResult_f.h"
 
 coShader::coShader()
-	: logicalDevice(nullptr)
+	: stage(Stage::none)
 {
 
 }
 
 coShader::InitConfig::InitConfig()
-	: logicalDevice(nullptr)
-	, code(nullptr)
+	: code(nullptr)
 	, codeSize8(0)
+	, stage(Stage::none)
 {
 
 }
@@ -22,8 +22,9 @@ coResult coShader::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
-	logicalDevice = config.logicalDevice;
+	stage = config.stage;
 	coTRY(config.code, nullptr);
 	coTRY(config.codeSize8, nullptr);
+	coTRY(stage != Stage::none, nullptr);
 	return true;
 }

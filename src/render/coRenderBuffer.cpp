@@ -6,7 +6,6 @@
 
 coRenderBuffer::coRenderBuffer()
 	: size8(0)
-	, logicalDevice(nullptr)
 {
 
 }
@@ -15,7 +14,6 @@ coRenderBuffer::InitConfig::InitConfig()
 	: size8(0)
 	, shared(false)
 	, usage(0)
-	, logicalDevice(nullptr)
 {
 
 }
@@ -25,8 +23,6 @@ coResult coRenderBuffer::OnInit(const coObject::InitConfig& _config)
 	coTRY(Super::OnInit(_config), nullptr);
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
 	size8 = config.size8;
-	logicalDevice = config.logicalDevice;
 	coTRY(size8 > 0, nullptr);
-	coTRY(logicalDevice, nullptr);
 	return true;
 }
