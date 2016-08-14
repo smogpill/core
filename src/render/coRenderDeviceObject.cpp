@@ -5,13 +5,13 @@
 #include "lang/result/coResult_f.h"
 
 coRenderDeviceObject::coRenderDeviceObject()
-	: logicalDevice(nullptr)
+	: device(nullptr)
 {
 
 }
 
 coRenderDeviceObject::InitConfig::InitConfig()
-	: logicalDevice(nullptr)
+	: device(nullptr)
 {
 
 }
@@ -20,8 +20,8 @@ coResult coRenderDeviceObject::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
-	logicalDevice = config.logicalDevice;
-	coTRY(logicalDevice, nullptr);
+	device = config.device;
+	coTRY(device, nullptr);
 
 	return true;
 }

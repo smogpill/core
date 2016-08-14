@@ -33,7 +33,7 @@ coResult coVulkanSwapChain::OnInit(const coObject::InitConfig& _config)
 	coTRY(Super::OnInit(_config), nullptr);
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
 
-	coVulkanLogicalDevice* vulkanLogicalDevice = static_cast<coVulkanLogicalDevice*>(logicalDevice);
+	coVulkanLogicalDevice* vulkanLogicalDevice = static_cast<coVulkanLogicalDevice*>(device);
 	coTRY(vulkanLogicalDevice, nullptr);
 	const VkDevice& device_vk = vulkanLogicalDevice->GetVkDevice();
 	coTRY(device_vk != VK_NULL_HANDLE, nullptr);
@@ -209,14 +209,14 @@ coResult coVulkanSwapChain::SelectExtent(VkExtent2D& _out, const VkSurfaceCapabi
 
 const VkDevice& coVulkanSwapChain::GetVkDevice() const
 {
-	const coVulkanLogicalDevice* vulkanLogicalDevice = static_cast<const coVulkanLogicalDevice*>(logicalDevice);
+	const coVulkanLogicalDevice* vulkanLogicalDevice = static_cast<const coVulkanLogicalDevice*>(device);
 	static VkDevice nullDevice_vk = VK_NULL_HANDLE;
 	return vulkanLogicalDevice ? vulkanLogicalDevice->GetVkDevice() : nullDevice_vk;
 }
 
 const VkPhysicalDevice& coVulkanSwapChain::GetVkPhysicalDevice() const
 {
-	const coVulkanLogicalDevice* vulkanLogicalDevice = static_cast<const coVulkanLogicalDevice*>(logicalDevice);
+	const coVulkanLogicalDevice* vulkanLogicalDevice = static_cast<const coVulkanLogicalDevice*>(device);
 	coVulkanPhysicalDevice* vulkanPhysicalDevice = vulkanLogicalDevice ? vulkanLogicalDevice->GetPhysicalDevice() : nullptr;
 	static VkPhysicalDevice nullPhysicalDevice_vk = VK_NULL_HANDLE;
 	return vulkanPhysicalDevice ? vulkanPhysicalDevice->GetVkPhysicalDevice() : nullPhysicalDevice_vk;

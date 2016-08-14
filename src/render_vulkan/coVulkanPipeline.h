@@ -4,7 +4,7 @@
 
 #include "render/coRenderPipeline.h"
 
-class coLogicalDevice;
+class coRenderDevice;
 
 class coVulkanPipeline : public coRenderPipeline
 {

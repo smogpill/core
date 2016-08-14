@@ -24,7 +24,7 @@ coVulkanShader::~coVulkanShader()
 
 const VkDevice& coVulkanShader::GetVkDevice() const
 {
-	coVulkanLogicalDevice* vulkanLogicalDevice = static_cast<coVulkanLogicalDevice*>(logicalDevice);
+	coVulkanLogicalDevice* vulkanLogicalDevice = static_cast<coVulkanLogicalDevice*>(device);
 	static VkDevice nullDevice = VK_NULL_HANDLE;
 	return vulkanLogicalDevice ? vulkanLogicalDevice->GetVkDevice() : nullDevice;
 }

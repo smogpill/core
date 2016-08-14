@@ -61,7 +61,7 @@ coResult coVulkanPass::OnInit(const coObject::InitConfig& _config)
 
 const VkDevice& coVulkanPass::GetVkDevice() const
 {
-	const coVulkanLogicalDevice* vulkanLogicalDevice = static_cast<const coVulkanLogicalDevice*>(logicalDevice);
+	const coVulkanLogicalDevice* vulkanLogicalDevice = static_cast<const coVulkanLogicalDevice*>(device);
 	static VkDevice nullDevice_vk = VK_NULL_HANDLE;
 	return vulkanLogicalDevice ? vulkanLogicalDevice->GetVkDevice() : nullDevice_vk;
 }

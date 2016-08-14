@@ -4,7 +4,7 @@
 
 #include "pattern/object/coObject.h"
 
-class coLogicalDevice : public coObject
+class coRenderDevice : public coObject
 {
 	coDECLARE_SUPER(coObject);
 public:
@@ -13,8 +13,8 @@ public:
 	public:
 	};
 
-	//coLogicalDevice();
-	virtual ~coLogicalDevice() {}
+	//coRenderDevice();
+	virtual ~coRenderDevice() {}
 
 protected:
 	//virtual coResult OnInit(const coObject::InitConfig& _config) override;

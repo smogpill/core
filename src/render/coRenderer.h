@@ -4,7 +4,7 @@
 
 #include "pattern/object/coObject.h"
 
-class coLogicalDevice;
+class coRenderDevice;
 
 class coRenderer : public coObject
 {
@@ -18,7 +18,7 @@ public:
 	coRenderer();
 	virtual ~coRenderer();
 
-	virtual coLogicalDevice* GetBestLogicalDeviceForSwapChain() const { return nullptr; }
+	virtual coRenderDevice* GetBestLogicalDeviceForSwapChain() const { return nullptr; }
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;

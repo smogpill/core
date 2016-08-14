@@ -4,14 +4,14 @@
 
 #include "render/coQueueRef.h"
 
-class coLogicalDevice;
+class coRenderDevice;
 
 class coVulkanQueueRef : public coQueueRef
 {
 public:
 	coVulkanQueueRef();
 
-	coLogicalDevice* logicalDevice;
+	coRenderDevice* logicalDevice;
 	coInt32 familyIndex;
 	coInt32 queueIndex;
 	VkQueue queue_vk;

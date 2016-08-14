@@ -2,16 +2,16 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include "render/coLogicalDevice.h"
+#include "render/coRenderDevice.h"
 
 class coVulkanLayerManager;
 class coVulkanSurface;
 class coVulkanPhysicalDevice;
 class coSwapChain;
 
-class coVulkanLogicalDevice : public coLogicalDevice
+class coVulkanLogicalDevice : public coRenderDevice
 {
-	coDECLARE_SUPER(coLogicalDevice);
+	coDECLARE_SUPER(coRenderDevice);
 public:
 	enum QueueType
 	{

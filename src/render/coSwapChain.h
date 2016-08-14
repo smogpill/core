@@ -6,7 +6,7 @@
 #include "math/vector/coInt32x2.h"
 
 class coSurface;
-class coLogicalDevice;
+class coRenderDevice;
 
 class coSwapChain : public coRenderDeviceObject
 {
