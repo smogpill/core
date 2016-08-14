@@ -27,9 +27,9 @@ coVulkanRenderer::coVulkanRenderer()
 
 coVulkanRenderer::~coVulkanRenderer()
 {
-	for (auto p : logicalDevices)
+	for (auto p : devices)
 		delete p;
-	coClear(logicalDevices);
+	coClear(devices);
 	for (auto p : physicalDevices)
 		delete p;
 	coClear(physicalDevices);
@@ -141,7 +141,7 @@ coResult coVulkanRenderer::InitMessageHandler()
 coResult coVulkanRenderer::InitDevices()
 {
 	coTRY(instance_vk, nullptr);
-	coTRY(logicalDevices.count == 0, nullptr);
+	coTRY(devices.count == 0, nullptr);
 
 	coTRY(coGetPhysicalDevices(physicalDevices, instance_vk), "Failed to retrieve the supported physical devices.");
 	coTRY(physicalDevices.count > 0, "Failed to find any supported physical device.");
@@ -168,10 +168,10 @@ coResult coVulkanRenderer::InitDevices()
 			continue;
 		}
 		coTRY(logicalDevice->AddRequestedExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME), nullptr);
-		coPushBack(logicalDevices, logicalDevice);
+		coPushBack(devices, logicalDevice);
 		logicalDevice = nullptr;
 	}
 
-	coTRY(logicalDevices.count > 0, "Failed to find any acceptable device.");
+	coTRY(devices.count > 0, "Failed to find any acceptable device.");
 	return true;
 }

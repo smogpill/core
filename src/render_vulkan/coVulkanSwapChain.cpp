@@ -81,7 +81,8 @@ coResult coVulkanSwapChain::OnInit(const coObject::InitConfig& _config)
 	createInfo.imageArrayLayers = 1;
 	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-	const coInt32 graphicsFamilyIndex = coVulkanLogicalDevice::GetQueueFamilyIndex(vulkanLogicalDevice->GetQueueId(coVulkanLogicalDevice::graphics));
+	coInt32 graphicsFamilyIndex;
+	coTRY(FindGraphicsQueueFamily(graphicsFamilyIndex), "Failed to find a device queue compatible with graphics.");
 	coInt32 presentFamilyIndex;
 	coTRY(FindPresentQueueFamily(presentFamilyIndex), "Failed to find a device queue compatible with presentation.");
 	coTRY(vulkanLogicalDevice->GetVkQueue(presentQueue_vk, presentFamilyIndex, 0), "Failed to retrieve the present queue of family index: "<<presentFamilyIndex);

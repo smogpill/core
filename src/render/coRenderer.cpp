@@ -10,6 +10,7 @@ coRenderer::coRenderer()
 
 coRenderer::~coRenderer()
 {
+	coASSERT(devices.count == 0);
 }
 
 coResult coRenderer::OnInit(const coObject::InitConfig& _config)

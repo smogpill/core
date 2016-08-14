@@ -8,12 +8,14 @@
 #include "render/coSwapChain.h"
 #include "render/coSurface.h"
 #include "render/coRenderFactory.h"
+#include "render/coRenderDevice.h"
 
 coRuntimeApp::coRuntimeApp()
 	: renderer(nullptr)
 	, window(nullptr)
 	, swapChain(nullptr)
 	, surface(nullptr)
+	, renderDevice(nullptr)
 {
 
 }
@@ -64,14 +66,44 @@ coResult coRuntimeApp::OnInit(const coObject::InitConfig& _config)
 		coTRY(surface->Init(c), "Failed to init the main render surface.");
 	}
 
+	coTRY(SelectRenderDevice(), "Failed to select a render device.");
+
 	swapChain = coCreateSwapChain();
 	{
 		coSwapChain::InitConfig c;
+		c.device = renderDevice;
 		c.size = coInt32x2(800, 600);
 		c.nbImages = 2;
 		c.surface = surface;
 		c.debugName = "MainSwapChain";
 		coTRY(swapChain->Init(c), "Failed to init the main render sswap chain.");
+	}
+
+	return true;
+}
+
+coResult coRuntimeApp::SelectRenderDevice()
+{
+	renderDevice = nullptr;
+	for (coRenderDevice* device : renderer->GetDevices())
+	{
+		coASSERT(device);
+		const coRenderDevice::DeviceType deviceType = device->GetDeviceType();
+		if (deviceType != coRenderDevice::discreteGpu && deviceType != coRenderDevice::integratedGpu)
+			continue;
+		coBool b;
+		coCHECK(device->SupportsGraphics(b), nullptr);
+		if (!b)
+			continue;
+
+		coCHECK(device->SupportsSurface(b, *surface), nullptr);
+		if (!b)
+			continue;
+
+		if (!renderDevice || renderDevice->GetDeviceType() == coRenderDevice::integratedGpu)
+		{
+			renderDevice = device;
+		}
 	}
 
 	return true;

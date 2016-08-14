@@ -37,5 +37,4 @@ private:
 	coVulkanLayerManager* layerManager_vk;
 	coVulkanExtensionManager* extensionManager_vk;
 	coDynamicArray<coVulkanPhysicalDevice*> physicalDevices;
-	coDynamicArray<coVulkanLogicalDevice*> logicalDevices;
 };

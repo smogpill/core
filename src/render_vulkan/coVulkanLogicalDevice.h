@@ -33,13 +33,13 @@ public:
 	coResult AddRequestedExtension(const coConstString& _extension);
 	coResult IsExtensionRequested(const coConstString& _extension) const;
 	const VkDevice& GetVkDevice() const { return logicalDevice_vk; }
-	coVulkanPhysicalDevice* GetPhysicalDevice() const { return physicalDevice_vk; }
-	coInt64 GetQueueId(QueueType _type) const { return queueIds[_type]; }
+	coVulkanPhysicalDevice* GetPhysicalDevice() const { return vulkanPhysicalDevice; }
 	const VkQueue& GetVkQueue(QueueType _type) const { return queues_vk[_type]; }
 	coResult GetVkQueue(VkQueue& _out, coUint _queueFamilyIndex, coUint _index);
-	static coInt32 GetQueueFamilyIndex(coInt64 _queueId);
 	coResult WaitForIdle();
 	virtual DeviceType GetDeviceType() const override;
+	virtual coResult SupportsGraphics(coBool& _out) const override;
+	virtual coResult SupportsSurface(coBool& _out, const coSurface& _surface) const override;
 	
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
@@ -48,15 +48,14 @@ protected:
 
 private:
 	coResult InitQueueFamilyIndices();
-	coResult InitDeviceType();
 	coResult InitQueues();
 	coResult InitLogicalDevice();
 	coResult GetAllRequestedExtensions(coDynamicArray<const coChar*>& _extensions) const;
 
-	coVulkanPhysicalDevice* physicalDevice_vk;
+	coVulkanPhysicalDevice* vulkanPhysicalDevice;
 	VkDevice logicalDevice_vk;
-	coInt64 queueIds[QueueType::count];
+	coInt32 queueFamilyIndices[QueueType::count];
 	VkQueue queues_vk[QueueType::count];
 	coDynamicArray<coDynamicString*> requestedExtensions;
-	coVulkanLayerManager* layerManager_vk;
+	coVulkanLayerManager* vulkanLayerManager;
 };

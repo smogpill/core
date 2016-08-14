@@ -11,11 +11,11 @@
 #include "lang/reflect/coNumericLimits.h"
 
 coVulkanLogicalDevice::coVulkanLogicalDevice()
-	: physicalDevice_vk(nullptr)
+	: vulkanPhysicalDevice(nullptr)
 	, logicalDevice_vk(VK_NULL_HANDLE)
 	//, queues_vk{ VK_NULL_HANDLE }
-	, queueIds{ -1 }
-	, layerManager_vk(nullptr)
+	, queueFamilyIndices{ -1 }
+	, vulkanLayerManager(nullptr)
 {
 
 }
@@ -39,10 +39,10 @@ coResult coVulkanLogicalDevice::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
-	coASSERT(physicalDevice_vk == VK_NULL_HANDLE);
+	coASSERT(vulkanPhysicalDevice == VK_NULL_HANDLE);
 	coTRY(config.physicalDevice_vk != VK_NULL_HANDLE, nullptr);
-	physicalDevice_vk = config.physicalDevice_vk;
-	layerManager_vk = config.layerManager_vk;
+	vulkanPhysicalDevice = config.physicalDevice_vk;
+	vulkanLayerManager = config.layerManager_vk;
 	coTRY(InitQueueFamilyIndices(), "Failed to init the queue family index");
 	return true;
 }
@@ -68,28 +68,28 @@ void coVulkanLogicalDevice::OnStop()
 
 coResult coVulkanLogicalDevice::InitQueueFamilyIndices()
 {
-	for (auto& index : queueIds)
+	for (auto& index : queueFamilyIndices)
 		index = -1;
 
-	const coArray<VkQueueFamilyProperties>& queueFamilyProps = physicalDevice_vk->GetQueueFamilyProperties();
+	const coArray<VkQueueFamilyProperties>& queueFamilyProps = vulkanPhysicalDevice->GetQueueFamilyProperties();
 	for (coUint i = 0; i < queueFamilyProps.count; ++i)
 	{
 		const VkQueueFamilyProperties& prop = queueFamilyProps[i];
 		if (prop.queueCount > 0)
 		{
-			if (queueIds[QueueType::graphics] == -1 && prop.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+			if (queueFamilyIndices[QueueType::graphics] == -1 && prop.queueFlags & VK_QUEUE_GRAPHICS_BIT)
 			{
-				queueIds[QueueType::graphics] = i;
+				queueFamilyIndices[QueueType::graphics] = i;
 			}
 
-			if (queueIds[QueueType::compute] == -1 && prop.queueFlags & VK_QUEUE_COMPUTE_BIT)
+			if (queueFamilyIndices[QueueType::compute] == -1 && prop.queueFlags & VK_QUEUE_COMPUTE_BIT)
 			{
-				queueIds[QueueType::compute] = i;
+				queueFamilyIndices[QueueType::compute] = i;
 			}
 
-			if (queueIds[QueueType::transfer] == -1 && prop.queueFlags & VK_QUEUE_TRANSFER_BIT)
+			if (queueFamilyIndices[QueueType::transfer] == -1 && prop.queueFlags & VK_QUEUE_TRANSFER_BIT)
 			{
-				queueIds[QueueType::transfer] = i;
+				queueFamilyIndices[QueueType::transfer] = i;
 			}
 			break;
 		}
@@ -99,14 +99,14 @@ coResult coVulkanLogicalDevice::InitQueueFamilyIndices()
 
 coResult coVulkanLogicalDevice::InitQueues()
 {
-	static_assert(coARRAY_SIZE(queues_vk) == coARRAY_SIZE(queueIds), "");
-	for (coUint i = 0; i < coARRAY_SIZE(queueIds); ++i)
+	static_assert(coARRAY_SIZE(queues_vk) == coARRAY_SIZE(queueFamilyIndices), "");
+	for (coUint i = 0; i < coARRAY_SIZE(queueFamilyIndices); ++i)
 	{
-		const coInt64 queueId = queueIds[i];
-		if (queueId != -1)
+		const coInt32 queueFamilyIndex = queueFamilyIndices[i];
+		if (queueFamilyIndex != -1)
 		{
-			const coUint32 queueFamilyIndex = coCastWithOverflowCheck<coUint32>(queueId);
-			coTRY(GetVkQueue(queues_vk[i], queueFamilyIndex, 0), nullptr);
+			const uint32_t queueFamilyIndex_vk = coCastWithOverflowCheck<uint32_t>(queueFamilyIndex);
+			coTRY(GetVkQueue(queues_vk[i], queueFamilyIndex_vk, 0), nullptr);
 		}
 		else
 		{
@@ -118,10 +118,10 @@ coResult coVulkanLogicalDevice::InitQueues()
 
 coResult coVulkanLogicalDevice::InitLogicalDevice()
 {
-	coTRY(queueIds[QueueType::graphics] >= 0, nullptr);
+	coTRY(queueFamilyIndices[QueueType::graphics] >= 0, nullptr);
 	VkDeviceQueueCreateInfo queueCreateInfo = {};
 	queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-	queueCreateInfo.queueFamilyIndex = GetQueueFamilyIndex(GetQueueId(QueueType::graphics));
+	queueCreateInfo.queueFamilyIndex = queueFamilyIndices[QueueType::graphics];
 	queueCreateInfo.queueCount = 1;
 	coFloat priority = 1.0f;
 	queueCreateInfo.pQueuePriorities = &priority;
@@ -129,9 +129,9 @@ coResult coVulkanLogicalDevice::InitLogicalDevice()
 	VkPhysicalDeviceFeatures deviceFeatures = {};
 
 	coDynamicArray<const coChar*> layers;
-	if (layerManager_vk)
+	if (vulkanLayerManager)
 	{
-		layerManager_vk->GetAllRequested(layers);
+		vulkanLayerManager->GetAllRequested(layers);
 	}
 
 	coDynamicArray<const coChar*> extensions;
@@ -148,14 +148,9 @@ coResult coVulkanLogicalDevice::InitLogicalDevice()
 	createInfo.ppEnabledLayerNames = layers.data;
 
 	coTRY(logicalDevice_vk == VK_NULL_HANDLE, nullptr);
-	coTRY(vkCreateDevice(physicalDevice_vk->GetVkPhysicalDevice(), &createInfo, nullptr, &logicalDevice_vk), "Failed to create device");
+	coTRY(vkCreateDevice(vulkanPhysicalDevice->GetVkPhysicalDevice(), &createInfo, nullptr, &logicalDevice_vk), "Failed to create device");
 
 	return true;
-}
-
-coInt32 coVulkanLogicalDevice::GetQueueFamilyIndex(coInt64 _queueId)
-{
-	return coCastWithOverflowCheck<coInt32>(_queueId);
 }
 
 coResult coVulkanLogicalDevice::GetVkQueue(VkQueue& _out, coUint _queueFamilyIndex, coUint _index)
@@ -169,7 +164,7 @@ coResult coVulkanLogicalDevice::GetVkQueue(VkQueue& _out, coUint _queueFamilyInd
 
 coResult coVulkanLogicalDevice::AddRequestedExtension(const coConstString& _extension)
 {
-	coTRY(physicalDevice_vk->IsExtensionSupported(_extension), "Device extension not supported: " << _extension);
+	coTRY(vulkanPhysicalDevice->IsExtensionSupported(_extension), "Device extension not supported: " << _extension);
 	coTRY(!IsExtensionRequested(_extension), "Device extension already requested: " << _extension);
 	coDynamicString* extension = new coDynamicString(_extension);
 	coNullTerminate(*extension);
@@ -207,9 +202,9 @@ coResult coVulkanLogicalDevice::WaitForIdle()
 
 auto coVulkanLogicalDevice::GetDeviceType() const -> DeviceType
 {
-	if (physicalDevice_vk)
+	if (vulkanPhysicalDevice)
 	{
-		const VkPhysicalDeviceProperties& deviceProperties = physicalDevice_vk->GetProperties();
+		const VkPhysicalDeviceProperties& deviceProperties = vulkanPhysicalDevice->GetProperties();
 		switch (deviceProperties.deviceType)
 		{
 		case VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU: return DeviceType::integratedGpu;
@@ -218,4 +213,32 @@ auto coVulkanLogicalDevice::GetDeviceType() const -> DeviceType
 		}
 	}
 	return DeviceType::none;
+}
+
+coResult coVulkanLogicalDevice::SupportsGraphics(coBool& _out) const
+{
+	_out = false;
+	coTRY(vulkanPhysicalDevice, nullptr);
+	const coUint nbFamilies = vulkanPhysicalDevice->GetNbQueueFamilies();
+	for (coUint i = 0; i < nbFamilies; ++i)
+	{
+		coTRY(vulkanPhysicalDevice->SupportsGraphics(_out, i), nullptr);
+		if (_out)
+			return true;
+	}
+	return true;
+}
+
+coResult coVulkanLogicalDevice::SupportsSurface(coBool& _out, const coSurface& _surface) const
+{
+	_out = false;
+	coTRY(vulkanPhysicalDevice, nullptr);
+	const coUint nbFamilies = vulkanPhysicalDevice->GetNbQueueFamilies();
+	for (coUint i = 0; i < nbFamilies; ++i)
+	{
+		coTRY(vulkanPhysicalDevice->SupportsSurface(_out, i, _surface), nullptr);
+		if (_out)
+			return true;
+	}
+	return true;
 }

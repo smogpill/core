@@ -4,6 +4,8 @@
 
 #include "pattern/object/coObject.h"
 
+class coSurface;
+
 class coRenderDevice : public coObject
 {
 	coDECLARE_SUPER(coObject);
@@ -23,6 +25,8 @@ public:
 	//coRenderDevice();
 	virtual ~coRenderDevice() {}
 
+	virtual coResult SupportsGraphics(coBool& _out) const = 0;
+	virtual coResult SupportsSurface(coBool& _out, const coSurface& _surface) const = 0;
 	virtual DeviceType GetDeviceType() const = 0;
 
 protected:
