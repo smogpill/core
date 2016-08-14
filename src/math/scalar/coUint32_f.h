@@ -138,3 +138,4 @@ coFORCE_INLINE coUint32 coRotl(coUint32 _a, coUint _shift)
 	return (_a << _shift) | (_a >> (32 - _shift));
 #endif
 }
+

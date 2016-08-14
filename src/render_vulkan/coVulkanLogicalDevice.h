@@ -7,6 +7,7 @@
 class coVulkanLayerManager;
 class coVulkanSurface;
 class coVulkanPhysicalDevice;
+class coSwapChain;
 
 class coVulkanLogicalDevice : public coLogicalDevice
 {
@@ -39,6 +40,7 @@ public:
 	coInt64 GetQueueId(QueueType _type) const { return queueIds[_type]; }
 	static coInt32 GetQueueFamilyIndex(coInt64 _queueId);
 	coResult WaitForIdle();
+	coResult Present(const coArray<coSwapChain*> _swapChains);
 	
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;

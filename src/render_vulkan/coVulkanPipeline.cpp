@@ -9,6 +9,12 @@
 #include "render_vulkan/coVulkanResult_f.h"
 #include "lang/result/coResult.h"
 #include "lang/result/coResult_f.h"
+#include "lang/reflect/coType.h"
+#include "lang/reflect/coType_f.h"
+#include "lang/reflect/coField.h"
+#include "math/vector/coFloatx2.h"
+#include "math/vector/coFloatx3.h"
+#include "math/vector/coFloatx4.h"
 
 coVulkanPipeline::coVulkanPipeline()
 	: pipeline_vk(VK_NULL_HANDLE)
@@ -36,7 +42,9 @@ coResult coVulkanPipeline::OnInit(const coObject::InitConfig& _config)
 
 	// Vertex input
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo;
-	coTRY(InitVertexInput(vertexInputInfo, config), "Failed to init the vertex inputs.");
+	coDynamicArray<VkVertexInputBindingDescription> vertexBindings;
+	coDynamicArray<VkVertexInputAttributeDescription> vertexAttributes;
+	coTRY(InitVertexInput(vertexInputInfo, vertexBindings, vertexAttributes, config), "Failed to init the vertex inputs.");
 
 	// Input assembly
 	VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
@@ -113,14 +121,77 @@ coResult coVulkanPipeline::InitShaderStages(coDynamicArray<VkPipelineShaderStage
 	return true;
 }
 
-coResult coVulkanPipeline::InitVertexInput(VkPipelineVertexInputStateCreateInfo& _out, const InitConfig& /*_config*/)
+coResult _coGetAttributeFormat(VkFormat& _out, const coType& _type)
 {
+	coTODO("Write a simpler and faster implementation");
+	static const coUint32 coFloatHash = coGetType<coFloat>()->nameHash;
+	static const coUint32 coFloatx2Hash = coGetType<coFloatx2>()->nameHash;
+	static const coUint32 coFloatx3Hash = coGetType<coFloatx3>()->nameHash;
+	static const coUint32 coFloatx4Hash = coGetType<coFloatx4>()->nameHash;
+	if (_type.nameHash == coFloatHash)
+	{
+		_out = VK_FORMAT_R32_SFLOAT;
+		return true;
+	}
+	else if (_type.nameHash == coFloatx2Hash)
+	{
+		_out = VK_FORMAT_R32G32_SFLOAT;
+		return true;
+	}
+	else if (_type.nameHash == coFloatx3Hash)
+	{
+		_out = VK_FORMAT_R32G32B32_SFLOAT;
+		return true;
+	}
+	else if (_type.nameHash == coFloatx4Hash)
+	{
+		_out = VK_FORMAT_R32G32B32A32_SFLOAT;
+		return true;
+	}
+	return false;
+}
+
+coResult coVulkanPipeline::InitVertexInput(VkPipelineVertexInputStateCreateInfo& _out, coDynamicArray<VkVertexInputBindingDescription>& _outBindings, coDynamicArray<VkVertexInputAttributeDescription>& _outAttributes, const InitConfig& _config)
+{
+	coASSERT(_outBindings.count == 0);
+	coASSERT(_outAttributes.count == 0);
+	coReserve(_outBindings, _config.vertexChannels.count);
+	coUint32 nbAttributes = 0;
+	for (const coType* type : _config.vertexChannels)
+	{
+		coTRY(type, nullptr);
+		nbAttributes += type->fields.count;
+	}
+	coReserve(_outAttributes, nbAttributes);
+
+	coUint32 location = 0;
+	for (coUint32 i = 0; i < _config.vertexChannels.count; ++i)
+	{
+		const coType* type = _config.vertexChannels[i];
+		VkVertexInputBindingDescription& binding_vk = coPushBack(_outBindings, VkVertexInputBindingDescription{});
+		binding_vk.binding = i;
+		binding_vk.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+		binding_vk.stride = type->size8;
+		for (const coField* field : type->fields)
+		{
+			coTRY(field, nullptr);
+			const coType* fieldType = field->type;
+			coTRY(fieldType, nullptr);
+			VkVertexInputAttributeDescription& attribute_vk = coPushBack(_outAttributes, VkVertexInputAttributeDescription{});
+			attribute_vk.binding = i;
+			attribute_vk.location = location;
+			attribute_vk.offset = attribute_vk.offset;
+			coTRY(_coGetAttributeFormat(attribute_vk.format, *fieldType), "Field type unsupported for conversion to Vulkan: "<<fieldType->name);
+			++location;
+		}
+	}
+
 	_out = {};
 	_out.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-	_out.vertexBindingDescriptionCount = 0;
-	_out.pVertexBindingDescriptions = nullptr;
-	_out.vertexAttributeDescriptionCount = 0;
-	_out.pVertexAttributeDescriptions = nullptr;
+	_out.vertexBindingDescriptionCount = _outBindings.count;
+	_out.pVertexBindingDescriptions = _outBindings.data;
+	_out.vertexAttributeDescriptionCount = _outAttributes.count;
+	_out.pVertexAttributeDescriptions = _outAttributes.data;
 	return true;
 }
 

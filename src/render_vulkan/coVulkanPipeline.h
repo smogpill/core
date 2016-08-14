@@ -19,7 +19,8 @@ protected:
 private:
 	const VkDevice& GetVkDevice() const;
 	coResult InitShaderStages(coDynamicArray<VkPipelineShaderStageCreateInfo>& _out, const InitConfig& _config);
-	coResult InitVertexInput(VkPipelineVertexInputStateCreateInfo& _out, const InitConfig& _config);
+	coResult InitVertexInput(VkPipelineVertexInputStateCreateInfo& _out, 
+		coDynamicArray<VkVertexInputBindingDescription>& _outBindings, coDynamicArray<VkVertexInputAttributeDescription>& _outAttributes, const InitConfig& _config);
 	coResult InitInputAssembly(VkPipelineInputAssemblyStateCreateInfo& _out, const InitConfig& _config);
 	coResult InitViewport(VkPipelineViewportStateCreateInfo& _out, coDynamicArray<VkViewport>& _outViewports, coDynamicArray<VkRect2D>& _outScissors, const InitConfig& _config);
 	coResult InitRasterizer(VkPipelineRasterizationStateCreateInfo& _out, const InitConfig& _config);

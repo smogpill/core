@@ -14,6 +14,6 @@ public:
 template <class T, class U>
 T coCastWithOverflowCheck(const U& _this)
 {
-	coASSERT(_this >= coNumericLimits<T>::Min() && _this <= coNumericLimits<T>::Max());
+	coASSERT(_this >= static_cast<const U&>(coNumericLimits<T>::Min()) && _this <= static_cast<const U&>(coNumericLimits<T>::Max()));
 	return static_cast<const T&>(_this);
 }

@@ -23,5 +23,6 @@ public:
 		coArray<const coShader*> shaders;
 		coArray<coFloatx2Rect> viewports;
 		coArray<coInt32x2Rect> scissors;
+		coArray<const coType*> vertexChannels;
 	};
 };

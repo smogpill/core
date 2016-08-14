@@ -6,6 +6,7 @@
 #include "render_vulkan/coVulkanResult_f.h"
 #include "render_vulkan/coVulkanLayerManager.h"
 #include "render_vulkan/coVulkanSurface.h"
+#include "render_vulkan/coVulkanSwapChain.h"
 #include "lang/result/coResult_f.h"
 #include "lang/reflect/coNumericLimits.h"
 
@@ -21,6 +22,7 @@ coVulkanLogicalDevice::coVulkanLogicalDevice()
 
 coVulkanLogicalDevice::~coVulkanLogicalDevice()
 {
+	coCHECK(WaitForIdle(), nullptr);
 	vkDestroyDevice(logicalDevice_vk, nullptr);
 	for (auto p : requestedExtensions)
 		delete p;
@@ -226,5 +228,45 @@ coResult coVulkanLogicalDevice::GetAllRequestedExtensions(coDynamicArray<const c
 coResult coVulkanLogicalDevice::WaitForIdle()
 {
 	coVULKAN_TRY(vkDeviceWaitIdle(logicalDevice_vk), "Wait device for idle failed.");
+	return true;
+}
+
+coResult coVulkanLogicalDevice::Present(const coArray<coSwapChain*> _swapChains)
+{
+	coTRY(_swapChains.count > 0, nullptr);
+
+	// Get swap chains
+	coDynamicArray<VkSwapchainKHR> swapChains_vk;
+	coDynamicArray<uint32_t> imageIndices_vk;
+	coReserve(swapChains_vk, _swapChains.count);
+	coReserve(imageIndices_vk, _swapChains.count);
+	for (coSwapChain* swapChain : _swapChains)
+	{
+		coVulkanSwapChain* vulkanSwapChain = static_cast<coVulkanSwapChain*>(swapChain);
+		coASSERT(vulkanSwapChain);
+		const coInt32 currentImageIndex = vulkanSwapChain->GetCurrentImageIndex();
+		if (currentImageIndex < 0)
+		{
+			coERROR("The swap chain '" << *vulkanSwapChain << "' is not ready for presenting (current image index: " << currentImageIndex << ")");
+			continue;
+		}
+		const VkSwapchainKHR& swapChain_vk = vulkanSwapChain->GetVkSwapchainKHR();
+		coASSERT(swapChain_vk);
+		coPushBack(swapChains_vk, swapChain_vk);
+		coPushBack(imageIndices_vk, coCastWithOverflowCheck<uint32_t>(currentImageIndex));
+	}
+
+	VkPresentInfoKHR presentInfo = {};
+	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+	presentInfo.waitSemaphoreCount = 1;
+	presentInfo.pWaitSemaphores = nullptr;
+	presentInfo.swapchainCount = swapChains_vk.count;
+	presentInfo.pSwapchains = swapChains_vk.data;
+	coTRY(swapChains_vk.count == imageIndices_vk.count, nullptr);
+	presentInfo.pImageIndices = imageIndices_vk.data;
+	presentInfo.pResults = nullptr;
+	//coVULKAN_TRY(vkQueuePresentKHR(presentQueue, &presentInfo), "Failed to present the rendered images into swap chains");
+	coWARN_NOT_AVAILABLE();
+
 	return true;
 }

@@ -1,18 +1,19 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "render_vulkan/pch.h"
-#include "render/coSwapChain.h"
 #include "render_vulkan/coVulkanSwapChain.h"
 #include "render_vulkan/coVulkanResult_f.h"
 #include "render_vulkan/coVulkanSurface.h"
 #include "render_vulkan/coVulkanLogicalDevice.h"
 #include "render_vulkan/coVulkanPhysicalDevice.h"
+#include "render/coSwapChain.h"
 #include "lang/result/coResult_f.h"
 #include "lang/reflect/coNumericLimits.h"
 #include "math/scalar/coUint32_f.h"
 
 coVulkanSwapChain::coVulkanSwapChain()
 	: swapChain_vk(VK_NULL_HANDLE)
+	, currentImageIndex(-1)
 {
 
 }
@@ -226,4 +227,14 @@ const VkSurfaceKHR& coVulkanSwapChain::GetVkSurfaceKHR() const
 	coVulkanSurface* vulkanSurface = static_cast<coVulkanSurface*>(surface);
 	static VkSurfaceKHR nullSurface_vk = VK_NULL_HANDLE;
 	return vulkanSurface ? vulkanSurface->GetVkSurfaceKHR() : nullSurface_vk;
+}
+
+coResult coVulkanSwapChain::Present()
+{
+	VkPresentInfoKHR presentInfo = {};
+	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+	presentInfo.waitSemaphoreCount = 1;
+	presentInfo.pWaitSemaphores = nullptr;
+
+	return true;
 }

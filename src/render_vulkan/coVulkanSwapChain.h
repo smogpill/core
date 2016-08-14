@@ -11,6 +11,10 @@ public:
 	coVulkanSwapChain();
 	virtual ~coVulkanSwapChain();
 
+	coResult Present();
+	const VkSwapchainKHR& GetVkSwapchainKHR() const { return swapChain_vk; }
+	coInt32 GetCurrentImageIndex() const { return currentImageIndex; }
+
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
@@ -25,4 +29,5 @@ private:
 	const VkSurfaceKHR& GetVkSurfaceKHR() const;
 
 	VkSwapchainKHR swapChain_vk;
+	coInt32 currentImageIndex;
 };

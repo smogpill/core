@@ -23,7 +23,7 @@ protected:
 	{
 		coTRY(Super::OnInitType(), nullptr);
 		type->name = typeName;
-		type->hash = coHash32(type->name);
+		type->nameHash = coHash32(type->name);
 		type->size8 = sizeof(T);
 		type->alignment8 = alignof(T);
 		type->createFunc = []() -> void* { return new T(); };

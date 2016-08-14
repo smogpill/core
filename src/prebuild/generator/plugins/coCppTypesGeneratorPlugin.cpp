@@ -223,7 +223,7 @@ coResult coCppTypesGeneratorPlugin::WriteGetStaticTypeFunc(coStringOutputStream&
 coResult coCppTypesGeneratorPlugin::WriteSymbol(coStringOutputStream& _stream, const coSymbol& _symbol, const coConstString& _indentation, const coConstString& _prefix)
 {
 	_stream << _indentation << _prefix << "name = \"" << _symbol.name << "\";\n";
-	_stream << _indentation << _prefix << "hash = coHash32(" << _prefix << "name);\n";
+	_stream << _indentation << _prefix << "nameHash = coHash32(" << _prefix << "name);\n";
 	_stream << _indentation << _prefix << "symbolFlags = " << _symbol.symbolFlags << ";\n";
 	return true;
 }
