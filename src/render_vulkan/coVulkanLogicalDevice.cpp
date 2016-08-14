@@ -9,6 +9,7 @@
 #include "render_vulkan/coVulkanSwapChain.h"
 #include "lang/result/coResult_f.h"
 #include "lang/reflect/coNumericLimits.h"
+#include "pattern/scope/coDefer.h"
 
 coVulkanLogicalDevice::coVulkanLogicalDevice()
 	: vulkanPhysicalDevice(nullptr)
@@ -22,8 +23,8 @@ coVulkanLogicalDevice::coVulkanLogicalDevice()
 
 coVulkanLogicalDevice::~coVulkanLogicalDevice()
 {
-	coCHECK(WaitForIdle(), nullptr);
-	vkDestroyDevice(logicalDevice_vk, nullptr);
+	Stop();
+	Clear();
 	for (auto p : requestedExtensions)
 		delete p;
 }
@@ -50,7 +51,6 @@ coResult coVulkanLogicalDevice::OnInit(const coObject::InitConfig& _config)
 coResult coVulkanLogicalDevice::OnStart()
 {
 	coTRY(Super::OnStart(), nullptr);
-
 	coTRY(InitLogicalDevice(), "Failed to init the logical device.");
 	coTRY(InitQueues(), "Failed to init queues.");
 	return true;
@@ -58,12 +58,17 @@ coResult coVulkanLogicalDevice::OnStart()
 
 void coVulkanLogicalDevice::OnStop()
 {
+	Clear();
+	Super::OnStop();
+}
+
+void coVulkanLogicalDevice::Clear()
+{
 	coCHECK(WaitForIdle(), nullptr);
 	for (VkQueue& queue_vk : queues_vk)
 		queue_vk = VK_NULL_HANDLE;
 	vkDestroyDevice(logicalDevice_vk, nullptr);
 	logicalDevice_vk = VK_NULL_HANDLE;
-	Super::OnStop();
 }
 
 coResult coVulkanLogicalDevice::InitQueueFamilyIndices()
@@ -105,7 +110,8 @@ coResult coVulkanLogicalDevice::InitQueues()
 		const coInt32 queueFamilyIndex = queueFamilyIndices[i];
 		if (queueFamilyIndex != -1)
 		{
-			const uint32_t queueFamilyIndex_vk = coCastWithOverflowCheck<uint32_t>(queueFamilyIndex);
+			uint32_t queueFamilyIndex_vk;
+			coNumericConvert(queueFamilyIndex_vk, queueFamilyIndex);
 			coTRY(GetVkQueue(queues_vk[i], queueFamilyIndex_vk, 0), nullptr);
 		}
 		else
@@ -126,18 +132,16 @@ coResult coVulkanLogicalDevice::InitLogicalDevice()
 	coFloat priority = 1.0f;
 	queueCreateInfo.pQueuePriorities = &priority;
 
-	VkPhysicalDeviceFeatures deviceFeatures = {};
+	VkPhysicalDeviceFeatures deviceFeatures{};
 
 	coDynamicArray<const coChar*> layers;
 	if (vulkanLayerManager)
-	{
-		vulkanLayerManager->GetAllRequested(layers);
-	}
+		coTRY(vulkanLayerManager->GetAllRequested(layers), nullptr);
 
 	coDynamicArray<const coChar*> extensions;
 	coTRY(GetAllRequestedExtensions(extensions), nullptr);
 
-	VkDeviceCreateInfo createInfo = {};
+	VkDeviceCreateInfo createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 	createInfo.pQueueCreateInfos = &queueCreateInfo;
 	createInfo.queueCreateInfoCount = 1;
@@ -148,7 +152,9 @@ coResult coVulkanLogicalDevice::InitLogicalDevice()
 	createInfo.ppEnabledLayerNames = layers.data;
 
 	coTRY(logicalDevice_vk == VK_NULL_HANDLE, nullptr);
-	coTRY(vkCreateDevice(vulkanPhysicalDevice->GetVkPhysicalDevice(), &createInfo, nullptr, &logicalDevice_vk), "Failed to create device");
+	const VkPhysicalDevice& physicalDevice_vk = vulkanPhysicalDevice->GetVkPhysicalDevice();
+	coTRY(physicalDevice_vk != VK_NULL_HANDLE, nullptr);
+	coVULKAN_TRY(vkCreateDevice(physicalDevice_vk, &createInfo, nullptr, &logicalDevice_vk), "Failed to create the logical device.");
 
 	return true;
 }
@@ -196,7 +202,10 @@ coResult coVulkanLogicalDevice::GetAllRequestedExtensions(coDynamicArray<const c
 
 coResult coVulkanLogicalDevice::WaitForIdle()
 {
-	coVULKAN_TRY(vkDeviceWaitIdle(logicalDevice_vk), "Wait device for idle failed.");
+	if (logicalDevice_vk != VK_NULL_HANDLE)
+	{
+		coVULKAN_TRY(vkDeviceWaitIdle(logicalDevice_vk), "Wait device for idle failed.");
+	}
 	return true;
 }
 

@@ -105,7 +105,7 @@ coResult coVulkanSwapChain::OnInit(const coObject::InitConfig& _config)
 	createInfo.oldSwapchain = oldSwapChain_vk ? oldSwapChain_vk->swapChain_vk : VK_NULL_HANDLE;
 
 	coTRY(swapChain_vk == VK_NULL_HANDLE, nullptr);
-	coVULKAN_TRY(vkCreateSwapchainKHR(GetVkDevice(), &createInfo, nullptr, &swapChain_vk), "Failed to create swap chain.");
+	coVULKAN_TRY(vkCreateSwapchainKHR(device_vk, &createInfo, nullptr, &swapChain_vk), "Failed to create swap chain.");
 
 	return true;
 }

@@ -36,7 +36,7 @@ coResult coVulkanCommandPool::OnInit(const coObject::InitConfig& _config)
 
 	VkCommandPoolCreateInfo poolInfo = {};
 	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-	poolInfo.queueFamilyIndex = coCastWithOverflowCheck<uint32_t>(config.queueFamilyIndex);
+	coNumericConvert(poolInfo.queueFamilyIndex, config.queueFamilyIndex);
 	poolInfo.flags = 0;
 
 	const VkDevice& device_vk = GetVkDevice();

@@ -51,6 +51,7 @@ private:
 	coResult InitQueues();
 	coResult InitLogicalDevice();
 	coResult GetAllRequestedExtensions(coDynamicArray<const coChar*>& _extensions) const;
+	void Clear();
 
 	coVulkanPhysicalDevice* vulkanPhysicalDevice;
 	VkDevice logicalDevice_vk;

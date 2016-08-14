@@ -67,6 +67,8 @@ coResult coRuntimeApp::OnInit(const coObject::InitConfig& _config)
 	}
 
 	coTRY(SelectRenderDevice(), "Failed to select a render device.");
+	coTRY(renderDevice, "No render device available.");
+	coTRY(renderDevice->Start(), "Failed to start the render device.");
 
 	swapChain = coCreateSwapChain();
 	{
