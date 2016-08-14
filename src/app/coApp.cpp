@@ -9,6 +9,7 @@
 
 coApp::coApp()
 	: defaultLogHandler(nullptr)
+	, exitRequested(false)
 {
 
 }

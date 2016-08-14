@@ -152,6 +152,11 @@ static LRESULT CALLBACK coWindowProc(HWND _hwnd, UINT _msg, WPARAM _wParam, LPAR
 	// 		return 0;
 	// 	}
 	// 	break;
+	case WM_DESTROY:
+	{
+		::PostQuitMessage(0);
+		return 0;
+	}
 	default:
 		break;
 	}

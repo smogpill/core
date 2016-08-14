@@ -8,7 +8,7 @@ class coDefaultLogHandler;
 
 class coApp : public coObject
 {
-	typedef coObject Super;
+	coDECLARE_SUPER(coObject);
 public:
 	coApp();
 	virtual ~coApp();
@@ -20,8 +20,12 @@ public:
 		const coChar** argv;
 		coUint nbArgs;
 	};
+
+	coResult ProcessEvents();
+
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
+	coBool exitRequested;
 
 private:
 	coDefaultLogHandler* defaultLogHandler;

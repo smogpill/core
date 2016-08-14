@@ -19,9 +19,11 @@ public:
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
+	virtual coResult OnStart() override;
 
 private:
 	coResult SelectRenderDevice();
+	coResult Render();
 
 	coWindow* window;
 	coRenderer* renderer;

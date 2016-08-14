@@ -110,3 +110,22 @@ coResult coRuntimeApp::SelectRenderDevice()
 
 	return true;
 }
+
+coResult coRuntimeApp::OnStart()
+{
+	coTRY(Super::OnStart(), nullptr);
+	while (!exitRequested)
+	{
+		coTRY(ProcessEvents(), "Failed to process events.");
+		if (exitRequested)
+			break;
+
+		coCHECK(Render(), "Failed to render");
+	}
+	return true;
+}
+
+coResult coRuntimeApp::Render()
+{
+	return true;
+}
