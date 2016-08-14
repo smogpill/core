@@ -14,6 +14,7 @@
 coVulkanSwapChain::coVulkanSwapChain()
 	: swapChain_vk(VK_NULL_HANDLE)
 	, currentImageIndex(-1)
+	, presentQueue_vk(VK_NULL_HANDLE)
 {
 
 }
@@ -81,7 +82,10 @@ coResult coVulkanSwapChain::OnInit(const coObject::InitConfig& _config)
 	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
 	const coInt32 graphicsFamilyIndex = coVulkanLogicalDevice::GetQueueFamilyIndex(vulkanLogicalDevice->GetQueueId(coVulkanLogicalDevice::graphics));
-	const coInt32 presentFamilyIndex = coVulkanLogicalDevice::GetQueueFamilyIndex(vulkanLogicalDevice->GetQueueId(coVulkanLogicalDevice::present));
+	coInt32 presentFamilyIndex;
+	coTRY(FindPresentQueueFamily(presentFamilyIndex), "Failed to find a device queue compatible with presentation.");
+	coTRY(vulkanLogicalDevice->GetVkQueue(presentQueue_vk, presentFamilyIndex, 0), "Failed to retrieve the present queue of family index: "<<presentFamilyIndex);
+	coTRY(presentQueue_vk != VK_NULL_HANDLE, nullptr);
 	coTRY(graphicsFamilyIndex != -1, nullptr);
 	coTRY(presentFamilyIndex != -1, nullptr);
 	coDynamicArray<coUint32> queueFamilyIndices;
@@ -231,10 +235,68 @@ const VkSurfaceKHR& coVulkanSwapChain::GetVkSurfaceKHR() const
 
 coResult coVulkanSwapChain::Present()
 {
+	coTRY(currentImageIndex >= 0, nullptr);
+
+	coUint32 imageIndex = currentImageIndex;
 	VkPresentInfoKHR presentInfo = {};
 	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 	presentInfo.waitSemaphoreCount = 1;
 	presentInfo.pWaitSemaphores = nullptr;
+	presentInfo.swapchainCount = 1;
+	presentInfo.pSwapchains = &swapChain_vk;
+	presentInfo.pImageIndices = &imageIndex;
+	presentInfo.pResults = nullptr;
+	coTRY(presentQueue_vk != VK_NULL_HANDLE, nullptr);
+	coVULKAN_TRY(vkQueuePresentKHR(presentQueue_vk, &presentInfo), "Failed to present the rendered images into swap chains");
 
 	return true;
+}
+
+coResult coVulkanSwapChain::FindGraphicsQueueFamily(coInt32& _queueFamily) const
+{
+	_queueFamily = -1;
+	const coVulkanPhysicalDevice* vulkanPhysicalDevice = GetVulkanPhysicalDevice();
+	coTRY(vulkanPhysicalDevice, nullptr);
+
+	const coUint nbQueueFamilies = vulkanPhysicalDevice->GetNbQueueFamilies();
+	for (coUint i = 0; i < nbQueueFamilies; ++i)
+	{
+		coBool b;
+		coTRY(vulkanPhysicalDevice->SupportsSurface(b, i, *surface), nullptr);
+		if (b)
+		{
+			_queueFamily = i;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+coResult coVulkanSwapChain::FindPresentQueueFamily(coInt32& _queueFamily) const
+{
+	_queueFamily = -1;
+	const coVulkanPhysicalDevice* vulkanPhysicalDevice = GetVulkanPhysicalDevice();
+	coTRY(vulkanPhysicalDevice, nullptr);
+	coTRY(surface, nullptr);
+
+	const coUint nbQueueFamilies = vulkanPhysicalDevice->GetNbQueueFamilies();
+	for (coUint i = 0; i < nbQueueFamilies; ++i)
+	{
+		coBool b;
+		coTRY(vulkanPhysicalDevice->SupportsSurface(b, i, *surface), nullptr);
+		if (b)
+		{
+			_queueFamily = i;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+const coVulkanPhysicalDevice* coVulkanSwapChain::GetVulkanPhysicalDevice() const
+{
+	const coVulkanLogicalDevice* vulkanLogicalDevice = static_cast<const coVulkanLogicalDevice*>(device);
+	return vulkanLogicalDevice ? vulkanLogicalDevice->GetPhysicalDevice() : nullptr;
 }

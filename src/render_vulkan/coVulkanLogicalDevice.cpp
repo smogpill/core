@@ -31,7 +31,6 @@ coVulkanLogicalDevice::~coVulkanLogicalDevice()
 coVulkanLogicalDevice::InitConfig::InitConfig()
 	: physicalDevice_vk(VK_NULL_HANDLE)
 	, layerManager_vk(nullptr)
-	, surface_vk(nullptr)
 {
 
 }
@@ -44,7 +43,7 @@ coResult coVulkanLogicalDevice::OnInit(const coObject::InitConfig& _config)
 	coTRY(config.physicalDevice_vk != VK_NULL_HANDLE, nullptr);
 	physicalDevice_vk = config.physicalDevice_vk;
 	layerManager_vk = config.layerManager_vk;
-	coTRY(InitQueueFamilyIndices(config.surface_vk), "Failed to init the queue family index");
+	coTRY(InitQueueFamilyIndices(), "Failed to init the queue family index");
 	return true;
 }
 
@@ -53,20 +52,21 @@ coResult coVulkanLogicalDevice::OnStart()
 	coTRY(Super::OnStart(), nullptr);
 
 	coTRY(InitLogicalDevice(), "Failed to init the logical device.");
-	coTRY(InitQueues(), "Failed to init the queue.");
+	coTRY(InitQueues(), "Failed to init queues.");
 	return true;
 }
 
 void coVulkanLogicalDevice::OnStop()
 {
-// 	for (VkQueue& queue_vk : queues_vk)
-// 		queue_vk = VK_NULL_HANDLE;
+	coCHECK(WaitForIdle(), nullptr);
+	for (VkQueue& queue_vk : queues_vk)
+		queue_vk = VK_NULL_HANDLE;
 	vkDestroyDevice(logicalDevice_vk, nullptr);
 	logicalDevice_vk = VK_NULL_HANDLE;
 	Super::OnStop();
 }
 
-coResult coVulkanLogicalDevice::InitQueueFamilyIndices(coVulkanSurface* _surface_vk)
+coResult coVulkanLogicalDevice::InitQueueFamilyIndices()
 {
 	for (auto& index : queueIds)
 		index = -1;
@@ -82,17 +82,35 @@ coResult coVulkanLogicalDevice::InitQueueFamilyIndices(coVulkanSurface* _surface
 				queueIds[QueueType::graphics] = i;
 			}
 
-			if (_surface_vk)
+			if (queueIds[QueueType::compute] == -1 && prop.queueFlags & VK_QUEUE_COMPUTE_BIT)
 			{
-				if (queueIds[QueueType::present] == -1)
-				{
-					if (physicalDevice_vk->SupportsSurface(i, *_surface_vk))
-					{
-						queueIds[QueueType::present] = i;
-					}
-				}
+				queueIds[QueueType::compute] = i;
+			}
+
+			if (queueIds[QueueType::transfer] == -1 && prop.queueFlags & VK_QUEUE_TRANSFER_BIT)
+			{
+				queueIds[QueueType::transfer] = i;
 			}
 			break;
+		}
+	}
+	return true;
+}
+
+coResult coVulkanLogicalDevice::InitQueues()
+{
+	static_assert(coARRAY_SIZE(queues_vk) == coARRAY_SIZE(queueIds), "");
+	for (coUint i = 0; i < coARRAY_SIZE(queueIds); ++i)
+	{
+		const coInt64 queueId = queueIds[i];
+		if (queueId != -1)
+		{
+			const coUint32 queueFamilyIndex = coCastWithOverflowCheck<coUint32>(queueId);
+			coTRY(GetVkQueue(queues_vk[i], queueFamilyIndex, 0), nullptr);
+		}
+		else
+		{
+			queues_vk[i] = VK_NULL_HANDLE;
 		}
 	}
 	return true;
@@ -140,56 +158,12 @@ coInt32 coVulkanLogicalDevice::GetQueueFamilyIndex(coInt64 _queueId)
 	return coCastWithOverflowCheck<coInt32>(_queueId);
 }
 
-coResult coVulkanLogicalDevice::InitQueues()
+coResult coVulkanLogicalDevice::GetVkQueue(VkQueue& _out, coUint _queueFamilyIndex, coUint _index)
 {
-// 
-// 	// Get unique queue families
-// 	coDynamicArray<coInt32> uniqueQueueFamilies;
-// 	for (const auto& index : queueFamilyIndices)
-// 	{
-// 		if (index != -1 && !coContains(uniqueQueueFamilies, index))
-// 			coPushBack(uniqueQueueFamilies, index);
-// 	}
-// 	
-// 	// Get queues
-// 	for (coInt32 index : uniqueQueueFamilies)
-// 	{
-// 		coTRY(index >= 0, nullptr);
-// 		VkQueue queue_vk;
-// 		vkGetDeviceQueue(logicalDevice_vk, index, 0, &queue_vk);
-// 		coPushBack(queues_vk, queue_vk);
-// 		if (index == graphicsFamilyIndex)
-// 			graphicsQueue_vk = queue_vk;
-// 		if (index == presentFamilyIndex)
-// 			presentQueue_vk = queue_vk;
-// 	}
-	
-	return true;
-}
-
-coResult coVulkanLogicalDevice::GetScore(coUint32& _out) const
-{
-	_out = 0;
-
-	coTRY(physicalDevice_vk != VK_NULL_HANDLE, nullptr);
-
-	const VkPhysicalDeviceProperties& deviceProperties = physicalDevice_vk->GetProperties();
-	if (deviceProperties.deviceType != VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU
-		&& deviceProperties.deviceType != VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU)
-	{
-		return true;
-	}
-
-	if (queueIds[QueueType::graphics] < 0)
-		return true;
-
-	_out = 1;
-
-	if (queueIds[QueueType::present] < 0)
-		return true;
-
-	++_out;
-
+	_out = VK_NULL_HANDLE;
+	const VkDevice& device_vk = GetVkDevice();
+	coTRY(device_vk != VK_NULL_HANDLE, nullptr);
+	vkGetDeviceQueue(device_vk, _queueFamilyIndex, _index, &_out);
 	return true;
 }
 
@@ -231,42 +205,17 @@ coResult coVulkanLogicalDevice::WaitForIdle()
 	return true;
 }
 
-coResult coVulkanLogicalDevice::Present(const coArray<coSwapChain*> _swapChains)
+auto coVulkanLogicalDevice::GetDeviceType() const -> DeviceType
 {
-	coTRY(_swapChains.count > 0, nullptr);
-
-	// Get swap chains
-	coDynamicArray<VkSwapchainKHR> swapChains_vk;
-	coDynamicArray<uint32_t> imageIndices_vk;
-	coReserve(swapChains_vk, _swapChains.count);
-	coReserve(imageIndices_vk, _swapChains.count);
-	for (coSwapChain* swapChain : _swapChains)
+	if (physicalDevice_vk)
 	{
-		coVulkanSwapChain* vulkanSwapChain = static_cast<coVulkanSwapChain*>(swapChain);
-		coASSERT(vulkanSwapChain);
-		const coInt32 currentImageIndex = vulkanSwapChain->GetCurrentImageIndex();
-		if (currentImageIndex < 0)
+		const VkPhysicalDeviceProperties& deviceProperties = physicalDevice_vk->GetProperties();
+		switch (deviceProperties.deviceType)
 		{
-			coERROR("The swap chain '" << *vulkanSwapChain << "' is not ready for presenting (current image index: " << currentImageIndex << ")");
-			continue;
+		case VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU: return DeviceType::integratedGpu;
+		case VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU: return DeviceType::discreteGpu;
+		case VK_PHYSICAL_DEVICE_TYPE_CPU: return DeviceType::cpu;
 		}
-		const VkSwapchainKHR& swapChain_vk = vulkanSwapChain->GetVkSwapchainKHR();
-		coASSERT(swapChain_vk);
-		coPushBack(swapChains_vk, swapChain_vk);
-		coPushBack(imageIndices_vk, coCastWithOverflowCheck<uint32_t>(currentImageIndex));
 	}
-
-	VkPresentInfoKHR presentInfo = {};
-	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-	presentInfo.waitSemaphoreCount = 1;
-	presentInfo.pWaitSemaphores = nullptr;
-	presentInfo.swapchainCount = swapChains_vk.count;
-	presentInfo.pSwapchains = swapChains_vk.data;
-	coTRY(swapChains_vk.count == imageIndices_vk.count, nullptr);
-	presentInfo.pImageIndices = imageIndices_vk.data;
-	presentInfo.pResults = nullptr;
-	//coVULKAN_TRY(vkQueuePresentKHR(presentQueue, &presentInfo), "Failed to present the rendered images into swap chains");
-	coWARN_NOT_AVAILABLE();
-
-	return true;
+	return DeviceType::none;
 }

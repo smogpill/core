@@ -4,8 +4,7 @@
 #include "render_vulkan/coVulkanQueueRef.h"
 
 coVulkanQueueRef::coVulkanQueueRef()
-	: logicalDevice(nullptr)
-	, familyIndex(-1)
+	: familyIndex(-1)
 	, queueIndex(-1)
 	, queue_vk(VK_NULL_HANDLE)
 {

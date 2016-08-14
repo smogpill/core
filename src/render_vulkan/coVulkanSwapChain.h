@@ -4,6 +4,8 @@
 
 #include "render/coSwapChain.h"
 
+class coVulkanPhysicalDevice;
+
 class coVulkanSwapChain final : public coSwapChain
 {
 	coDECLARE_SUPER(coSwapChain);
@@ -24,10 +26,14 @@ private:
 	coResult SelectFormat(VkSurfaceFormatKHR& _out, const VkSurfaceFormatKHR& _requested);
 	coResult SelectPresentMode(VkPresentModeKHR& _out, const VkPresentModeKHR& _requested);
 	coResult SelectExtent(VkExtent2D& _out, const VkSurfaceCapabilitiesKHR& _capabilities, const VkExtent2D& _requested);
+	coResult FindGraphicsQueueFamily(coInt32& _queueFamily) const;
+	coResult FindPresentQueueFamily(coInt32& _queueFamily) const;
+	const coVulkanPhysicalDevice* GetVulkanPhysicalDevice() const;
 	const VkDevice& GetVkDevice() const;
 	const VkPhysicalDevice& GetVkPhysicalDevice() const;
 	const VkSurfaceKHR& GetVkSurfaceKHR() const;
 
 	VkSwapchainKHR swapChain_vk;
+	VkQueue presentQueue_vk;
 	coInt32 currentImageIndex;
 };

@@ -97,12 +97,26 @@ coResult coVulkanPhysicalDevice::InitProps()
 	return true;
 }
 
-coBool coVulkanPhysicalDevice::SupportsSurface(coUint queueFamilyIndex, const coVulkanSurface& _surface_vk) const
+coResult coVulkanPhysicalDevice::SupportsGraphics(coBool& _out, coUint queueFamilyIndex) const
 {
+	_out = false;
+	coTRY(queueFamilyIndex < GetNbQueueFamilies(), nullptr);
+	_out = (queueFamilyProperties[queueFamilyIndex].queueFlags & VK_QUEUE_GRAPHICS_BIT) != 0;
+	return true;
+}
+
+coResult coVulkanPhysicalDevice::SupportsSurface(coBool& _out, coUint queueFamilyIndex, const coSurface& _surface) const
+{
+	_out = false;
+	coTRY(queueFamilyIndex < GetNbQueueFamilies(), nullptr);
+	const coVulkanSurface& vulkanSurface = static_cast<const coVulkanSurface&>(_surface);
+	const VkSurfaceKHR& surface_vk = vulkanSurface.GetVkSurfaceKHR();
+	coTRY(surface_vk != VK_NULL_HANDLE, nullptr);
 	coASSERT(physicalDevice_vk != VK_NULL_HANDLE);
 	VkBool32 supported_vk = VK_FALSE;
-	coVULKAN_TRY(vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice_vk, queueFamilyIndex, _surface_vk.GetVkSurfaceKHR(), &supported_vk), "vkGetPhysicalDeviceSurfaceSupportKHR failed.");
-	return supported_vk == VK_TRUE;
+	coVULKAN_TRY(vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice_vk, queueFamilyIndex, surface_vk, &supported_vk), "vkGetPhysicalDeviceSurfaceSupportKHR failed.");
+	_out = supported_vk == VK_TRUE;
+	return true;
 }
 
 coBool coVulkanPhysicalDevice::IsExtensionSupported(const coConstString& _extension) const
@@ -113,4 +127,9 @@ coBool coVulkanPhysicalDevice::IsExtensionSupported(const coConstString& _extens
 			return true;
 	}
 	return false;
+}
+
+coUint coVulkanPhysicalDevice::GetNbQueueFamilies() const
+{
+	return queueFamilyProperties.count;
 }

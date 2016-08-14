@@ -11,7 +11,6 @@ class coVulkanQueueRef : public coQueueRef
 public:
 	coVulkanQueueRef();
 
-	coRenderDevice* logicalDevice;
 	coInt32 familyIndex;
 	coInt32 queueIndex;
 	VkQueue queue_vk;

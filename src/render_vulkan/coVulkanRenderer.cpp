@@ -162,15 +162,14 @@ coResult coVulkanRenderer::InitDevices()
 		c.physicalDevice_vk = physicalDevice;
 		c.layerManager_vk = layerManager_vk;
 		coTRY(logicalDevice->Init(c), "Failed to init the device: " << *logicalDevice);
-
-		coTRY(logicalDevice->AddRequestedExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME), nullptr);
-		coUint32 score = 0;
-		coTRY(logicalDevice->GetScore(score), "Failed to get the device score");
-		if (score > 0)
+		const coRenderDevice::DeviceType deviceType = logicalDevice->GetDeviceType();
+		if (deviceType != coRenderDevice::discreteGpu && deviceType != coRenderDevice::integratedGpu)
 		{
-			coPushBack(logicalDevices, logicalDevice);
-			logicalDevice = nullptr;
+			continue;
 		}
+		coTRY(logicalDevice->AddRequestedExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME), nullptr);
+		coPushBack(logicalDevices, logicalDevice);
+		logicalDevice = nullptr;
 	}
 
 	coTRY(logicalDevices.count > 0, "Failed to find any acceptable device.");

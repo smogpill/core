@@ -2,9 +2,10 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include "pattern/object/coObject.h"
+#include "render/coRenderDeviceObject.h"
 
-class coQueueRef : public coObject
+class coQueueRef : public coRenderDeviceObject
 {
+	coDECLARE_SUPER(coRenderDeviceObject);
 public:
 };

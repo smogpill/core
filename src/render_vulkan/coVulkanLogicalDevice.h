@@ -16,7 +16,8 @@ public:
 	enum QueueType
 	{
 		graphics,
-		present,
+		compute,
+		transfer,
 		count
 	};
 	class InitConfig : public Super::InitConfig
@@ -25,22 +26,20 @@ public:
 		InitConfig();
 		coVulkanPhysicalDevice* physicalDevice_vk;
 		coVulkanLayerManager* layerManager_vk;
-		coVulkanSurface* surface_vk;
 	};
 	coVulkanLogicalDevice();
 	virtual ~coVulkanLogicalDevice();
 
 	coResult AddRequestedExtension(const coConstString& _extension);
 	coResult IsExtensionRequested(const coConstString& _extension) const;
-	coResult GetScore(coUint32& _out) const;
-	//const VkQueue& GetGraphicsQueue() const { return graphicsQueue_vk; }
-	//const VkQueue& GetPresentQueue() const { return presentQueue_vk; }
 	const VkDevice& GetVkDevice() const { return logicalDevice_vk; }
 	coVulkanPhysicalDevice* GetPhysicalDevice() const { return physicalDevice_vk; }
 	coInt64 GetQueueId(QueueType _type) const { return queueIds[_type]; }
+	const VkQueue& GetVkQueue(QueueType _type) const { return queues_vk[_type]; }
+	coResult GetVkQueue(VkQueue& _out, coUint _queueFamilyIndex, coUint _index);
 	static coInt32 GetQueueFamilyIndex(coInt64 _queueId);
 	coResult WaitForIdle();
-	coResult Present(const coArray<coSwapChain*> _swapChains);
+	virtual DeviceType GetDeviceType() const override;
 	
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
@@ -48,15 +47,16 @@ protected:
 	virtual void OnStop() override;
 
 private:
-	coResult InitQueueFamilyIndices(coVulkanSurface* _surface_vk);
-	coResult InitLogicalDevice();
+	coResult InitQueueFamilyIndices();
+	coResult InitDeviceType();
 	coResult InitQueues();
+	coResult InitLogicalDevice();
 	coResult GetAllRequestedExtensions(coDynamicArray<const coChar*>& _extensions) const;
 
 	coVulkanPhysicalDevice* physicalDevice_vk;
 	VkDevice logicalDevice_vk;
 	coInt64 queueIds[QueueType::count];
-	//VkQueue queues_vk[QueueType::count];
+	VkQueue queues_vk[QueueType::count];
 	coDynamicArray<coDynamicString*> requestedExtensions;
 	coVulkanLayerManager* layerManager_vk;
 };

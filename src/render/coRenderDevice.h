@@ -8,6 +8,13 @@ class coRenderDevice : public coObject
 {
 	coDECLARE_SUPER(coObject);
 public:
+	enum DeviceType // Ordered from less powerful to more powerful
+	{
+		none,
+		cpu,
+		integratedGpu,
+		discreteGpu,
+	};
 	class InitConfig : public Super::InitConfig
 	{
 	public:
@@ -15,6 +22,8 @@ public:
 
 	//coRenderDevice();
 	virtual ~coRenderDevice() {}
+
+	virtual DeviceType GetDeviceType() const = 0;
 
 protected:
 	//virtual coResult OnInit(const coObject::InitConfig& _config) override;

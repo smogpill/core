@@ -4,7 +4,7 @@
 
 #include "pattern/object/coObject.h"
 
-class coVulkanSurface;
+class coSurface;
 
 class coVulkanPhysicalDevice : public coObject
 {
@@ -23,7 +23,9 @@ public:
 	const VkPhysicalDevice& GetVkPhysicalDevice() const { return physicalDevice_vk; }
 	const VkPhysicalDeviceProperties& GetProperties() const { return props_vk; }
 	coBool IsExtensionSupported(const coConstString& _extension) const;
-	coBool SupportsSurface(coUint queueFamilyIndex, const coVulkanSurface& _surface_vk) const;
+	coUint GetNbQueueFamilies() const;
+	coResult SupportsGraphics(coBool& _out, coUint queueFamilyIndex) const;
+	coResult SupportsSurface(coBool& _out, coUint queueFamilyIndex, const coSurface& _surface) const;
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
