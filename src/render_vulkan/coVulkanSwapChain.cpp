@@ -295,6 +295,7 @@ coResult coVulkanSwapChain::Present(const coArray<coRenderSemaphore*> _waitSemap
 	coTRY(imageIndex >= 0, nullptr);
 	coTRY(presentQueue_vk != VK_NULL_HANDLE, nullptr);
 	coVULKAN_TRY(vkQueuePresentKHR(presentQueue_vk, &presentInfo), "Failed to present the rendered images into swap chains");
+	currentImageIndex = -1;
 
 	return true;
 }

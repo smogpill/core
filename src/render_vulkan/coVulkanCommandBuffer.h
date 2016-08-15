@@ -2,15 +2,15 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include "render/coRenderDeviceObject.h"
+#include "render/coRenderCommandBuffer.h"
 
 class coRenderPass;
 class coRenderFramebuffer;
 class coRenderPipeline;
 
-class coVulkanCommandBuffer final : public coRenderDeviceObject
+class coVulkanCommandBuffer final : public coRenderCommandBuffer
 {
-	coDECLARE_SUPER(coRenderDeviceObject);
+	coDECLARE_SUPER(coRenderCommandBuffer);
 public:
 	coVulkanCommandBuffer();
 	virtual ~coVulkanCommandBuffer();
@@ -18,6 +18,7 @@ public:
 	void PushPassBegin(const coRenderPass& _pass, const coRenderFramebuffer& _frameBuffer);
 	void PushPassEnd();
 	void PushBindPipeline(const coRenderPipeline& _pipeline);
+	const VkCommandBuffer& GetVkCommandBuffer() const { return commandBuffer_vk; }
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;

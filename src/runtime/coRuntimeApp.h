@@ -9,6 +9,7 @@ class coWindow;
 class coSurface;
 class coSwapChain;
 class coRenderDevice;
+class coRenderSemaphore;
 
 class coRuntimeApp : public coApp
 {
@@ -30,4 +31,5 @@ private:
 	coSurface* surface;
 	coRenderDevice* renderDevice;
 	coSwapChain* swapChain;
+	coRenderSemaphore* renderFinishedSemaphore;
 };

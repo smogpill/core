@@ -9,6 +9,7 @@
 #include "render/coSurface.h"
 #include "render/coRenderFactory.h"
 #include "render/coRenderDevice.h"
+#include "render/coRenderSemaphore.h"
 #include "container/array/coDynamicArray_f.h"
 
 coRuntimeApp::coRuntimeApp()
@@ -17,12 +18,19 @@ coRuntimeApp::coRuntimeApp()
 	, swapChain(nullptr)
 	, surface(nullptr)
 	, renderDevice(nullptr)
+	, renderFinishedSemaphore(nullptr)
 {
 
 }
 
 coRuntimeApp::~coRuntimeApp()
 {
+	if (renderDevice)
+	{
+		coCHECK(renderDevice->WaitForIdle(), nullptr);
+	}
+	delete renderFinishedSemaphore;
+	renderFinishedSemaphore = nullptr;
 	delete swapChain;
 	swapChain = nullptr;
 	delete surface;
@@ -70,7 +78,7 @@ coResult coRuntimeApp::OnInit(const coObject::InitConfig& _config)
 	coTRY(SelectRenderDevice(), "Failed to select a render device.");
 	coTRY(renderDevice, "No render device available.");
 	coTRY(renderDevice->Start(), "Failed to start the render device.");
-
+	
 	swapChain = coCreateSwapChain();
 	{
 		coSwapChain::InitConfig c;
@@ -80,6 +88,14 @@ coResult coRuntimeApp::OnInit(const coObject::InitConfig& _config)
 		c.surface = surface;
 		c.debugName = "MainSwapChain";
 		coTRY(swapChain->Init(c), "Failed to init the main render sswap chain.");
+	}
+
+	{
+		coASSERT(!renderFinishedSemaphore);
+		renderFinishedSemaphore = coCreateRenderSemaphore();
+		coRenderSemaphore::InitConfig c;
+		c.device = renderDevice;
+		coTRY(renderFinishedSemaphore->Init(c), "Failed to init the render finished semaphore.");
 	}
 
 	return true;
@@ -133,8 +149,23 @@ coResult coRuntimeApp::Render()
 	coRenderSemaphore* imageAvailableSemaphore = swapChain->GetImageAvailableSemaphore();
 	coTRY(imageAvailableSemaphore, nullptr);
 
-	coDynamicArray<coRenderSemaphore*> waitSemaphores;
-	coPushBack(waitSemaphores, swapChain->GetImageAvailableSemaphore());
-	coTRY(swapChain->Present(waitSemaphores), "Failed to present: " << *swapChain);
+	// Submit
+	{
+		coDynamicArray<coRenderSemaphore*> waitSemaphores;
+		coDynamicArray<coRenderSemaphore*> finishSemaphores;
+		coPushBack(waitSemaphores, imageAvailableSemaphore);
+		coPushBack(finishSemaphores, renderFinishedSemaphore);
+		coRenderDevice::SubmitConfig c;
+		c.waitSemaphores = waitSemaphores;
+		c.finishSemaphores = finishSemaphores;
+		coTRY(renderDevice->Submit(c), nullptr);
+	}
+
+	// Present
+	{
+		coDynamicArray<coRenderSemaphore*> waitSemaphores;
+		coPushBack(waitSemaphores, renderFinishedSemaphore);
+		coTRY(swapChain->Present(waitSemaphores), "Failed to present: " << *swapChain);
+	}
 	return true;
 }

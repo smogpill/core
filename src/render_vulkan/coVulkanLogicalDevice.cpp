@@ -7,6 +7,8 @@
 #include "render_vulkan/coVulkanLayerManager.h"
 #include "render_vulkan/coVulkanSurface.h"
 #include "render_vulkan/coVulkanSwapChain.h"
+#include "render_vulkan/coVulkanSemaphore.h"
+#include "render_vulkan/coVulkanCommandBuffer.h"
 #include "lang/result/coResult_f.h"
 #include "lang/reflect/coNumericLimits.h"
 #include "pattern/scope/coDefer.h"
@@ -202,6 +204,7 @@ coResult coVulkanLogicalDevice::GetAllRequestedExtensions(coDynamicArray<const c
 
 coResult coVulkanLogicalDevice::WaitForIdle()
 {
+	coTRY(Super::WaitForIdle(), nullptr);
 	if (logicalDevice_vk != VK_NULL_HANDLE)
 	{
 		coVULKAN_TRY(vkDeviceWaitIdle(logicalDevice_vk), "Wait device for idle failed.");
@@ -249,5 +252,66 @@ coResult coVulkanLogicalDevice::SupportsSurface(coBool& _out, const coSurface& _
 		if (_out)
 			return true;
 	}
+	return true;
+}
+
+coResult coVulkanLogicalDevice::Submit(const SubmitConfig& _config)
+{
+	coTRY(Super::Submit(_config), nullptr);
+
+	// Wait semaphores
+	coDynamicArray<VkSemaphore> waitSemaphores_vk;
+	coDynamicArray<VkPipelineStageFlags> waitFlags_vk;
+	coReserve(waitSemaphores_vk, _config.waitSemaphores.count);
+	coReserve(waitFlags_vk, _config.waitSemaphores.count);
+	for (const coRenderSemaphore* semaphore : _config.waitSemaphores)
+	{
+		const coVulkanSemaphore* vulkanSemaphore = static_cast<const coVulkanSemaphore*>(semaphore);
+		coTRY(vulkanSemaphore, nullptr);
+		const VkSemaphore& semaphore_vk = vulkanSemaphore->GetVkSemaphore();
+		coTRY(semaphore_vk != VK_NULL_HANDLE, nullptr);
+		coPushBack(waitSemaphores_vk, semaphore_vk);
+		coPushBack(waitFlags_vk, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+	}
+
+	// Finish semaphores
+	coDynamicArray<VkSemaphore> finishSemaphores_vk;
+	coReserve(finishSemaphores_vk, _config.finishSemaphores.count);
+	for (const coRenderSemaphore* semaphore : _config.finishSemaphores)
+	{
+		const coVulkanSemaphore* vulkanSemaphore = static_cast<const coVulkanSemaphore*>(semaphore);
+		coTRY(vulkanSemaphore, nullptr);
+		const VkSemaphore& semaphore_vk = vulkanSemaphore->GetVkSemaphore();
+		coTRY(semaphore_vk != VK_NULL_HANDLE, nullptr);
+		coPushBack(finishSemaphores_vk, semaphore_vk);
+	}
+
+	// Command buffers
+	coDynamicArray<VkCommandBuffer> commandBuffers_vk;
+	coReserve(commandBuffers_vk, _config.commandBuffers.count);
+	for (const coRenderCommandBuffer* commandBuffer : _config.commandBuffers)
+	{
+		const coVulkanCommandBuffer* vulkanCommandBuffer = static_cast<const coVulkanCommandBuffer*>(commandBuffer);
+		coTRY(vulkanCommandBuffer, nullptr);
+		const VkCommandBuffer& commandBuffer_vk = vulkanCommandBuffer->GetVkCommandBuffer();
+		coTRY(commandBuffer_vk != VK_NULL_HANDLE, nullptr);
+		coPushBack(commandBuffers_vk, commandBuffer_vk);
+	}
+
+	VkSubmitInfo submitInfo{};
+	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	submitInfo.waitSemaphoreCount = waitSemaphores_vk.count;
+	submitInfo.pWaitSemaphores = waitSemaphores_vk.data;
+	submitInfo.pWaitDstStageMask = waitFlags_vk.data;
+	submitInfo.commandBufferCount = commandBuffers_vk.count;
+	submitInfo.pCommandBuffers = commandBuffers_vk.data;
+	submitInfo.signalSemaphoreCount = finishSemaphores_vk.count;
+	submitInfo.pSignalSemaphores = finishSemaphores_vk.data;
+
+	const VkQueue graphicsQueue = queues_vk[QueueType::graphics];
+	coTRY(graphicsQueue != VK_NULL_HANDLE, nullptr);
+
+	coVULKAN_TRY(vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE), "Failed to submit command buffers.");
+
 	return true;
 }

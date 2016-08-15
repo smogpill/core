@@ -5,6 +5,8 @@
 #include "pattern/object/coObject.h"
 
 class coSurface;
+class coRenderSemaphore;
+class coRenderCommandBuffer;
 
 class coRenderDevice : public coObject
 {
@@ -21,10 +23,19 @@ public:
 	{
 	public:
 	};
+	class SubmitConfig
+	{
+	public:
+		coArray<coRenderCommandBuffer*> commandBuffers;
+		coArray<coRenderSemaphore*> waitSemaphores;
+		coArray<coRenderSemaphore*> finishSemaphores;
+	};
 
 	//coRenderDevice();
 	virtual ~coRenderDevice() {}
 
+	virtual coResult WaitForIdle();
+	virtual coResult Submit(const SubmitConfig& _config);
 	virtual coResult SupportsGraphics(coBool& _out) const = 0;
 	virtual coResult SupportsSurface(coBool& _out, const coSurface& _surface) const = 0;
 	virtual DeviceType GetDeviceType() const = 0;

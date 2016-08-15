@@ -36,10 +36,11 @@ public:
 	coVulkanPhysicalDevice* GetPhysicalDevice() const { return vulkanPhysicalDevice; }
 	const VkQueue& GetVkQueue(QueueType _type) const { return queues_vk[_type]; }
 	coResult GetVkQueue(VkQueue& _out, coUint _queueFamilyIndex, coUint _index);
-	coResult WaitForIdle();
+	virtual coResult WaitForIdle() override;
 	virtual DeviceType GetDeviceType() const override;
 	virtual coResult SupportsGraphics(coBool& _out) const override;
 	virtual coResult SupportsSurface(coBool& _out, const coSurface& _surface) const override;
+	virtual coResult Submit(const SubmitConfig& _config) override;
 	
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
