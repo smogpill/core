@@ -43,7 +43,7 @@ coResult coVulkanShader::OnInit(const coObject::InitConfig& _config)
 	coTRY(device_vk != VK_NULL_HANDLE, nullptr);
 
 	coASSERT(shaderModule_vk == VK_NULL_HANDLE);
-	coVULKAN_TRY(vkCreateShaderModule(device_vk, &createInfo, nullptr, &shaderModule_vk), "Failed to create the vulkan shader module.");
+	coVULKAN_TRY(vkCreateShaderModule(device_vk, &createInfo, nullptr, &shaderModule_vk), "Failed to create Vulkan shader module.");
 	return true;
 }
 
