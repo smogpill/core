@@ -11,6 +11,8 @@ public:
 	coVulkanImageView();
 	virtual ~coVulkanImageView();
 
+	const VkImageView& GetVkImageView() const { return imageView_vk; }
+
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 

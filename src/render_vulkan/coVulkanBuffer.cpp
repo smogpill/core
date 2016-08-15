@@ -25,6 +25,8 @@ coResult coVulkanBuffer::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
+	const VkDevice& device_vk = GetVkDevice();
+	coTRY(device_vk != VK_NULL_HANDLE, nullptr);
 
 	VkBufferUsageFlags usage_vk = 0;
 	if (config.usage & Usage::vertex)
@@ -40,8 +42,6 @@ coResult coVulkanBuffer::OnInit(const coObject::InitConfig& _config)
 	createInfo.usage = usage_vk;
 	createInfo.flags = 0;
 	createInfo.sharingMode = config.shared ? VK_SHARING_MODE_CONCURRENT : VK_SHARING_MODE_EXCLUSIVE;
-
-	const VkDevice& device_vk = GetVkDevice();
 
 	coASSERT(buffer_vk == VK_NULL_HANDLE);
 	coVULKAN_TRY(vkCreateBuffer(device_vk, &createInfo, nullptr, &buffer_vk), "Failed to create buffer.");

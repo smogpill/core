@@ -46,7 +46,7 @@ coResult coVulkanImage::OnInit(const coObject::InitConfig& _config)
 	coTRY(Super::OnInit(_config), nullptr);
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
 	const VkDevice& device_vk = GetVkDevice();
-	coTRY(device_vk, nullptr);
+	coTRY(device_vk != VK_NULL_HANDLE, nullptr);
 	coTRY(config.arraySize > 0, nullptr);
 	size = config.size;
 	coASSERT(image_vk == VK_NULL_HANDLE);

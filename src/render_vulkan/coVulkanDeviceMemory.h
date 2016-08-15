@@ -2,13 +2,13 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include "pattern/object/coObject.h"
+#include "render/coRenderDeviceObject.h"
 
 class coVulkanLogicalDevice;
 
-class coVulkanDeviceMemory : public coObject
+class coVulkanDeviceMemory : public coRenderDeviceObject
 {
-	coDECLARE_SUPER(coObject);
+	coDECLARE_SUPER(coRenderDeviceObject);
 public:
 	enum Type
 	{
@@ -23,7 +23,6 @@ public:
 		InitConfig();
 		coUint64 size;
 		Type type;
-		coVulkanLogicalDevice* device_vk;
 	};
 
 	coVulkanDeviceMemory();
@@ -33,6 +32,7 @@ protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 private:
-	coVulkanLogicalDevice* logicalDevice_vk;
+	const VkDevice& GetVkDevice() const;
+
 	VkDeviceMemory deviceMemory_vk;
 };
