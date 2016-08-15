@@ -20,12 +20,12 @@ public:
 		coRenderer* renderer;
 	};
 
-	coSurface();
 	virtual ~coSurface() {}
 
 	coRenderer* GetRenderer() const { return renderer; }
 
 protected:
+	coSurface();
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 	coRenderer* renderer;

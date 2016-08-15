@@ -14,14 +14,14 @@ public:
 	{
 	public:
 	};
-
-	coRenderer();
+	
 	virtual ~coRenderer();
 
 	virtual coRenderDevice* GetBestLogicalDeviceForSwapChain() const { return nullptr; }
 	const coArray<coRenderDevice*> GetDevices() const { return devices; }
 
 protected:
+	coRenderer();
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 	coDynamicArray<coRenderDevice*> devices;

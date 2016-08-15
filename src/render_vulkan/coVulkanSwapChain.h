@@ -13,6 +13,7 @@ public:
 	coVulkanSwapChain();
 	virtual ~coVulkanSwapChain();
 
+	virtual coResult AcquireImage();
 	virtual coResult Present(const coArray<coRenderSemaphore*> _waitSemaphores) override;
 	const VkSwapchainKHR& GetVkSwapchainKHR() const { return swapChain_vk; }
 	coInt32 GetCurrentImageIndex() const { return currentImageIndex; }
@@ -24,6 +25,7 @@ private:
 	coResult GetFormats(coDynamicArray<VkSurfaceFormatKHR>& _out);
 	coResult GetPresentModes(coDynamicArray<VkPresentModeKHR>& _out);
 	coResult InitImages();
+	coResult InitSemaphores();
 	coResult SelectFormat(VkSurfaceFormatKHR& _out, const VkSurfaceFormatKHR& _requested);
 	coResult SelectPresentMode(VkPresentModeKHR& _out, const VkPresentModeKHR& _requested);
 	coResult SelectExtent(VkExtent2D& _out, const VkSurfaceCapabilitiesKHR& _capabilities, const VkExtent2D& _requested);

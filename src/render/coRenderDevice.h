@@ -30,6 +30,7 @@ public:
 	virtual DeviceType GetDeviceType() const = 0;
 
 protected:
+	coRenderDevice() {}
 	//virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 private:

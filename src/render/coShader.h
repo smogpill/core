@@ -26,11 +26,11 @@ public:
 		coUint32 codeSize8;
 		Stage stage;
 	};
-	coShader();
 
 	const Stage& GetStage() const { return stage; }
 
 protected:
+	coShader();
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 	Stage stage;

@@ -7,4 +7,6 @@
 class coRenderSemaphore : public coRenderDeviceObject
 {
 	coDECLARE_SUPER(coRenderDeviceObject);
+protected:
+	coRenderSemaphore() {}
 };

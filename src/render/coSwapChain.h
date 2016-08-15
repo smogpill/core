@@ -24,14 +24,17 @@ public:
 		coUint32 nbImages;
 	};
 
-	coSwapChain();
 	virtual ~coSwapChain();
 
+	virtual coResult AcquireImage();
 	virtual coResult Present(const coArray<coRenderSemaphore*> _waitSemaphores);
+	coRenderSemaphore* GetImageAvailableSemaphore() const { return imageAvailableSemaphore; }
 
 protected:
+	coSwapChain();
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 	coSurface* surface;
 	coDynamicArray<coRenderImage*> images;
+	coRenderSemaphore* imageAvailableSemaphore;
 };

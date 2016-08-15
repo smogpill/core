@@ -26,13 +26,14 @@ public:
 		Type type;
 	};
 
-	coRenderImage();
 	virtual ~coRenderImage();
 
 	const coInt32x3& GetSize() const { return size; }
 	const coRenderImageView* GetDefaultView() const { return defaultView; }
 
 protected:
+	coRenderImage();
+
 	coInt32x3 size;
 	coRenderImageView* defaultView;
 };

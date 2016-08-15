@@ -4,7 +4,7 @@
 
 #include "render/coRenderSemaphore.h"
 
-class coVulkanSemaphore : public coRenderSemaphore
+class coVulkanSemaphore final : public coRenderSemaphore
 {
 	coDECLARE_SUPER(coRenderSemaphore);
 public:

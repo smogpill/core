@@ -26,9 +26,9 @@ public:
 		Type type;
 	};
 
+protected:
 	coRenderImageView();
 
-protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 	coRenderImage* image;

@@ -22,9 +22,9 @@ public:
 		coUint32 usage;
 		coBool shared;
 	};
-	coRenderBuffer();
 
 protected:
+	coRenderBuffer();
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 	coUint32 size8;

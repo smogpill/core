@@ -7,4 +7,6 @@
 class coRenderPipelineLayout : public coRenderDeviceObject
 {
 	coDECLARE_SUPER(coRenderDeviceObject);
+protected:
+	coRenderPipelineLayout(){}
 };

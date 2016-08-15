@@ -26,6 +26,9 @@ coVulkanSwapChain::coVulkanSwapChain()
 
 coVulkanSwapChain::~coVulkanSwapChain()
 {
+	delete imageAvailableSemaphore;
+	imageAvailableSemaphore = nullptr;
+
 	for (auto& p : images)
 		delete p;
 	coClear(images);
@@ -118,6 +121,7 @@ coResult coVulkanSwapChain::OnInit(const coObject::InitConfig& _config)
 	coVULKAN_TRY(vkCreateSwapchainKHR(device_vk, &createInfo, nullptr, &swapChain_vk), "Failed to create swap chain.");
 
 	coTRY(InitImages(), "Failed to init images.");
+	coTRY(InitSemaphores(), "Failed to init semaphores.");
 
 	return true;
 }
@@ -246,6 +250,23 @@ const VkSurfaceKHR& coVulkanSwapChain::GetVkSurfaceKHR() const
 	return vulkanSurface ? vulkanSurface->GetVkSurfaceKHR() : nullSurface_vk;
 }
 
+coResult coVulkanSwapChain::AcquireImage()
+{
+	coTRY(Super::AcquireImage(), nullptr);
+	coTRY(swapChain_vk != VK_NULL_HANDLE, nullptr);
+	const VkDevice& device_vk = GetVkDevice();
+	coTRY(device_vk != VK_NULL_HANDLE, nullptr);
+	coVulkanSemaphore* vulkanSemaphore = static_cast<coVulkanSemaphore*>(imageAvailableSemaphore);
+	coTRY(vulkanSemaphore, nullptr);
+	const VkSemaphore& semaphore_vk = vulkanSemaphore->GetVkSemaphore();
+	coTRY(semaphore_vk != VK_NULL_HANDLE, nullptr);
+
+	coUint32 imageIndex;
+	coVULKAN_TRY(vkAcquireNextImageKHR(device_vk, swapChain_vk, std::numeric_limits<uint64_t>::max(), semaphore_vk, VK_NULL_HANDLE, &imageIndex), "Failed to acquire next image");
+	currentImageIndex = imageIndex;
+	return true;
+}
+
 coResult coVulkanSwapChain::Present(const coArray<coRenderSemaphore*> _waitSemaphores)
 {
 	coTRY(Super::Present(_waitSemaphores), nullptr);
@@ -359,5 +380,18 @@ coResult coVulkanSwapChain::InitImages()
 		coPushBack(images, vulkanImage);
 		vulkanImage = nullptr;
 	}
+	return true;
+}
+
+coResult coVulkanSwapChain::InitSemaphores()
+{
+	coRenderSemaphore* semaphore = new coVulkanSemaphore();
+	coDEFER() { delete semaphore; };
+	coRenderSemaphore::InitConfig c;
+	c.device = device;
+	c.debugName = "imageAvailableSemaphore";
+	coTRY(semaphore->Init(c), "Failed to init the semaphore: " << *semaphore);
+	coASSERT(!imageAvailableSemaphore);
+	coSwap(imageAvailableSemaphore, semaphore);
 	return true;
 }

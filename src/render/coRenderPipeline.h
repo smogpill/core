@@ -25,4 +25,7 @@ public:
 		coArray<coInt32x2Rect> scissors;
 		coArray<const coType*> vertexChannels;
 	};
+
+protected:
+	coRenderPipeline() {}
 };

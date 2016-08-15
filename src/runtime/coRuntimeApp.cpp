@@ -9,6 +9,7 @@
 #include "render/coSurface.h"
 #include "render/coRenderFactory.h"
 #include "render/coRenderDevice.h"
+#include "container/array/coDynamicArray_f.h"
 
 coRuntimeApp::coRuntimeApp()
 	: renderer(nullptr)
@@ -128,7 +129,12 @@ coResult coRuntimeApp::OnStart()
 coResult coRuntimeApp::Render()
 {
 	coTRY(swapChain, nullptr);
-	coArray<coRenderSemaphore*> waitSemaphores;
-	coTRY(swapChain->Present(waitSemaphores), "Failed to present: "<<*swapChain);
+	coTRY(swapChain->AcquireImage(), "Failed to acquire image for: " << *swapChain);
+	coRenderSemaphore* imageAvailableSemaphore = swapChain->GetImageAvailableSemaphore();
+	coTRY(imageAvailableSemaphore, nullptr);
+
+	coDynamicArray<coRenderSemaphore*> waitSemaphores;
+	coPushBack(waitSemaphores, swapChain->GetImageAvailableSemaphore());
+	coTRY(swapChain->Present(waitSemaphores), "Failed to present: " << *swapChain);
 	return true;
 }

@@ -7,4 +7,6 @@
 class coRenderPass : public coRenderDeviceObject
 {
 	coDECLARE_SUPER(coRenderDeviceObject);
+protected:
+	coRenderPass() {}
 };

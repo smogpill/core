@@ -6,6 +6,7 @@
 
 coSwapChain::coSwapChain()
 	: surface(nullptr)
+	, imageAvailableSemaphore(nullptr)
 {
 }
 
@@ -21,6 +22,7 @@ coSwapChain::InitConfig::InitConfig()
 coSwapChain::~coSwapChain()
 {
 	coASSERT(images.count == 0);
+	coASSERT(!imageAvailableSemaphore);
 }
 
 coResult coSwapChain::OnInit(const coObject::InitConfig& _config)
@@ -29,6 +31,11 @@ coResult coSwapChain::OnInit(const coObject::InitConfig& _config)
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
 	surface = config.surface;
 	coTRY(surface, nullptr);
+	return true;
+}
+
+coResult coSwapChain::AcquireImage()
+{
 	return true;
 }
 
