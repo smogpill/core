@@ -3,6 +3,18 @@
 #include "render/pch.h"
 #include "render/coRenderImage.h"
 
+coRenderImage::coRenderImage()
+	: size(0)
+	, defaultView(nullptr)
+{
+
+}
+
+coRenderImage::~coRenderImage()
+{
+	coASSERT(!defaultView);
+}
+
 coRenderImage::InitConfig::InitConfig()
 	: size(0)
 	, type(Type::default)

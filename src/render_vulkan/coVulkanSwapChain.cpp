@@ -11,11 +11,14 @@
 #include "lang/result/coResult_f.h"
 #include "lang/reflect/coNumericLimits.h"
 #include "math/scalar/coUint32_f.h"
+#include "pattern/scope/coDefer.h"
 
 coVulkanSwapChain::coVulkanSwapChain()
 	: swapChain_vk(VK_NULL_HANDLE)
 	, currentImageIndex(-1)
 	, presentQueue_vk(VK_NULL_HANDLE)
+	, format_vk(VK_FORMAT_UNDEFINED)
+	, extent2D_vk{}
 {
 
 }
@@ -65,6 +68,7 @@ coResult coVulkanSwapChain::OnInit(const coObject::InitConfig& _config)
 		coTRY(SelectFormat(format, requestedFormat), "Failed to select a format.");
 		createInfo.imageFormat = format.format;
 		createInfo.imageColorSpace = format.colorSpace;
+		format_vk = format.format;
 	}
 
 	// Select present mode
@@ -78,9 +82,9 @@ coResult coVulkanSwapChain::OnInit(const coObject::InitConfig& _config)
 		VkExtent2D requestedExtent;
 		requestedExtent.width = config.size.x;
 		requestedExtent.height = config.size.y;
-		coTRY(SelectExtent(createInfo.imageExtent, capabilities, requestedExtent), "Failed to select an extent.");
+		coTRY(SelectExtent(extent2D_vk, capabilities, requestedExtent), "Failed to select an extent.");
+		createInfo.imageExtent = extent2D_vk;
 	}
-
 
 	createInfo.minImageCount = config.nbImages;
 	createInfo.imageArrayLayers = 1;
@@ -323,12 +327,23 @@ coResult coVulkanSwapChain::InitImages()
 
 	coASSERT(images.count == 0);
 	coReserve(images, images_vk.count);
+	coInt32x3 size;
+	size.x = extent2D_vk.width;
+	size.y = extent2D_vk.height;
+	size.z = 1;
 	for (const VkImage& image_vk : images_vk)
 	{
 		coASSERT(image_vk != VK_NULL_HANDLE);
 		coVulkanImage* vulkanImage = new coVulkanImage();
-		coTRY(vulkanImage->InitFromVkImage(image_vk), nullptr);
+		coDEFER() { delete vulkanImage; };
+		coVulkanImage::InitConfig c;
+		c.device = device;
+		c.image_vk = image_vk;
+		c.format_vk = format_vk;
+		c.size = size;
+		coTRY(vulkanImage->Init(c), nullptr);
 		coPushBack(images, vulkanImage);
+		vulkanImage = nullptr;
 	}
 	return true;
 }

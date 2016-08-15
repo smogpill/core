@@ -3,36 +3,33 @@
 #pragma once
 
 #include "render/coRenderDeviceObject.h"
-#include "math/vector/coInt32x3.h"
 
-class coRenderImageView;
+class coRenderImage;
 
-class coRenderImage : public coRenderDeviceObject
+class coRenderImageView : public coRenderDeviceObject
 {
 	coDECLARE_SUPER(coRenderDeviceObject);
 public:
 	enum Type
 	{
 		default,
-		staging,
-		dynamic
+		tex1D,
+		tex2D,
+		tex3D,
+		texCube
 	};
 	class InitConfig : public Super::InitConfig
 	{
 	public:
 		InitConfig();
-		coInt32x3 size;
-		coUint32 arraySize;
+		coRenderImage* image;
 		Type type;
 	};
 
-	coRenderImage();
-	virtual ~coRenderImage();
-
-	const coInt32x3& GetSize() const { return size; }
-	const coRenderImageView* GetDefaultView() const { return defaultView; }
+	coRenderImageView();
 
 protected:
-	coInt32x3 size;
-	coRenderImageView* defaultView;
+	virtual coResult OnInit(const coObject::InitConfig& _config) override;
+
+	coRenderImage* image;
 };

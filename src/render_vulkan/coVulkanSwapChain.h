@@ -37,4 +37,6 @@ private:
 	VkSwapchainKHR swapChain_vk;
 	VkQueue presentQueue_vk;
 	coInt32 currentImageIndex;
+	VkFormat format_vk;
+	VkExtent2D extent2D_vk;
 };
