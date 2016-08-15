@@ -21,5 +21,11 @@ public:
 		coArray<coRenderImageView*> imageViews;
 	};
 
+	coRenderFramebuffer();
+	const coInt32x2& GetSize() const { return size; }
+
 protected:
+	virtual coResult OnInit(const coObject::InitConfig& _config) override;
+
+	coInt32x2 size;
 };

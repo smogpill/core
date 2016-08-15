@@ -13,6 +13,8 @@ public:
 	coVulkanPipeline();
 	virtual ~coVulkanPipeline();
 
+	const VkPipeline& GetVkPipeline() const { return pipeline_vk; }
+
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 

@@ -5,3 +5,4 @@
 const coChar* coGetVulkanResultString(const VkResult& _result);
 
 #define coVULKAN_TRY(_result_vk_, _msg_) coSAFE_SCOPE(VkResult r_ = (_result_vk_); coTRY(r_ == VK_SUCCESS, _msg_ << " (Vulkan: " << coGetVulkanResultString(r_) << ").");)
+#define coVULKAN_CHECK(_result_vk_, _msg_) coSAFE_SCOPE(VkResult r_ = (_result_vk_); coCHECK(r_ == VK_SUCCESS, _msg_ << " (Vulkan: " << coGetVulkanResultString(r_) << ").");)
