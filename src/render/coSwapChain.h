@@ -26,6 +26,8 @@ public:
 	coSwapChain();
 	virtual ~coSwapChain();
 
+	virtual coResult Present() { return true; }
+
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 

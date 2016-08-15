@@ -13,7 +13,7 @@ public:
 	coVulkanSwapChain();
 	virtual ~coVulkanSwapChain();
 
-	coResult Present();
+	virtual coResult Present() override;
 	const VkSwapchainKHR& GetVkSwapchainKHR() const { return swapChain_vk; }
 	coInt32 GetCurrentImageIndex() const { return currentImageIndex; }
 

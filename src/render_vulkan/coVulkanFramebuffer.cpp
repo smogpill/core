@@ -61,3 +61,10 @@ coResult coVulkanFramebuffer::OnInit(const coObject::InitConfig& _config)
 	coVULKAN_TRY(vkCreateFramebuffer(device_vk, &createInfo, nullptr, &framebuffer_vk), "Failed to create framebuffer.");
 	return true;
 }
+
+const VkDevice& coVulkanFramebuffer::GetVkDevice() const
+{
+	coVulkanLogicalDevice* vulkanLogicalDevice = static_cast<coVulkanLogicalDevice*>(device);
+	static VkDevice nullDevice = VK_NULL_HANDLE;
+	return vulkanLogicalDevice ? vulkanLogicalDevice->GetVkDevice() : nullDevice;
+}

@@ -247,6 +247,7 @@ const VkSurfaceKHR& coVulkanSwapChain::GetVkSurfaceKHR() const
 
 coResult coVulkanSwapChain::Present()
 {
+	coTRY(Super::Present(), nullptr);
 	coTRY(currentImageIndex >= 0, nullptr);
 
 	coUint32 imageIndex = currentImageIndex;
