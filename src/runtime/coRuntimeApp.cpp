@@ -128,6 +128,7 @@ coResult coRuntimeApp::OnStart()
 coResult coRuntimeApp::Render()
 {
 	coTRY(swapChain, nullptr);
-	coTRY(swapChain->Present(), "Failed to present: "<<*swapChain);
+	coArray<coRenderSemaphore*> waitSemaphores;
+	coTRY(swapChain->Present(waitSemaphores), "Failed to present: "<<*swapChain);
 	return true;
 }

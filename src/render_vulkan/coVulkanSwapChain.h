@@ -13,7 +13,7 @@ public:
 	coVulkanSwapChain();
 	virtual ~coVulkanSwapChain();
 
-	virtual coResult Present() override;
+	virtual coResult Present(const coArray<coRenderSemaphore*> _waitSemaphores) override;
 	const VkSwapchainKHR& GetVkSwapchainKHR() const { return swapChain_vk; }
 	coInt32 GetCurrentImageIndex() const { return currentImageIndex; }
 

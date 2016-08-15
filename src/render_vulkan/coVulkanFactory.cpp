@@ -4,6 +4,7 @@
 #include "render_vulkan/coVulkanRenderer.h"
 #include "render_vulkan/coVulkanSwapChain.h"
 #include "render_vulkan/coVulkanSurface.h"
+#include "render_vulkan/coVulkanSemaphore.h"
 #include "render/coRenderFactory.h"
 
 coRenderer* coCreateRenderer()
@@ -19,4 +20,9 @@ coSwapChain* coCreateSwapChain()
 coSurface* coCreateSurface()
 {
 	return new coVulkanSurface();
+}
+
+coRenderSemaphore* coCreateRenderSemaphore()
+{
+	return new coVulkanSemaphore();
 }

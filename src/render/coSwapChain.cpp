@@ -31,3 +31,8 @@ coResult coSwapChain::OnInit(const coObject::InitConfig& _config)
 	coTRY(surface, nullptr);
 	return true;
 }
+
+coResult coSwapChain::Present(const coArray<coRenderSemaphore*> /*_waitSemaphores*/)
+{
+	return true;
+}

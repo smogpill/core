@@ -2,11 +2,11 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include "render/coRenderDeviceObject.h"
+#include "render/coRenderSemaphore.h"
 
-class coVulkanSemaphore : public coRenderDeviceObject
+class coVulkanSemaphore : public coRenderSemaphore
 {
-	coDECLARE_SUPER(coRenderDeviceObject);
+	coDECLARE_SUPER(coRenderSemaphore);
 public:
 	coVulkanSemaphore();
 	virtual ~coVulkanSemaphore();

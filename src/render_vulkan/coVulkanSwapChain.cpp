@@ -7,6 +7,7 @@
 #include "render_vulkan/coVulkanImage.h"
 #include "render_vulkan/coVulkanLogicalDevice.h"
 #include "render_vulkan/coVulkanPhysicalDevice.h"
+#include "render_vulkan/coVulkanSemaphore.h"
 #include "render/coSwapChain.h"
 #include "lang/result/coResult_f.h"
 #include "lang/reflect/coNumericLimits.h"
@@ -245,20 +246,32 @@ const VkSurfaceKHR& coVulkanSwapChain::GetVkSurfaceKHR() const
 	return vulkanSurface ? vulkanSurface->GetVkSurfaceKHR() : nullSurface_vk;
 }
 
-coResult coVulkanSwapChain::Present()
+coResult coVulkanSwapChain::Present(const coArray<coRenderSemaphore*> _waitSemaphores)
 {
-	coTRY(Super::Present(), nullptr);
+	coTRY(Super::Present(_waitSemaphores), nullptr);
 	coTRY(currentImageIndex >= 0, nullptr);
+
+	coDynamicArray<VkSemaphore> waitSemaphores_vk;
+	coReserve(waitSemaphores_vk, _waitSemaphores.count);
+	for (coRenderSemaphore* semaphore : _waitSemaphores)
+	{
+		coVulkanSemaphore* vulkanSemaphore = static_cast<coVulkanSemaphore*>(semaphore);
+		coTRY(vulkanSemaphore, nullptr);
+		const VkSemaphore& semaphore_vk = vulkanSemaphore->GetVkSemaphore();
+		coTRY(semaphore_vk, nullptr);
+		coPushBack(waitSemaphores_vk, semaphore_vk);
+	}
 
 	coUint32 imageIndex = currentImageIndex;
 	VkPresentInfoKHR presentInfo = {};
 	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-	presentInfo.waitSemaphoreCount = 1;
-	presentInfo.pWaitSemaphores = nullptr;
+	presentInfo.waitSemaphoreCount = waitSemaphores_vk.count;
+	presentInfo.pWaitSemaphores = waitSemaphores_vk.data;
 	presentInfo.swapchainCount = 1;
 	presentInfo.pSwapchains = &swapChain_vk;
 	presentInfo.pImageIndices = &imageIndex;
 	presentInfo.pResults = nullptr;
+	coTRY(imageIndex >= 0, nullptr);
 	coTRY(presentQueue_vk != VK_NULL_HANDLE, nullptr);
 	coVULKAN_TRY(vkQueuePresentKHR(presentQueue_vk, &presentInfo), "Failed to present the rendered images into swap chains");
 

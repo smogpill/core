@@ -8,6 +8,7 @@
 class coSurface;
 class coRenderDevice;
 class coRenderImage;
+class coRenderSemaphore;
 
 class coSwapChain : public coRenderDeviceObject
 {
@@ -26,7 +27,7 @@ public:
 	coSwapChain();
 	virtual ~coSwapChain();
 
-	virtual coResult Present() { return true; }
+	virtual coResult Present(const coArray<coRenderSemaphore*> _waitSemaphores);
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
