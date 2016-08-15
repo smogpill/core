@@ -8,18 +8,13 @@
 
 coVulkanImage::coVulkanImage()
 	: image_vk(VK_NULL_HANDLE)
-	, device_vk(nullptr)
 	, deviceMemory_vk(VK_NULL_HANDLE)
 {
 
 }
 
 coVulkanImage::InitConfig::InitConfig()
-	: device_vk(nullptr)
-	, size(0)
-	, type(Type::default)
-	, arraySize(1)
-	, deviceMemory_vk(VK_NULL_HANDLE)
+	: deviceMemory_vk(VK_NULL_HANDLE)
 	, deviceMemoryOffset_vk(0)
 {
 
@@ -29,9 +24,12 @@ coVulkanImage::~coVulkanImage()
 {
 	if (image_vk != VK_NULL_HANDLE)
 	{
-		coASSERT(device_vk);
-		coASSERT(device_vk->GetVkDevice() != VK_NULL_HANDLE);
-		vkDestroyImage(device_vk->GetVkDevice(), image_vk, nullptr);
+		if (deviceMemory_vk != VK_NULL_HANDLE)
+		{
+			const VkDevice& device_vk = GetVkDevice();
+			coASSERT(device_vk);
+			vkDestroyImage(device_vk, image_vk, nullptr);
+		}
 	}
 }
 
@@ -39,7 +37,7 @@ coResult coVulkanImage::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
-	device_vk = config.device_vk;
+	const VkDevice& device_vk = GetVkDevice();
 	coTRY(device_vk, nullptr);
 	coTRY(config.arraySize > 0, nullptr);
 
@@ -59,8 +57,15 @@ coResult coVulkanImage::OnInit(const coObject::InitConfig& _config)
 	createInfo.samples = VK_SAMPLE_COUNT_1_BIT;
 	createInfo.flags = 0;
 
-	coASSERT(device_vk->GetVkDevice() != VK_NULL_HANDLE);
-	coVULKAN_TRY(vkCreateImage(device_vk->GetVkDevice(), &createInfo, nullptr, &image_vk), "Failed to create image.");
+	coASSERT(image_vk == VK_NULL_HANDLE);
+	coVULKAN_TRY(vkCreateImage(device_vk, &createInfo, nullptr, &image_vk), "Failed to create Vulkan image.");
+	return true;
+}
+
+coResult coVulkanImage::InitFromVkImage(const VkImage& _image_vk)
+{
+	coTRY(image_vk == VK_NULL_HANDLE, nullptr);
+	image_vk = _image_vk;
 	return true;
 }
 
@@ -91,4 +96,11 @@ coResult coVulkanImage::ComputeImageType(VkImageType& _out, const InitConfig& _c
 	}
 
 	return true;
+}
+
+const VkDevice& coVulkanImage ::GetVkDevice() const
+{
+	coVulkanLogicalDevice* vulkanLogicalDevice = static_cast<coVulkanLogicalDevice*>(device);
+	static VkDevice nullDevice = VK_NULL_HANDLE;
+	return vulkanLogicalDevice ? vulkanLogicalDevice->GetVkDevice() : nullDevice;
 }

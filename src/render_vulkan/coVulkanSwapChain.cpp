@@ -4,6 +4,7 @@
 #include "render_vulkan/coVulkanSwapChain.h"
 #include "render_vulkan/coVulkanResult_f.h"
 #include "render_vulkan/coVulkanSurface.h"
+#include "render_vulkan/coVulkanImage.h"
 #include "render_vulkan/coVulkanLogicalDevice.h"
 #include "render_vulkan/coVulkanPhysicalDevice.h"
 #include "render/coSwapChain.h"
@@ -21,6 +22,10 @@ coVulkanSwapChain::coVulkanSwapChain()
 
 coVulkanSwapChain::~coVulkanSwapChain()
 {
+	for (auto& p : images)
+		delete p;
+	coClear(images);
+
 	if (swapChain_vk != VK_NULL_HANDLE)
 	{
 		const VkDevice& device_vk = GetVkDevice();
@@ -106,6 +111,8 @@ coResult coVulkanSwapChain::OnInit(const coObject::InitConfig& _config)
 
 	coTRY(swapChain_vk == VK_NULL_HANDLE, nullptr);
 	coVULKAN_TRY(vkCreateSwapchainKHR(device_vk, &createInfo, nullptr, &swapChain_vk), "Failed to create swap chain.");
+
+	coTRY(InitImages(), "Failed to init images.");
 
 	return true;
 }
@@ -300,4 +307,28 @@ const coVulkanPhysicalDevice* coVulkanSwapChain::GetVulkanPhysicalDevice() const
 {
 	const coVulkanLogicalDevice* vulkanLogicalDevice = static_cast<const coVulkanLogicalDevice*>(device);
 	return vulkanLogicalDevice ? vulkanLogicalDevice->GetPhysicalDevice() : nullptr;
+}
+
+coResult coVulkanSwapChain::InitImages()
+{
+	const VkDevice& device_vk = GetVkDevice();
+	coTRY(device_vk != VK_NULL_HANDLE, nullptr);
+	coTRY(swapChain_vk != VK_NULL_HANDLE, nullptr);
+	coUint32 nbImages;
+	coVULKAN_TRY(vkGetSwapchainImagesKHR(device_vk, swapChain_vk, &nbImages, nullptr), "Failed to retrieve the swap chain image count.");
+	coDynamicArray<VkImage> images_vk;
+	coResize(images_vk, nbImages);
+	coVULKAN_TRY(vkGetSwapchainImagesKHR(device_vk, swapChain_vk, &images_vk.count, images_vk.data), "Failed to retrieve the swap chain images.");
+	coTRY(images_vk.count == nbImages, nullptr);
+
+	coASSERT(images.count == 0);
+	coReserve(images, images_vk.count);
+	for (const VkImage& image_vk : images_vk)
+	{
+		coASSERT(image_vk != VK_NULL_HANDLE);
+		coVulkanImage* vulkanImage = new coVulkanImage();
+		coTRY(vulkanImage->InitFromVkImage(image_vk), nullptr);
+		coPushBack(images, vulkanImage);
+	}
+	return true;
 }

@@ -2,44 +2,33 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include "pattern/object/coObject.h"
-#include "math/vector/coInt32x3.h"
+#include "render/coRenderImage.h"
 
 class coVulkanLogicalDevice;
 
-class coVulkanImage : public coObject
+class coVulkanImage : public coRenderImage
 {
-	coDECLARE_SUPER(coObject);
+	coDECLARE_SUPER(coRenderImage);
 public:
-	enum Type
-	{
-		default,
-		staging,
-		dynamic
-	};
 	class InitConfig : public Super::InitConfig
 	{
 	public:
 		InitConfig();
-		coVulkanLogicalDevice* device_vk;
-		coInt32x3 size;
-		coUint32 arraySize;
 		VkDeviceMemory deviceMemory_vk;
 		VkDeviceSize deviceMemoryOffset_vk;
-		//coBool cpuWriteAccess;
-		//coBool cpuReadAccess;
-		Type type;
 	};
 	coVulkanImage();
 	virtual ~coVulkanImage();
+
+	coResult InitFromVkImage(const VkImage& _image_vk);
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 private:
 	static coResult ComputeImageType(VkImageType& _out, const InitConfig& _config);
+	const VkDevice& GetVkDevice() const;
 
-	coVulkanLogicalDevice* device_vk;
 	VkDeviceMemory deviceMemory_vk;
 	VkImage image_vk;
 };

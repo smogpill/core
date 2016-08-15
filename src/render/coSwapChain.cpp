@@ -18,6 +18,11 @@ coSwapChain::InitConfig::InitConfig()
 
 }
 
+coSwapChain::~coSwapChain()
+{
+	coASSERT(images.count == 0);
+}
+
 coResult coSwapChain::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);

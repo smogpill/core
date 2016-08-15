@@ -7,6 +7,7 @@
 
 class coSurface;
 class coRenderDevice;
+class coRenderImage;
 
 class coSwapChain : public coRenderDeviceObject
 {
@@ -23,10 +24,11 @@ public:
 	};
 
 	coSwapChain();
-	virtual ~coSwapChain() {}
+	virtual ~coSwapChain();
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 	coSurface* surface;
+	coDynamicArray<coRenderImage*> images;
 };
