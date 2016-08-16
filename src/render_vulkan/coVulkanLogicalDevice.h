@@ -8,6 +8,7 @@ class coVulkanLayerManager;
 class coVulkanSurface;
 class coVulkanPhysicalDevice;
 class coSwapChain;
+class coVulkanCommandPool;
 
 class coVulkanLogicalDevice : public coRenderDevice
 {
@@ -51,6 +52,7 @@ private:
 	coResult InitQueueFamilyIndices();
 	coResult InitQueues();
 	coResult InitLogicalDevice();
+	coResult InitCommandPools();
 	coResult GetAllRequestedExtensions(coDynamicArray<const coChar*>& _extensions) const;
 	void Clear();
 
@@ -60,4 +62,5 @@ private:
 	VkQueue queues_vk[QueueType::count];
 	coDynamicArray<coDynamicString*> requestedExtensions;
 	coVulkanLayerManager* vulkanLayerManager;
+	coVulkanCommandPool* vulkanCommandPools[QueueType::count];
 };

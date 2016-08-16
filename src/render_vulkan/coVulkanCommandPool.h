@@ -6,7 +6,7 @@
 
 class coVulkanCommandPool final : public coRenderDeviceObject
 {
-	coDECLARE_SUPER(coObject);
+	coDECLARE_SUPER(coRenderDeviceObject);
 public:
 	class InitConfig : public Super::InitConfig
 	{
@@ -17,6 +17,8 @@ public:
 
 	coVulkanCommandPool();
 	virtual ~coVulkanCommandPool();
+
+	const VkCommandPool& GetVkCommandPool() const { return commandPool_vk; }
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;

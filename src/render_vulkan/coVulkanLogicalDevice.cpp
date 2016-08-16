@@ -8,6 +8,7 @@
 #include "render_vulkan/coVulkanSurface.h"
 #include "render_vulkan/coVulkanSwapChain.h"
 #include "render_vulkan/coVulkanSemaphore.h"
+#include "render_vulkan/coVulkanCommandPool.h"
 #include "render_vulkan/coVulkanCommandBuffer.h"
 #include "lang/result/coResult_f.h"
 #include "lang/reflect/coNumericLimits.h"
@@ -19,6 +20,7 @@ coVulkanLogicalDevice::coVulkanLogicalDevice()
 	//, queues_vk{ VK_NULL_HANDLE }
 	, queueFamilyIndices{ -1 }
 	, vulkanLayerManager(nullptr)
+	, vulkanCommandPools{}
 {
 
 }
@@ -55,6 +57,7 @@ coResult coVulkanLogicalDevice::OnStart()
 	coTRY(Super::OnStart(), nullptr);
 	coTRY(InitLogicalDevice(), "Failed to init the logical device.");
 	coTRY(InitQueues(), "Failed to init queues.");
+	coTRY(InitCommandPools(), "Failed to init command pools.");
 	return true;
 }
 
@@ -67,6 +70,11 @@ void coVulkanLogicalDevice::OnStop()
 void coVulkanLogicalDevice::Clear()
 {
 	coCHECK(WaitForIdle(), nullptr);
+	for (auto& p : vulkanCommandPools)
+	{
+		delete p;
+		p = nullptr;
+	}
 	for (VkQueue& queue_vk : queues_vk)
 		queue_vk = VK_NULL_HANDLE;
 	vkDestroyDevice(logicalDevice_vk, nullptr);
@@ -121,6 +129,20 @@ coResult coVulkanLogicalDevice::InitQueues()
 			queues_vk[i] = VK_NULL_HANDLE;
 		}
 	}
+	return true;
+}
+
+coResult coVulkanLogicalDevice::InitCommandPools()
+{
+	coVulkanCommandPool* cp = new coVulkanCommandPool();
+	coDEFER() { delete cp; };
+	coTRY(queueFamilyIndices[QueueType::graphics] >= 0, nullptr);
+	coVulkanCommandPool::InitConfig c;
+	c.device = this;
+	c.queueFamilyIndex = queueFamilyIndices[QueueType::graphics];
+	coTRY(cp->Init(c), "Failed to init command pool.");
+	coASSERT(!vulkanCommandPools[QueueType::graphics]);
+	coSwap(vulkanCommandPools[QueueType::graphics], cp);
 	return true;
 }
 

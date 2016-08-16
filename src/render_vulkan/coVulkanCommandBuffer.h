@@ -7,17 +7,30 @@
 class coRenderPass;
 class coRenderFramebuffer;
 class coRenderPipeline;
+class coShader;
+class coRenderMesh;
+class coVulkanCommandPool;
 
 class coVulkanCommandBuffer final : public coRenderCommandBuffer
 {
 	coDECLARE_SUPER(coRenderCommandBuffer);
 public:
+	class InitConfig : public Super::InitConfig
+	{
+	public:
+		InitConfig();
+		coVulkanCommandPool* vulkanCommandPool;
+		coBool primary;
+	};
+
 	coVulkanCommandBuffer();
 	virtual ~coVulkanCommandBuffer();
 
 	void PushPassBegin(const coRenderPass& _pass, const coRenderFramebuffer& _frameBuffer);
 	void PushPassEnd();
 	void PushBindPipeline(const coRenderPipeline& _pipeline);
+	void PushExecuteCommands(const coArray<const coRenderCommandBuffer*>& _commandBuffers);
+	void PushDraw(const coRenderMesh& _mesh);
 	const VkCommandBuffer& GetVkCommandBuffer() const { return commandBuffer_vk; }
 
 protected:
@@ -26,6 +39,10 @@ protected:
 	virtual void OnStop();
 
 private:
+	const VkCommandPool& GetVkCommandPool() const;
+	const VkDevice& GetVkDevice() const;
+
 	VkCommandBuffer commandBuffer_vk;
+	coVulkanCommandPool* vulkanCommandPool;
 	coBool passStarted;
 };

@@ -11,6 +11,8 @@ public:
 	coVulkanBuffer();
 	virtual ~coVulkanBuffer();
 
+	const VkBuffer& GetVkBuffer() const { return buffer_vk; }
+
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
