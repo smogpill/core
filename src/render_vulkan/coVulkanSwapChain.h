@@ -25,7 +25,11 @@ private:
 	coResult GetFormats(coDynamicArray<VkSurfaceFormatKHR>& _out);
 	coResult GetPresentModes(coDynamicArray<VkPresentModeKHR>& _out);
 	coResult InitImages();
+	coResult InitImageViews();
 	coResult InitSemaphores();
+	coResult InitSwapChain();
+	coResult InitFramebuffers();
+	coResult InitPass();
 	coResult SelectFormat(VkSurfaceFormatKHR& _out, const VkSurfaceFormatKHR& _requested);
 	coResult SelectPresentMode(VkPresentModeKHR& _out, const VkPresentModeKHR& _requested);
 	coResult SelectExtent(VkExtent2D& _out, const VkSurfaceCapabilitiesKHR& _capabilities, const VkExtent2D& _requested);

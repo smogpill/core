@@ -4,7 +4,7 @@
 
 #include "app/coApp.h"
 
-class coRenderer;
+class coRenderContext;
 class coWindow;
 class coSurface;
 class coSwapChain;
@@ -27,7 +27,7 @@ private:
 	coResult Render();
 
 	coWindow* window;
-	coRenderer* renderer;
+	coRenderContext* renderer;
 	coSurface* surface;
 	coRenderDevice* renderDevice;
 	coSwapChain* swapChain;

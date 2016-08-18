@@ -2,7 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include "render/coRenderer.h"
+#include "render/coRenderContext.h"
 #include "container/array/coDynamicArray.h"
 
 class coVulkanMessageHandler;
@@ -11,12 +11,12 @@ class coVulkanExtensionManager;
 class coVulkanPhysicalDevice;
 class coVulkanLogicalDevice;
 
-class coVulkanRenderer final : public coRenderer
+class coVulkanContext final : public coRenderContext
 {
-	coDECLARE_SUPER(coRenderer);
+	coDECLARE_SUPER(coRenderContext);
 public:
-	coVulkanRenderer();
-	virtual ~coVulkanRenderer();
+	coVulkanContext();
+	virtual ~coVulkanContext();
 
 	const VkInstance& GetVkInstance() const { return instance_vk; }
 

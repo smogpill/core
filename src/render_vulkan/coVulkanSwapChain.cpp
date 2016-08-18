@@ -5,9 +5,12 @@
 #include "render_vulkan/coVulkanResult_f.h"
 #include "render_vulkan/coVulkanSurface.h"
 #include "render_vulkan/coVulkanImage.h"
+#include "render_vulkan/coVulkanImageView.h"
 #include "render_vulkan/coVulkanLogicalDevice.h"
 #include "render_vulkan/coVulkanPhysicalDevice.h"
 #include "render_vulkan/coVulkanSemaphore.h"
+#include "render_vulkan/coVulkanFramebuffer.h"
+#include "render_vulkan/coVulkanPass.h"
 #include "render/coSwapChain.h"
 #include "lang/result/coResult_f.h"
 #include "lang/reflect/coNumericLimits.h"
@@ -26,6 +29,8 @@ coVulkanSwapChain::coVulkanSwapChain()
 
 coVulkanSwapChain::~coVulkanSwapChain()
 {
+	delete renderPass;
+	renderPass = nullptr;
 	delete imageAvailableSemaphore;
 	imageAvailableSemaphore = nullptr;
 
@@ -121,7 +126,10 @@ coResult coVulkanSwapChain::OnInit(const coObject::InitConfig& _config)
 	coVULKAN_TRY(vkCreateSwapchainKHR(device_vk, &createInfo, nullptr, &swapChain_vk), "Failed to create swap chain.");
 
 	coTRY(InitImages(), "Failed to init images.");
+	coTRY(InitImageViews(), "Failed to init image views.");
 	coTRY(InitSemaphores(), "Failed to init semaphores.");
+	coTRY(InitPass(), "Failed to init pass.");
+	coTRY(InitFramebuffers(), "Failed to init framebuffers.");
 
 	return true;
 }
@@ -264,6 +272,15 @@ coResult coVulkanSwapChain::AcquireImage()
 	coUint32 imageIndex;
 	coVULKAN_TRY(vkAcquireNextImageKHR(device_vk, swapChain_vk, std::numeric_limits<uint64_t>::max(), semaphore_vk, VK_NULL_HANDLE, &imageIndex), "Failed to acquire next image");
 	currentImageIndex = imageIndex;
+
+	coTODO("Handle swap chain image acquisition specific messages.");
+// 	if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+// 		recreateSwapChain();
+// 		return;
+// 	}
+// 	else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+// 		throw std::runtime_error("failed to acquire swap chain image!");
+// 	}
 	return true;
 }
 
@@ -384,6 +401,25 @@ coResult coVulkanSwapChain::InitImages()
 	return true;
 }
 
+coResult coVulkanSwapChain::InitImageViews()
+{
+	coASSERT(!imageViews.count);
+	coReserve(imageViews, images.count);
+	for (coRenderImage* image : images)
+	{
+		coASSERT(image);
+		coRenderImageView* imageView = new coVulkanImageView();
+		coDEFER() { delete imageView; };
+		coRenderImageView::InitConfig c;
+		c.device = device;
+		c.image = image;
+		coTRY(imageView->Init(c), "Failed to init image view.");
+		coPushBack(imageViews, imageView);
+		imageView = nullptr;
+	}
+	return true;
+}
+
 coResult coVulkanSwapChain::InitSemaphores()
 {
 	coRenderSemaphore* semaphore = new coVulkanSemaphore();
@@ -394,5 +430,55 @@ coResult coVulkanSwapChain::InitSemaphores()
 	coTRY(semaphore->Init(c), "Failed to init the semaphore: " << *semaphore);
 	coASSERT(!imageAvailableSemaphore);
 	coSwap(imageAvailableSemaphore, semaphore);
+	return true;
+}
+
+coResult coVulkanSwapChain::InitFramebuffers()
+{
+	coTRY(renderPass, nullptr);
+	coReserve(frameBuffers, images.count);
+
+	for (coRenderImageView* imageView : imageViews)
+	{
+		coASSERT(imageView);
+		const coRenderImage* image = imageView->GetImage();
+		coTRY(image, nullptr);
+		coRenderFramebuffer* fb = new coVulkanFramebuffer();
+		coDEFER() { delete fb; };
+		coRenderFramebuffer::InitConfig c;
+		c.device = device;
+		c.pass = renderPass;
+		const coInt32x3& size = image->GetSize();
+		coASSERT(size.z == 1);
+		c.size = coInt32x2(size.x, size.y);
+		coTODO("Because of weird Visual studio behavior in release.");
+		coDynamicArray<coRenderImageView*> views;
+		coPushBack(views, imageView);
+		c.imageViews = imageViews;
+		coTRY(fb->Init(c), "Failed to init framebuffer.");
+		coPushBack(frameBuffers, fb);
+		fb = nullptr;
+	}
+
+	return true;
+}
+
+coResult coVulkanSwapChain::InitPass()
+{
+	coVulkanPass* pass = new coVulkanPass();
+	coDEFER() { delete pass; };
+	coVulkanPass::InitConfig c;
+	VkAttachmentDescription& att = c.attachmentDescription_vk;
+	att.format = format_vk;
+	att.samples = VK_SAMPLE_COUNT_1_BIT;
+	att.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	att.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+	att.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	att.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	att.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	att.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+	c.device = device;
+	coTRY(pass->Init(c), "Failed to init render pass.");
+	coSwap(renderPass, reinterpret_cast<coRenderPass*&>(pass));
 	return true;
 }

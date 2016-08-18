@@ -2,12 +2,12 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-class coRenderer;
+class coRenderContext;
 class coSwapChain;
 class coSurface;
 class coRenderSemaphore;
 
-coRenderer* coCreateRenderer();
+coRenderContext* coCreateRenderer();
 coSwapChain* coCreateSwapChain();
 coSurface* coCreateSurface();
 coRenderSemaphore* coCreateRenderSemaphore();

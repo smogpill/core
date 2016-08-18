@@ -4,7 +4,7 @@
 
 #include "pattern/object/coObject.h"
 
-class coRenderer;
+class coRenderContext;
 
 class coSurface : public coObject
 {
@@ -17,16 +17,16 @@ public:
 #ifdef coMSWINDOWS
 		HWND hwnd;
 #endif
-		coRenderer* renderer;
+		coRenderContext* renderer;
 	};
 
 	virtual ~coSurface() {}
 
-	coRenderer* GetRenderer() const { return renderer; }
+	coRenderContext* GetRenderer() const { return renderer; }
 
 protected:
 	coSurface();
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
-	coRenderer* renderer;
+	coRenderContext* renderer;
 };

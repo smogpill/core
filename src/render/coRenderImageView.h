@@ -26,6 +26,8 @@ public:
 		Type type;
 	};
 
+	const coRenderImage* GetImage() const { return image; }
+
 protected:
 	coRenderImageView();
 

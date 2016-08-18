@@ -6,12 +6,16 @@
 #include "math/vector/coFloatx2.h"
 #include "math/vector/coFloatx3.h"
 
+class coRenderMaterial;
+
 class coRenderMesh : public coRenderDeviceObject
 {
 	coDECLARE_SUPER(coObject);
 public:
+	coRenderMesh();
 	coDynamicArray<coFloatx3> positions;
 	coDynamicArray<coFloatx3> normals;
 	coDynamicArray<coFloatx2> uvs;
 	coDynamicArray<coUint16> indices;
+	coRenderMaterial* material;
 };

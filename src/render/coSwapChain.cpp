@@ -7,6 +7,7 @@
 coSwapChain::coSwapChain()
 	: surface(nullptr)
 	, imageAvailableSemaphore(nullptr)
+	, renderPass(nullptr)
 {
 }
 
@@ -21,8 +22,11 @@ coSwapChain::InitConfig::InitConfig()
 
 coSwapChain::~coSwapChain()
 {
-	coASSERT(images.count == 0);
+	coASSERT(!imageViews.count);
+	coASSERT(!images.count);
 	coASSERT(!imageAvailableSemaphore);
+	coASSERT(!renderPass);
+	coASSERT(!frameBuffers.count);
 }
 
 coResult coSwapChain::OnInit(const coObject::InitConfig& _config)

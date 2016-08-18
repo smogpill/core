@@ -1,7 +1,7 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "render_vulkan/pch.h"
-#include "render_vulkan/coVulkanRenderer.h"
+#include "render_vulkan/coVulkanContext.h"
 #include "render_vulkan/coVulkanResult_f.h"
 #include "render_vulkan/coVulkanMessageHandler.h"
 #include "render_vulkan/coVulkanExtensionManager.h"
@@ -13,7 +13,7 @@
 #include "pattern/scope/coDefer.h"
 #include "container/array/coDynamicArray_f.h"
 
-coVulkanRenderer::coVulkanRenderer()
+coVulkanContext::coVulkanContext()
 	: instance_vk(VK_NULL_HANDLE)
 	, enableDebug(false)
 	, messageHandler_vk(nullptr)
@@ -25,7 +25,7 @@ coVulkanRenderer::coVulkanRenderer()
 #endif
 }
 
-coVulkanRenderer::~coVulkanRenderer()
+coVulkanContext::~coVulkanContext()
 {
 	for (auto p : devices)
 		delete p;
@@ -39,7 +39,7 @@ coVulkanRenderer::~coVulkanRenderer()
 	delete layerManager_vk;
 }
 
-coResult coVulkanRenderer::OnInit(const coObject::InitConfig& _config)
+coResult coVulkanContext::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 	//const InitConfig& config = static_cast<const InitConfig&>(_config);
@@ -51,7 +51,7 @@ coResult coVulkanRenderer::OnInit(const coObject::InitConfig& _config)
 	return true;
 }
 
-coResult coVulkanRenderer::InitLayers()
+coResult coVulkanContext::InitLayers()
 {
 	coVulkanLayerManager* manager = new coVulkanLayerManager();
 	coDEFER() { delete manager; };
@@ -65,7 +65,7 @@ coResult coVulkanRenderer::InitLayers()
 	return true;
 }
 
-coResult coVulkanRenderer::InitExtensions()
+coResult coVulkanContext::InitExtensions()
 {
 	coVulkanExtensionManager* manager = new coVulkanExtensionManager();
 	coDEFER() { delete manager; };
@@ -85,7 +85,7 @@ coResult coVulkanRenderer::InitExtensions()
 	return true;
 }
 
-coResult coVulkanRenderer::InitInstance()
+coResult coVulkanContext::InitInstance()
 {
 	// Application Info
 	VkApplicationInfo appInfo = {};
@@ -124,7 +124,7 @@ coResult coVulkanRenderer::InitInstance()
 	return true;
 }
 
-coResult coVulkanRenderer::InitMessageHandler()
+coResult coVulkanContext::InitMessageHandler()
 {
 	if (enableDebug)
 	{
@@ -138,7 +138,7 @@ coResult coVulkanRenderer::InitMessageHandler()
 	return true;
 }
 
-coResult coVulkanRenderer::InitDevices()
+coResult coVulkanContext::InitDevices()
 {
 	coTRY(instance_vk, nullptr);
 	coTRY(devices.count == 0, nullptr);

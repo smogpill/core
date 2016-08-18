@@ -4,7 +4,7 @@
 #include "runtime/coRuntimeApp.h"
 #include "app/window/coWindow.h"
 #include "lang/result/coResult_f.h"
-#include "render/coRenderer.h"
+#include "render/coRenderContext.h"
 #include "render/coSwapChain.h"
 #include "render/coSurface.h"
 #include "render/coRenderFactory.h"
@@ -47,7 +47,7 @@ coResult coRuntimeApp::OnInit(const coObject::InitConfig& _config)
 
 	renderer = coCreateRenderer();
 	{
-		coRenderer::InitConfig c;
+		coRenderContext::InitConfig c;
 		c.debugName = "Renderer";
 		coTRY(renderer->Init(c), "Failed to init the renderer.");
 	}

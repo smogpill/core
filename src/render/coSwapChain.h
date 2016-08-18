@@ -8,7 +8,10 @@
 class coSurface;
 class coRenderDevice;
 class coRenderImage;
+class coRenderImageView;
 class coRenderSemaphore;
+class coRenderPass;
+class coRenderFramebuffer;
 
 class coSwapChain : public coRenderDeviceObject
 {
@@ -36,5 +39,8 @@ protected:
 
 	coSurface* surface;
 	coDynamicArray<coRenderImage*> images;
+	coDynamicArray<coRenderImageView*> imageViews;
 	coRenderSemaphore* imageAvailableSemaphore;
+	coRenderPass* renderPass;
+	coDynamicArray<coRenderFramebuffer*> frameBuffers;
 };

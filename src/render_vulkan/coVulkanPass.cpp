@@ -13,6 +13,12 @@ coVulkanPass::coVulkanPass()
 
 }
 
+coVulkanPass::InitConfig::InitConfig()
+	: attachmentDescription_vk{}
+{
+
+}
+
 coVulkanPass::~coVulkanPass()
 {
 	if (renderPass_vk != VK_NULL_HANDLE)
@@ -25,17 +31,17 @@ coVulkanPass::~coVulkanPass()
 coResult coVulkanPass::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
-	//const InitConfig& config = static_cast<const InitConfig&>(_config);
+	const InitConfig& config = static_cast<const InitConfig&>(_config);
 
-	VkAttachmentDescription colorAttachment{};
-	colorAttachment.format = VK_FORMAT_B8G8R8A8_UNORM;
-	colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+// 	VkAttachmentDescription colorAttachment{};
+// 	colorAttachment.format = VK_FORMAT_B8G8R8A8_UNORM;
+// 	colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+// 	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+// 	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+// 	colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+// 	colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+// 	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+// 	colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
 	VkAttachmentReference colorAttachmentRef{};
 	colorAttachmentRef.attachment = 0;
@@ -57,7 +63,7 @@ coResult coVulkanPass::OnInit(const coObject::InitConfig& _config)
 	VkRenderPassCreateInfo renderPassInfo{};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 	renderPassInfo.attachmentCount = 1;
-	renderPassInfo.pAttachments = &colorAttachment;
+	renderPassInfo.pAttachments = &config.attachmentDescription_vk;
 	renderPassInfo.subpassCount = 1;
 	renderPassInfo.pSubpasses = &subPass;
 	renderPassInfo.dependencyCount = 1;

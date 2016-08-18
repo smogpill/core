@@ -2,9 +2,9 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "render_vulkan/pch.h"
 #include "render_vulkan/coVulkanSurface.h"
-#include "render_vulkan/coVulkanRenderer.h"
+#include "render_vulkan/coVulkanContext.h"
 #include "render_vulkan/coVulkanResult_f.h"
-#include "render/coRenderer.h"
+#include "render/coRenderContext.h"
 #include "lang/result/coResult_f.h"
 
 coVulkanSurface::coVulkanSurface()
@@ -17,7 +17,7 @@ coVulkanSurface::~coVulkanSurface()
 {
 	if (surface_vk != VK_NULL_HANDLE)
 	{
-		coVulkanRenderer* vulkanRenderer = static_cast<coVulkanRenderer*>(renderer);
+		coVulkanContext* vulkanRenderer = static_cast<coVulkanContext*>(renderer);
 		coASSERT(vulkanRenderer);
 		const VkInstance& instance_vk = vulkanRenderer->GetVkInstance();
 		coASSERT(instance_vk != VK_NULL_HANDLE);
@@ -29,7 +29,7 @@ coResult coVulkanSurface::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
-	coVulkanRenderer* vulkanRenderer = static_cast<coVulkanRenderer*>(renderer);
+	coVulkanContext* vulkanRenderer = static_cast<coVulkanContext*>(renderer);
 	coTRY(vulkanRenderer, nullptr);
 	const VkInstance& instance_vk = vulkanRenderer->GetVkInstance();
 

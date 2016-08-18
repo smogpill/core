@@ -8,6 +8,12 @@ class coVulkanPass : public coRenderPass
 {
 	coDECLARE_SUPER(coRenderPass);
 public:
+	class InitConfig : public Super::InitConfig
+	{
+	public:
+		InitConfig();
+		VkAttachmentDescription attachmentDescription_vk;
+	};
 	coVulkanPass();
 	virtual ~coVulkanPass();
 

@@ -5,8 +5,9 @@
 #include "pattern/object/coObject.h"
 
 class coRenderDevice;
+class coSwapChain;
 
-class coRenderer : public coObject
+class coRenderContext : public coObject
 {
 	coDECLARE_SUPER(coObject);
 public:
@@ -15,14 +16,17 @@ public:
 	public:
 	};
 	
-	virtual ~coRenderer();
+	virtual ~coRenderContext();
+
+	virtual coResult Add(coSwapChain& _swapChain);
 
 	virtual coRenderDevice* GetBestLogicalDeviceForSwapChain() const { return nullptr; }
 	const coArray<coRenderDevice*> GetDevices() const { return devices; }
 
 protected:
-	coRenderer();
+	coRenderContext();
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 	coDynamicArray<coRenderDevice*> devices;
+	coDynamicArray<coSwapChain*> swapChains;
 };
