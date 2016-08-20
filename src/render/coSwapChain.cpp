@@ -11,6 +11,13 @@ coSwapChain::coSwapChain()
 {
 }
 
+coSwapChain::~coSwapChain()
+{
+	coASSERT(!imageAvailableSemaphore);
+	coASSERT(!renderPass);
+	coASSERT(!imageInfos.count);
+}
+
 coSwapChain::InitConfig::InitConfig()
 	: surface(nullptr)
 	, oldSwapChain(nullptr)
@@ -20,13 +27,12 @@ coSwapChain::InitConfig::InitConfig()
 
 }
 
-coSwapChain::~coSwapChain()
+coSwapChain::ImageInfo::ImageInfo()
+	: image(nullptr)
+	, imageView(nullptr)
+	, frameBuffer(nullptr)
 {
-	coASSERT(!imageViews.count);
-	coASSERT(!images.count);
-	coASSERT(!imageAvailableSemaphore);
-	coASSERT(!renderPass);
-	coASSERT(!frameBuffers.count);
+
 }
 
 coResult coSwapChain::OnInit(const coObject::InitConfig& _config)

@@ -34,15 +34,14 @@ coVulkanSwapChain::~coVulkanSwapChain()
 	delete imageAvailableSemaphore;
 	imageAvailableSemaphore = nullptr;
 
-	for (auto& p : imageViews)
+	for (auto& p : imageInfos)
+	{
+		delete p->frameBuffer;
+		delete p->imageView;
+		delete p->image;
 		delete p;
-	coClear(imageViews);
-	for (auto& p : images)
-		delete p;
-	coClear(images);
-	for (auto& p : frameBuffers)
-		delete p;
-	coClear(frameBuffers);
+	}
+	coClear(imageInfos);
 
 	if (swapChain_vk != VK_NULL_HANDLE)
 	{
@@ -384,8 +383,8 @@ coResult coVulkanSwapChain::InitImages()
 	coVULKAN_TRY(vkGetSwapchainImagesKHR(device_vk, swapChain_vk, &images_vk.count, images_vk.data), "Failed to retrieve the swap chain images.");
 	coTRY(images_vk.count == nbImages, nullptr);
 
-	coASSERT(images.count == 0);
-	coReserve(images, images_vk.count);
+	coASSERT(!imageInfos.count);
+	coReserve(imageInfos, images_vk.count);
 	coInt32x3 size;
 	size.x = extent2D_vk.width;
 	size.y = extent2D_vk.height;
@@ -401,27 +400,26 @@ coResult coVulkanSwapChain::InitImages()
 		c.format_vk = format_vk;
 		c.size = size;
 		coTRY(vulkanImage->Init(c), nullptr);
-		coPushBack(images, vulkanImage);
-		vulkanImage = nullptr;
+		ImageInfo* imageInfo = new ImageInfo();
+		coSwap(imageInfo->image, reinterpret_cast<coRenderImage*&>(vulkanImage));
+		coPushBack(imageInfos, imageInfo);
 	}
 	return true;
 }
 
 coResult coVulkanSwapChain::InitImageViews()
 {
-	coASSERT(!imageViews.count);
-	coReserve(imageViews, images.count);
-	for (coRenderImage* image : images)
+	for (ImageInfo* info : imageInfos)
 	{
-		coASSERT(image);
+		coASSERT(info);
 		coRenderImageView* imageView = new coVulkanImageView();
 		coDEFER() { delete imageView; };
 		coRenderImageView::InitConfig c;
 		c.device = device;
-		c.image = image;
+		coTRY(info->image, nullptr);
+		c.image = info->image;
 		coTRY(imageView->Init(c), "Failed to init image view.");
-		coPushBack(imageViews, imageView);
-		imageView = nullptr;
+		coSwap(info->imageView, imageView);
 	}
 	return true;
 }
@@ -442,13 +440,12 @@ coResult coVulkanSwapChain::InitSemaphores()
 coResult coVulkanSwapChain::InitFramebuffers()
 {
 	coTRY(renderPass, nullptr);
-	coReserve(frameBuffers, images.count);
-
-	for (coRenderImageView* imageView : imageViews)
+	for (ImageInfo* info : imageInfos)
 	{
-		coASSERT(imageView);
-		const coRenderImage* image = imageView->GetImage();
+		coASSERT(info);
+		const coRenderImage* image = info->image;
 		coTRY(image, nullptr);
+		coTRY(info->imageView, nullptr);
 		coRenderFramebuffer* fb = new coVulkanFramebuffer();
 		coDEFER() { delete fb; };
 		coRenderFramebuffer::InitConfig c;
@@ -459,11 +456,10 @@ coResult coVulkanSwapChain::InitFramebuffers()
 		c.size = coInt32x2(size.x, size.y);
 		coTODO("Because of weird Visual studio behavior in release.");
 		coDynamicArray<coRenderImageView*> views;
-		coPushBack(views, imageView);
-		c.imageViews = imageViews;
+		coPushBack(views, info->imageView);
+		c.imageViews = views;
 		coTRY(fb->Init(c), "Failed to init framebuffer.");
-		coPushBack(frameBuffers, fb);
-		fb = nullptr;
+		coSwap(info->frameBuffer, fb);
 	}
 
 	return true;

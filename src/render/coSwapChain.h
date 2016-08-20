@@ -26,6 +26,14 @@ public:
 		coInt32x2 size;
 		coUint32 nbImages;
 	};
+	class ImageInfo
+	{
+	public:
+		ImageInfo();
+		coRenderImage* image;
+		coRenderImageView* imageView;
+		coRenderFramebuffer* frameBuffer;
+	};
 
 	virtual ~coSwapChain();
 
@@ -38,9 +46,7 @@ protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 	coSurface* surface;
-	coDynamicArray<coRenderImage*> images;
-	coDynamicArray<coRenderImageView*> imageViews;
 	coRenderSemaphore* imageAvailableSemaphore;
 	coRenderPass* renderPass;
-	coDynamicArray<coRenderFramebuffer*> frameBuffers;
+	coDynamicArray<ImageInfo*> imageInfos;
 };
