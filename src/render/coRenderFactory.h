@@ -7,7 +7,7 @@ class coSwapChain;
 class coSurface;
 class coRenderSemaphore;
 
-coRenderContext* coCreateRenderer();
+coRenderContext* coCreateRenderContext();
 coSwapChain* coCreateSwapChain();
 coSurface* coCreateSurface();
 coRenderSemaphore* coCreateRenderSemaphore();

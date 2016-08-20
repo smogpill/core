@@ -4,29 +4,25 @@
 
 #include "pattern/object/coObject.h"
 
+class coRenderDevice;
 class coRenderContext;
 
-class coSurface : public coObject
+class coRenderer : public coObject
 {
 	coDECLARE_SUPER(coObject);
 public:
-	class InitConfig : public Super::InitConfig
-	{
-	public:
-		InitConfig();
-#ifdef coMSWINDOWS
-		HWND hwnd;
-#endif
-		coRenderContext* rendererContext;
-	};
+	coRenderer();
+	virtual ~coRenderer();
 
-	virtual ~coSurface() {}
-
-	coRenderContext* GetRenderContext() const { return renderContext; }
+	coResult Render();
+	coRenderContext* GetContext() const { return context; }
 
 protected:
-	coSurface();
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
-	coRenderContext* renderContext;
+private:
+	coResult InitDevices();
+
+	coRenderContext* context;
+	coDynamicArray<coRenderDevice*> devices;
 };

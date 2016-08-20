@@ -7,7 +7,7 @@
 #include "render_vulkan/coVulkanSemaphore.h"
 #include "render/coRenderFactory.h"
 
-coRenderContext* coCreateRenderer()
+coRenderContext* coCreateRenderContext()
 {
 	return new coVulkanContext();
 }

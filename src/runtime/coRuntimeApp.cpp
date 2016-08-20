@@ -4,37 +4,22 @@
 #include "runtime/coRuntimeApp.h"
 #include "app/window/coWindow.h"
 #include "lang/result/coResult_f.h"
-#include "render/coRenderContext.h"
-#include "render/coSwapChain.h"
-#include "render/coSurface.h"
-#include "render/coRenderFactory.h"
-#include "render/coRenderDevice.h"
-#include "render/coRenderSemaphore.h"
+#include "render/coRenderer.h"
+#include "render/coRenderWindow.h"
 #include "container/array/coDynamicArray_f.h"
 
 coRuntimeApp::coRuntimeApp()
-	: renderer(nullptr)
-	, window(nullptr)
-	, swapChain(nullptr)
-	, surface(nullptr)
-	, renderDevice(nullptr)
-	, renderFinishedSemaphore(nullptr)
+	: window(nullptr)
+	, renderer(nullptr)
+	, renderWindow(nullptr)
 {
 
 }
 
 coRuntimeApp::~coRuntimeApp()
 {
-	if (renderDevice)
-	{
-		coCHECK(renderDevice->WaitForIdle(), nullptr);
-	}
-	delete renderFinishedSemaphore;
-	renderFinishedSemaphore = nullptr;
-	delete swapChain;
-	swapChain = nullptr;
-	delete surface;
-	surface = nullptr;
+	delete renderWindow;
+	renderWindow = nullptr;
 	delete window;
 	window = nullptr;
 	delete renderer;
@@ -45,13 +30,15 @@ coResult coRuntimeApp::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 
-	renderer = coCreateRenderer();
+	coTRY(!renderer, nullptr);
+	renderer = new coRenderer();
 	{
-		coRenderContext::InitConfig c;
-		c.debugName = "Renderer";
+		coRenderer::InitConfig c;
+		c.debugName = "MainRenderer";
 		coTRY(renderer->Init(c), "Failed to init the renderer.");
 	}
 
+	coTRY(!window, nullptr);
 	window = new coWindow();
 	{
 		coWindow::InitConfig c;
@@ -62,67 +49,17 @@ coResult coRuntimeApp::OnInit(const coObject::InitConfig& _config)
 		coTRY(window->SetShowState(coWindow::ShowState::default), nullptr);
 	}
 
-	surface = coCreateSurface();
+	coTRY(!renderWindow, nullptr);
+	renderWindow = new coRenderWindow();
 	{
-		coSurface::InitConfig c;
-		c.renderer = renderer;
-		c.debugName = "MainRenderSurface";
+		coRenderWindow::InitConfig c;
+		c.context = renderer->GetContext();
+		c.debugName = "MainRenderWindow";
+		c.size = window->GetClientSize();
 #ifdef coMSWINDOWS
-		c.hwnd = static_cast<HWND>(window->GetImpl());
-#else
-#	error "Not supported"
+		c.hwnd = static_cast<HWND>(window->GetImpl());;
 #endif
-		coTRY(surface->Init(c), "Failed to init the main render surface.");
-	}
-
-	coTRY(SelectRenderDevice(), "Failed to select a render device.");
-	coTRY(renderDevice, "No render device available.");
-	coTRY(renderDevice->Start(), "Failed to start the render device.");
-	
-	swapChain = coCreateSwapChain();
-	{
-		coSwapChain::InitConfig c;
-		c.device = renderDevice;
-		c.size = coInt32x2(800, 600);
-		c.nbImages = 2;
-		c.surface = surface;
-		c.debugName = "MainSwapChain";
-		coTRY(swapChain->Init(c), "Failed to init the main render sswap chain.");
-	}
-
-	{
-		coASSERT(!renderFinishedSemaphore);
-		renderFinishedSemaphore = coCreateRenderSemaphore();
-		coRenderSemaphore::InitConfig c;
-		c.device = renderDevice;
-		coTRY(renderFinishedSemaphore->Init(c), "Failed to init the render finished semaphore.");
-	}
-
-	return true;
-}
-
-coResult coRuntimeApp::SelectRenderDevice()
-{
-	renderDevice = nullptr;
-	for (coRenderDevice* device : renderer->GetDevices())
-	{
-		coASSERT(device);
-		const coRenderDevice::DeviceType deviceType = device->GetDeviceType();
-		if (deviceType != coRenderDevice::discreteGpu && deviceType != coRenderDevice::integratedGpu)
-			continue;
-		coBool b;
-		coCHECK(device->SupportsGraphics(b), nullptr);
-		if (!b)
-			continue;
-
-		coCHECK(device->SupportsSurface(b, *surface), nullptr);
-		if (!b)
-			continue;
-
-		if (!renderDevice || renderDevice->GetDeviceType() == coRenderDevice::integratedGpu)
-		{
-			renderDevice = device;
-		}
+		coTRY(renderWindow->Init(c), "Failed to init the render window.");
 	}
 
 	return true;
@@ -144,28 +81,9 @@ coResult coRuntimeApp::OnStart()
 
 coResult coRuntimeApp::Render()
 {
-	coTRY(swapChain, nullptr);
-	coTRY(swapChain->AcquireImage(), "Failed to acquire image for: " << *swapChain);
-	coRenderSemaphore* imageAvailableSemaphore = swapChain->GetImageAvailableSemaphore();
-	coTRY(imageAvailableSemaphore, nullptr);
-
-	// Submit
+	if (renderWindow)
 	{
-		coDynamicArray<coRenderSemaphore*> waitSemaphores;
-		coDynamicArray<coRenderSemaphore*> finishSemaphores;
-		coPushBack(waitSemaphores, imageAvailableSemaphore);
-		coPushBack(finishSemaphores, renderFinishedSemaphore);
-		coRenderDevice::SubmitConfig c;
-		c.waitSemaphores = waitSemaphores;
-		c.finishSemaphores = finishSemaphores;
-		coTRY(renderDevice->Submit(c), nullptr);
-	}
-
-	// Present
-	{
-		coDynamicArray<coRenderSemaphore*> waitSemaphores;
-		coPushBack(waitSemaphores, renderFinishedSemaphore);
-		coTRY(swapChain->Present(waitSemaphores), "Failed to present: " << *swapChain);
+		coTRY(renderWindow->Render(), "Failed to render the render window: " << *renderWindow);
 	}
 	return true;
 }

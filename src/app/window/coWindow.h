@@ -33,6 +33,7 @@ public:
 	coResult SetForeground();
 	coResult SetFocus();
 	void* GetImpl() const { return impl; }
+	const coInt32x2& GetClientSize() const { return clientSize; }
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;

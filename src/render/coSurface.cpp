@@ -5,12 +5,12 @@
 #include "lang/result/coResult_f.h"
 
 coSurface::coSurface()
-	: renderer(nullptr)
+	: renderContext(nullptr)
 {
 }
 
 coSurface::InitConfig::InitConfig()
-	: renderer(nullptr)
+	: rendererContext(nullptr)
 #ifdef coMSWINDOWS
 	, hwnd(NULL)
 #endif
@@ -21,7 +21,7 @@ coResult coSurface::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
-	renderer = config.renderer;
-	coTRY(renderer, nullptr);
+	renderContext = config.rendererContext;
+	coTRY(renderContext, nullptr);
 	return true;
 }

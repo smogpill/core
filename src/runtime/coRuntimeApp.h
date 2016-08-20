@@ -4,12 +4,9 @@
 
 #include "app/coApp.h"
 
-class coRenderContext;
 class coWindow;
-class coSurface;
-class coSwapChain;
-class coRenderDevice;
-class coRenderSemaphore;
+class coRenderer;
+class coRenderWindow;
 
 class coRuntimeApp : public coApp
 {
@@ -23,13 +20,9 @@ protected:
 	virtual coResult OnStart() override;
 
 private:
-	coResult SelectRenderDevice();
 	coResult Render();
 
 	coWindow* window;
-	coRenderContext* renderer;
-	coSurface* surface;
-	coRenderDevice* renderDevice;
-	coSwapChain* swapChain;
-	coRenderSemaphore* renderFinishedSemaphore;
+	coRenderer* renderer;
+	coRenderWindow* renderWindow;
 };

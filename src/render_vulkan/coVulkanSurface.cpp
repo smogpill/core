@@ -17,7 +17,7 @@ coVulkanSurface::~coVulkanSurface()
 {
 	if (surface_vk != VK_NULL_HANDLE)
 	{
-		coVulkanContext* vulkanRenderer = static_cast<coVulkanContext*>(renderer);
+		coVulkanContext* vulkanRenderer = static_cast<coVulkanContext*>(renderContext);
 		coASSERT(vulkanRenderer);
 		const VkInstance& instance_vk = vulkanRenderer->GetVkInstance();
 		coASSERT(instance_vk != VK_NULL_HANDLE);
@@ -29,7 +29,7 @@ coResult coVulkanSurface::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
-	coVulkanContext* vulkanRenderer = static_cast<coVulkanContext*>(renderer);
+	coVulkanContext* vulkanRenderer = static_cast<coVulkanContext*>(renderContext);
 	coTRY(vulkanRenderer, nullptr);
 	const VkInstance& instance_vk = vulkanRenderer->GetVkInstance();
 

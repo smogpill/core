@@ -3,10 +3,15 @@
 #pragma once
 
 #include "pattern/object/coObject.h"
+#include "math/vector/coInt32x2.h"
 
+class coSwapChain;
+class coRenderSemaphore;
+class coSurface;
 class coRenderContext;
+class coRenderDevice;
 
-class coSurface : public coObject
+class coRenderWindow : public coObject
 {
 	coDECLARE_SUPER(coObject);
 public:
@@ -14,19 +19,25 @@ public:
 	{
 	public:
 		InitConfig();
+		coRenderContext* context;
+		coInt32x2 size;
 #ifdef coMSWINDOWS
 		HWND hwnd;
 #endif
-		coRenderContext* rendererContext;
 	};
+	coRenderWindow();
+	virtual ~coRenderWindow();
 
-	virtual ~coSurface() {}
-
-	coRenderContext* GetRenderContext() const { return renderContext; }
+	coResult Render();
 
 protected:
-	coSurface();
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
-	coRenderContext* renderContext;
+private:
+	coResult SelectDevice(const InitConfig& config);
+
+	coSwapChain* swapChain;
+	coSurface* surface;
+	coRenderDevice* device;
+	coRenderSemaphore* renderFinishedSemaphore;
 };

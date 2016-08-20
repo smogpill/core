@@ -34,9 +34,15 @@ coVulkanSwapChain::~coVulkanSwapChain()
 	delete imageAvailableSemaphore;
 	imageAvailableSemaphore = nullptr;
 
+	for (auto& p : imageViews)
+		delete p;
+	coClear(imageViews);
 	for (auto& p : images)
 		delete p;
 	coClear(images);
+	for (auto& p : frameBuffers)
+		delete p;
+	coClear(frameBuffers);
 
 	if (swapChain_vk != VK_NULL_HANDLE)
 	{
