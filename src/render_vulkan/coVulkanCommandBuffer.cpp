@@ -21,13 +21,6 @@ coVulkanCommandBuffer::coVulkanCommandBuffer()
 
 }
 
-coVulkanCommandBuffer::InitConfig::InitConfig()
-	: vulkanCommandPool(nullptr)
-	, primary(false)
-{
-
-}
-
 coVulkanCommandBuffer::~coVulkanCommandBuffer()
 {
 	if (commandBuffer_vk != VK_NULL_HANDLE)
@@ -42,13 +35,15 @@ coVulkanCommandBuffer::~coVulkanCommandBuffer()
 coResult coVulkanCommandBuffer::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
-	const InitConfig& config = static_cast<const InitConfig&>(_config);
-	vulkanCommandPool = config.vulkanCommandPool;
+	const InitConfig& config = static_cast<const InitConfig&>(_config); 
+	coTRY(device, nullptr);
+	coVulkanLogicalDevice* vulkanDevice = static_cast<coVulkanLogicalDevice*>(device);
+	const VkDevice& device_vk = vulkanDevice->GetVkDevice();
+	coTRY(device_vk != VK_NULL_HANDLE, nullptr);
+	vulkanCommandPool = vulkanDevice->GetVulkanCommandPool(coVulkanLogicalDevice::graphics);
 	coTRY(vulkanCommandPool, nullptr);
 	const VkCommandPool& commandPool_vk = vulkanCommandPool->GetVkCommandPool();
 	coTRY(commandPool_vk != VK_NULL_HANDLE, nullptr);
-	const VkDevice& device_vk = GetVkDevice();
-	coTRY(device_vk != VK_NULL_HANDLE, nullptr);
 
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;

@@ -15,14 +15,6 @@ class coVulkanCommandBuffer final : public coRenderCommandBuffer
 {
 	coDECLARE_SUPER(coRenderCommandBuffer);
 public:
-	class InitConfig : public Super::InitConfig
-	{
-	public:
-		InitConfig();
-		coVulkanCommandPool* vulkanCommandPool;
-		coBool primary;
-	};
-
 	coVulkanCommandBuffer();
 	virtual ~coVulkanCommandBuffer();
 

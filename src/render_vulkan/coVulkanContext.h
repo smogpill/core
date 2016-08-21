@@ -33,8 +33,8 @@ private:
 	VkInstance instance_vk;
 	VkAllocationCallbacks allocator_vk;
 	coBool enableDebug;
-	coVulkanMessageHandler* messageHandler_vk;
-	coVulkanLayerManager* layerManager_vk;
-	coVulkanExtensionManager* extensionManager_vk;
-	coDynamicArray<coVulkanPhysicalDevice*> physicalDevices;
+	coVulkanMessageHandler* vulkanMessageHandler;
+	coVulkanLayerManager* vulkanLayerManager;
+	coVulkanExtensionManager* vulkanExtensionManager;
+	coDynamicArray<coVulkanPhysicalDevice*> vulkanPhysicalDevices;
 };

@@ -3,3 +3,8 @@
 #include "render/pch.h"
 #include "render/coRenderCommandBuffer.h"
 
+coRenderCommandBuffer::InitConfig::InitConfig()
+	: primary(false)
+{
+
+}

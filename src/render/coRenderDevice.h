@@ -7,6 +7,7 @@
 class coSurface;
 class coRenderSemaphore;
 class coRenderCommandBuffer;
+class coRenderContext;
 
 class coRenderDevice : public coObject
 {
@@ -22,6 +23,8 @@ public:
 	class InitConfig : public Super::InitConfig
 	{
 	public:
+		InitConfig();
+		coRenderContext* context;
 	};
 	class SubmitConfig
 	{
@@ -41,8 +44,9 @@ public:
 	virtual DeviceType GetDeviceType() const = 0;
 
 protected:
-	coRenderDevice() {}
-	//virtual coResult OnInit(const coObject::InitConfig& _config) override;
+	coRenderDevice();
+	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 private:
+	coRenderContext* context;
 };

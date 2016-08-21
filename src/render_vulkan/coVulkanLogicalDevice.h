@@ -36,6 +36,8 @@ public:
 	const VkDevice& GetVkDevice() const { return logicalDevice_vk; }
 	coVulkanPhysicalDevice* GetPhysicalDevice() const { return vulkanPhysicalDevice; }
 	const VkQueue& GetVkQueue(QueueType _type) const { return queues_vk[_type]; }
+	const VkCommandPool& GetVkCommandPool(QueueType _type) const;
+	coVulkanCommandPool* GetVulkanCommandPool(QueueType _type) const;
 	coResult GetVkQueue(VkQueue& _out, coUint _queueFamilyIndex, coUint _index);
 	virtual coResult WaitForIdle() override;
 	virtual DeviceType GetDeviceType() const override;

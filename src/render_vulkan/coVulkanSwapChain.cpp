@@ -10,6 +10,7 @@
 #include "render_vulkan/coVulkanPhysicalDevice.h"
 #include "render_vulkan/coVulkanSemaphore.h"
 #include "render_vulkan/coVulkanFramebuffer.h"
+#include "render_vulkan/coVulkanCommandBuffer.h"
 #include "render_vulkan/coVulkanPass.h"
 #include "render/coSwapChain.h"
 #include "lang/result/coResult_f.h"
@@ -35,12 +36,7 @@ coVulkanSwapChain::~coVulkanSwapChain()
 	imageAvailableSemaphore = nullptr;
 
 	for (auto& p : imageInfos)
-	{
-		delete p->frameBuffer;
-		delete p->imageView;
-		delete p->image;
 		delete p;
-	}
 	coClear(imageInfos);
 
 	if (swapChain_vk != VK_NULL_HANDLE)
@@ -135,6 +131,7 @@ coResult coVulkanSwapChain::OnInit(const coObject::InitConfig& _config)
 	coTRY(InitSemaphores(), "Failed to init semaphores.");
 	coTRY(InitPass(), "Failed to init pass.");
 	coTRY(InitFramebuffers(), "Failed to init framebuffers.");
+	coTRY(InitCommandBuffers(), "Failed to init command buffers.");
 
 	return true;
 }
@@ -462,6 +459,21 @@ coResult coVulkanSwapChain::InitFramebuffers()
 		coSwap(info->frameBuffer, fb);
 	}
 
+	return true;
+}
+
+coResult coVulkanSwapChain::InitCommandBuffers()
+{
+	for (ImageInfo* info : imageInfos)
+	{
+		coVulkanCommandBuffer* vcb = new coVulkanCommandBuffer();
+		coDEFER() { delete vcb; };
+		coVulkanCommandBuffer::InitConfig c;
+		c.device = device;
+		c.primary = true;
+		coTRY(vcb->Init(c), "Failed to init command buffer.");
+		coSwap(info->commandBuffer, reinterpret_cast<coRenderCommandBuffer*&>(vcb));
+	}
 	return true;
 }
 

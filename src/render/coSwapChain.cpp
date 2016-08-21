@@ -2,6 +2,10 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "render/pch.h"
 #include "render/coSwapChain.h"
+#include "render/coRenderCommandBuffer.h"
+#include "render/coRenderFramebuffer.h"
+#include "render/coRenderImageView.h"
+#include "render/coRenderImage.h"
 #include "lang/result/coResult_f.h"
 
 coSwapChain::coSwapChain()
@@ -31,8 +35,17 @@ coSwapChain::ImageInfo::ImageInfo()
 	: image(nullptr)
 	, imageView(nullptr)
 	, frameBuffer(nullptr)
+	, commandBuffer(nullptr)
 {
 
+}
+
+coSwapChain::ImageInfo::~ImageInfo()
+{
+	delete commandBuffer;
+	delete frameBuffer;
+	delete imageView;
+	delete image;
 }
 
 coResult coSwapChain::OnInit(const coObject::InitConfig& _config)

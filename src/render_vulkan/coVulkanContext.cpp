@@ -16,9 +16,9 @@
 coVulkanContext::coVulkanContext()
 	: instance_vk(VK_NULL_HANDLE)
 	, enableDebug(false)
-	, messageHandler_vk(nullptr)
-	, layerManager_vk(nullptr)
-	, extensionManager_vk(nullptr)
+	, vulkanMessageHandler(nullptr)
+	, vulkanLayerManager(nullptr)
+	, vulkanExtensionManager(nullptr)
 {
 #ifdef coDEBUG
 	enableDebug = true;
@@ -30,13 +30,13 @@ coVulkanContext::~coVulkanContext()
 	for (auto p : devices)
 		delete p;
 	coClear(devices);
-	for (auto p : physicalDevices)
+	for (auto p : vulkanPhysicalDevices)
 		delete p;
-	coClear(physicalDevices);
-	delete messageHandler_vk;
+	coClear(vulkanPhysicalDevices);
+	delete vulkanMessageHandler;
 	vkDestroyInstance(instance_vk, nullptr);
-	delete extensionManager_vk;
-	delete layerManager_vk;
+	delete vulkanExtensionManager;
+	delete vulkanLayerManager;
 }
 
 coResult coVulkanContext::OnInit(const coObject::InitConfig& _config)
@@ -61,7 +61,7 @@ coResult coVulkanContext::InitLayers()
 	{
 		coCHECK(manager->AddRequested("VK_LAYER_LUNARG_standard_validation"), "Failed to add layer, ignored.");
 	}
-	coSwap(layerManager_vk, manager);
+	coSwap(vulkanLayerManager, manager);
 	return true;
 }
 
@@ -81,7 +81,7 @@ coResult coVulkanContext::InitExtensions()
 	{
 		coCHECK(manager->AddRequested(VK_EXT_DEBUG_REPORT_EXTENSION_NAME), "Failed to add extension, ignored.");
 	}
-	coSwap(extensionManager_vk, manager);
+	coSwap(vulkanExtensionManager, manager);
 	return true;
 }
 
@@ -107,12 +107,12 @@ coResult coVulkanContext::InitInstance()
 		createInfo.pApplicationInfo = &appInfo;
 
 		// Set layers
-		coTRY(layerManager_vk->GetAllRequested(requestedLayers), nullptr);
+		coTRY(vulkanLayerManager->GetAllRequested(requestedLayers), nullptr);
 		createInfo.enabledLayerCount = requestedLayers.count;
 		createInfo.ppEnabledLayerNames = requestedLayers.data;
 
 		// Set extensions
-		coTRY(extensionManager_vk->GetAllRequested(requestedExtensions), nullptr);
+		coTRY(vulkanExtensionManager->GetAllRequested(requestedExtensions), nullptr);
 		createInfo.enabledExtensionCount = requestedExtensions.count;
 		createInfo.ppEnabledExtensionNames = requestedExtensions.data;
 	}
@@ -133,7 +133,7 @@ coResult coVulkanContext::InitMessageHandler()
 		coVulkanMessageHandler::InitConfig c;
 		c.instance_vk = &instance_vk;
 		coTRY(p->Init(c), "Failed to init the message handler.");
-		coSwap(messageHandler_vk, p);
+		coSwap(vulkanMessageHandler, p);
 	}
 	return true;
 }
@@ -143,10 +143,10 @@ coResult coVulkanContext::InitDevices()
 	coTRY(instance_vk, nullptr);
 	coTRY(devices.count == 0, nullptr);
 
-	coTRY(coGetPhysicalDevices(physicalDevices, instance_vk), "Failed to retrieve the supported physical devices.");
-	coTRY(physicalDevices.count > 0, "Failed to find any supported physical device.");
+	coTRY(coGetPhysicalDevices(vulkanPhysicalDevices, instance_vk), "Failed to retrieve the supported physical devices.");
+	coTRY(vulkanPhysicalDevices.count > 0, "Failed to find any supported physical device.");
 
-	for (coVulkanPhysicalDevice* physicalDevice : physicalDevices)
+	for (coVulkanPhysicalDevice* physicalDevice : vulkanPhysicalDevices)
 	{
 		coTRY(physicalDevice, nullptr);
 
@@ -159,8 +159,9 @@ coResult coVulkanContext::InitDevices()
 		coVulkanLogicalDevice* logicalDevice = new coVulkanLogicalDevice();
 		coDEFER() { delete logicalDevice; };
 		coVulkanLogicalDevice::InitConfig c;
+		c.context = this;
 		c.physicalDevice_vk = physicalDevice;
-		c.layerManager_vk = layerManager_vk;
+		c.layerManager_vk = vulkanLayerManager;
 		coTRY(logicalDevice->Init(c), "Failed to init the device: " << *logicalDevice);
 		const coRenderDevice::DeviceType deviceType = logicalDevice->GetDeviceType();
 		if (deviceType != coRenderDevice::discreteGpu && deviceType != coRenderDevice::integratedGpu)

@@ -7,6 +7,14 @@
 class coRenderCommandBuffer : public coRenderDeviceObject
 {
 	coDECLARE_SUPER(coRenderDeviceObject);
+
+public:
+	class InitConfig : public Super::InitConfig
+	{
+	public:
+		InitConfig();
+		coBool primary;
+	};
 protected:
 	coRenderCommandBuffer() {}
 };

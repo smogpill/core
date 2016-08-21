@@ -12,6 +12,7 @@ class coRenderImageView;
 class coRenderSemaphore;
 class coRenderPass;
 class coRenderFramebuffer;
+class coRenderCommandBuffer;
 
 class coSwapChain : public coRenderDeviceObject
 {
@@ -30,9 +31,11 @@ public:
 	{
 	public:
 		ImageInfo();
+		~ImageInfo();
 		coRenderImage* image;
 		coRenderImageView* imageView;
 		coRenderFramebuffer* frameBuffer;
+		coRenderCommandBuffer* commandBuffer;
 	};
 
 	virtual ~coSwapChain();

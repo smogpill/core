@@ -337,3 +337,15 @@ coResult coVulkanLogicalDevice::Submit(const SubmitConfig& _config)
 
 	return true;
 }
+
+const VkCommandPool& coVulkanLogicalDevice::GetVkCommandPool(QueueType _type) const
+{
+	static VkCommandPool nullCommandPool_vk = VK_NULL_HANDLE;
+	const coVulkanCommandPool* vulkanCommandPool = vulkanCommandPools[_type];
+	return vulkanCommandPool ? vulkanCommandPool->GetVkCommandPool() : nullCommandPool_vk;
+}
+
+coVulkanCommandPool* coVulkanLogicalDevice::GetVulkanCommandPool(QueueType _type) const
+{
+	return vulkanCommandPools[_type];
+}

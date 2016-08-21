@@ -29,6 +29,7 @@ private:
 	coResult InitSemaphores();
 	coResult InitSwapChain();
 	coResult InitFramebuffers();
+	coResult InitCommandBuffers();
 	coResult InitPass();
 	coResult SelectFormat(VkSurfaceFormatKHR& _out, const VkSurfaceFormatKHR& _requested);
 	coResult SelectPresentMode(VkPresentModeKHR& _out, const VkPresentModeKHR& _requested);
