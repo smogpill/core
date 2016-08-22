@@ -6,6 +6,7 @@
 
 coRenderFramebuffer::coRenderFramebuffer()
 	: size(0)
+	, pass(nullptr)
 {
 
 }
@@ -24,5 +25,7 @@ coResult coRenderFramebuffer::OnInit(const coObject::InitConfig& _config)
 	size = config.size;
 	coTRY(size.x >= 0, nullptr);
 	coTRY(size.y >= 0, nullptr);
+	pass = config.pass;
+	coTRY(pass, nullptr);
 	return true;
 }

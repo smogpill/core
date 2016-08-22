@@ -30,7 +30,7 @@ coResult coVulkanFramebuffer::OnInit(const coObject::InitConfig& _config)
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
 	const VkDevice& device_vk = GetVkDevice();
 	coTRY(device_vk != VK_NULL_HANDLE, nullptr);
-	coVulkanPass* vulkanPass = static_cast<coVulkanPass*>(config.pass);
+	coVulkanPass* vulkanPass = static_cast<coVulkanPass*>(pass);
 	coTRY(vulkanPass, nullptr);
 	const VkRenderPass& renderPass_vk = vulkanPass->GetVkRenderPass();
 	coTRY(renderPass_vk != VK_NULL_HANDLE, nullptr);

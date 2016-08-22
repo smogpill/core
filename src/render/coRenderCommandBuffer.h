@@ -15,6 +15,7 @@ public:
 		InitConfig();
 		coBool primary;
 	};
+
 protected:
 	coRenderCommandBuffer() {}
 };

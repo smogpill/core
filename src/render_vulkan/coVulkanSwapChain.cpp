@@ -20,18 +20,16 @@
 
 coVulkanSwapChain::coVulkanSwapChain()
 	: swapChain_vk(VK_NULL_HANDLE)
-	, currentImageIndex(-1)
 	, presentQueue_vk(VK_NULL_HANDLE)
 	, format_vk(VK_FORMAT_UNDEFINED)
-	, extent2D_vk{}
 {
 
 }
 
 coVulkanSwapChain::~coVulkanSwapChain()
 {
-	delete renderPass;
-	renderPass = nullptr;
+	delete pass;
+	pass = nullptr;
 	delete imageAvailableSemaphore;
 	imageAvailableSemaphore = nullptr;
 
@@ -92,8 +90,11 @@ coResult coVulkanSwapChain::OnInit(const coObject::InitConfig& _config)
 		VkExtent2D requestedExtent;
 		requestedExtent.width = config.size.x;
 		requestedExtent.height = config.size.y;
+		VkExtent2D extent2D_vk;
 		coTRY(SelectExtent(extent2D_vk, capabilities, requestedExtent), "Failed to select an extent.");
 		createInfo.imageExtent = extent2D_vk;
+		size.x = extent2D_vk.width;
+		size.y = extent2D_vk.height;
 	}
 
 	createInfo.minImageCount = config.nbImages;
@@ -382,10 +383,10 @@ coResult coVulkanSwapChain::InitImages()
 
 	coASSERT(!imageInfos.count);
 	coReserve(imageInfos, images_vk.count);
-	coInt32x3 size;
-	size.x = extent2D_vk.width;
-	size.y = extent2D_vk.height;
-	size.z = 1;
+	coInt32x3 imageSize;
+	imageSize.x = size.x;
+	imageSize.y = size.y;
+	imageSize.z = 1;
 	for (const VkImage& image_vk : images_vk)
 	{
 		coASSERT(image_vk != VK_NULL_HANDLE);
@@ -395,7 +396,7 @@ coResult coVulkanSwapChain::InitImages()
 		c.device = device;
 		c.image_vk = image_vk;
 		c.format_vk = format_vk;
-		c.size = size;
+		c.size = imageSize;
 		coTRY(vulkanImage->Init(c), nullptr);
 		ImageInfo* imageInfo = new ImageInfo();
 		coSwap(imageInfo->image, reinterpret_cast<coRenderImage*&>(vulkanImage));
@@ -436,7 +437,7 @@ coResult coVulkanSwapChain::InitSemaphores()
 
 coResult coVulkanSwapChain::InitFramebuffers()
 {
-	coTRY(renderPass, nullptr);
+	coTRY(pass, nullptr);
 	for (ImageInfo* info : imageInfos)
 	{
 		coASSERT(info);
@@ -447,16 +448,16 @@ coResult coVulkanSwapChain::InitFramebuffers()
 		coDEFER() { delete fb; };
 		coRenderFramebuffer::InitConfig c;
 		c.device = device;
-		c.pass = renderPass;
-		const coInt32x3& size = image->GetSize();
-		coASSERT(size.z == 1);
-		c.size = coInt32x2(size.x, size.y);
+		c.pass = pass;
+		const coInt32x3& imageSize = image->GetSize();
+		coASSERT(imageSize.z == 1);
+		c.size = coInt32x2(imageSize.x, imageSize.y);
 		coTODO("Because of weird Visual studio behavior in release.");
 		coDynamicArray<coRenderImageView*> views;
 		coPushBack(views, info->imageView);
 		c.imageViews = views;
 		coTRY(fb->Init(c), "Failed to init framebuffer.");
-		coSwap(info->frameBuffer, fb);
+		coSwap(info->framebuffer, fb);
 	}
 
 	return true;
@@ -479,8 +480,8 @@ coResult coVulkanSwapChain::InitCommandBuffers()
 
 coResult coVulkanSwapChain::InitPass()
 {
-	coVulkanPass* pass = new coVulkanPass();
-	coDEFER() { delete pass; };
+	coVulkanPass* p = new coVulkanPass();
+	coDEFER() { delete p; };
 	coVulkanPass::InitConfig c;
 	VkAttachmentDescription& att = c.attachmentDescription_vk;
 	att.format = format_vk;
@@ -492,7 +493,7 @@ coResult coVulkanSwapChain::InitPass()
 	att.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	att.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 	c.device = device;
-	coTRY(pass->Init(c), "Failed to init render pass.");
-	coSwap(renderPass, reinterpret_cast<coRenderPass*&>(pass));
+	coTRY(p->Init(c), "Failed to init render pass.");
+	coSwap(pass, reinterpret_cast<coRenderPass*&>(p));
 	return true;
 }

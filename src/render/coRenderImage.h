@@ -13,7 +13,7 @@ class coRenderImage : public coRenderDeviceObject
 public:
 	enum Type
 	{
-		default,
+		default_,
 		staging,
 		dynamic
 	};

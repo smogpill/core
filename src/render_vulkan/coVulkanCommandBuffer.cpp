@@ -188,3 +188,11 @@ const VkDevice& coVulkanCommandBuffer::GetVkDevice() const
 	static VkDevice nullDevice_vk = VK_NULL_HANDLE;
 	return vulkanLogicalDevice ? vulkanLogicalDevice->GetVkDevice() : nullDevice_vk;
 }
+
+coBool coVulkanCommandBuffer::IsValid() const
+{
+	if (!Super::IsValid())
+		return false;
+
+	return commandBuffer_vk != VK_NULL_HANDLE && !passStarted;
+}

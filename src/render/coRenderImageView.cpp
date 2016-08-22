@@ -12,7 +12,7 @@ coRenderImageView::coRenderImageView()
 
 coRenderImageView::InitConfig::InitConfig()
 	: image(nullptr)
-	, type(Type::default)
+	, type(Type::default_)
 {
 
 }

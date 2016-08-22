@@ -24,6 +24,7 @@ public:
 	void PushExecuteCommands(const coArray<const coRenderCommandBuffer*>& _commandBuffers);
 	void PushDraw(const coRenderMesh& _mesh);
 	const VkCommandBuffer& GetVkCommandBuffer() const { return commandBuffer_vk; }
+	virtual coBool IsValid() const override;
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;

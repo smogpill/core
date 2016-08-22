@@ -34,7 +34,7 @@ public:
 		~ImageInfo();
 		coRenderImage* image;
 		coRenderImageView* imageView;
-		coRenderFramebuffer* frameBuffer;
+		coRenderFramebuffer* framebuffer;
 		coRenderCommandBuffer* commandBuffer;
 	};
 
@@ -43,13 +43,19 @@ public:
 	virtual coResult AcquireImage();
 	virtual coResult Present(const coArray<coRenderSemaphore*> _waitSemaphores);
 	coRenderSemaphore* GetImageAvailableSemaphore() const { return imageAvailableSemaphore; }
+	coInt32 GetCurrentImageIndex() const { return currentImageIndex; }
+	const ImageInfo* GetCurrentImageInfo() const { return currentImageIndex == -1 ? nullptr : imageInfos[currentImageIndex]; }
+	coRenderPass* GetPass() const { return pass; }
+	const coInt32x2& GetSize() const { return size; }
 
 protected:
 	coSwapChain();
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
+	coInt32 currentImageIndex;
 	coSurface* surface;
 	coRenderSemaphore* imageAvailableSemaphore;
-	coRenderPass* renderPass;
+	coRenderPass* pass;
 	coDynamicArray<ImageInfo*> imageInfos;
+	coInt32x2 size;
 };

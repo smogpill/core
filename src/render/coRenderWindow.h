@@ -8,8 +8,13 @@
 class coSwapChain;
 class coRenderSemaphore;
 class coSurface;
-class coRenderContext;
+class coRenderer;
 class coRenderDevice;
+class coRenderContext;
+class coRenderPipeline;
+class coRenderPipelineLayout;
+class coRenderPass;
+class coShader;
 
 class coRenderWindow : public coObject
 {
@@ -19,7 +24,7 @@ public:
 	{
 	public:
 		InitConfig();
-		coRenderContext* context;
+		coRenderer* renderer;
 		coInt32x2 size;
 #ifdef coMSWINDOWS
 		HWND hwnd;
@@ -29,15 +34,24 @@ public:
 	virtual ~coRenderWindow();
 
 	coResult Render();
+	coRenderPass* GetPass() const;
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 private:
-	coResult SelectDevice(const InitConfig& config);
+	coResult InitPipelineLayout();
+	coResult InitPipeline();
+	coResult SelectDevice();
+	coRenderContext* GetContext() const;
 
+	coRenderer* renderer;
 	coSwapChain* swapChain;
 	coSurface* surface;
 	coRenderDevice* device;
 	coRenderSemaphore* renderFinishedSemaphore;
+	coRenderPipelineLayout* pipelineLayout;
+	coRenderPipeline* pipeline;
+	coShader* vertexShader;
+	coShader* fragmentShader;
 };

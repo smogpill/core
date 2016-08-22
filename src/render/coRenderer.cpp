@@ -27,6 +27,13 @@ coRenderer::~coRenderer()
 	context = nullptr;
 }
 
+coRenderer::FillConfig::FillConfig()
+	: framebuffer(nullptr)
+	, commandBuffer(nullptr)
+{
+
+}
+
 coResult coRenderer::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
@@ -56,5 +63,10 @@ coResult coRenderer::InitDevices()
 			}
 		}
 	}
+	return true;
+}
+
+coResult coRenderer::FillCommandBuffer(const FillConfig& /*_config*/)
+{
 	return true;
 }

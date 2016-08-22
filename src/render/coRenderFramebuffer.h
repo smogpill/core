@@ -22,10 +22,12 @@ public:
 	};
 	
 	const coInt32x2& GetSize() const { return size; }
+	coRenderPass* GetPass() const { return pass; }
 
 protected:
 	coRenderFramebuffer();
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 	coInt32x2 size;
+	coRenderPass* pass;
 };

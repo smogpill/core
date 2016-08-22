@@ -6,8 +6,12 @@ class coRenderContext;
 class coSwapChain;
 class coSurface;
 class coRenderSemaphore;
+class coRenderPipeline;
+class coRenderPipelineLayout;
 
 coRenderContext* coCreateRenderContext();
 coSwapChain* coCreateSwapChain();
 coSurface* coCreateSurface();
 coRenderSemaphore* coCreateRenderSemaphore();
+coRenderPipeline* coCreateRenderPipeline();
+coRenderPipelineLayout* coCreateRenderPipelineLayout();

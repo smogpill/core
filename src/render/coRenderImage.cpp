@@ -17,7 +17,7 @@ coRenderImage::~coRenderImage()
 
 coRenderImage::InitConfig::InitConfig()
 	: size(0)
-	, type(Type::default)
+	, type(Type::default_)
 	, arraySize(1)
 {
 

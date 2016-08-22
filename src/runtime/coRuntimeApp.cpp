@@ -53,7 +53,7 @@ coResult coRuntimeApp::OnInit(const coObject::InitConfig& _config)
 	renderWindow = new coRenderWindow();
 	{
 		coRenderWindow::InitConfig c;
-		c.context = renderer->GetContext();
+		c.renderer = renderer;
 		c.debugName = "MainRenderWindow";
 		c.size = window->GetClientSize();
 #ifdef coMSWINDOWS

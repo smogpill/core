@@ -75,7 +75,7 @@ coResult coVulkanImageView::ComputeType(VkImageViewType& _out, const InitConfig&
 	case tex2D: _out = VK_IMAGE_VIEW_TYPE_2D; break;
 	case tex3D: _out = VK_IMAGE_VIEW_TYPE_3D; break;
 	case texCube: _out = VK_IMAGE_VIEW_TYPE_CUBE; break;
-	case default:
+	case default_:
 	{
 		coVulkanImage* vulkanImage = static_cast<coVulkanImage*>(image);
 		coTRY(vulkanImage, nullptr);

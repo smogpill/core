@@ -6,6 +6,8 @@
 
 class coRenderDevice;
 class coRenderContext;
+class coRenderFramebuffer;
+class coRenderCommandBuffer;
 
 class coRenderer : public coObject
 {
@@ -14,8 +16,17 @@ public:
 	coRenderer();
 	virtual ~coRenderer();
 
-	coResult Render();
+	class FillConfig
+	{
+	public:
+		FillConfig();
+		coRenderCommandBuffer* commandBuffer;
+		coRenderFramebuffer* framebuffer;
+	};
+
 	coRenderContext* GetContext() const { return context; }
+
+	virtual coResult FillCommandBuffer(const FillConfig& _config);
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;

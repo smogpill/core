@@ -11,14 +11,16 @@
 coSwapChain::coSwapChain()
 	: surface(nullptr)
 	, imageAvailableSemaphore(nullptr)
-	, renderPass(nullptr)
+	, pass(nullptr)
+	, currentImageIndex(-1)
+	, size(0)
 {
 }
 
 coSwapChain::~coSwapChain()
 {
 	coASSERT(!imageAvailableSemaphore);
-	coASSERT(!renderPass);
+	coASSERT(!pass);
 	coASSERT(!imageInfos.count);
 }
 
@@ -34,7 +36,7 @@ coSwapChain::InitConfig::InitConfig()
 coSwapChain::ImageInfo::ImageInfo()
 	: image(nullptr)
 	, imageView(nullptr)
-	, frameBuffer(nullptr)
+	, framebuffer(nullptr)
 	, commandBuffer(nullptr)
 {
 
@@ -43,7 +45,7 @@ coSwapChain::ImageInfo::ImageInfo()
 coSwapChain::ImageInfo::~ImageInfo()
 {
 	delete commandBuffer;
-	delete frameBuffer;
+	delete framebuffer;
 	delete imageView;
 	delete image;
 }

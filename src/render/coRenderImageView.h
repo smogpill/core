@@ -12,7 +12,7 @@ class coRenderImageView : public coRenderDeviceObject
 public:
 	enum Type
 	{
-		default,
+		default_,
 		tex1D,
 		tex2D,
 		tex3D,

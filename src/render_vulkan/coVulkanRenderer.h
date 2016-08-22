@@ -4,10 +4,20 @@
 
 #include "render/coRenderer.h"
 
+class coRenderPipeline;
+
 class coVulkanRenderer final : public coRenderer
 {
 	coDECLARE_SUPER(coRenderer);
 public:
+	coVulkanRenderer();
+	virtual ~coVulkanRenderer();
+
+	virtual coResult FillCommandBuffer(const FillConfig& _config) override;
+
 protected:
-	//virtual coResult OnInit(const coObject::InitConfig& _config) override;
+	virtual coResult OnInit(const coObject::InitConfig& _config) override;
+
+private:
+	coRenderPipeline* testPipeline;
 };

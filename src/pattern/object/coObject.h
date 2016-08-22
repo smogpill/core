@@ -35,6 +35,7 @@ public:
 	void SetDebugName(const coConstString& _s);
 	coBool IsInitialized() const { return objectState == ObjectState::initialized; }
 	coBool IsStarted() const { return objectState == ObjectState::started; }
+	virtual coBool IsValid() const { return true; }
 
 protected:
 	virtual coResult OnInit(const InitConfig& _config);
