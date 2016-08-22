@@ -42,10 +42,23 @@ void* coLocalAllocator::Allocate(coUint32 _size8)
 	}
 }
 
-void* coLocalAllocator::AllocateAligned(coUint32 /*_size8*/, coUint /*_alignment*/)
+void* coLocalAllocator::AllocateAligned(coUint32 _size8, coUint _alignment)
 {
-	coWARN_NOT_AVAILABLE();
-	return nullptr;
+	const coUint32 newStackAllocated = allocatedStackSize8 + _size8 + _alignment;
+	if (newStackAllocated <= maxStackAlloc)
+	{
+		void* buffer = stackBuffer + allocatedStackSize8;
+		void* p = reinterpret_cast<void*>((reinterpret_cast<coIntPtr>(buffer) & ~(coIntPtr(_alignment - 1))) + _alignment);
+		//*(reinterpret_cast<void**>(p) - 1) = buffer;
+		allocatedStackSize8 = newStackAllocated;
+		return p;
+	}
+	else
+	{
+		coAllocator* defaultAllocator = coAllocator::GetHeap();
+		coASSERT(defaultAllocator);
+		return defaultAllocator->AllocateAligned(_size8, _alignment);
+	}
 }
 
 void coLocalAllocator::Free(void* _p)
