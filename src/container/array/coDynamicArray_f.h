@@ -26,7 +26,7 @@ template<class T>
 coDynamicArray<T>::~coDynamicArray()
 {
 	coASSERT(allocator);
-	allocator->Free(data);
+	allocator->FreeAligned(data);
 }
 
 coUint32 _coComputeBestArrayCapacity(coUint32 _capacity);
@@ -38,11 +38,11 @@ void coReserve(coDynamicArray<T>& _this, coUint32 _desiredCount)
 	{
 		const coUint32 bestCapacity = _coComputeBestArrayCapacity(_desiredCount);
 		coASSERT(_this.allocator);
-		T* newBuffer = static_cast<T*>(_this.allocator->Allocate(bestCapacity * sizeof(T)));
+		T* newBuffer = static_cast<T*>(_this.allocator->AllocateAligned(bestCapacity * sizeof(T),  alignof(T)));
 		if (_this.data)
 		{
 			coMemCopy(newBuffer, _this.data, _this.count * sizeof(T));
-			_this.allocator->Free(_this.data);
+			_this.allocator->FreeAligned(_this.data);
 		}
 		_this.data = newBuffer;
 		_this.capacity = bestCapacity;
