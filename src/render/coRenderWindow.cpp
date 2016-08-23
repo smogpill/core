@@ -41,6 +41,8 @@ coRenderWindow::~coRenderWindow()
 	}
 	delete pipeline;
 	delete pipelineLayout;
+	delete vertexShader;
+	delete fragmentShader;
 	delete renderFinishedSemaphore;
 	delete swapChain;
 	delete surface;
