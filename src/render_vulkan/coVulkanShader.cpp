@@ -34,7 +34,7 @@ coResult coVulkanShader::OnInit(const coObject::InitConfig& _config)
 	coTRY(Super::OnInit(_config), nullptr);
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
 
-	VkShaderModuleCreateInfo createInfo = {};
+	VkShaderModuleCreateInfo createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 	createInfo.codeSize = config.codeSize8;
 	createInfo.pCode = static_cast<const uint32_t*>(config.code);

@@ -30,6 +30,7 @@ coRenderer::~coRenderer()
 coRenderer::FillConfig::FillConfig()
 	: framebuffer(nullptr)
 	, commandBuffer(nullptr)
+	, pipeline(nullptr)
 {
 
 }

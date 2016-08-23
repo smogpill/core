@@ -6,6 +6,7 @@
 #include "lang/result/coResult_f.h"
 #include "render/coRenderer.h"
 #include "render/coRenderWindow.h"
+#include "render/coRenderFactory.h"
 #include "container/array/coDynamicArray_f.h"
 
 coRuntimeApp::coRuntimeApp()
@@ -31,7 +32,7 @@ coResult coRuntimeApp::OnInit(const coObject::InitConfig& _config)
 	coTRY(Super::OnInit(_config), nullptr);
 
 	coTRY(!renderer, nullptr);
-	renderer = new coRenderer();
+	renderer = coCreateRenderer();
 	{
 		coRenderer::InitConfig c;
 		c.debugName = "MainRenderer";

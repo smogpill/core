@@ -8,12 +8,12 @@ class coRenderDevice;
 class coRenderContext;
 class coRenderFramebuffer;
 class coRenderCommandBuffer;
+class coRenderPipeline;
 
 class coRenderer : public coObject
 {
 	coDECLARE_SUPER(coObject);
 public:
-	coRenderer();
 	virtual ~coRenderer();
 
 	class FillConfig
@@ -22,6 +22,7 @@ public:
 		FillConfig();
 		coRenderCommandBuffer* commandBuffer;
 		coRenderFramebuffer* framebuffer;
+		coRenderPipeline* pipeline;
 	};
 
 	coRenderContext* GetContext() const { return context; }
@@ -29,6 +30,7 @@ public:
 	virtual coResult FillCommandBuffer(const FillConfig& _config);
 
 protected:
+	coRenderer();
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 private:

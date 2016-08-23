@@ -10,11 +10,14 @@
 #include "render/coRenderPipelineLayout.h"
 #include "render/coRenderer.h"
 #include "render/coSwapChain.h"
+#include "render/coShader.h"
 #include "render/coRenderCommandBuffer.h"
 #include "render/coRenderContext.h"
 #include "render/coRenderVertexChannels.h"
 #include "pattern/scope/coDefer.h"
 #include "lang/result/coResult_f.h"
+#include "io/file/coFileAccess.h"
+#include "io/file/coFile_f.h"
 
 coRenderWindow::coRenderWindow()
 	: swapChain(nullptr)
@@ -99,6 +102,7 @@ coResult coRenderWindow::OnInit(const coObject::InitConfig& _config)
 		coTRY(renderFinishedSemaphore->Init(c), "Failed to init the render finished semaphore.");
 	}
 
+	coTRY(InitShaders(), "Failed to init the shaders.");
 	coTRY(InitPipelineLayout(), "Failed to init the pipeline layout.");
 	coTRY(InitPipeline(), "Failed to init the pipeline.");
 
@@ -142,8 +146,6 @@ coResult coRenderWindow::Render()
 	coRenderSemaphore* imageAvailableSemaphore = swapChain->GetImageAvailableSemaphore();
 	coTRY(imageAvailableSemaphore, nullptr);
 
-	coTRY(swapChain->AcquireImage(), "Failed to acquire new swap chain image.");
-
 	const coSwapChain::ImageInfo* imageInfo = swapChain->GetCurrentImageInfo();
 	coTRY(imageInfo, nullptr);
 
@@ -153,6 +155,7 @@ coResult coRenderWindow::Render()
 		coRenderer::FillConfig c;
 		c.commandBuffer = commandBuffer;
 		c.framebuffer = imageInfo->framebuffer;
+		c.pipeline = pipeline;
 		coTRY(renderer->FillCommandBuffer(c), "Failed to fill the command buffer.");
 	}
 
@@ -162,9 +165,12 @@ coResult coRenderWindow::Render()
 		coDynamicArray<coRenderSemaphore*> finishSemaphores;
 		coPushBack(waitSemaphores, imageAvailableSemaphore);
 		coPushBack(finishSemaphores, renderFinishedSemaphore);
+		coDynamicArray<coRenderCommandBuffer*> commandBuffers;
+		coPushBack(commandBuffers, commandBuffer);
 		coRenderDevice::SubmitConfig c;
 		c.waitSemaphores = waitSemaphores;
 		c.finishSemaphores = finishSemaphores;
+		c.commandBuffers = commandBuffers;
 		coTRY(device->Submit(c), nullptr);
 	}
 
@@ -185,6 +191,38 @@ coRenderContext* coRenderWindow::GetContext() const
 coRenderPass* coRenderWindow::GetPass() const
 {
 	return swapChain ? swapChain->GetPass() : nullptr;
+}
+
+coResult coRenderWindow::InitShaders()
+{
+	coDynamicArray<coUint8> content;
+	{
+		coTRY(coReadFullFile(content, "shaders/test.vert.spv"), nullptr);
+		coShader* shader = coCreateShader();
+		coDEFER() { delete shader; };
+		coShader::InitConfig c;
+		c.device = device;
+		c.code = content.data;
+		c.codeSize8 = content.count;
+		c.stage = coShader::vertex;
+		coTRY(shader->Init(c), "Failed to init the vertex shader.");
+		coSwap(vertexShader, shader);
+	}
+
+	{
+		coTRY(coReadFullFile(content, "shaders/test.frag.spv"), nullptr);
+		coShader* shader = coCreateShader();
+		coDEFER() { delete shader; };
+		coShader::InitConfig c;
+		c.device = device;
+		c.code = content.data;
+		c.codeSize8 = content.count;
+		c.stage = coShader::fragment;
+		coTRY(shader->Init(c), "Failed to init the fragment shader.");
+		coSwap(fragmentShader, shader);
+	}
+	
+	return true;
 }
 
 coResult coRenderWindow::InitPipelineLayout()
@@ -225,7 +263,7 @@ coResult coRenderWindow::InitPipeline()
 	viewport.size = coFloatx2(coFloat(swapChainSize.x), coFloat(swapChainSize.y));
 	coPushBack(viewports, viewport);
 	c.viewports = viewports;
-	coTRY(p, "Failed to init the pipeline.");
+	coTRY(p->Init(c), "Failed to init the pipeline.");
 	coASSERT(!pipeline);
 	coSwap(pipeline, p);
 	return true;

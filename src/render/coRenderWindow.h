@@ -42,6 +42,7 @@ protected:
 private:
 	coResult InitPipelineLayout();
 	coResult InitPipeline();
+	coResult InitShaders();
 	coResult SelectDevice();
 	coRenderContext* GetContext() const;
 

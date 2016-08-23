@@ -44,9 +44,9 @@ coResult coVulkanRenderer::FillCommandBuffer(const FillConfig& _config)
 	coDEFER() { vulkanCommandBuffer->Stop(); };
 
 	vulkanCommandBuffer->PushPassBegin(*vulkanPass, *vulkanFramebuffer);
-	//vulkanCommandBuffer->PushBindPipeline();
-
-	vulkanCommandBuffer->PushPassEnd();
+	coDEFER() { vulkanCommandBuffer->PushPassEnd(); };
+	coTRY(_config.pipeline, nullptr);
+	vulkanCommandBuffer->PushBindPipeline(*_config.pipeline);
 
 	return true;
 }
