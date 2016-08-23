@@ -27,7 +27,7 @@ public:
 	coFileAccess();
 	virtual ~coFileAccess();
 
-	coResult GetSize8(coInt64& _size8) const;
+	coResult GetSize8(coUint64& _size8) const;
 	Mode GetMode() const { return mode; }
 	const coConstString& GetName() const;
 	coResult GetTime(coUint64& _creationTime, coUint64& _lastAccessTime, coUint64& _lastWriteTime) const;

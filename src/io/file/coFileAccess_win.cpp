@@ -7,11 +7,12 @@
 #include "debug/log/coLog.h"
 #include "platform/coOs.h"
 #include "lang/result/coResult_f.h"
+#include "lang/reflect/coNumericLimits.h"
 #include "container/string/coConstString16.h"
 #include "container/string/coDynamicString16.h"
 #include "container/string/coDynamicString16_f.h"
 
-coResult coFileAccess::GetSize8(coInt64& _size8) const
+coResult coFileAccess::GetSize8(coUint64& _size8) const
 {
 	_size8 = 0;
 	const HANDLE& handle = static_cast<const HANDLE&>(impl);
@@ -27,7 +28,7 @@ coResult coFileAccess::GetSize8(coInt64& _size8) const
 		return false;
 	}
 
-	_size8 = info.QuadPart;
+	coNumericConvert(_size8, info.QuadPart);
 
 	return true;
 }
@@ -68,7 +69,7 @@ coResult coFileAccess::OnImplInit(const InitConfig& /*_config*/)
 	case coFileAccess::Mode::write: openMode = GENERIC_WRITE; break;
 	default:
 	{
-		coERROR("File mode not supported: " << mode);
+		coERROR("File mode not supported: " << coUint32(mode));
 		return false;
 	}
 	}
@@ -86,7 +87,7 @@ coResult coFileAccess::OnImplInit(const InitConfig& /*_config*/)
 			}
 			else
 			{
-				coERROR("File does not exist.");
+				coERROR("File does not exist: "<<path);
 				return false;
 			}
 		}
@@ -101,7 +102,7 @@ coResult coFileAccess::OnImplInit(const InitConfig& /*_config*/)
 		break;
 		default:
 		{
-			coERROR("File mode not supported: " << mode);
+			coERROR("File mode "<<mode<<" not supported: " << path);
 			return false;
 		}
 		}
