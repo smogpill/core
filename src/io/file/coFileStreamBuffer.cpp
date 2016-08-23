@@ -43,7 +43,7 @@ coResult coFileStreamBuffer::OnInit(const coObject::InitConfig& _config)
 
 	windowBegin = buffer.data;
 	windowEnd = coEnd(buffer);
-	cursor = windowBegin;
+	cursor = windowEnd;
 
 	switch (mode)
 	{
