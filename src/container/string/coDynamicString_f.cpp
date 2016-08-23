@@ -13,10 +13,59 @@ coDynamicString& operator<<(coDynamicString& _this, const coConstString& _a)
 	return _this;
 }
 
+coDynamicString& operator<<(coDynamicString& _this, coInt8 _a)
+{
+	coChar s[4];
+	::sprintf_s(s, coARRAY_SIZE(s), "%" PRIi8, _a);
+	return _this << coConstString(s);
+}
+
+coDynamicString& operator<<(coDynamicString& _this, coInt16 _a)
+{
+	coChar s[16];
+	::sprintf_s(s, coARRAY_SIZE(s), "%" PRIi16, _a);
+	return _this << coConstString(s);
+}
+
+coDynamicString& operator<<(coDynamicString& _this, coInt32 _a)
+{
+	coChar s[16];
+	::sprintf_s(s, coARRAY_SIZE(s), "%" PRIi32, _a);
+	return _this << coConstString(s);
+}
+
+coDynamicString& operator<<(coDynamicString& _this, coInt64 _a)
+{
+	coChar s[128];
+	::sprintf_s(s, coARRAY_SIZE(s), "%" PRIi64, _a);
+	return _this << coConstString(s);
+}
+
+coDynamicString& operator<<(coDynamicString& _this, coUint8 _a)
+{
+	coChar s[4];
+	::sprintf_s(s, coARRAY_SIZE(s), "%" PRIu8, _a);
+	return _this << coConstString(s);
+}
+
+coDynamicString& operator<<(coDynamicString& _this, coUint16 _a)
+{
+	coChar s[16];
+	::sprintf_s(s, coARRAY_SIZE(s), "%" PRIu16, _a);
+	return _this << coConstString(s);
+}
+
 coDynamicString& operator<<(coDynamicString& _this, coUint32 _a)
 {
 	coChar s[16];
-	::sprintf_s(s, coARRAY_SIZE(s), "%u", _a);
+	::sprintf_s(s, coARRAY_SIZE(s), "%" PRIu32, _a);
+	return _this << coConstString(s);
+}
+
+coDynamicString& operator<<(coDynamicString& _this, coUint64 _a)
+{
+	coChar s[128];
+	::sprintf_s(s, coARRAY_SIZE(s), "%" PRIu64, _a);
 	return _this << coConstString(s);
 }
 
