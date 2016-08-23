@@ -195,28 +195,26 @@ coRenderPass* coRenderWindow::GetPass() const
 
 coResult coRenderWindow::InitShaders()
 {
-	coDynamicArray<coUint8> content;
+	coDynamicArray<coUint8> code;
 	{
-		coTRY(coReadFullFile(content, "shaders/test.vert.spv"), nullptr);
+		coTRY(coReadFullFile(code, "shaders/test.vert.spv"), nullptr);
 		coShader* shader = coCreateShader();
 		coDEFER() { delete shader; };
 		coShader::InitConfig c;
 		c.device = device;
-		c.code = content.data;
-		c.codeSize8 = content.count;
+		c.code = code;
 		c.stage = coShader::vertex;
 		coTRY(shader->Init(c), "Failed to init the vertex shader.");
 		coSwap(vertexShader, shader);
 	}
 
 	{
-		coTRY(coReadFullFile(content, "shaders/test.frag.spv"), nullptr);
+		coTRY(coReadFullFile(code, "shaders/test.frag.spv"), nullptr);
 		coShader* shader = coCreateShader();
 		coDEFER() { delete shader; };
 		coShader::InitConfig c;
 		c.device = device;
-		c.code = content.data;
-		c.codeSize8 = content.count;
+		c.code = code;
 		c.stage = coShader::fragment;
 		coTRY(shader->Init(c), "Failed to init the fragment shader.");
 		coSwap(fragmentShader, shader);

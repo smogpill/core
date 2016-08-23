@@ -22,8 +22,7 @@ public:
 	{
 	public:
 		InitConfig();
-		const void* code;
-		coUint32 codeSize8;
+		coArray<coByte> code;
 		Stage stage;
 	};
 

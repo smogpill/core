@@ -11,9 +11,7 @@ coShader::coShader()
 }
 
 coShader::InitConfig::InitConfig()
-	: code(nullptr)
-	, codeSize8(0)
-	, stage(Stage::none)
+	: stage(Stage::none)
 {
 
 }
@@ -23,8 +21,7 @@ coResult coShader::OnInit(const coObject::InitConfig& _config)
 	coTRY(Super::OnInit(_config), nullptr);
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
 	stage = config.stage;
-	coTRY(config.code, nullptr);
-	coTRY(config.codeSize8, nullptr);
+	coTRY(config.code.count > 0, nullptr);
 	coTRY(stage != Stage::none, nullptr);
 	return true;
 }
