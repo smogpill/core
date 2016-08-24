@@ -184,6 +184,18 @@ coResult coCppTypesGeneratorPlugin::WriteLinkTypeFunc(coStringOutputStream& _str
 		_stream << "\ttype->super = coGetType<" << _parsedType.superTypeName << ">();\n";
 		_stream << "\n";
 	}
+	coUint32 fieldIndex = 0;
+	for (const coParsedField* parsedField : _parsedType.parsedFields)
+	{
+		const coField* field = parsedField->field;
+		coASSERT(field);
+		if (field->symbolFlags & coSymbol::public_)
+		{
+			coTRY(parsedField->typeName.count, nullptr);
+			_stream << "\ttype->fields["<< fieldIndex<<"]->type = coGetType<" << parsedField->typeName << ">();\n";
+			++fieldIndex;
+		}
+	}
 	_stream << "\treturn true;\n";
 	_stream << "}\n";
 	_stream << "\n";
