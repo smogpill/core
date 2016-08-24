@@ -210,7 +210,7 @@ CXChildVisitResult coClangSourceParser::ParseTypeChildrenVisitor(CXCursor _child
 	coClangSourceParser* _this = scope->parser;
 	if (!_this->ParseTypeChild(*scope, _child))
 	{
-		coERROR("Failed to parse type child");
+		coERROR("Failed to parse a member of "<<scope->curType->type->name);
 		CXChildVisitResult::CXChildVisit_Break;
 	}
 	
@@ -301,12 +301,16 @@ coResult coClangSourceParser::ParseType(ParseResult& _result, const CXCursor& _c
 coResult coClangSourceParser::ParseField(coParsedField& _parsedField, const CXCursor& _cursor)
 {
 	coTRY(ParseSymbol(*_parsedField.field, _cursor), nullptr);
-	const CXType type = clang_getCursorType(_cursor);
-	const CXType canonicalType = clang_getCanonicalType(type);
-	const CXCursor typeCursor = clang_getTypeDeclaration(canonicalType);
+	CXType type = clang_getCursorType(_cursor);
+	if (type.kind != CXType_Typedef)
+	{
+		type = clang_getCanonicalType(type);
+	}
+	const CXCursor typeCursor = clang_getTypeDeclaration(type);
 	const CXString typeSpelling = clang_getCursorSpelling(typeCursor);
 	coDEFER() { clang_disposeString(typeSpelling); };
 	_parsedField.typeName = clang_getCString(typeSpelling);
+	coTRY(_parsedField.typeName.count, "Failed to retrieve the type name of the field: "<<_parsedField.field->name);
 	return true;
 }
 
