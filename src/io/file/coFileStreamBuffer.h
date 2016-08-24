@@ -46,4 +46,5 @@ private:
 	Mode mode;
 	coDynamicArray<coByte> buffer;
 	void* impl;
+	coBool refilled;
 };

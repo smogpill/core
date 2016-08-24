@@ -11,6 +11,7 @@ const coUint co_bufferSize8 = 65536;
 coFileStreamBuffer::coFileStreamBuffer()
 	: mode(Mode::read)
 	, impl(nullptr)
+	, refilled(false)
 {
 	OnImplConstruct();
 }
@@ -97,6 +98,7 @@ coBool coFileStreamBuffer::RefillRead()
 	if (ImplRead(readSize8, buffer.data, buffer.count))
 	{
 		windowEnd = windowBegin + readSize8;
+		refilled = true;
 		return true;
 	}
 	else
@@ -110,8 +112,9 @@ coBool coFileStreamBuffer::RefillRead()
 coBool coFileStreamBuffer::RefillWrite()
 {
 	cursor = windowBegin;
-	if (ImplWrite(buffer.data, buffer.count))
+	if (!refilled || ImplWrite(buffer.data, buffer.count))
 	{
+		refilled = true;
 		return true;
 	}
 	else
