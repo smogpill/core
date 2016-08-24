@@ -256,13 +256,23 @@ coResult coRenderWindow::InitPipeline()
 	coDynamicArray<const coType*> channels;
 	coPushBack(channels, defaultVertexType);
 	c.vertexChannels = channels;
-	coDynamicArray<coFloatx2Rect> viewports;
-	coFloatx2Rect viewport;
 	const coInt32x2 swapChainSize = swapChain->GetSize();
-	viewport.pos = coFloatx2(0.0f);
-	viewport.size = coFloatx2(coFloat(swapChainSize.x), coFloat(swapChainSize.y));
-	coPushBack(viewports, viewport);
+	coDynamicArray<coFloatx2Rect> viewports;
+	{
+		coFloatx2Rect viewport;
+		viewport.pos = coFloatx2(0.0f);
+		viewport.size = coFloatx2(coFloat(swapChainSize.x), coFloat(swapChainSize.y));
+		coPushBack(viewports, viewport);
+	}
 	c.viewports = viewports;
+	coDynamicArray<coInt32x2Rect> scissors;
+	{
+		coInt32x2Rect scissor;
+		scissor.pos = coInt32x2(0);
+		scissor.size = swapChainSize;
+		coPushBack(scissors, scissor);
+	}
+	c.scissors = scissors;
 	coTRY(p->Init(c), "Failed to init the pipeline.");
 	coASSERT(!pipeline);
 	coSwap(pipeline, p);
