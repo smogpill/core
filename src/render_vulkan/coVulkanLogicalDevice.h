@@ -33,7 +33,7 @@ public:
 
 	coResult AddRequestedExtension(const coConstString& _extension);
 	coResult IsExtensionRequested(const coConstString& _extension) const;
-	const VkDevice& GetVkDevice() const { return logicalDevice_vk; }
+	const VkDevice& GetVkDevice() const { return device_vk; }
 	coVulkanPhysicalDevice* GetPhysicalDevice() const { return vulkanPhysicalDevice; }
 	const VkQueue& GetVkQueue(QueueType _type) const { return queues_vk[_type]; }
 	const VkCommandPool& GetVkCommandPool(QueueType _type) const;
@@ -55,13 +55,15 @@ private:
 	coResult InitQueues();
 	coResult InitLogicalDevice();
 	coResult InitCommandPools();
+	coResult InitFences();
 	coResult GetAllRequestedExtensions(coDynamicArray<const coChar*>& _extensions) const;
 	void Clear();
 
 	coVulkanPhysicalDevice* vulkanPhysicalDevice;
-	VkDevice logicalDevice_vk;
+	VkDevice device_vk;
 	coInt32 queueFamilyIndices[QueueType::count];
 	VkQueue queues_vk[QueueType::count];
+	VkFence fences_vk[QueueType::count];
 	coDynamicArray<coDynamicString*> requestedExtensions;
 	coVulkanLayerManager* vulkanLayerManager;
 	coVulkanCommandPool* vulkanCommandPools[QueueType::count];

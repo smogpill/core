@@ -16,13 +16,18 @@
 
 coVulkanLogicalDevice::coVulkanLogicalDevice()
 	: vulkanPhysicalDevice(nullptr)
-	, logicalDevice_vk(VK_NULL_HANDLE)
+	, device_vk(VK_NULL_HANDLE)
 	//, queues_vk{ VK_NULL_HANDLE }
-	, queueFamilyIndices{ -1 }
 	, vulkanLayerManager(nullptr)
-	, vulkanCommandPools{}
 {
-
+	for (auto& x : queueFamilyIndices)
+		x = -1;
+	for (auto& x : queues_vk)
+		x = VK_NULL_HANDLE;
+	for (auto& x : fences_vk)
+		x = VK_NULL_HANDLE;
+	for (auto& x : vulkanCommandPools)
+		x = nullptr;
 }
 
 coVulkanLogicalDevice::~coVulkanLogicalDevice()
@@ -58,6 +63,7 @@ coResult coVulkanLogicalDevice::OnStart()
 	coTRY(InitLogicalDevice(), "Failed to init the logical device.");
 	coTRY(InitQueues(), "Failed to init queues.");
 	coTRY(InitCommandPools(), "Failed to init command pools.");
+	coTRY(InitFences(), "Failed to init fences.");
 	return true;
 }
 
@@ -77,8 +83,13 @@ void coVulkanLogicalDevice::Clear()
 	}
 	for (VkQueue& queue_vk : queues_vk)
 		queue_vk = VK_NULL_HANDLE;
-	vkDestroyDevice(logicalDevice_vk, nullptr);
-	logicalDevice_vk = VK_NULL_HANDLE;
+	for (VkFence& fence_vk : fences_vk)
+	{
+		vkDestroyFence(device_vk, fence_vk, nullptr);
+		fence_vk = VK_NULL_HANDLE;
+	}
+	vkDestroyDevice(device_vk, nullptr);
+	device_vk = VK_NULL_HANDLE;
 }
 
 coResult coVulkanLogicalDevice::InitQueueFamilyIndices()
@@ -175,10 +186,10 @@ coResult coVulkanLogicalDevice::InitLogicalDevice()
 	createInfo.enabledLayerCount = layers.count;
 	createInfo.ppEnabledLayerNames = layers.data;
 
-	coTRY(logicalDevice_vk == VK_NULL_HANDLE, nullptr);
+	coTRY(device_vk == VK_NULL_HANDLE, nullptr);
 	const VkPhysicalDevice& physicalDevice_vk = vulkanPhysicalDevice->GetVkPhysicalDevice();
 	coTRY(physicalDevice_vk != VK_NULL_HANDLE, nullptr);
-	coVULKAN_TRY(vkCreateDevice(physicalDevice_vk, &createInfo, nullptr, &logicalDevice_vk), "Failed to create the logical device.");
+	coVULKAN_TRY(vkCreateDevice(physicalDevice_vk, &createInfo, nullptr, &device_vk), "Failed to create the logical device.");
 
 	return true;
 }
@@ -186,7 +197,6 @@ coResult coVulkanLogicalDevice::InitLogicalDevice()
 coResult coVulkanLogicalDevice::GetVkQueue(VkQueue& _out, coUint _queueFamilyIndex, coUint _index)
 {
 	_out = VK_NULL_HANDLE;
-	const VkDevice& device_vk = GetVkDevice();
 	coTRY(device_vk != VK_NULL_HANDLE, nullptr);
 	vkGetDeviceQueue(device_vk, _queueFamilyIndex, _index, &_out);
 	return true;
@@ -227,9 +237,9 @@ coResult coVulkanLogicalDevice::GetAllRequestedExtensions(coDynamicArray<const c
 coResult coVulkanLogicalDevice::WaitForIdle()
 {
 	coTRY(Super::WaitForIdle(), nullptr);
-	if (logicalDevice_vk != VK_NULL_HANDLE)
+	if (device_vk != VK_NULL_HANDLE)
 	{
-		coVULKAN_TRY(vkDeviceWaitIdle(logicalDevice_vk), "Wait device for idle failed.");
+		coVULKAN_TRY(vkDeviceWaitIdle(device_vk), "Wait device for idle failed.");
 	}
 	return true;
 }
@@ -333,7 +343,16 @@ coResult coVulkanLogicalDevice::Submit(const SubmitConfig& _config)
 	const VkQueue graphicsQueue = queues_vk[QueueType::graphics];
 	coTRY(graphicsQueue != VK_NULL_HANDLE, nullptr);
 
-	coVULKAN_TRY(vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE), "Failed to submit command buffers.");
+	const VkFence& fence_vk = fences_vk[QueueType::graphics];
+	VkResult res;
+	do
+	{
+		res = vkWaitForFences(device_vk, 1, &fence_vk, VK_TRUE, 100000000);
+	} while (res == VK_TIMEOUT);
+	coVULKAN_TRY(res, "Failed to wait for Vulkan fence.");
+
+	coVULKAN_TRY(vkResetFences(device_vk, 1, &fence_vk), "Failed to reset a Vulkan fence.");
+	coVULKAN_TRY(vkQueueSubmit(graphicsQueue, 1, &submitInfo, fence_vk), "Failed to submit command buffers.");
 
 	return true;
 }
@@ -348,4 +367,20 @@ const VkCommandPool& coVulkanLogicalDevice::GetVkCommandPool(QueueType _type) co
 coVulkanCommandPool* coVulkanLogicalDevice::GetVulkanCommandPool(QueueType _type) const
 {
 	return vulkanCommandPools[_type];
+}
+
+coResult coVulkanLogicalDevice::InitFences()
+{
+	coTRY(device_vk != VK_NULL_HANDLE, nullptr);
+
+	VkFenceCreateInfo createInfo_vk{};
+	createInfo_vk.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+	createInfo_vk.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+	for (auto& f : fences_vk)
+	{
+		coVULKAN_TRY(vkCreateFence(device_vk, &createInfo_vk, nullptr, &f), "Failed to create Vulkan fence.");
+	}
+	
+	return true;
 }

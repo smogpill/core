@@ -102,7 +102,7 @@ void coVulkanCommandBuffer::PushPassBegin(const coRenderPass& _pass, const coRen
 	coNumericConvert(renderPassInfo.renderArea.extent.width, size.x);
 	coNumericConvert(renderPassInfo.renderArea.extent.height, size.y);
 
-	VkClearValue clearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
+	VkClearValue clearColor = { 1.0f, 0.0f, 0.0f, 1.0f };
 	renderPassInfo.clearValueCount = 1;
 	renderPassInfo.pClearValues = &clearColor;
 
