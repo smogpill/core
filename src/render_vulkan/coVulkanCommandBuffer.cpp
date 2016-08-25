@@ -176,6 +176,15 @@ void coVulkanCommandBuffer::PushDraw(const coRenderMesh& _mesh)
 	}
 }
 
+void coVulkanCommandBuffer::PushDrawEmptyTriangle()
+{
+	coASSERT(IsStarted());
+	coASSERT(passStarted);
+	coASSERT(commandBuffer_vk != VK_NULL_HANDLE);
+
+	vkCmdDraw(commandBuffer_vk, 3, 1, 0, 0);
+}
+
 const VkCommandPool& coVulkanCommandBuffer::GetVkCommandPool() const
 {
 	static VkCommandPool nullCommandPool_vk = VK_NULL_HANDLE;

@@ -23,6 +23,7 @@ public:
 	void PushBindPipeline(const coRenderPipeline& _pipeline);
 	void PushExecuteCommands(const coArray<const coRenderCommandBuffer*>& _commandBuffers);
 	void PushDraw(const coRenderMesh& _mesh);
+	void PushDrawEmptyTriangle();
 	const VkCommandBuffer& GetVkCommandBuffer() const { return commandBuffer_vk; }
 	virtual coBool IsValid() const override;
 
