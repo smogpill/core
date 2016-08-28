@@ -4,18 +4,14 @@
 
 #include "pattern/object/coObject.h"
 
-class coRenderEntity;
+class coRenderCamera;
 
-class coRenderWorld : public coObject
+class coRenderView : public coObject
 {
 	coDECLARE_SUPER(coObject);
 public:
-
-	coResult Add(coRenderEntity& _entity);
-	void Remove(coRenderEntity& _entity);
-
-	const coArray<coRenderEntity*>& GetEntities() const { return entities; }
+	coRenderView();
 
 private:
-	coDynamicArray<coRenderEntity*> entities;
+	coRenderCamera* camera;
 };

@@ -6,6 +6,8 @@
 #include "render_vulkan/coVulkanFramebuffer.h"
 #include "render_vulkan/coVulkanPass.h"
 #include "render_vulkan/coVulkanPipeline.h"
+#include "render/coRenderEntity.h"
+#include "render/coRenderWorld.h"
 #include "lang/result/coResult_f.h"
 #include "pattern/scope/coDefer.h"
 
@@ -49,6 +51,20 @@ coResult coVulkanRenderer::FillCommandBuffer(const FillConfig& _config)
 	vulkanCommandBuffer->PushBindPipeline(*_config.pipeline);
 
 	vulkanCommandBuffer->PushDrawEmptyTriangle();
+
+	if (_config.world)
+	{
+		const coArray<coRenderEntity*>& entities = _config.world->GetEntities();
+		for (const coRenderEntity* entity : entities)
+		{
+			coASSERT(entity);
+			const coRenderMesh* mesh = entity->GetRenderMesh();
+			if (mesh)
+			{
+				vulkanCommandBuffer->PushDraw(*mesh);
+			}
+		}
+	}
 
 	return true;
 }

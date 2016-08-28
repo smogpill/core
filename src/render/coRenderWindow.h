@@ -15,6 +15,8 @@ class coRenderPipeline;
 class coRenderPipelineLayout;
 class coRenderPass;
 class coShader;
+class coRenderMaterial;
+class coRenderWorld;
 
 class coRenderWindow : public coObject
 {
@@ -33,16 +35,19 @@ public:
 	coRenderWindow();
 	virtual ~coRenderWindow();
 
-	coResult Render();
+	coResult Render(const coRenderWorld& _world);
 	coRenderPass* GetPass() const;
+	coRenderDevice* GetDevice() const { return device; }
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 private:
 	coResult InitPipelineLayout();
-	coResult InitPipeline();
-	coResult InitShaders();
+	coResult InitPipeline(coRenderPipeline& _out, const coRenderMaterial& _material);
+	coResult InitSwapChain(const InitConfig& _config);
+	coResult InitSemaphores();
+	coResult InitSurface(const InitConfig& _config);
 	coResult SelectDevice();
 	coRenderContext* GetContext() const;
 
@@ -52,7 +57,4 @@ private:
 	coRenderDevice* device;
 	coRenderSemaphore* renderFinishedSemaphore;
 	coRenderPipelineLayout* pipelineLayout;
-	coRenderPipeline* pipeline;
-	coShader* vertexShader;
-	coShader* fragmentShader;
 };

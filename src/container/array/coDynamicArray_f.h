@@ -22,6 +22,15 @@ coDynamicArray<T>::coDynamicArray(coAllocator& _allocator)
 	static_assert(std::is_trivially_copyable<T>::value, "Trivially copyable only");
 }
 
+template <class T>
+template <coUint N>
+coDynamicArray<T>::coDynamicArray(const T(&_a)[N])
+	: coDynamicArray()
+{
+	coResize(N);
+	coMemCopy(data, _a, sizeof(_a));
+}
+
 template<class T>
 coDynamicArray<T>::~coDynamicArray()
 {

@@ -7,6 +7,8 @@
 class coWindow;
 class coRenderer;
 class coRenderWindow;
+class coRenderWorld;
+class coTestScene;
 
 class coRuntimeApp : public coApp
 {
@@ -21,8 +23,15 @@ protected:
 
 private:
 	coResult Render();
+	coResult InitRenderer();
+	coResult InitRenderWorld();
+	coResult InitTestScene();
+	coResult InitWindow();
+	coResult InitRenderWindow();
 
 	coWindow* window;
 	coRenderer* renderer;
+	coRenderWorld* renderWorld;
 	coRenderWindow* renderWindow;
+	coTestScene* testScene;
 };

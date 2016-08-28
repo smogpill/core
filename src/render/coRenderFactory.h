@@ -10,6 +10,7 @@ class coRenderSemaphore;
 class coRenderPipeline;
 class coRenderPipelineLayout;
 class coShader;
+class coRenderMesh;
 
 coRenderer* coCreateRenderer();
 coRenderContext* coCreateRenderContext();
@@ -19,3 +20,4 @@ coRenderSemaphore* coCreateRenderSemaphore();
 coRenderPipeline* coCreateRenderPipeline();
 coRenderPipelineLayout* coCreateRenderPipelineLayout();
 coShader* coCreateShader();
+coRenderMesh* coCreateRenderMesh();

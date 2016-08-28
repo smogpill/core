@@ -9,6 +9,7 @@
 #include "render_vulkan/coVulkanPipeline.h"
 #include "render_vulkan/coVulkanPipelineLayout.h"
 #include "render_vulkan/coVulkanShader.h"
+#include "render_vulkan/coVulkanMesh.h"
 #include "render/coRenderFactory.h"
 
 coRenderer* coCreateRenderer()
@@ -49,4 +50,9 @@ coRenderPipelineLayout* coCreateRenderPipelineLayout()
 coShader* coCreateShader()
 {
 	return new coVulkanShader();
+}
+
+coRenderMesh* coCreateRenderMesh()
+{
+	return new coVulkanMesh();
 }

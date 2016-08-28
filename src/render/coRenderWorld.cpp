@@ -3,3 +3,14 @@
 #include "render/pch.h"
 #include "render/coRenderWorld.h"
 
+coResult coRenderWorld::Add(coRenderEntity& _entity)
+{
+	coASSERT(!coContains(entities, &_entity));
+	coPushBack(entities, &_entity);
+	return true;
+}
+
+void coRenderWorld::Remove(coRenderEntity& _entity)
+{
+	coRemoveUnordered(entities, &_entity);
+}

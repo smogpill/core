@@ -6,29 +6,14 @@ template <class F>
 class _coDefer
 {
 public:
-	_coDefer(F&& _f) : f(std::move(_f)), enabled(true) {}
-	/*_coDefer(_coDefer&& _d) 
-		: _f(std::move(_d.f))
-		, enabled(_d.enabled)
-	{
-		_d.enabled = false;
-	}*/
+	_coDefer(F&& _f) : f(std::move(_f)) {}
 	~_coDefer()
 	{
-		if (enabled)
-			f();
+		f();
 	}
-
-	coBool enabled;
 private:
 	F f;
 };
-
-template <class F>
-_coDefer<F> _coMakeDefer(F f)
-{
-	return _coDefer<F>(std::move(f));
-}
 
 struct _coDeferFactory
 {
@@ -41,7 +26,6 @@ struct _coDeferFactory
 
 #define CONCAT(x, y) CONCAT2(x, y)
 #define CONCAT2(x, y) x ## y
-//#define _coDEFER_NAME() _defer_obj_ ## coSTRINGIFY(__LINE__)
 #define _coDEFER_NAME() CONCAT(_deferObj_, __LINE__)
 
 #define coDEFER_WITH_OBJ() _coDeferFactory()*[&]

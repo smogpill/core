@@ -5,6 +5,8 @@
 #include "memory/coMemory_f.h"
 #include "lang/coStdWrapper.h"
 
+#define coARRAY_SIZE(_array_) (sizeof(_array_) / sizeof(_array_[0]))
+
 template <class T>
 coArray<T>::coArray(std::initializer_list<T> _l)
 	: data(const_cast<T*>(_l.begin()))
@@ -12,7 +14,14 @@ coArray<T>::coArray(std::initializer_list<T> _l)
 {
 }
 
-#define coARRAY_SIZE(_array_) (sizeof(_array_) / sizeof(_array_[0]))
+template <class T>
+template <coUint N>
+coArray<T>::coArray(const T (&_a)[N])
+	: data(const_cast<T*>(_a))
+	, count(N)
+{
+
+}
 
 template <class T> coFORCE_INLINE T* coBegin(coArray<T>& _a) { return _a.data; }
 template <class T> coFORCE_INLINE const T* coBegin(const coArray<T>& _a) { return _a.data; }
@@ -48,6 +57,22 @@ void coDeleteElementsAndClear(coArray<T>& _this)
 	for (T e : _this)
 		delete e;
 	coClear(_this);
+}
+
+template <class T>
+void coRemoveUnordered(coArray<T>& _this, const T& _e)
+{
+	for (T& e : _this)
+	{
+		if (_e == e)
+		{
+			T& back = coBack(_this);
+			if (&back != &e)
+				coSwap(e, back);
+			--_this.count;
+			break;
+		}
+	}
 }
 
 template <class T>

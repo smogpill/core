@@ -11,6 +11,7 @@
 #include "app/coCommandLineArgs.h"
 #include "app/coProject_f.h"
 #include "parser/project/coParsedProject.h"
+#include "container/array/coDynamicArray_f.h"
 
 coPrebuildApp::coPrebuildApp()
 {
@@ -158,10 +159,10 @@ coResult coPrebuildApp::GenerateProject(const coParsedProject& _parsedProject)
 		coHACK("Direct assignation seems to fail in release for some reason.");
 		// Seems to be a bug with VS2015 : https://social.msdn.microsoft.com/Forums/expression/en-US/9c58a750-b424-4d65-bf99-b7a29d0e3965/initializer-list-bug-in-vc-2015-the-following-program-crashes-in-64bit-release-optimized?forum=vcgeneral
 		//c.plugins = {&cppTypesPlugin, &mainEntryPointPlugin};
-		coDynamicArray<coProjectGeneratorPlugin*> a;
-		coPushBack(a, &cppTypesPlugin);
-		coPushBack(a, &mainEntryPointPlugin);
-		c.plugins = a;
+ 		coDynamicArray<coProjectGeneratorPlugin*> a;
+ 		coPushBack(a, &cppTypesPlugin);
+ 		coPushBack(a, &mainEntryPointPlugin);
+ 		c.plugins = a;
 		coTRY(projectGenerator.Init(c), "Failed to init the project generator.");
 	}
 	

@@ -165,14 +165,17 @@ void coVulkanCommandBuffer::PushDraw(const coRenderMesh& _mesh)
 	coASSERT(buffer_vk != VK_NULL_HANDLE);
 	VkDeviceSize offset_vk = 0;
 	vkCmdBindVertexBuffers(commandBuffer_vk, 0, 1, &buffer_vk, &offset_vk);
-	if (_mesh.indices.count)
+
+	const coUint32 nbIndices = _mesh.GetNbIndices();
+	if (nbIndices)
 	{
-		vkCmdBindIndexBuffer(commandBuffer_vk, buffer_vk, vulkanMesh.GetIndexBufferOffset(), VK_INDEX_TYPE_UINT16);
-		vkCmdDrawIndexed(commandBuffer_vk, _mesh.indices.count, 1, 0, 0, 0);
+		vkCmdBindIndexBuffer(commandBuffer_vk, buffer_vk, vulkanMesh.GetIndexBufferOffset(), VK_INDEX_TYPE_UINT32);
+		vkCmdDrawIndexed(commandBuffer_vk, nbIndices, 1, 0, 0, 0);
 	}
 	else
 	{
-		vkCmdDraw(commandBuffer_vk, _mesh.positions.count, 1, 0, 0);
+		const coUint32 nbVertices = _mesh.GetNbVertices();
+		vkCmdDraw(commandBuffer_vk, nbVertices, 1, 0, 0);
 	}
 }
 

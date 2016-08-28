@@ -3,19 +3,14 @@
 #pragma once
 
 #include "pattern/object/coObject.h"
+#include "math/matrix/coMat4.h"
 
-class coRenderEntity;
-
-class coRenderWorld : public coObject
+class coRenderCamera : public coObject
 {
 	coDECLARE_SUPER(coObject);
 public:
-
-	coResult Add(coRenderEntity& _entity);
-	void Remove(coRenderEntity& _entity);
-
-	const coArray<coRenderEntity*>& GetEntities() const { return entities; }
+	coRenderCamera();
 
 private:
-	coDynamicArray<coRenderEntity*> entities;
+	coMat4 worldMatrix;
 };

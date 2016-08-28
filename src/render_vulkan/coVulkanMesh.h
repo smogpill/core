@@ -6,7 +6,7 @@
 
 class coVulkanBuffer;
 
-class coVulkanMesh : public coRenderMesh
+class coVulkanMesh final : public coRenderMesh
 {
 	coDECLARE_SUPER(coRenderMesh);
 public:

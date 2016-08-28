@@ -7,15 +7,29 @@
 #include "math/vector/coFloatx3.h"
 
 class coRenderMaterial;
+class coMesh;
 
 class coRenderMesh : public coRenderDeviceObject
 {
-	coDECLARE_SUPER(coObject);
+	coDECLARE_SUPER(coRenderDeviceObject);
 public:
+	class InitConfig : public Super::InitConfig
+	{
+	public:
+		InitConfig();
+		coMesh* mesh;
+		coRenderMaterial* material;
+	};
+
+	coMesh* GetMesh() const { return mesh; }
+	coRenderMaterial* GetMaterial() const { return material; }
+	coUint GetNbIndices() const;
+	coUint GetNbVertices() const;
+
+protected:
 	coRenderMesh();
-	coDynamicArray<coFloatx3> positions;
-	coDynamicArray<coFloatx3> normals;
-	coDynamicArray<coFloatx2> uvs;
-	coDynamicArray<coUint16> indices;
+	virtual coResult OnInit(const coObject::InitConfig& _config) override;
+
+	coMesh* mesh;
 	coRenderMaterial* material;
 };

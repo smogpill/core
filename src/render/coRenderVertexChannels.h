@@ -6,11 +6,12 @@
 #include "math/vector/coFloatx3.h"
 #include "math/vector/coFloatx2.h"
 
-class coRenderVertex_PosNormalUv
+class coRenderVertex_PosNormalTangentUv
 {
 	coDECLARE_REFLECTED_NO_VIRTUAL();
 public:
 	coFloatx3 pos;
 	coFloatx3 normal;
+	coFloatx3 tangent;
 	coFloatx2 uv;
 };

@@ -10,8 +10,22 @@ class coRenderMaterial : public coObject
 {
 	coDECLARE_SUPER(coObject);
 public:
+	class InitConfig : public Super::InitConfig
+	{
+	public:
+		InitConfig();
+		coShader* vertexShader;
+		coShader* fragmentShader;
+	};
 	coRenderMaterial();
 
+	const coShader* GetVertexShader() const { return vertexShader; }
+	const coShader* GetFragmentShader() const { return fragmentShader; }
+
 protected:
-	coShader* shader;
+	virtual coResult OnInit(const coObject::InitConfig& _config) override;
+
+private:
+	coShader* vertexShader;
+	coShader* fragmentShader;
 };

@@ -1,7 +1,10 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
-#pragma once
+#include "render/pch.h"
+#include "render/coRenderView.h"
 
-#include "lang/publicPch.h"
-#include "debug/publicPch.h"
-#include "math/publicPch.h"
+coRenderView::coRenderView()
+	: camera(nullptr)
+{
+
+}

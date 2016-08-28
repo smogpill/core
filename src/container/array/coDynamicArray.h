@@ -13,6 +13,8 @@ class coDynamicArray : public coArray<T>
 public:
 	coDynamicArray();
 	coDynamicArray(coAllocator& _allocator);
+	template <coUint N>
+	coDynamicArray(const T(&_a)[N]);
 	~coDynamicArray();
 
 	coUint32 capacity;

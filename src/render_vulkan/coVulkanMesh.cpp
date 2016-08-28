@@ -3,6 +3,7 @@
 #include "render_vulkan/pch.h"
 #include "render_vulkan/coVulkanMesh.h"
 #include "render_vulkan/coVulkanBuffer.h"
+#include "render/coMesh.h"
 #include "lang/result/coResult_f.h"
 #include "pattern/scope/coDefer.h"
 
@@ -30,8 +31,11 @@ coResult coVulkanMesh::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 
+	coASSERT(mesh);
+	const auto& positions = mesh->GetPositions();
+	const auto& indices = mesh->GetIndices();
 	const coUint32 vertexBufferSize = positions.count * sizeof(_coVertex_PosNormalUv);
-	const coUint32 indexBufferSize = indices.count * sizeof(coUint16);
+	const coUint32 indexBufferSize = indices.count * sizeof(indices[0]);
 
 	coVulkanBuffer* b = new coVulkanBuffer();
 	coDEFER() { delete b; };
