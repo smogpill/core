@@ -244,12 +244,7 @@ coResult coClangSourceParser::ParseTypeChild(const ScopeInfo& scope, const CXCur
 	}
 	case CXCursor_FieldDecl:
 	{
-		coParsedField* parsedField = new coParsedField();
-		parsedField->field = new coField();
-		coDEFER() { delete parsedField; };
-		coTRY(ParseField(*parsedField, _cursor), "Failed to parse field: " << parsedField->field->name);
-		coPushBack(scope.curType->parsedFields, parsedField);
-		parsedField = nullptr;
+		coTRY(ParseField(scope, _cursor), "Failed to parse field.");
 		break;
 	}
 	case CXCursor_VarDecl: // Static field
@@ -298,10 +293,28 @@ coResult coClangSourceParser::ParseType(ParseResult& _result, const CXCursor& _c
 	return true;
 }
 
-coResult coClangSourceParser::ParseField(coParsedField& _parsedField, const CXCursor& _cursor)
+coResult coClangSourceParser::ParseField(const ScopeInfo& scope, const CXCursor& _cursor)
 {
-	coTRY(ParseSymbol(*_parsedField.field, _cursor), nullptr);
 	CXType type = clang_getCursorType(_cursor);
+	if (type.kind == CXType_Pointer)
+	{
+		return true;
+	}
+	coParsedField* parsedField = new coParsedField();
+	parsedField->field = new coField();
+	coDEFER() { delete parsedField; };
+	coTRY(ParseSymbol(*parsedField->field, _cursor), nullptr);
+	switch (type.kind)
+	{
+	case CXType_Typedef:
+		break;
+	case CXType_Pointer:
+		coASSERT(false);
+		break;
+	default:
+		type = clang_getCanonicalType(type);
+		break;
+	}
 	if (type.kind != CXType_Typedef)
 	{
 		type = clang_getCanonicalType(type);
@@ -309,8 +322,10 @@ coResult coClangSourceParser::ParseField(coParsedField& _parsedField, const CXCu
 	const CXCursor typeCursor = clang_getTypeDeclaration(type);
 	const CXString typeSpelling = clang_getCursorSpelling(typeCursor);
 	coDEFER() { clang_disposeString(typeSpelling); };
-	_parsedField.typeName = clang_getCString(typeSpelling);
-	coTRY(_parsedField.typeName.count, "Failed to retrieve the type name of the field: "<<_parsedField.field->name);
+	parsedField->typeName = clang_getCString(typeSpelling);
+	coTRY(parsedField->typeName.count, "Failed to retrieve the type name of the field: "<< parsedField->field->name);
+	coPushBack(scope.curType->parsedFields, parsedField);
+	parsedField = nullptr;
 	return true;
 }
 

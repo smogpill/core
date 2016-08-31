@@ -11,5 +11,6 @@ public:
 	coField();
 
 	const coType* type;
+	const coType* subType;
 	coUint16 offset8;
 };

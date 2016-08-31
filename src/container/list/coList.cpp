@@ -2,18 +2,5 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "container/pch.h"
 #include "container/list/coList.h"
-#include "debug/log/coAssert.h"
 
-coListNode::coListNode()
-{
-	previous = this;
-	next = this;
-}
-
-coListNode::~coListNode()
-{
-	coASSERT(previous == this);
-	coASSERT(next == this);
-	previous->next = next;
-	next->previous = previous;
-}
+int ____warning_LNK4221; // warning LNK4221: This object file does not define any previously undefined public symbols, so it will not be used by any link operation that consumes this library

@@ -4,9 +4,18 @@
 
 #include "pattern/object/coObject.h"
 
+class coEntity;
+
 class coComponent : public coObject
 {
+	friend coEntity;
 	coDECLARE_SUPER(coObject);
 	coDECLARE_REFLECTED_VIRTUAL();
 public:
+	coComponent();
+
+	coEntity* GetEntity() const { return entity; }
+
+private:
+	coEntity* entity;
 };

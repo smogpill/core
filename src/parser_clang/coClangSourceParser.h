@@ -36,7 +36,7 @@ private:
 	coResult ParseTypeChild(const ScopeInfo& scope, const CXCursor& _cursor);
 	coResult ParseMethod(coParsedFunction& _parsedFunction, const CXCursor& _cursor);
 	coResult ParseSymbol(coSymbol& _symbol, const CXCursor& _cursor);
-	coResult ParseField(coParsedField& _parsedField, const CXCursor& _cursor);
+	coResult ParseField(const ScopeInfo& scope, const CXCursor& _cursor);
 	coResult ParseType(ParseResult& _result, const CXCursor& _cursor);
 	coResult ParseTypes(ParseResult& _result, const CXCursor& _cursor);
 	coResult DisplayDiagnostics(const CXTranslationUnit& _translationUnit) const;

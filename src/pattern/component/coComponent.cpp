@@ -4,3 +4,8 @@
 #include "pattern/component/coComponent.h"
 #include "lang/result/coResult_f.h"
 
+coComponent::coComponent()
+	: entity(nullptr)
+{
+
+}

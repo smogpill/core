@@ -56,3 +56,7 @@ coDEFINE_BASE_TYPE(coFloat64);
 coDEFINE_BASE_TYPE(coNullPtr);
 coDEFINE_BASE_TYPE(coIntPtr);
 coDEFINE_BASE_TYPE(coUintPtr);
+
+/*coBaseType_typeBuilder<void*> co_typeBuilder_pointer("pointer");
+const coType* _coGetStaticType_pointer() { return co_typeBuilder_pointer.GetType(); }
+coTypeAutoRegistrator co_typeAutoRegistrator_pointer(co_typeBuilder_pointer);*/
