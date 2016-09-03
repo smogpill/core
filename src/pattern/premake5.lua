@@ -1,1 +1,1 @@
-coSetProjectDefaults("pattern")
+coSetCppProjectDefaults("pattern")

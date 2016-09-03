@@ -1,1 +1,1 @@
-coSetProjectDefaults("debug")
+coSetCppProjectDefaults("debug")

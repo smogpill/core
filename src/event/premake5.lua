@@ -1,1 +1,1 @@
-coSetProjectDefaults("event")
+coSetCppProjectDefaults("event")

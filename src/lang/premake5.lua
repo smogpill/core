@@ -1,1 +1,1 @@
-coSetProjectDefaults("lang")
+coSetCppProjectDefaults("lang")

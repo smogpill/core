@@ -1,3 +1,3 @@
-coSetProjectDefaults("test_math")
+coSetCppProjectDefaults("test_math")
 kind "ConsoleApp"
 links {"container", "test", "memory", "lang", "math"}

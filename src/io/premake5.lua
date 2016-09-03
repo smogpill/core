@@ -1,1 +1,1 @@
-coSetProjectDefaults("io")
+coSetCppProjectDefaults("io")

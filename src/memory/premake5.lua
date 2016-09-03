@@ -1,1 +1,1 @@
-coSetProjectDefaults("memory")
+coSetCppProjectDefaults("memory")

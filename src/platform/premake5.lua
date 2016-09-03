@@ -1,1 +1,1 @@
-coSetProjectDefaults("platform")
+coSetCppProjectDefaults("platform")

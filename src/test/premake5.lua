@@ -1,1 +1,1 @@
-coSetProjectDefaults("test")
+coSetCppProjectDefaults("test")

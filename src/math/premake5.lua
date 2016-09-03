@@ -1,1 +1,1 @@
-coSetProjectDefaults("math")
+coSetCppProjectDefaults("math")

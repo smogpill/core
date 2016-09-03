@@ -81,15 +81,23 @@ void coVulkanLogicalDevice::Clear()
 		delete p;
 		p = nullptr;
 	}
+
 	for (VkQueue& queue_vk : queues_vk)
 		queue_vk = VK_NULL_HANDLE;
 	for (VkFence& fence_vk : fences_vk)
 	{
-		vkDestroyFence(device_vk, fence_vk, nullptr);
-		fence_vk = VK_NULL_HANDLE;
+		if (fence_vk != VK_NULL_HANDLE)
+		{
+			vkDestroyFence(device_vk, fence_vk, nullptr);
+			fence_vk = VK_NULL_HANDLE;
+		}
 	}
-	vkDestroyDevice(device_vk, nullptr);
-	device_vk = VK_NULL_HANDLE;
+	
+	if (device_vk != VK_NULL_HANDLE)
+	{
+		vkDestroyDevice(device_vk, nullptr);
+		device_vk = VK_NULL_HANDLE;
+	}
 }
 
 coResult coVulkanLogicalDevice::InitQueueFamilyIndices()

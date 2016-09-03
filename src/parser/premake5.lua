@@ -1,1 +1,1 @@
-coSetProjectDefaults("parser")
+coSetCppProjectDefaults("parser")

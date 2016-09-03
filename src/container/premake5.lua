@@ -1,1 +1,1 @@
-coSetProjectDefaults("container")
+coSetCppProjectDefaults("container")

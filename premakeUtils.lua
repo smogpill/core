@@ -8,13 +8,14 @@ versionMajor = 0
 versionMinor = 0
 versionBuild = 0
 
-function coSetSolutionDefaults()
-	configurations {"debug", "release"}
+function coSetWorkspaceDefaults()
+	configurations {"debug", "release", "prebuildDebug", "prebuildRelease"}
 	location(buildPath)
 	objdir(buildPath .. "/obj")
 	libdirs { buildPath .. "/bin" }
 	targetdir(buildPath .. "/bin")
 	defines { "coVERSION_MAJOR="..versionMajor, "coVERSION_MINOR="..versionMinor, "coVERSION_BUILD="..versionBuild }
+	includedirs { "src", "build/gen" }
 end
 
 function coSetPCH(_dir, _projectName, _fileName)
@@ -30,73 +31,73 @@ function coSetPCH(_dir, _projectName, _fileName)
 	--]]
 end
 
-function coSetProjectDefaults(_name)
+function coSetProjectDefaults(_name, _options)
+	print("Generating project ".._name.."...")
 	project(_name)
-	filter {}
 
 	architecture "x86_64"
-	rtti "Off"
-	exceptionhandling "Off"
-	vectorextensions "SSE2"
 	warnings "Extra"
-	floatingpoint "Fast"
-	editandcontinue "Off"
+	kind "StaticLib"
+	location (buildAbsPath.."/projects")
+	projectDir = "src/".._name
+	defines { "coPROJECT_NAME=".._name }
 
-	flags { "Symbols", "NoMinimalRebuild", "FatalWarnings", "C++14", "MultiProcessorCompile" }
-	filter { "gmake" }
-		buildoptions { "-Wno-reorder", "-Wno-deprecated" }
-		includedirs { gmakeIncludeDir }
+	if not (_options and _options.prebuildDependency) then
+		--removeconfigurations {"prebuild*"}
+		configurations { "debug", "release" }
+	end
+
+	filter{"configurations:debug or release"}
+		defines {"coREFLECT_ENABLED"}
 	filter { "configurations:debug or prebuildDebug" }
 		targetsuffix "_d"
 	filter { "configurations:release or prebuildRelease" }
 		optimize "On"
-		flags { "OptimizeSpeed", "NoFramePointer"}
+	filter {}	
+end
+
+function coSetCppProjectDefaults(_name)
+	coSetProjectDefaults(_name)
+
+	rtti "Off"
+	language "C++"
+	exceptionhandling "Off"
+	vectorextensions "SSE2"
+	floatingpoint "Fast"
+	editandcontinue "Off"
+	flags { "Symbols", "NoMinimalRebuild", "FatalWarnings", "C++14", "MultiProcessorCompile" }
+	files { "**.cpp", "**.h"}
+
+	if os.isfile("pch.h") then
+		coSetPCH(projectDir, _name, "pch")
+	end
+
+	filter { "gmake" }
+		buildoptions { "-Wno-reorder", "-Wno-deprecated" }
+		includedirs { gmakeIncludeDir }
 	filter { "vs*" }
 		defines { "_HAS_EXCEPTIONS=0" }
 		--flags { "StaticRuntime" }
 		linkoptions { "/ENTRY:mainCRTStartup" }
-	filter {}
-
-	-- Defaults
-	kind "StaticLib"
-	location (buildAbsPath.."/projects")
-	projectDir = "src/".._name
-	files { "**.cpp", "**.h"}
-
-	-- Precompiled header
-	if os.isfile("pch.h") then
-		coSetPCH(projectDir, _name, "pch")
-	end
-	
-	--vpaths { ["*"] = _projectDir }
-	defines { "coPROJECT_NAME=".._name }
-	language "C++"
-
-	-- Reflection
-	filter "debug or release"
+	filter { "configurations:release or prebuildRelease" }
+		flags { "OptimizeSpeed", "NoFramePointer"}
+	filter {"configurations:debug or release"}
 		if os.isfile("reflect.cpp") then
 			prebuildcommands{"$(OutputPath)prebuild_dist.exe '" .. srcAbsPath .. "' '" .. genAbsPath .. "' '" .. _name .. "' '".. _name .."/pch.h''"}
 		end
-		defines {"coREFLECT_ENABLED"}
 	filter {}
 end
 
 function coSetShaderProjectDefaults(_name)
-	project(_name)
-	filter {}
+	coSetProjectDefaults(_name)
 
 	-- Defaults
-	kind "StaticLib"
-	location (buildAbsPath.."/projects")
-	projectDir = "src/".._name
 	files { "**.vert", "**.frag"}
-	
-	defines { "coPROJECT_NAME=".._name }
 	--language "C++" -- We don't have better here
 
 	---[[
 	shaderOutPath = "$(OutDir)/shaders/%{file.name}.spv"
-	filter 'files:**.vert or **.frag'
+	filter {'files:**.vert or **.frag'}
 		buildmessage 'Compiling %{file.relpath}'
 		buildcommands
 		{
@@ -107,29 +108,18 @@ function coSetShaderProjectDefaults(_name)
 	--]]
 end
 
-workspace("core")
-	coSetSolutionDefaults()
-	configurations {"prebuildDebug", "prebuildRelease"}
-	includedirs { "src", "build/gen" }
+function coSetProjectDependencies(_deps)
+	co_dependencies = _deps
+	links(_deps)
+end
 
-	include("src/lang")
-	include("src/debug")
-	include("src/math")
-	include("src/memory")
-	include("src/container")
-	include("src/pattern")
-	include("src/platform")
-	include("src/test")
-	include("src/event")
-	include("src/io")
-	include("src/app")
-	include("src/parser")
-	include("src/parser_clang")
-	include("src/prebuild")
-	include("src/render")
-	include("src/render_vulkan")
-	include("src/shader")
-	include("src/runtime")
-	include("src/test_math")
-	include("src/test_container")
-	include("src/test_io")
+function coGenerateProjectWorkspace(_params)
+	print("Generating workspace ".._params.name.."...")
+	workspace(_params.name)
+	coSetWorkspaceDefaults()
+	startproject(_params.name)
+	include("src/".._params.name)
+	for i, d in ipairs(co_dependencies) do
+		include("src/"..d)
+	end
+end

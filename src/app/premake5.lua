@@ -1,1 +1,1 @@
-coSetProjectDefaults("app")
+coSetCppProjectDefaults("app")

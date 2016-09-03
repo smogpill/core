@@ -1,6 +1,7 @@
-coSetProjectDefaults("prebuild")
+coSetCppProjectDefaults("prebuild")
 kind "ConsoleApp"
-links {"lang", "debug", "app", "pattern", "memory", "parser", "parser_clang", "container", "io", "platform", "math"}
+coSetProjectDependencies{"lang", "debug", "app", "pattern", "memory", "parser", "parser_clang", "container", "io", "platform", "math"}
+--links {"lang", "debug", "app", "pattern", "memory", "parser", "parser_clang", "container", "io", "platform", "math"}
 links {externalAbsPath .. "/clang/lib/vs/x64/libclang"}
 
 debugargs {"$(OutputPath)../../../src", "$(OutputPath)../../gen", "math", "math/pch.h"}
