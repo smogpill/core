@@ -90,6 +90,7 @@ end
 
 function coSetShaderProjectDefaults(_name)
 	coSetProjectDefaults(_name)
+	kind "Utility"
 
 	-- Defaults
 	files { "**.vert", "**.frag"}
