@@ -14,6 +14,4 @@ coListNode::~coListNode()
 {
 	coASSERT(previous == this);
 	coASSERT(next == this);
-	previous->next = next;
-	next->previous = previous;
 }

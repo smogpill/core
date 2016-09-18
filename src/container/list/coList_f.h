@@ -9,35 +9,40 @@ template <class T>
 class coListIterator
 {
 public:
-	coListIterator(coListNodeData<T>* _node) : node(_node) {}
-	T& operator*() const { return node->data; }
-	T& operator*() { return node->data; }
+	typedef typename  coList<T>::Entry Entry;
+	typedef coListIterator<T> Iterator;
+
+	coListIterator(typename Entry* _entry) : entry(_entry) {}
+	T& operator*() const { return entry->data; }
+	T& operator*() { return entry->data; }
 	void operator++()
 	{
-		node = static_cast<coListNodeData<T>*>(node->next);
+		entry = static_cast<Entry*>(entry->next);
 	}
-	coBool operator!=(const coListIterator<T>& _other) const { return node == _other.node; }
+	coBool operator!=(const Iterator& _other) const { return entry == _other.entry; }
 private:
-	coListNodeData<T>* node;
+	Entry* entry;
 };
 
 template <class T>
 class coListConstIterator
 {
+	typedef typename coList<T>::Entry Entry;
+	typedef coListConstIterator<T> Iterator;
 public:
-	coListConstIterator(const coListNodeData<T>* _node) : node(_node) {}
-	const T& operator*() const { return node->data; }
-	T& operator*() { return node->data; }
+	coListConstIterator(const Entry* _entry) : entry(_entry) {}
+	const T& operator*() const { return entry->data; }
+	T& operator*() { return entry->data; }
 	void operator++()
 	{
-		node = static_cast<const coListNodeData<T>*>(node->next);
+		entry = static_cast<const Entry*>(entry->next);
 	}
-	coBool operator!=(const coListIterator<T>& _other) const { return node == _other.node; }
+	coBool operator!=(const Iterator& _other) const { return entry == _other.entry; }
 private:
-	const coListNodeData<T>* node;
+	const Entry* entry;
 };
 
-template <class T> coFORCE_INLINE coListConstIterator<T> coBegin(const coList<T>& _this) { return coListConstIterator<T>(static_cast<const coListNodeData<T>*>(_this.endNode.next)); }
-template <class T> coFORCE_INLINE coListIterator<T> coBegin(coList<T>& _this) { return coListIterator<T>(static_cast<coListNodeData<T>*>(_this.endNode.next)); }
-template <class T> coFORCE_INLINE coListConstIterator<T> coEnd(const coList<T>& _this) { return coListConstIterator<T>(static_cast<const coListNodeData<T>*>(&_this.endNode)); }
-template <class T> coFORCE_INLINE coListIterator<T> coEnd(coList<T>& _this) { return coListIterator<T>(static_cast<coListNodeData<T>*>(&_this.endNode)); }
+template <class T> coFORCE_INLINE coListConstIterator<T> coBegin(const coList<T>& _this) { return coListConstIterator<T>(static_cast<const coList<T>::Entry*>(_this.endNode.next)); }
+template <class T> coFORCE_INLINE coListIterator<T> coBegin(coList<T>& _this) { return coListIterator<T>(static_cast<coList<T>::Entry*>(_this.endNode.next)); }
+template <class T> coFORCE_INLINE coListConstIterator<T> coEnd(const coList<T>& _this) { return coListConstIterator<T>(static_cast<const coList<T>::Entry*>(&_this.endNode)); }
+template <class T> coFORCE_INLINE coListIterator<T> coEnd(coList<T>& _this) { return coListIterator<T>(static_cast<coList<T>::Entry*>(&_this.endNode)); }

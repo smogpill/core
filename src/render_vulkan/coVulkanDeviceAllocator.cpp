@@ -81,7 +81,6 @@ coResult coVulkanDeviceAllocator::Allocate(coVulkanDeviceAllocation*& /*_alloc*/
 
 			if (newBlock.size_vk != 0)
 			{
-				coWARN_NOT_AVAILABLE();
 				//coInsertAfter(*selectedBlock, new coListNodeData<coVulkanDeviceMemoryBlock>(newBlock));
 			}
 		}

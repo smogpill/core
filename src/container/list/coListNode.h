@@ -10,12 +10,3 @@ public:
 	coListNode* previous;
 	coListNode* next;
 };
-
-template <class T>
-class coListNodeData : public coListNode
-{
-public:
-	typedef T DataType;
-	coListNodeData(const T& _data) : data(_data) {}
-	T data;
-};
