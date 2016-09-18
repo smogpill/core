@@ -4,15 +4,31 @@
 
 #include "render/coRenderDeviceObject.h"
 
+class coVulkanDeviceMemoryChunk;
+class coVulkanDeviceAllocation;
+
 class coVulkanDeviceAllocator : public coRenderDeviceObject
 {
 	coDECLARE_SUPER(coRenderDeviceObject);
 public:
+	enum Type
+	{
+		deviceLocal,
+		uploadToDevice,
+		readBackFromDevice,
+		end
+	};
+	virtual ~coVulkanDeviceAllocator();
+
+	coResult Allocate(coVulkanDeviceAllocation*& _alloc, const VkMemoryPropertyFlags& _flags_vk, const VkDeviceSize& _size_vk);
+	void Free(coVulkanDeviceAllocation& _alloc);
+
+protected:
+	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 private:
-	class Block
-	{
-	public:
-		VkDeviceMemory deviceMemory_vk;
-	};
+	const VkDevice& GetVkDevice() const;
+	coResult AllocateChunk(coVulkanDeviceMemoryChunk*& _chunk, const VkMemoryPropertyFlags& _requiredFlags_vk, const VkDeviceSize& _size_vk);
+
+	coDynamicArray<coVulkanDeviceMemoryChunk*> chunks;
 };

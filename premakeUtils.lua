@@ -41,6 +41,7 @@ function coSetProjectDefaults(_name, _options)
 	location (buildAbsPath.."/projects")
 	projectDir = "src/".._name
 	defines { "coPROJECT_NAME=".._name }
+	debugdir "$(OutDir)"
 
 	if not (_options and _options.prebuildDependency) then
 		--removeconfigurations {"prebuild*"}

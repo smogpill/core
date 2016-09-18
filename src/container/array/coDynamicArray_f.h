@@ -88,21 +88,38 @@ void coPushBackArray(coDynamicArray<T>& _this, const coArray<T>& _other)
 }
 
 template <class T>
+void coInsert(coDynamicArray<T>& _this, coUint32 _pos, const T& _val)
+{
+	coASSERT(_pos <= _this.count);
+	if (_pos == _this.count)
+	{
+		coPushBack(_this, _val);
+	}
+	else
+	{
+		coASSERT(_pos <= _this.count);
+		coReserve(_this, _this.count + 1);
+
+		coWARN_NOT_AVAILABLE();
+	}
+}
+
+template <class T>
 void coSwap(coDynamicArray<T>& _this, coDynamicArray<T>& _other)
 {
 	coSwapMemory(_this, _other);
 }
 
 template <class T>
-coDynamicArray<T>::coDynamicArray(const coArray<T>& _)
+coDynamicArray<T>::coDynamicArray(const coArray<T>& _this)
 	: coDynamicArray()
 {
-	operator=(_);
+	operator=(_this);
 }
 
 template <class T>
-coDynamicArray<T>::coDynamicArray(const coDynamicArray<T>& _)
-	: coDynamicArray(static_cast<const coArray<T>&>(_))
+coDynamicArray<T>::coDynamicArray(const coDynamicArray<T>& _this)
+	: coDynamicArray(static_cast<const coArray<T>&>(_this))
 {
 
 }

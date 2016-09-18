@@ -8,6 +8,7 @@
 
 coVulkanBuffer::coVulkanBuffer()
 	: buffer_vk(VK_NULL_HANDLE)
+	, deviceMemory_vk(VK_NULL_HANDLE)
 {
 
 }
@@ -18,6 +19,12 @@ coVulkanBuffer::~coVulkanBuffer()
 	{
 		const VkDevice& device_vk = GetVkDevice();
 		vkDestroyBuffer(device_vk, buffer_vk, nullptr);
+	}
+
+	if (deviceMemory_vk != VK_NULL_HANDLE)
+	{
+		const VkDevice& device_vk = GetVkDevice();
+		vkFreeMemory(device_vk, deviceMemory_vk, nullptr);
 	}
 }
 
@@ -54,4 +61,17 @@ const VkDevice& coVulkanBuffer::GetVkDevice() const
 	const coVulkanLogicalDevice* vulkanLogicalDevice = static_cast<const coVulkanLogicalDevice*>(device);
 	static VkDevice nullDevice_vk = VK_NULL_HANDLE;
 	return vulkanLogicalDevice ? vulkanLogicalDevice->GetVkDevice() : nullDevice_vk;
+}
+
+coResult coVulkanBuffer::InitMemoryHack()
+{
+	VkMemoryAllocateInfo allocInfo{};
+	// 	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+	// 	allocInfo.allocationSize = 256 * 1024 * 1024;
+	// 	allocInfo.memoryTypeIndex = ;
+	// 
+	// 	const VkDevice& device_vk = GetVkDevice();
+	// 	VkDeviceMemory deviceMemory_vk;
+	// 	coVULKAN_TRY(vkAllocateMemory(device_vk, &allocInfo, nullptr, &deviceMemory_vk), "Failed to allocate device memory.");
+	return true;
 }

@@ -46,7 +46,8 @@ coResult coGetPhysicalDevices(coDynamicArray<coVulkanPhysicalDevice*>& _out, con
 
 coVulkanPhysicalDevice::coVulkanPhysicalDevice()
 	: physicalDevice_vk(VK_NULL_HANDLE)
-	, props_vk({})
+	, properties_vk{}
+	, memoryProperties_vk{}
 {
 
 }
@@ -65,7 +66,8 @@ coResult coVulkanPhysicalDevice::OnInit(const coObject::InitConfig& _config)
 	coTRY(physicalDevice_vk != VK_NULL_HANDLE, nullptr);
 	coTRY(InitQueueFamilyProperties(), "Failed to init queue family properties.");
 	coTRY(InitSupportedExtensions(), "Failed to init supported extensions.");
-	coTRY(InitProps(), "Failed to init device properties.");
+	coTRY(InitProperties(), "Failed to init device properties.");
+	coTRY(InitMemoryProperties(), "Failed to init device memory properties.");
 	return true;
 }
 
@@ -91,9 +93,15 @@ coResult coVulkanPhysicalDevice::InitSupportedExtensions()
 	return true;
 }
 
-coResult coVulkanPhysicalDevice::InitProps()
+coResult coVulkanPhysicalDevice::InitProperties()
 {
-	vkGetPhysicalDeviceProperties(physicalDevice_vk, &props_vk);
+	vkGetPhysicalDeviceProperties(physicalDevice_vk, &properties_vk);
+	return true;
+}
+
+coResult coVulkanPhysicalDevice::InitMemoryProperties()
+{
+	vkGetPhysicalDeviceMemoryProperties(physicalDevice_vk, &memoryProperties_vk);
 	return true;
 }
 

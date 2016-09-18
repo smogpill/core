@@ -21,7 +21,8 @@ public:
 	const coArray<VkQueueFamilyProperties>& GetQueueFamilyProperties() const { return queueFamilyProperties; }
 	const coArray<VkExtensionProperties>&  GetSupportedExtensions() const { return supportedExtensions; }
 	const VkPhysicalDevice& GetVkPhysicalDevice() const { return physicalDevice_vk; }
-	const VkPhysicalDeviceProperties& GetProperties() const { return props_vk; }
+	const VkPhysicalDeviceProperties& GetProperties() const { return properties_vk; }
+	const VkPhysicalDeviceMemoryProperties& GetMemoryProperties() const { return memoryProperties_vk; }
 	coBool IsExtensionSupported(const coConstString& _extension) const;
 	coUint GetNbQueueFamilies() const;
 	coResult SupportsGraphics(coBool& _out, coUint queueFamilyIndex) const;
@@ -33,12 +34,14 @@ protected:
 private:
 	coResult InitQueueFamilyProperties();
 	coResult InitSupportedExtensions();
-	coResult InitProps();
+	coResult InitProperties();
+	coResult InitMemoryProperties();
 
 	VkPhysicalDevice physicalDevice_vk;
 	coDynamicArray<VkQueueFamilyProperties> queueFamilyProperties;
 	coDynamicArray<VkExtensionProperties> supportedExtensions;
-	VkPhysicalDeviceProperties props_vk;
+	VkPhysicalDeviceProperties properties_vk;
+	VkPhysicalDeviceMemoryProperties memoryProperties_vk;
 };
 
 coResult coGetPhysicalDevices(coDynamicArray<coVulkanPhysicalDevice*>& _out, const VkInstance& _instance_vk);

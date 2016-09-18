@@ -18,6 +18,8 @@ protected:
 
 private:
 	const VkDevice& GetVkDevice() const;
+	coResult InitMemoryHack();
 
 	VkBuffer buffer_vk;
+	VkDeviceMemory deviceMemory_vk;
 };
