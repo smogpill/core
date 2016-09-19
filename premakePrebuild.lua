@@ -1,3 +1,3 @@
 dofile("premakeUtils.lua")
 
-coGenerateProjectWorkspace{name = "prebuild"}
+coGenerateProjectWorkspace{name = "prebuild", projects={"prebuild"}}

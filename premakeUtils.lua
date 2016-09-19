@@ -111,7 +111,10 @@ function coSetShaderProjectDefaults(_name)
 end
 
 function coSetProjectDependencies(_deps)
-	co_dependencies = _deps
+	if not co_dependencies then
+		co_dependencies = {}
+	end
+	for _,v in pairs(_deps) do table.insert(co_dependencies, v) end
 	links(_deps)
 end
 
@@ -119,9 +122,13 @@ function coGenerateProjectWorkspace(_params)
 	print("Generating workspace ".._params.name.."...")
 	workspace(_params.name)
 	coSetWorkspaceDefaults()
-	startproject(_params.name)
-	include("src/".._params.name)
-	for i, d in ipairs(co_dependencies) do
-		include("src/"..d)
+	startproject(_params.projects[0])
+	for _, p in pairs(_params.projects) do
+		include("src/"..p)
+	end
+	if co_dependencies then
+		for _, d in pairs(co_dependencies) do
+			include("src/"..d)
+		end
 	end
 end
