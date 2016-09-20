@@ -4,4 +4,5 @@
 
 class coListNode;
 
-void coInsertAfter(coListNode& _this, coListNode& _newNode);
+void coInsertBefore(coListNode& _node, coListNode& _newNode);
+void coInsertAfter(coListNode& _node, coListNode& _newNode);

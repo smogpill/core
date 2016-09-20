@@ -12,6 +12,4 @@ coListNode::coListNode()
 
 coListNode::~coListNode()
 {
-	coASSERT(previous == this);
-	coASSERT(next == this);
 }

@@ -13,5 +13,9 @@ public:
 	{
 		T data;
 	};
+
+	coList(){}
+	coList(std::initializer_list<T> _l);
+
 	coListNode endNode;
 };

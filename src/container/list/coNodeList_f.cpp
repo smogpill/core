@@ -5,14 +5,20 @@
 #include "container/list/coListNode.h"
 #include "debug/log/coAssert.h"
 
-void coInsertAfter(coListNode& _this, coListNode& _newNode)
+void coInsertAfter(coListNode& _node, coListNode& _newNode)
+{
+	coASSERT(_node.next);
+	coInsertBefore(*_node.next, _newNode);
+}
+
+void coInsertBefore(coListNode& _node, coListNode& _newNode)
 {
 	coASSERT(_newNode.previous == &_newNode);
 	coASSERT(_newNode.next == &_newNode);
-	coListNode* last = _this.next;
-	coASSERT(last);
-	_this.next = &_newNode;
-	_newNode.previous = &_this;
-	_newNode.next = last;
-	last->previous = &_newNode;
+	coListNode* previous = _node.previous;
+	coASSERT(previous);
+	_node.previous = &_newNode;
+	_newNode.next = &_node;
+	_newNode.previous = previous;
+	previous->next = &_newNode;
 }
