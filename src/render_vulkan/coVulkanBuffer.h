@@ -4,6 +4,8 @@
 
 #include "render/coRenderBuffer.h"
 
+class coVulkanDeviceAllocation;
+
 class coVulkanBuffer : public coRenderBuffer
 {
 	coDECLARE_SUPER(coRenderBuffer);
@@ -12,14 +14,18 @@ public:
 	virtual ~coVulkanBuffer();
 
 	const VkBuffer& GetVkBuffer() const { return buffer_vk; }
+	virtual coResult Map(void*& _data) override;
+	virtual void Unmap() override;
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
+	virtual coResult OnStart() override;
+	virtual void OnStop() override;
 
 private:
 	const VkDevice& GetVkDevice() const;
 	coResult InitMemoryHack();
 
 	VkBuffer buffer_vk;
-	VkDeviceMemory deviceMemory_vk;
+	coVulkanDeviceAllocation* deviceAllocation;
 };

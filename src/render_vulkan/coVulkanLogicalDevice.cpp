@@ -10,6 +10,7 @@
 #include "render_vulkan/coVulkanSemaphore.h"
 #include "render_vulkan/coVulkanCommandPool.h"
 #include "render_vulkan/coVulkanCommandBuffer.h"
+#include "render_vulkan/coVulkanDeviceAllocator.h"
 #include "lang/result/coResult_f.h"
 #include "lang/reflect/coNumericLimits.h"
 #include "pattern/scope/coDefer.h"
@@ -19,6 +20,7 @@ coVulkanLogicalDevice::coVulkanLogicalDevice()
 	, device_vk(VK_NULL_HANDLE)
 	//, queues_vk{ VK_NULL_HANDLE }
 	, vulkanLayerManager(nullptr)
+	, vulkanDeviceAllocator(nullptr)
 {
 	for (auto& x : queueFamilyIndices)
 		x = -1;
@@ -61,6 +63,7 @@ coResult coVulkanLogicalDevice::OnStart()
 {
 	coTRY(Super::OnStart(), nullptr);
 	coTRY(InitLogicalDevice(), "Failed to init the logical device.");
+	coTRY(InitAllocator(), "Failed to init the allocator.");
 	coTRY(InitQueues(), "Failed to init queues.");
 	coTRY(InitCommandPools(), "Failed to init command pools.");
 	coTRY(InitFences(), "Failed to init fences.");
@@ -92,6 +95,9 @@ void coVulkanLogicalDevice::Clear()
 			fence_vk = VK_NULL_HANDLE;
 		}
 	}
+
+	delete vulkanDeviceAllocator;
+	vulkanDeviceAllocator = nullptr;
 	
 	if (device_vk != VK_NULL_HANDLE)
 	{
@@ -390,5 +396,18 @@ coResult coVulkanLogicalDevice::InitFences()
 		coVULKAN_TRY(vkCreateFence(device_vk, &createInfo_vk, nullptr, &f), "Failed to create Vulkan fence.");
 	}
 	
+	return true;
+}
+
+coResult coVulkanLogicalDevice::InitAllocator()
+{
+	coASSERT(device_vk);
+
+	coVulkanDeviceAllocator* a = new coVulkanDeviceAllocator();
+	coDEFER() { delete a; };
+	coVulkanDeviceAllocator::InitConfig c;
+	c.device = this;
+	coTRY(a->Init(c), "Failed to init the device allocator.");
+	coSwap(vulkanDeviceAllocator, a);
 	return true;
 }

@@ -14,14 +14,24 @@ public:
 		index = 1<<1,
 		uniform = 1<<2,
 	};
+	enum Type
+	{
+		default_,
+		staging,
+		dynamic
+	};
 	class InitConfig : public Super::InitConfig
 	{
 	public:
 		InitConfig();
 		coUint32 size8;
 		coUint32 usage;
+		Type type;
 		coBool shared;
 	};
+
+	virtual coResult Map(void*& _data);
+	virtual void Unmap();
 
 protected:
 	coRenderBuffer();

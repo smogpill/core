@@ -9,6 +9,7 @@ class coVulkanSurface;
 class coVulkanPhysicalDevice;
 class coSwapChain;
 class coVulkanCommandPool;
+class coVulkanDeviceAllocator;
 
 class coVulkanLogicalDevice : public coRenderDevice
 {
@@ -44,6 +45,7 @@ public:
 	virtual coResult SupportsGraphics(coBool& _out) const override;
 	virtual coResult SupportsSurface(coBool& _out, const coSurface& _surface) const override;
 	virtual coResult Submit(const SubmitConfig& _config) override;
+	coVulkanDeviceAllocator* GetVulkanDeviceAllocator() const { return vulkanDeviceAllocator; }
 	
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
@@ -56,6 +58,7 @@ private:
 	coResult InitLogicalDevice();
 	coResult InitCommandPools();
 	coResult InitFences();
+	coResult InitAllocator();
 	coResult GetAllRequestedExtensions(coDynamicArray<const coChar*>& _extensions) const;
 	void Clear();
 
@@ -67,4 +70,5 @@ private:
 	coDynamicArray<coDynamicString*> requestedExtensions;
 	coVulkanLayerManager* vulkanLayerManager;
 	coVulkanCommandPool* vulkanCommandPools[QueueType::count];
+	coVulkanDeviceAllocator* vulkanDeviceAllocator;
 };

@@ -41,12 +41,30 @@ coResult coVulkanMesh::OnInit(const coObject::InitConfig& _config)
 	coDEFER() { delete b; };
 	coVulkanBuffer::InitConfig c;
 	c.device = device;
-	c.debugName = "Index buffer";
+	c.debugName = "MeshVulkanBuffer";
 	c.usage = coVulkanBuffer::index;
+	c.type = coVulkanBuffer::dynamic; // temp
 	c.size8 = vertexBufferSize + indexBufferSize;
 	coTRY(b->Init(c), "Failed to init the vulkan buffer.");
-	coSwap(vulkanBuffer, b);
 	indexBufferOffset = vertexBufferSize;
 
+	// Copy data
+	void* data = nullptr;
+	coTRY(b->Map(data), "Failed to map the vulkan buffer data.");
+	{
+		coDEFER() { b->Unmap(); };
+		_coVertex_PosNormalUv* posData = static_cast<_coVertex_PosNormalUv*>(data);
+		for (const auto& p : positions)
+		{
+			posData->pos = p;
+			posData->normal = coFloatx3(0);
+			posData->uv = coFloatx2(0);
+			++posData;
+		}
+		coByte* index = static_cast<coByte*>(data) + indexBufferOffset;
+		coMemCopy(index, indices.data, indexBufferSize);
+	}
+
+	coSwap(vulkanBuffer, b);
 	return true;
 }

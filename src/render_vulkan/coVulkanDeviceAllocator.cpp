@@ -39,8 +39,11 @@ const VkDevice& coVulkanDeviceAllocator::GetVkDevice() const
 	return vulkanLogicalDevice ? vulkanLogicalDevice->GetVkDevice() : nullDevice_vk;
 }
 
-coResult coVulkanDeviceAllocator::Allocate(coVulkanDeviceAllocation*& /*_alloc*/, const VkMemoryPropertyFlags& _flags_vk, const VkDeviceSize& _size_vk)
+coResult coVulkanDeviceAllocator::Allocate(coVulkanDeviceAllocation*& _alloc, const VkMemoryPropertyFlags& _flags_vk, const VkDeviceSize& _size_vk)
 {
+	delete _alloc;
+	_alloc = nullptr;
+
 	// Initial raw implementation from https://cpp-rendering.io/vulkan-and-pipelines/. 
 
 	VkDeviceSize size_vk = _size_vk;
@@ -55,34 +58,44 @@ coResult coVulkanDeviceAllocator::Allocate(coVulkanDeviceAllocation*& /*_alloc*/
 		if ((chunk->flags_vk & _flags_vk) == _flags_vk)
 		{
 			// Find block
-			coVulkanDeviceMemoryBlock* selectedBlock = nullptr;
-			for (auto& block : chunk->blocks)
+			coList<coVulkanDeviceMemoryBlock>::Entry* selectedBlockEntry = nullptr;
+			for (auto& entry : chunk->blocks)
 			{
+				const auto& block = entry.data;
 				if (block.isFree)
 				{
 					if (block.size_vk > size_vk)
 					{
-						selectedBlock = &block;
+						selectedBlockEntry = &entry;
 						break;
 					}
 				}
 			}
 
-			if (!!selectedBlock)
+			if (!selectedBlockEntry)
 				continue;
 
 			coVulkanDeviceMemoryBlock newBlock;
 			newBlock.isFree = true;
-			newBlock.offset_vk = selectedBlock->offset_vk + size_vk;
-			newBlock.size_vk = selectedBlock->size_vk - size_vk;
+			newBlock.offset_vk = selectedBlockEntry->data.offset_vk + size_vk;
+			newBlock.size_vk = selectedBlockEntry->data.size_vk - size_vk;
 
-			selectedBlock->isFree = false;
-			selectedBlock->size_vk = size_vk;
+			selectedBlockEntry->data.isFree = false;
+			selectedBlockEntry->data.size_vk = size_vk;
 
 			if (newBlock.size_vk != 0)
 			{
-				//coInsertAfter(*selectedBlock, new coListNodeData<coVulkanDeviceMemoryBlock>(newBlock));
+				coInsertAfter(*selectedBlockEntry, newBlock);
 			}
+
+			coVulkanDeviceAllocation* allocation = new coVulkanDeviceAllocation();
+			allocation->allocator = this;
+			allocation->chunk = chunk;
+			allocation->offset_vk = selectedBlockEntry->data.offset_vk;
+			allocation->size_vk = size_vk;
+			coASSERT(!_alloc);
+			_alloc = allocation;
+			return true;
 		}
 	}
 
@@ -90,13 +103,14 @@ coResult coVulkanDeviceAllocator::Allocate(coVulkanDeviceAllocation*& /*_alloc*/
 	coTRY(AllocateChunk(chunk, _flags_vk, 256 * 1024 * 1024), "Failed to allocate new Vulkan memory chunk.");
 	coASSERT(chunk);
 
-	return true;
+	return Allocate(_alloc, _flags_vk, _size_vk);
 }
 
 void coVulkanDeviceAllocator::Free(coVulkanDeviceAllocation& _alloc)
 {
-	for (coVulkanDeviceMemoryBlock& block : _alloc.chunk->blocks)
+	for (auto& entry : _alloc.chunk->blocks)
 	{
+		auto& block = entry.data;
 		if (block.offset_vk == _alloc.offset_vk)
 		{
 			block.isFree = true;
@@ -106,8 +120,9 @@ void coVulkanDeviceAllocator::Free(coVulkanDeviceAllocation& _alloc)
 	coASSERT(false);
 }
 
-coResult coVulkanDeviceAllocator::AllocateChunk(coVulkanDeviceMemoryChunk*& /*_chunk*/, const VkMemoryPropertyFlags& _requiredFlags_vk, const VkDeviceSize& _size_vk)
+coResult coVulkanDeviceAllocator::AllocateChunk(coVulkanDeviceMemoryChunk*& _chunk, const VkMemoryPropertyFlags& _requiredFlags_vk, const VkDeviceSize& _size_vk)
 {
+	_chunk = nullptr;
 	coVulkanLogicalDevice* vulkanDevice = static_cast<coVulkanLogicalDevice*>(device);
 	coTRY(vulkanDevice, nullptr);
 	const coVulkanPhysicalDevice* vulkanPhysicalDevice = vulkanDevice->GetPhysicalDevice();
@@ -119,16 +134,18 @@ coResult coVulkanDeviceAllocator::AllocateChunk(coVulkanDeviceMemoryChunk*& /*_c
 	{
 		for (coUint i = 0; i < memProps_vk.memoryTypeCount; ++i)
 		{
-			if ((memProps_vk.memoryTypes[i].propertyFlags & _requiredFlags_vk) == _requiredFlags_vk)
+			const VkMemoryType& memoryType_vk = memProps_vk.memoryTypes[i];
+			if ((memoryType_vk.propertyFlags & _requiredFlags_vk) == _requiredFlags_vk)
 			{
-				const VkMemoryHeap& heap_vk = memProps_vk.memoryHeaps[memProps_vk.memoryTypes[i].heapIndex];
+				const VkMemoryHeap& heap_vk = memProps_vk.memoryHeaps[memoryType_vk.heapIndex];
 				if (_size_vk < heap_vk.size)
 				{
 					index = i;
+					break;
 				}
 			}
 		}
-		coTRY(index == -1, "Failed to find a valid Vulkan memory heap for the allocation.");
+		coTRY(index != -1, "Failed to find a valid Vulkan memory heap for the allocation.");
 	}
 
 	VkMemoryAllocateInfo allocInfo{};
@@ -143,11 +160,18 @@ coResult coVulkanDeviceAllocator::AllocateChunk(coVulkanDeviceMemoryChunk*& /*_c
 
 	const VkMemoryType& memoryType_vk = memProps_vk.memoryTypes[index];
 
-	coVulkanDeviceMemoryChunk* chunk = new coVulkanDeviceMemoryChunk();
-	chunk->deviceMemory_vk = deviceMemory_vk;
-	chunk->flags_vk = memoryType_vk.propertyFlags;
-	chunk->size_vk = _size_vk;
-	coPushBack(chunks, chunk);
+	_chunk = new coVulkanDeviceMemoryChunk();
+	_chunk->deviceMemory_vk = deviceMemory_vk;
+	_chunk->flags_vk = memoryType_vk.propertyFlags;
+	_chunk->size_vk = _size_vk;
+	
+	coVulkanDeviceMemoryBlock block;
+	block.isFree = true;
+	block.offset_vk = 0;
+	block.size_vk = _size_vk;
+	coPushBack(_chunk->blocks, block);
+
+	coPushBack(chunks, _chunk);
 
 	return true;
 }

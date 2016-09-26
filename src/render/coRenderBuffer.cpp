@@ -14,6 +14,7 @@ coRenderBuffer::InitConfig::InitConfig()
 	: size8(0)
 	, shared(false)
 	, usage(0)
+	, type(default_)
 {
 
 }
@@ -25,4 +26,14 @@ coResult coRenderBuffer::OnInit(const coObject::InitConfig& _config)
 	size8 = config.size8;
 	coTRY(size8 > 0, nullptr);
 	return true;
+}
+
+coResult coRenderBuffer::Map(void*& /*_data*/)
+{
+	return true;
+}
+
+void coRenderBuffer::Unmap()
+{
+
 }

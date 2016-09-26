@@ -3,11 +3,14 @@
 #pragma once
 
 class coVulkanDeviceMemoryChunk;
+class coVulkanDeviceAllocator;
 
 class coVulkanDeviceAllocation
 {
 public:
 	coVulkanDeviceAllocation();
+	~coVulkanDeviceAllocation();
+	coVulkanDeviceAllocator* allocator;
 	coVulkanDeviceMemoryChunk* chunk;
 	VkDeviceSize offset_vk;
 	VkDeviceSize size_vk;
