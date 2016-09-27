@@ -10,7 +10,7 @@
 
 static LRESULT CALLBACK coWindowProc(HWND _hwnd, UINT _msg, WPARAM _wParam, LPARAM _lParam)
 {
-	//coWindow* window = reinterpret_cast<coWindow*>(::GetWindowLongPtrW(_hwnd, GWLP_USERDATA));
+	coWindow* window = reinterpret_cast<coWindow*>(::GetWindowLongPtrW(_hwnd, GWLP_USERDATA));
 	switch (_msg)
 	{
 	case WM_INPUT:
@@ -141,19 +141,9 @@ static LRESULT CALLBACK coWindowProc(HWND _hwnd, UINT _msg, WPARAM _wParam, LPAR
 	// 		return 0;
 	// 	}
 	// 	break;
-	// 	case WM_DESTROY:
-	// 	{
-	// 		// To not shutdown the coWindow too late.
-	// 		if (window)
-	// 		{
-	// 			coCHECK(window->shutdown(), "Failed to shutdown the window on the WM_DESTROY window event");
-	// 		}
-	// 		::PostQuitMessage(0);
-	// 		return 0;
-	// 	}
-	// 	break;
 	case WM_DESTROY:
 	{
+		window->_SetImpl(nullptr);
 		::PostQuitMessage(0);
 		return 0;
 	}
@@ -231,14 +221,17 @@ void coWindow::OnImplConstruct()
 void coWindow::OnImplDestruct()
 {
 	HWND& hwnd = reinterpret_cast<HWND&>(impl);
-	const BOOL res = ::DestroyWindow(hwnd);
-	if (res == FALSE)
+	if (hwnd != NULL)
 	{
-		coDynamicString s;
-		coDumpLastOsError(s);
-		coERROR("::DestroyWindow failed: " << s);
+		const BOOL res = ::DestroyWindow(hwnd);
+		if (res == FALSE)
+		{
+			coDynamicString s;
+			coDumpLastOsError(s);
+			coERROR("::DestroyWindow failed: " << s);
+		}
+		hwnd = NULL;
 	}
-	hwnd = nullptr;
 }
 
 coResult coWindow::OnImplInstanceCreate()

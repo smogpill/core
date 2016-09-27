@@ -4,16 +4,9 @@
 #include "render_vulkan/coVulkanMesh.h"
 #include "render_vulkan/coVulkanBuffer.h"
 #include "render/coMesh.h"
+#include "render/coRenderVertexChannels.h"
 #include "lang/result/coResult_f.h"
 #include "pattern/scope/coDefer.h"
-
-class _coVertex_PosNormalUv
-{
-public:
-	coFloatx3 pos;
-	coFloatx3 normal;
-	coFloatx2 uv;
-};
 
 coVulkanMesh::coVulkanMesh()
 	: vulkanBuffer(nullptr)
@@ -24,7 +17,7 @@ coVulkanMesh::coVulkanMesh()
 
 coVulkanMesh::~coVulkanMesh()
 {
-
+	delete vulkanBuffer;
 }
 
 coResult coVulkanMesh::OnInit(const coObject::InitConfig& _config)
@@ -34,7 +27,7 @@ coResult coVulkanMesh::OnInit(const coObject::InitConfig& _config)
 	coASSERT(mesh);
 	const auto& positions = mesh->GetPositions();
 	const auto& indices = mesh->GetIndices();
-	const coUint32 vertexBufferSize = positions.count * sizeof(_coVertex_PosNormalUv);
+	const coUint32 vertexBufferSize = positions.count * sizeof(coRenderVertex_PosNormalTangentUv);
 	const coUint32 indexBufferSize = indices.count * sizeof(indices[0]);
 
 	coVulkanBuffer* b = new coVulkanBuffer();
@@ -53,7 +46,7 @@ coResult coVulkanMesh::OnInit(const coObject::InitConfig& _config)
 	coTRY(b->Map(data), "Failed to map the vulkan buffer data.");
 	{
 		coDEFER() { b->Unmap(); };
-		_coVertex_PosNormalUv* posData = static_cast<_coVertex_PosNormalUv*>(data);
+		coRenderVertex_PosNormalTangentUv* posData = static_cast<coRenderVertex_PosNormalTangentUv*>(data);
 		for (const auto& p : positions)
 		{
 			posData->pos = p;

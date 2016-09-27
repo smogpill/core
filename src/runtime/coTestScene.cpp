@@ -79,13 +79,13 @@ coResult coTestScene::InitMesh()
 	const coFloatx3 positions[] = 
 	{
 		coFloatx3(-halfSize, -halfSize, -halfSize),
+		coFloatx3(halfSize, -halfSize, -halfSize),
 		coFloatx3(-halfSize, halfSize, -halfSize),
 		coFloatx3(halfSize, halfSize, -halfSize),
-		coFloatx3(halfSize, -halfSize, -halfSize),
-		coFloatx3(halfSize, -halfSize, halfSize),
-		coFloatx3(halfSize, halfSize, halfSize),
-		coFloatx3(-halfSize, halfSize, halfSize),
 		coFloatx3(-halfSize, -halfSize, halfSize),
+		coFloatx3(halfSize, -halfSize, halfSize),
+		coFloatx3(-halfSize, halfSize, halfSize),
+		coFloatx3(halfSize, halfSize, halfSize),
 	};
 	coPushBackArray(p->positions, coArray<coFloatx3>(positions));
 	coSwap(mesh, p);

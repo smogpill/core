@@ -50,7 +50,7 @@ coResult coVulkanRenderer::FillCommandBuffer(const FillConfig& _config)
 	coTRY(_config.pipeline, nullptr);
 	vulkanCommandBuffer->PushBindPipeline(*_config.pipeline);
 
-	vulkanCommandBuffer->PushDrawEmptyTriangle();
+	//vulkanCommandBuffer->PushDrawEmptyTriangle();
 
 	if (_config.world)
 	{

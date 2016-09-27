@@ -180,7 +180,7 @@ coResult coVulkanPipeline::InitVertexInput(VkPipelineVertexInputStateCreateInfo&
 			VkVertexInputAttributeDescription& attribute_vk = coPushBack(_outAttributes, VkVertexInputAttributeDescription{});
 			attribute_vk.binding = i;
 			attribute_vk.location = location;
-			attribute_vk.offset = attribute_vk.offset;
+			attribute_vk.offset = field->offset8;
 			coTRY(_coGetAttributeFormat(attribute_vk.format, *fieldType), "Field type unsupported for conversion to Vulkan: "<<fieldType->name);
 			++location;
 		}

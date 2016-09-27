@@ -33,6 +33,7 @@ public:
 	coResult SetForeground();
 	coResult SetFocus();
 	void* GetImpl() const { return impl; }
+	void _SetImpl(void* _impl) { impl = _impl; }
 	const coInt32x2& GetClientSize() const { return clientSize; }
 
 protected:

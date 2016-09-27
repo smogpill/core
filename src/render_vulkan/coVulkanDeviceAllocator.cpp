@@ -178,6 +178,11 @@ coResult coVulkanDeviceAllocator::AllocateChunk(coVulkanDeviceMemoryChunk*& _chu
 
 coVulkanDeviceAllocator::~coVulkanDeviceAllocator()
 {
+	const VkDevice& device_vk = GetVkDevice();
 	for (auto& p : chunks)
+	{
+		coCHECK(device_vk != VK_NULL_HANDLE, nullptr);
+		vkFreeMemory(device_vk, p->deviceMemory_vk, nullptr);
 		delete p;
+	}
 }

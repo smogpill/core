@@ -244,10 +244,10 @@ coResult coRenderWindow::InitPipeline(coRenderPipeline& _out, const coRenderMate
 	coPushBack(shaders, vertexShader);
 	coPushBack(shaders, fragmentShader);
 	c.shaders = shaders;
-	/*const coType* defaultVertexType = coRenderVertex_PosNormalUv::GetStaticType();
+	const coType* defaultVertexType = coRenderVertex_PosNormalTangentUv::GetStaticType();
 	coDynamicArray<const coType*> channels;
 	coPushBack(channels, defaultVertexType);
-	c.vertexChannels = channels;*/
+	c.vertexChannels = channels;
 	const coInt32x2 swapChainSize = swapChain->GetSize();
 	coDynamicArray<coFloatx2Rect> viewports;
 	{
