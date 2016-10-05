@@ -2,6 +2,8 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
+#undef _HAS_EXCEPTIONS
+#define _HAS_EXCEPTIONS 0
 #include <cstddef>
 #include <cstdint>
 #include <xmmintrin.h>

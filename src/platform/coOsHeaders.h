@@ -7,6 +7,8 @@
 #		define NOMINMAX
 #	endif // NOMINMAX
 
+//#	define _HAS_EXCEPTIONS 0 // to avoid warning C4577: 'noexcept' used with no exception handling mode specified; termination on exception is not guaranteed. 
+
 // [BUILD-OPT] Exclude rarely-used stuff from Windows headers
 // VC_EXTRALEAN defines WIN32_LEAN_AND_MEAN and a number of NOservice definitions, such as NOCOMM and NOSOUND
 // See afxv_w32.h

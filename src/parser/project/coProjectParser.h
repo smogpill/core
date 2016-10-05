@@ -26,6 +26,7 @@ public:
 		coConstString outReferenceDir;
 		coConstString projectRelativePath;
 		coConstString precompiledHeaderPath;
+		coArray<coConstString> includeDirs;
 	};
 
 	coProjectParser();

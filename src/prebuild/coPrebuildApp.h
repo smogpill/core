@@ -31,5 +31,6 @@ private:
 	coDynamicString outReferenceDir;
 	coDynamicString projectRelativePath;
 	coDynamicString pchRelativePath;
+	coDynamicArray<coDynamicString*> includeDirs;
 	coProjectParser projectParser;
 };

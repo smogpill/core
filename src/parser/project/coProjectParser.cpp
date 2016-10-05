@@ -66,6 +66,7 @@ coResult coProjectParser::Parse(coParsedProject& _out, const ParseConfig& _confi
 		//config.includeDirs = { _config.srcReferenceDir };
 		coDynamicArray<coConstString> includeDirs;
 		coPushBack(includeDirs, _config.srcReferenceDir);
+		coPushBackArray(includeDirs, _config.includeDirs);
 		config.includeDirs = includeDirs;
 		coTRY(sourceParser->Init(config), nullptr);
 	}

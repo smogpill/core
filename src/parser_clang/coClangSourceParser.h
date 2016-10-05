@@ -40,6 +40,7 @@ private:
 	coResult ParseType(ParseResult& _result, const CXCursor& _cursor);
 	coResult ParseTypes(ParseResult& _result, const CXCursor& _cursor);
 	coResult DisplayDiagnostics(const CXTranslationUnit& _translationUnit) const;
+	coBool ValidateDiagnostic(const CXTranslationUnit& _translationUnit) const;
 	static CXCursor FindAttribute(const CXCursor& _cursor, const coConstString& _attr);
 
 	static CXChildVisitResult ParseTypesVisitor(CXCursor _child, CXCursor _parent, CXClientData _clientData);

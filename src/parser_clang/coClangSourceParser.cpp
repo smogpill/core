@@ -73,7 +73,7 @@ coResult coClangSourceParser::OnInit(const coObject::InitConfig& _config)
 coResult coClangSourceParser::InitCommonParseArgs(const InitConfig& _config)
 {
 	coTRY(commonParseArgs.count == 0, nullptr);
-	commonParseArgs = { "-x", "c++", "-std=c++11", "-fms-compatibility-version=19", "-Wno-pragma-once-outside-header", "-D", "coREFLECTION_PARSING" };
+	commonParseArgs = { "-x", "c++", "-std=c++14", "-fms-compatibility-version=19", "-Wno-pragma-once-outside-header", "-D", "coREFLECTION_PARSING" };
 	for (const coConstString& includeDir : _config.includeDirs)
 	{
 		coDynamicString* s = new coDynamicString();
@@ -137,7 +137,8 @@ coResult coClangSourceParser::InitPrecompiledHeader(const InitConfig& _config)
 		coTRY(parseError == CXError_Success, "Clang failed to parse the file: " << filePath << " (libclang: "<< co_GetClangErrorString(parseError) << ")");
 		coTRY(translationUnit, "Can't create translation unit from source file: " << filePath);
 		coDEFER() { clang_disposeTranslationUnit(translationUnit); };
-		coTRY(DisplayDiagnostics(translationUnit), "Failed to display clang diagnostics");
+		coTRY(DisplayDiagnostics(translationUnit), "Failed to display clang diagnostics.");
+		coTRY(ValidateDiagnostic(translationUnit), "Validation failed.");
 		const CXSaveError saveError = static_cast<CXSaveError>(clang_saveTranslationUnit(translationUnit, precompiledHeaderPath.data, 0));
 		coTRY(saveError == CXSaveError_None, "Clang failed to save the file: " << precompiledHeaderPath.data);
 	}
@@ -159,7 +160,8 @@ coResult coClangSourceParser::Parse(ParseResult& _result, const ParseConfig& _co
 	coTRY(error == CXError_Success, "Clang failed to parse the file: " << filePath << " (libclang: " << co_GetClangErrorString(error) << ")");
 	coTRY(translationUnit, "Can't create translation unit from source file: " << filePath);
 	coDEFER() { clang_disposeTranslationUnit(translationUnit); };
-	coTRY(DisplayDiagnostics(translationUnit), "Failed to display clang diagnostics");
+	coTRY(DisplayDiagnostics(translationUnit), "Failed to display clang diagnostics.");
+	coTRY(ValidateDiagnostic(translationUnit), "Validation failed.");
 	CXCursor cursor = clang_getTranslationUnitCursor(translationUnit);
 
 	if (_result.parsedTypes)
@@ -396,6 +398,21 @@ CXCursor coClangSourceParser::FindAttribute(const CXCursor& _cursor, const coCon
 	}
 
 	return clang_getNullCursor();
+}
+
+coBool coClangSourceParser::ValidateDiagnostic(const CXTranslationUnit& _translationUnit) const
+{
+	const coUint nbDiagnostics = clang_getNumDiagnostics(_translationUnit);
+	for (coUint i = 0; i < nbDiagnostics; ++i)
+	{
+		CXDiagnostic diag = clang_getDiagnostic(_translationUnit, i);
+		coDEFER() { clang_disposeDiagnostic(diag); };
+
+		const CXDiagnosticSeverity severity = clang_getDiagnosticSeverity(diag);
+		if (severity >= CXDiagnostic_Warning)
+			return false;
+	}
+	return true;
 }
 
 coResult coClangSourceParser::DisplayDiagnostics(const CXTranslationUnit& _translationUnit) const

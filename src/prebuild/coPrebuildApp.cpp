@@ -19,6 +19,8 @@ coPrebuildApp::coPrebuildApp()
 
 coPrebuildApp::~coPrebuildApp()
 {
+	for (auto& p : includeDirs)
+		delete p;
 }
 
 coResult coPrebuildApp::ParseArgs(const InitConfig& _config)
@@ -55,6 +57,15 @@ coResult coPrebuildApp::ParseArgs(const InitConfig& _config)
 		//c.optional = true;
 		coTRY(argParser.Add(c), nullptr);
 	}
+
+	{
+		coCommandLineArgs::ArgConfig c;
+		c.name = "include";
+		c.shortName = "I";
+		c.optional = true;
+		c.maxCount = 9999;
+		coTRY(argParser.Add(c), nullptr);
+	}
 	
 	coTRY(argParser.Parse(_config.argv, _config.nbArgs), nullptr);
 
@@ -86,6 +97,16 @@ coResult coPrebuildApp::ParseArgs(const InitConfig& _config)
 		if (pchRelativePath != "")
 		{
 			coNormalizePath(pchRelativePath);
+		}
+	}
+
+	// Include paths
+	{
+		for (const coConstString& value : argParser.GetArgValues("include"))
+		{
+			coDynamicString* path = new coDynamicString(value);
+			coNormalizePath(*path);
+			coPushBack(includeDirs, path);
 		}
 	}
 
@@ -127,6 +148,11 @@ coResult coPrebuildApp::ParseProject(coParsedProject& _parsedProject)
 	parseConfig.outReferenceDir = outReferenceDir;
 	parseConfig.projectRelativePath = projectRelativePath;
 	parseConfig.precompiledHeaderPath = pchRelativePath;
+	coDynamicArray<coConstString> includes;
+	coReserve(includes, includeDirs.count);
+	for (const coDynamicString* s : includeDirs)
+		coPushBack(includes, *s);
+	parseConfig.includeDirs = includes;
 	coTRY(projectParser.Parse(_parsedProject, parseConfig), "Failed to parse the project: " << projectRelativePath);
 
 	return true;

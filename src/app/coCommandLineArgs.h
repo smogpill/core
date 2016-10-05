@@ -21,42 +21,41 @@ public:
 		coConstString shortName;
 		coConstString defaultValue;
 		coBool optional;
+		coUint maxCount;
 		const coType* type;
 		coConstString description;
 	};
 	class InitConfig : public Super::InitConfig
 	{
 	public:
-		InitConfig();
 		coConstString commandName;
 	};
 	class Arg
 	{
 	public:
 		Arg();
-		coConstString value;
-		const ArgConfig* argConfig;
+		coDynamicArray<coConstString> values;
+		ArgConfig config;
 	};
 
 	~coCommandLineArgs();
 	coResult Add(const ArgConfig& _argConfig);
-	coResult Parse(const coChar** args, coUint nbArgs);
+	coResult Parse(const coChar** _args, coUint _nbArgs);
 	coResult DumpHelp() const;
 	const coConstString& GetArgValue(const coConstString& _name) const;
+	const coArray<coConstString>& GetArgValues(const coConstString& _name) const;
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 private:
+	coResult InternalParse(const coChar** _args, coUint _nbArgs);
 	coResult ParseRawArg(const coConstString& _rawArg);
-	const Arg* GetArg(const coConstString& _name) const;
+	Arg* FindArg(const coConstString& _name) const;
 
 	// Config
 	coDynamicString commandName;
-	coDynamicArray<ArgConfig> argConfigs;
-	coDynamicArray<ArgConfig*> optionalArgConfigs;
-	coDynamicArray<ArgConfig*> nonOptionalArgConfigs;
 
 	// Runtime
-	coDynamicArray<Arg> args;
+	coDynamicArray<Arg*> args;
 };
