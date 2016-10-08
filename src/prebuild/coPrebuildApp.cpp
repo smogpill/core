@@ -105,6 +105,16 @@ coResult coPrebuildApp::ParseArgs(const InitConfig& _config)
 		for (const coConstString& value : argParser.GetArgValues("include"))
 		{
 			coDynamicString* path = new coDynamicString(value);
+
+			coHACK("Visual Studio 2015 adds a semicolon at the end of the path provided by the $(UniversalCRT_IncludePath) macro.");
+			if (path->count)
+			{
+				if (path->data[path->count - 1] == ';')
+				{
+					--path->count;
+				}
+			}
+
 			coNormalizePath(*path);
 			coPushBack(includeDirs, path);
 		}
