@@ -8,20 +8,20 @@ public:
 	static bool breakOnError;
 };
 
-#if defined(_MSC_VER)
-#	define coMSVC_COMPILER
-#	ifdef _DEBUG
-#		define coDEBUG
-#	endif
-#elif defined(__clang__)
+#if defined(__clang__)
 #	define coCLANG_COMPILER
 #elif defined(__MINGW32__) || defined(__MINGW64__)
 #	define coGCC_COMPATIBLE_COMPILER
 #	define coMINGW_COMPILER
-#elif defined(__GCC__)
+#elif defined(__GNUC__)
 #	define coGCC_COMPATIBLE_COMPILER
 #	define coGCC_COMPILER
 #	ifndef NDEBUG
+#		define coDEBUG
+#	endif
+#elif defined(_MSC_VER)
+#	define coMSVC_COMPILER
+#	ifdef _DEBUG
 #		define coDEBUG
 #	endif
 #else
@@ -45,7 +45,7 @@ inline void _coReturnVoid(int) {}  // to avoid some gcc warnings with the comma 
 #	define coBREAK() _coReturnVoid(coConfig::breakOnError && ::raise(SIGINT))
 #endif
 
-#if coGCC_COMPATIBLE_COMPILER || coCLANG_COMPILER
+#if defined(coGCC_COMPATIBLE_COMPILER) || defined(coCLANG_COMPILER)
 #	define coCRASH() (coBREAK(), __builtin_trap())
 #else
 #	define coCRASH() (coBREAK(), ((void)(*(volatile char*)0 = 0)))
