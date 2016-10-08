@@ -5,6 +5,4 @@
 #include "lang/publicPch.h"
 #include "debug/publicPch.h"
 #include <math.h>
-#ifdef coMSVC_COMPILER
 #include <intrin.h>
-#endif
