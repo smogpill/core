@@ -28,7 +28,7 @@ coFORCE_INLINE coBool coIsVerticalWhitespace(coChar _c) { return (_coCharCategor
 coFORCE_INLINE coBool coIsWhitespace(coChar _c) { return (_coCharCategoryTable[_c] & (_coCharCategory_horzws | _coCharCategory_vertws | _coCharCategory_space)) != 0; }
 coFORCE_INLINE coBool coIsIdentifierHeadCompatible(coChar _c) { return (_coCharCategoryTable[_c] & (_coCharCategory_upper | _coCharCategory_lower | _coCharCategory_under)) != 0; }
 coFORCE_INLINE coBool coIsIdentifierBodyCompatible(coChar _c) { return (_coCharCategoryTable[_c] & (_coCharCategory_upper | _coCharCategory_lower | _coCharCategory_digit | _coCharCategory_under)) != 0; }
-coFORCE_INLINE coBool coIsFileNameCompatible(coChar _c) { return (_coCharCategoryTable[_c] & (_coCharCategory_under | _coCharCategory_letter | _coCharCategory_space | _coCharCategory_digit | _coCharCategory_period)) != 0; }
+coFORCE_INLINE coBool coIsFileNameCompatible(coChar _c) { return (_coCharCategoryTable[_c] & (_coCharCategory_under | _coCharCategory_letter | _coCharCategory_space | _coCharCategory_digit | _coCharCategory_period | _coCharCategory_punct)) != 0; }
 coFORCE_INLINE coBool coIsDigit(coChar _c) { return (_coCharCategoryTable[_c] & _coCharCategory_digit) != 0; }
 coFORCE_INLINE coBool coIsDigitOrPeriod(coChar _c) { return (_coCharCategoryTable[_c] & (_coCharCategory_digit | _coCharCategory_period)) != 0; }
 coFORCE_INLINE coBool coIsLowerCase(coChar _c) { return (_coCharCategoryTable[_c] & _coCharCategory_lower) != 0; }
