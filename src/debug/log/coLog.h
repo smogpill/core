@@ -22,6 +22,6 @@ coDynamicString& _coGetTempLogString();
 #define coWARN_NOT_AVAILABLE() coSAFE_SCOPE( coERROR("<not available>"); )
 #define coWARN_NOT_TESTED() coWARN("<not tested>")
 #define coWARN_NOT_OPTIMIZED() coWARN("<not optimized>")
-#define coWARN_NOT_FULLY_FUNCTIONAL coWARN("<not fully functional>")
+#define coWARN_NOT_FULLY_FUNCTIONAL() coWARN("<not fully functional>")
 #define coTODO(_message_) coPRAGMA_MESSAGE("[TODO] " _message_)
 #define coHACK(_message_) coPRAGMA_MESSAGE("[HACK] " _message_)
