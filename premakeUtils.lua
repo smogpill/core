@@ -84,7 +84,9 @@ function coSetCppProjectDefaults(_name)
 		flags { "OptimizeSpeed", "NoFramePointer"}
 	filter {"configurations:debug or release"}
 		if os.isfile("reflect.cpp") then
-			prebuildcommands{"$(OutputPath)prebuild_dist.exe '" .. srcAbsPath .. "' '" .. genAbsPath .. "' '" .. _name .. "' '".. _name .."/pch.h''"}
+			local command = '$(OutputPath)prebuild_dist.exe "' .. srcAbsPath .. '" "' .. genAbsPath .. '" "' .. _name .. '" "'.. _name ..'/pch.h"'
+			command = command .. ' -I="$(UniversalCRT_IncludePath)"'
+			prebuildcommands{command}
 		end
 	filter {}
 end
