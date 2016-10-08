@@ -12,10 +12,11 @@ class coDynamicArray : public coArray<T>
 	typedef coArray<T> Super;
 public:
 	coDynamicArray();
-	coDynamicArray(coAllocator& _allocator);
+	explicit coDynamicArray(coAllocator& _allocator);
 	template <coUint N>
-	coDynamicArray(const T(&_a)[N]);
+	explicit coDynamicArray(const T(&_a)[N]);
 	~coDynamicArray();
+	explicit coDynamicArray(std::initializer_list<T> _l);
 
 	coUint32 capacity;
 	coAllocator* allocator;
@@ -24,5 +25,4 @@ public:
 	explicit coDynamicArray(const coDynamicArray<T>&);
 	coDynamicArray(coDynamicArray<T>&&);
 	coDynamicArray<T>& operator=(const coArray<const T>&);
-	coDynamicArray<T>& operator=(const coDynamicArray<T>&);
 };

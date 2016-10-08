@@ -12,64 +12,57 @@ void coNormalizePath(coDynamicString& _this)
 	if (_this.count == 0)
 		return;
 
-	const coUint32 len = _this.count;
+	// Replace '\' by '/'
+	for (coChar& c : _this)
+		if (c == '\\')
+			c = '/';
 
-	coTODO("Use better allocation.");
-	coChar* buf = new coChar[len];
-	coInt bufIndex = 0;
-	coInt lastSlashInBuf = -1;
+	coRemoveMultiples(_this, '/');
 
-	for (coUint i = 0; i < len; ++i)
-	{
-		const coChar c = _this[i];
-		switch (c)
-		{
-		case '/':
-		case '\\':
-		{
-			if (bufIndex == 0 || lastSlashInBuf != (bufIndex - 1))
-			{
-				buf[bufIndex] = '/';
-				lastSlashInBuf = bufIndex;
-				++bufIndex;
-			}
-		}
-		break;
-		case '.':
-		case ' ':
-		case ':':
-		{
-			buf[bufIndex] = c;
-			++bufIndex;
-		}
-		break;
-		default:
-		{
-			if (coIsFileNameCompatible(c))
-			{
-				buf[bufIndex] = c;
-				++bufIndex;
-			}
-		}
-		break;
-		}
-	}
+	// remove trailing '/'
+	coASSERT(_this.count);
+	if (_this.count > 2  && _this.data[_this.count - 1] == '/')
+		--_this.count;
 
-	// remove '/' when last character
-	if (bufIndex > 1 && buf[bufIndex - 1] == '/')
-		--bufIndex;
+	coWARN_NOT_FULLY_FUNCTIONAL();
 
-	coUint startIndex = 0;
-	// Remove starting './'
-	if (bufIndex > 1 && buf[0] == '.' && buf[1] == '/')
-	{
-		startIndex = 2;
-		bufIndex -= 2;
-	}
-
-	_this = coConstString(buf + startIndex, bufIndex);
-
-	delete[] buf;
+// 	coUint in = 0;
+// 	coUint out = 0;
+// 
+// 	const coUint countMinus1 = _this.count - 1;
+// 	const coUint countMinus2 = _this.count - 2;
+// 	coUint lastNameStart = 0;
+// 
+// 	while (in < _this.count)
+// 	{
+// 
+// 	}
+// 	for (; in < _this.count; ++in)
+// 	{
+// 		const coChar c = _this.data[in];
+// 		switch (c)
+// 		{
+// 		case '/':
+// 		{
+// 			break;
+// 		}
+// 		case '.':
+// 		{
+// 
+// 			break;
+// 		}
+// 		}
+// 		while (_this.data[in] == '/')
+// 		{
+// 			++in;
+// 			if (in >= _this.count)
+// 				break;
+// 		}
+// 
+// 		_this.data[out] = c;
+// 	}
+// 
+// 	coASSERT(out <= _this.count);
 }
 
 coBool coIsPathNormalized(const coConstString& _this)

@@ -2,7 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include "container/string/coDynamicString.h"
-#include "container/string/coConstString_f.h"
+#include "container/string/coString_f.h"
 #include "container/array/coDynamicArray_f.h"
 
 class coConstString16;

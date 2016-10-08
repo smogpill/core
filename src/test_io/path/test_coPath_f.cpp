@@ -33,135 +33,115 @@ coTEST(coPath_f, coIsDotHiddenPath)
 
 coTEST(coPath_f, coNormalizePath)
 {
+	const coConstString a[][2] = 
+	{
+		{ "/", "/" },
+		{ "//", "//" },
+		{ "///", "/" },
+		{ "./", "." },
+		{ "./a", "a" },
+		{ "./a.b", "a.b" },
+		{ ".//", "." },
+		{ ".///", "." },
+		{ "..", ".." },
+		{ "../", ".." },
+		{ "../a", "../a" },
+		{ "../a.b", "../a.b" },
+		{ ".a", ".a" },
+		{ "./.a", ".a" },
+		{ "c:/a.c", "c:/a.c" },
+		{ "./a.c", "a.c" },
+		{ "a.b/c/", "a.b/c" },
+		{ "c:\\a\\\\b.c", "c:/a/b.c" },
+
+// 		{ "c:/a/./b.c", "c:/a/b.c" },
+// 		{ "c:/a/././b.c", "c:/a/b.c" },
+// 		{ "c:/a/../b.c", "c:/b.c" },
+// 		{ "c:\\\\chicken\\..\\sandwich\\/\\chicken.jpeg", "c:/sandwich/chicken.jpeg" }
+	};
 	coDynamicString p;
-
-	p = "c:\\chicken\\\\small.jpeg";
-	coNormalizePath(p);
-	coEXPECT(p == "c:/chicken/small.jpeg");
-	coEXPECT(coIsPathNormalized(p));
-
-	p = "/";
-	coNormalizePath(p);
-	coEXPECT(p == "/");
-	coEXPECT(coIsPathNormalized(p));
-
-	p = "./";
-	coNormalizePath(p);
-	coEXPECT(p == ".");
-	coEXPECT(coIsPathNormalized(p));
-
-	p = ".//";
-	coNormalizePath(p);
-	coEXPECT(p == ".");
-	coEXPECT(coIsPathNormalized(p));
-
-	p = "c:/chicken.jpeg";
-	coNormalizePath(p);
-	coEXPECT(p == "c:/chicken.jpeg");
-	coEXPECT(coIsPathNormalized(p));
-
-	p = "./chicken.jpeg";
-	coNormalizePath(p);
-	coEXPECT(p == "chicken.jpeg");
-	coEXPECT(coIsPathNormalized(p));
-
-	p = "c:/chicken_burger.jpeg";
-	coNormalizePath(p);
-	coEXPECT(p == "c:/chicken_burger.jpeg");
-	coEXPECT(coIsPathNormalized(p));
+	for (const auto& e : a)
+	{
+		p = e[0];
+		coNormalizePath(p);
+		coEXPECT(p == e[1]);
+		coEXPECT(coIsPathNormalized(p));
+	}
 }
 
 coTEST(coPath_f, coGetFileName)
 {
-	coConstString s;
-
-	coGetFileName(s, "c:/chicken.jpeg");
-	coEXPECT(s == "chicken.jpeg");
-
-	coGetFileName(s, "c:/chicken.small.jpeg");
-	coEXPECT(s == "chicken.small.jpeg");
-
-	coGetFileName(s, ".");
-	coEXPECT(s == ".");
-
-	coGetFileName(s, "..");
-	coEXPECT(s == "..");
-
-	coGetFileName(s, "c:/chicken-small.jpeg");
-	coEXPECT(s == "chicken-small.jpeg");
+	const coConstString a[][2] =
+	{
+		{ "c:/a.b", "a.b" },
+		{ "c:/a.b.c", "a.b.c" },
+		{ ".", "." },
+		{ "..", ".." },
+		{ "c:/a-b.c", "a-b.c" },
+	};
+	for (const auto& e : a)
+	{
+		coConstString s;
+		coGetFileName(s, e[0]);
+		coEXPECT(s == e[1]);
+	}
 }
 
 coTEST(coPath_f, coGetExtension)
 {
-	coConstString s;
-
-	coGetExtension(s, "c:/chicken.jpeg");
-	coEXPECT(s == ".jpeg");
-	
-	coGetExtension(s, "c:/chicken.small.jpeg");
-	coEXPECT(s == ".jpeg");
-	
-	coGetExtension(s, ".");
-	coEXPECT(s == "");
-	
-	coGetExtension(s, "..");
-	coEXPECT(s == "");
-
-	coGetExtension(s, "c:/chicken-small.jpeg");
-	coEXPECT(s == ".jpeg");
-
-	coGetExtension(s, "c:/hey.zer/chicken-small.jpeg");
-	coEXPECT(s == ".jpeg");
-
-	coGetExtension(s, "c:/hey.zer/chicken-small");
-	coEXPECT(s == "");
+	const coConstString a[][2] =
+	{
+		{ "c:/chicken.jpeg", ".jpeg" },
+		{ "c:/chicken.small.jpeg", ".jpeg" },
+		{ ".", "" },
+		{ "..", "" },
+		{ "c:/chicken-small.jpeg", ".jpeg" },
+		{ "c:/hey.zer/chicken-small.jpeg", ".jpeg" },
+		{ "c:/hey.zer/chicken-small", "" },
+	};
+	for (const auto& e : a)
+	{
+		coConstString s;
+		coGetExtension(s, e[0]);
+		coEXPECT(s == e[1]);
+	}
 }
 
 coTEST(coPath_f, coGetBaseName)
 {
-	coConstString s;
-
-	coGetBaseName(s, "c:/chicken.jpeg");
-	coEXPECT(s == "chicken");
-
-	coGetBaseName(s, "c:/chicken.small.jpeg");
-	coEXPECT(s == "chicken.small");
-
-	coGetBaseName(s, ".");
-	coEXPECT(s == "");
-
-	coGetBaseName(s, "..");
-	coEXPECT(s == "");
-
-	coGetBaseName(s, "c:/chicken-small.jpeg");
-	coEXPECT(s == "chicken-small");
+	const coConstString a[][2] =
+	{
+		{ "c:/chicken.jpeg", "chicken" },
+		{ "c:/chicken.small.jpeg", "chicken.small" },
+		{ ".", "" },
+		{ "..", "" },
+		{ "c:/chicken-small.jpeg", "chicken-small" },
+	};
+	for (const auto& e : a)
+	{
+		coConstString s;
+		coGetBaseName(s, e[0]);
+		coEXPECT(s == e[1]);
+	}
 }
 
 coTEST(coPath_f, coJoinPaths)
 {
+	const coConstString a[][3] =
+	{
+		{ nullptr, nullptr, "" },
+		{ "chicken", nullptr, "chicken" },
+		{ nullptr, "chicken", "chicken" },
+		{ "chi", "cken", "chi/cken" },
+		{ "", "", "" },
+		{ "c:/hep", "chicken", "c:/hep/chicken" },
+		{ ".", "chicken.png", "chicken.png" },
+		{ ".", nullptr, "." },
+	};
 	coDynamicString s;
-
-	coJoinPaths(s, nullptr, nullptr);
-	coEXPECT(s == "");
-
-	coJoinPaths(s, "chicken", nullptr);
-	coEXPECT(s == "chicken");
-
-	coJoinPaths(s, nullptr, "chicken");
-	coEXPECT(s == "chicken");
-
-	coJoinPaths(s, "chi", "cken");
-	coEXPECT(s == "chi/cken");
-
-	coJoinPaths(s, "", "");
-	coEXPECT(s == "");
-
-	coJoinPaths(s, "c:/hep", "chicken");
-	coEXPECT(s == "c:/hep/chicken");
-
-	coJoinPaths(s, ".", "chicken.png");
-	coEXPECT(s == "chicken.png");
-
-	coJoinPaths(s, ".", nullptr);
-	coEXPECT(s == ".");
+	for (const auto& e : a)
+	{
+		coJoinPaths(s, e[0], e[1]);
+		coEXPECT(s == e[2]);
+	}
 }
