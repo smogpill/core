@@ -12,6 +12,15 @@ class coType;
 #define coDEFINE_ATTRIBUTE(_attr_, ...)
 #endif*/
 
+#ifdef coCLANG_COMPILER
+#	define _coPUSH_DISABLE_OVERRIDE_WARNING() _Pragma("clang diagnostic push") \
+	_Pragma("clang diagnostic ignored \"-Winconsistent-missing-override\"")
+#	define _coPOP_DISABLE_OVERRIDE_WARNING() _Pragma("clang diagnostic pop")
+#else
+#	define _coPUSH_DISABLE_OVERRIDE_WARNING()
+#	define _coPOP_DISABLE_OVERRIDE_WARNING()
+#endif
+
 #define coDECLARE_PIMPL() \
 	public: \
 		class _Impl; \
@@ -52,5 +61,7 @@ class coType;
 	private: \
 	_coDECLARE_REFLECTED_SHARED(); \
 	public: \
+		_coPUSH_DISABLE_OVERRIDE_WARNING() \
 		virtual const coType* GetType() const { return GetStaticType(); } \
+		_coPOP_DISABLE_OVERRIDE_WARNING() \
 	private:
