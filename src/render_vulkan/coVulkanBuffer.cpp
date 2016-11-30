@@ -138,3 +138,8 @@ void coVulkanBuffer::Unmap()
 	vkUnmapMemory(device_vk, deviceAllocation->chunk->deviceMemory_vk);
 	Super::Unmap();
 }
+
+VkDeviceSize coVulkanBuffer::GetVkDeviceSize() const
+{
+	return deviceAllocation ? deviceAllocation->size_vk : VkDeviceSize(0);
+}

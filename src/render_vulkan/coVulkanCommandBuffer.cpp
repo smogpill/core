@@ -7,6 +7,8 @@
 #include "render_vulkan/coVulkanFramebuffer.h"
 #include "render_vulkan/coVulkanCommandPool.h"
 #include "render_vulkan/coVulkanPipeline.h"
+#include "render_vulkan/coVulkanPipelineLayout.h"
+#include "render_vulkan/coVulkanDescriptorSet.h"
 #include "render_vulkan/coVulkanMesh.h"
 #include "render_vulkan/coVulkanBuffer.h"
 #include "render_vulkan/coVulkanResult_f.h"
@@ -114,18 +116,14 @@ void coVulkanCommandBuffer::PushPassBegin(const coRenderPass& _pass, const coRen
 
 void coVulkanCommandBuffer::PushPassEnd()
 {
-	coASSERT(IsStarted());
-	coCHECK(passStarted, nullptr);
-	coASSERT(commandBuffer_vk != VK_NULL_HANDLE);
+	coASSERT(CheckReadyForPassCommands());
 	passStarted = false;
 	vkCmdEndRenderPass(commandBuffer_vk);
 }
 
 void coVulkanCommandBuffer::PushBindPipeline(const coRenderPipeline& _pipeline)
 {
-	coASSERT(IsStarted());
-	coCHECK(passStarted, nullptr);
-	coASSERT(commandBuffer_vk != VK_NULL_HANDLE);
+	coASSERT(CheckReadyForPassCommands());
 
 	const coVulkanPipeline& vulkanPipeline = static_cast<const coVulkanPipeline&>(_pipeline);
 	const VkPipeline& pipeline_vk = vulkanPipeline.GetVkPipeline();
@@ -133,11 +131,20 @@ void coVulkanCommandBuffer::PushBindPipeline(const coRenderPipeline& _pipeline)
 	vkCmdBindPipeline(commandBuffer_vk, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_vk);
 }
 
+void coVulkanCommandBuffer::PushBindDescriptorSet(const coVulkanDescriptorSet& _vulkanDescriptorSet, const coVulkanPipelineLayout& _vulkanPipelineLayout, coUint _index)
+{
+	coASSERT(CheckReadyForPassCommands());
+
+	const VkDescriptorSet& descriptorSet_vk = _vulkanDescriptorSet.GetVkDescriptorSet();
+	coASSERT(descriptorSet_vk != VK_NULL_HANDLE);
+	const VkPipelineLayout& pipelineLayout_vk = _vulkanPipelineLayout.GetVkPipelineLayout();
+	coASSERT(pipelineLayout_vk != VK_NULL_HANDLE);
+	vkCmdBindDescriptorSets(commandBuffer_vk, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_vk, _index, 1, &descriptorSet_vk, 0, nullptr);
+}
+
 void coVulkanCommandBuffer::PushExecuteCommands(const coArray<const coRenderCommandBuffer*>& _commandBuffers)
 {
-	coASSERT(IsStarted());
-	coASSERT(passStarted);
-	coASSERT(commandBuffer_vk != VK_NULL_HANDLE);
+	coASSERT(CheckReadyForPassCommands());
 
 	coDynamicArray<VkCommandBuffer> commandBuffers_vk;
 	coReserve(commandBuffers_vk, _commandBuffers.count);
@@ -154,9 +161,7 @@ void coVulkanCommandBuffer::PushExecuteCommands(const coArray<const coRenderComm
 
 void coVulkanCommandBuffer::PushDraw(const coRenderMesh& _mesh)
 {
-	coASSERT(IsStarted());
-	coASSERT(passStarted);
-	coASSERT(commandBuffer_vk != VK_NULL_HANDLE);
+	coASSERT(CheckReadyForPassCommands());
 
 	const coVulkanMesh& vulkanMesh = static_cast<const coVulkanMesh&>(_mesh);
 	const coVulkanBuffer* vulkanBuffer = vulkanMesh.GetVulkanBuffer();
@@ -181,11 +186,17 @@ void coVulkanCommandBuffer::PushDraw(const coRenderMesh& _mesh)
 
 void coVulkanCommandBuffer::PushDrawEmptyTriangle()
 {
-	coASSERT(IsStarted());
-	coASSERT(passStarted);
-	coASSERT(commandBuffer_vk != VK_NULL_HANDLE);
+	coASSERT(CheckReadyForPassCommands());
 
 	vkCmdDraw(commandBuffer_vk, 3, 1, 0, 0);
+}
+
+coBool coVulkanCommandBuffer::CheckReadyForPassCommands() const
+{
+	coTRY(IsStarted(), nullptr);
+	coTRY(commandBuffer_vk != VK_NULL_HANDLE, nullptr);
+	coTRY(passStarted, nullptr);
+	return true;
 }
 
 const VkCommandPool& coVulkanCommandBuffer::GetVkCommandPool() const
