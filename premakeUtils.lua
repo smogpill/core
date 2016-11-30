@@ -1,21 +1,27 @@
-baseAbsPath = os.getcwd()
-srcAbsPath = baseAbsPath .. "/src"
-externalAbsPath = baseAbsPath .. "/external"
-buildPath = "build/" .. _ACTION
-genAbsPath = baseAbsPath .. "/build/gen"
-buildAbsPath = baseAbsPath .. "/" .. buildPath
-versionMajor = 0
-versionMinor = 0
-versionBuild = 0
 
-function coSetWorkspaceDefaults()
+function coInitParams()
+	baseAbsPath = os.getcwd()
+	externalAbsPath = baseAbsPath .. "/external"
+	buildPath = "build/" .. _ACTION
+	genAbsPath = baseAbsPath .. "/build/gen"
+	buildAbsPath = baseAbsPath .. "/" .. buildPath
+	versionMajor = 0
+	versionMinor = 0
+	versionBuild = 0
+end
+
+function coSetWorkspaceDefaults(_name, _srcDirs)
+	local buildLocation = buildPath
+	print("Generating workspace ".._name.."... (in "..buildLocation..")")
+	workspace(_name)
 	configurations {"debug", "release", "prebuildDebug", "prebuildRelease"}
-	location(buildPath)
+	location(buildLocation)
 	objdir(buildPath .. "/obj")
 	libdirs { buildPath .. "/bin" }
 	targetdir(buildPath .. "/bin")
 	defines { "coVERSION_MAJOR="..versionMajor, "coVERSION_MINOR="..versionMinor, "coVERSION_BUILD="..versionBuild }
-	includedirs { "src", "build/gen" }
+	includedirs { "build/gen" }
+	includedirs(_srcDirs)
 end
 
 function coSetPCH(_dir, _projectName, _fileName)
@@ -32,14 +38,14 @@ function coSetPCH(_dir, _projectName, _fileName)
 end
 
 function coSetProjectDefaults(_name, _options)
-	print("Generating project ".._name.."...")
+	local buildLocation = buildAbsPath.."/projects"
+	print("Generating project ".._name.."... (in "..buildLocation..")")
 	project(_name)
 
 	architecture "x86_64"
 	warnings "Extra"
 	kind "StaticLib"
-	location (buildAbsPath.."/projects")
-	projectDir = "src/".._name
+	location(buildLocation)
 	defines { "coPROJECT_NAME=".._name }
 	debugdir "$(OutDir)"
 
@@ -70,7 +76,7 @@ function coSetCppProjectDefaults(_name)
 	files { "**.cpp", "**.h"}
 
 	if os.isfile("pch.h") then
-		coSetPCH(projectDir, _name, "pch")
+		coSetPCH(co_projectDir, _name, "pch")
 	end
 
 	filter { "gmake" }
@@ -84,7 +90,7 @@ function coSetCppProjectDefaults(_name)
 		flags { "OptimizeSpeed", "NoFramePointer"}
 	filter {"configurations:debug or release"}
 		if os.isfile("reflect.cpp") then
-			local command = '$(OutputPath)prebuild_dist.exe "' .. srcAbsPath .. '" "' .. genAbsPath .. '" "' .. _name .. '" "'.. _name ..'/pch.h"'
+			local command = '$(OutputPath)prebuild_dist.exe "' .. co_projectDir .. "/.." .. '" "' .. genAbsPath .. '" "' .. _name .. '" "'.. _name ..'/pch.h"'
 			command = command .. ' -I="$(UniversalCRT_IncludePath)"'
 			prebuildcommands{command}
 		end
@@ -120,17 +126,37 @@ function coSetProjectDependencies(_deps)
 	links(_deps)
 end
 
+function coFindDir(_srcDirs, _dirName)
+	for _, d in pairs(_srcDirs) do
+		local foundDirs = os.matchdirs(d.."/**".._dirName)
+		for _, e in pairs(foundDirs) do
+			return e
+		end
+	end
+	return nil
+end
+
+function coIncludeProject(_srcDirs, _projectName)
+	local foundDir = coFindDir(_srcDirs, _projectName)
+	if foundDir == nil then
+		error("Failed to find the project: "..p)
+	else
+		co_projectDir = foundDir
+		include(foundDir)
+	end
+end
+
 function coGenerateProjectWorkspace(_params)
-	print("Generating workspace ".._params.name.."...")
-	workspace(_params.name)
-	coSetWorkspaceDefaults()
+	coInitParams()
+	coSetWorkspaceDefaults(_params.name, _params.srcDirs)
 	startproject(_params.projects[0])
 	for _, p in pairs(_params.projects) do
-		include("src/"..p)
+		coIncludeProject(_params.srcDirs, p)
+		--include(pPath)
 	end
 	if co_dependencies then
 		for _, d in pairs(co_dependencies) do
-			include("src/"..d)
+			coIncludeProject(_params.srcDirs, d)
 		end
 	end
 end
