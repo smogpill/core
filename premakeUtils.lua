@@ -1,21 +1,27 @@
 
-function coInitParams()
+function coInitParams(_params)
 	baseAbsPath = os.getcwd()
+	print("baseAbsPath: "..baseAbsPath)
 	externalAbsPath = baseAbsPath .. "/external"
 	buildPath = "build/" .. _ACTION
 	genAbsPath = baseAbsPath .. "/build/gen"
 	buildAbsPath = baseAbsPath .. "/" .. buildPath
+	coreRelativePath = "."
+	if _params.coreRelativePath then
+		coreRelativePath = _params.coreRelativePath
+	end
+	coreAbsolutePath = path.getabsolute(coreRelativePath)
+	prebuildPath = coreAbsolutePath .. "/build/prebuild.exe"
 	versionMajor = 0
 	versionMinor = 0
 	versionBuild = 0
 end
 
 function coSetWorkspaceDefaults(_name, _srcDirs)
-	local buildLocation = buildPath
-	print("Generating workspace ".._name.."... (in "..buildLocation..")")
+	print("Generating workspace ".._name.."... (in "..buildPath..")")
 	workspace(_name)
 	configurations {"debug", "release", "prebuildDebug", "prebuildRelease"}
-	location(buildLocation)
+	location(buildPath)
 	objdir(buildPath .. "/obj")
 	libdirs { buildPath .. "/bin" }
 	targetdir(buildPath .. "/bin")
@@ -90,7 +96,7 @@ function coSetCppProjectDefaults(_name)
 		flags { "OptimizeSpeed", "NoFramePointer"}
 	filter {"configurations:debug or release"}
 		if os.isfile("reflect.cpp") then
-			local command = '$(OutputPath)prebuild_dist.exe "' .. co_projectDir .. "/.." .. '" "' .. genAbsPath .. '" "' .. _name .. '" "'.. _name ..'/pch.h"'
+			local command = prebuildPath .. ' "' .. path.getabsolute(co_projectDir, baseAbsPath) .. "/.." .. '" "' .. genAbsPath .. '" "' .. _name .. '" "'.. _name ..'/pch.h"'
 			command = command .. ' -I="$(UniversalCRT_IncludePath)"'
 			prebuildcommands{command}
 		end
@@ -147,7 +153,6 @@ function coIncludeProject(_srcDirs, _projectName)
 end
 
 function coGenerateProjectWorkspace(_params)
-	coInitParams()
 	coSetWorkspaceDefaults(_params.name, _params.srcDirs)
 	startproject(_params.projects[0])
 	for _, p in pairs(_params.projects) do
