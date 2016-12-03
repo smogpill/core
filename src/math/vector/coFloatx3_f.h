@@ -30,9 +30,13 @@ coFORCE_INLINE coBool32x3 operator<= (const coFloatx3& _a, const coFloatx3& _b) 
 coFORCE_INLINE coBool32x3 operator> (const coFloatx3& _a, const coFloatx3& _b) { return coBitCast<coBool32x3>(coBitCast<coFloatx4>(_a) > coBitCast<coFloatx4>(_b)); }
 coFORCE_INLINE coBool32x3 operator>= (const coFloatx3& _a, const coFloatx3& _b) { return coBitCast<coBool32x3>(coBitCast<coFloatx4>(_a) >= coBitCast<coFloatx4>(_b)); }
 coFORCE_INLINE coFloatx3 operator+ (const coFloatx3& _a, const coFloatx3& _b) { return coBitCast<coFloatx3>(coBitCast<coFloatx4>(_a) + coBitCast<coFloatx4>(_b)); }
+coFORCE_INLINE coFloatx3& operator+= (coFloatx3& _a, const coFloatx3& _b) { return _a = coBitCast<coFloatx3>(coBitCast<coFloatx4>(_a) + coBitCast<coFloatx4>(_b)); }
 coFORCE_INLINE coFloatx3 operator- (const coFloatx3& _a, const coFloatx3& _b) { return coBitCast<coFloatx3>(coBitCast<coFloatx4>(_a) - coBitCast<coFloatx4>(_b)); }
+coFORCE_INLINE coFloatx3& operator-= (coFloatx3& _a, const coFloatx3& _b) { return _a = coBitCast<coFloatx3>(coBitCast<coFloatx4>(_a) - coBitCast<coFloatx4>(_b)); }
 coFORCE_INLINE coFloatx3 operator/ (const coFloatx3& _a, const coFloatx3& _b) { return coBitCast<coFloatx3>(coBitCast<coFloatx4>(_a) / coBitCast<coFloatx4>(_b)); }
+coFORCE_INLINE coFloatx3& operator/= (coFloatx3& _a, const coFloatx3& _b) { return _a = coBitCast<coFloatx3>(coBitCast<coFloatx4>(_a) / coBitCast<coFloatx4>(_b)); }
 coFORCE_INLINE coFloatx3 operator* (const coFloatx3& _a, const coFloatx3& _b) { return coBitCast<coFloatx3>(coBitCast<coFloatx4>(_a) * coBitCast<coFloatx4>(_b)); }
+coFORCE_INLINE coFloatx3& operator*= (coFloatx3& _a, const coFloatx3& _b) { return _a = coBitCast<coFloatx3>(coBitCast<coFloatx4>(_a) * coBitCast<coFloatx4>(_b)); }
 coFORCE_INLINE coBool32x3 coIsValid(const coFloatx3& _a) { return _a == _a; }
 template <coInt8 X, coInt8 Y, coInt8 Z>
 coFORCE_INLINE coFloatx3 coShuffle(const coFloatx3& _a, const coFloatx3& _b) { return coBitCast<coFloatx3>(coShuffle<X, Y, Z, 3>(coBitCast<coFloatx4>(_a), coBitCast<coFloatx4>(_b))); }
@@ -64,4 +68,5 @@ coFORCE_INLINE coBool32x3 coNearEqual(const coFloatx3& _a, const coFloatx3& _b, 
 	const coFloatx3 delta = coAbs(_b - _a);
 	return delta < _epsilon;
 }
+coFORCE_INLINE coFloatx3 coSquareLength(const coFloatx3& _a) { return coDot(_a, _a); }
 coFORCE_INLINE coFloatx3 coLength(const coFloatx3& _a) { return coSqrt(coDot(_a, _a)); }
