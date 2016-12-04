@@ -55,6 +55,14 @@ coFORCE_INLINE coFloatx3 coDot(const coFloatx3& _a, const coFloatx3& _b)
 	const coFloatx3 mul = _a * _b;
 	return coBroadcastX(mul) + coBroadcastY(mul) + coBroadcastZ(mul);
 }
+coFORCE_INLINE coFloatx3 coCross(const coFloatx3& _a, const coFloatx3& _b)
+{
+	const coFloatx3 tmp0 = coShuffle<1, 2, 0>(_a, _a);
+	const coFloatx3 tmp1 = coShuffle<2, 0, 1>(_b, _b);
+	const coFloatx3 tmp2 = coShuffle<2, 0, 1>(_a, _a);
+	const coFloatx3 tmp3 = coShuffle<1, 2, 0>(_b, _b);
+	return tmp0 * tmp1 - tmp2 * tmp3;
+}
 coFORCE_INLINE coFloatx3 coNormalize(const coFloatx3& _a) { return _a * coInvSqrt(coDot(_a, _a)); }
 coFORCE_INLINE coFloatx3 coPow2(const coFloatx3& _a) { return  _a * _a; }
 coFORCE_INLINE coFloatx3 coPow4(const coFloatx3& _a) { return coPow2(_a * _a); }
