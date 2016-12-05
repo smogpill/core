@@ -11,6 +11,8 @@ public:
 	coUint32 x;
 	coUint32 y;
 	coUint32 z;
+
+	operator coBool () const { return (_mm_movemask_ps(coBitCast<__m128>(*this)) & 7) == 7; }
 private:
 	coUint32 pad;
 };
