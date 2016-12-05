@@ -22,6 +22,8 @@ coFORCE_INLINE coUint32 coMake_Uint32(const coFloatx3& _a) { return coMake_Uint3
 
 const coFloatx3 coFloatx3_ONE = coMake_Floatx3(1.0f);
 const coFloatx3 coFloatx3_ZERO = coMake_Floatx3(0.0f);
+const coFloatx3 coFloatx3_DEGREES_TO_RADIANS = coMake_Floatx3(0.01745329252f);
+const coFloatx3 coFloatx3_RADIANS_TO_DEGREES = coMake_Floatx3(57.2957795131f);
 
 coFORCE_INLINE coBool32x3 operator== (const coFloatx3& _a, const coFloatx3& _b) { return coBitCast<coBool32x3>(coBitCast<coFloatx4>(_a) == coBitCast<coFloatx4>(_b)); }
 coFORCE_INLINE coBool32x3 operator!= (const coFloatx3& _a, const coFloatx3& _b) { return coBitCast<coBool32x3>(coBitCast<coFloatx4>(_a) != coBitCast<coFloatx4>(_b)); }
@@ -32,6 +34,7 @@ coFORCE_INLINE coBool32x3 operator>= (const coFloatx3& _a, const coFloatx3& _b) 
 coFORCE_INLINE coFloatx3 operator+ (const coFloatx3& _a, const coFloatx3& _b) { return coBitCast<coFloatx3>(coBitCast<coFloatx4>(_a) + coBitCast<coFloatx4>(_b)); }
 coFORCE_INLINE coFloatx3& operator+= (coFloatx3& _a, const coFloatx3& _b) { return _a = coBitCast<coFloatx3>(coBitCast<coFloatx4>(_a) + coBitCast<coFloatx4>(_b)); }
 coFORCE_INLINE coFloatx3 operator- (const coFloatx3& _a, const coFloatx3& _b) { return coBitCast<coFloatx3>(coBitCast<coFloatx4>(_a) - coBitCast<coFloatx4>(_b)); }
+coFORCE_INLINE coFloatx3 operator- (const coFloatx3& _a) { return coBitCast<coFloatx3>(coFloatx4_ZERO - coBitCast<coFloatx4>(_a)); }
 coFORCE_INLINE coFloatx3& operator-= (coFloatx3& _a, const coFloatx3& _b) { return _a = coBitCast<coFloatx3>(coBitCast<coFloatx4>(_a) - coBitCast<coFloatx4>(_b)); }
 coFORCE_INLINE coFloatx3 operator/ (const coFloatx3& _a, const coFloatx3& _b) { return coBitCast<coFloatx3>(coBitCast<coFloatx4>(_a) / coBitCast<coFloatx4>(_b)); }
 coFORCE_INLINE coFloatx3& operator/= (coFloatx3& _a, const coFloatx3& _b) { return _a = coBitCast<coFloatx3>(coBitCast<coFloatx4>(_a) / coBitCast<coFloatx4>(_b)); }
@@ -55,6 +58,7 @@ coFORCE_INLINE coFloatx3 coDot(const coFloatx3& _a, const coFloatx3& _b)
 	const coFloatx3 mul = _a * _b;
 	return coBroadcastX(mul) + coBroadcastY(mul) + coBroadcastZ(mul);
 }
+coFORCE_INLINE coFloatx3 coLerp(const coFloatx3& _from, const coFloatx3& _to, const coFloatx3& _ratio) { return _from + (_to - _from) * _ratio; }
 coFORCE_INLINE coFloatx3 coCross(const coFloatx3& _a, const coFloatx3& _b)
 {
 	const coFloatx3 tmp0 = coShuffle<1, 2, 0>(_a, _a);
