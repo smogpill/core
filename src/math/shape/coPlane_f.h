@@ -27,7 +27,7 @@ coFORCE_INLINE coBool32x4 coRayPlaneIntersection(const coPlane& _this, const coF
 	const coFloatx4 dot2 = coDot(_rayDir, _this.normalAndDistance);
 	if (coNotNearEqual0(dot2))
 	{
-		_t = dot / dot2;
+		_t = - dot / dot2;
 		return coBool32x4_true;
 	}
 	else

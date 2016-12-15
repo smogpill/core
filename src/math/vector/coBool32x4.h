@@ -4,6 +4,8 @@
 
 #include "lang/reflect/coTypeDecl.h"
 
+class coBool32x3;
+
 class alignas(16) coBool32x4
 {
 	coDECLARE_REFLECTED_NO_VIRTUAL();
