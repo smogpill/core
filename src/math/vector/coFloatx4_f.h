@@ -98,3 +98,8 @@ coFORCE_INLINE coBool32x4 coNearEqual(const coFloatx4& _a, const coFloatx4& _b, 
 	const coFloatx4 delta = coAbs(_b - _a);
 	return delta < _epsilon;
 }
+coFORCE_INLINE coBool32x4 coNotNearEqual0(const coFloatx4& _a, const coFloatx4& _epsilon = coBitCast<coFloatx4>(0.0001f))
+{
+	const coFloatx4 delta = coAbs(_a);
+	return delta > _epsilon;
+}
