@@ -25,6 +25,7 @@ template <class F>
 coFORCE_INLINE coUint32 coSetFlag(coUint32 _mask, const F& _flags, coBool _onoff) { return _onoff ? (_mask | static_cast<coUint32>(_flags)) : (_mask & ~static_cast<coUint32>(_flags)); }
 template <class F>
 coFORCE_INLINE coBool coAreAllRaised(coUint32 _mask, const F& _flags) { return (_mask & static_cast<coUint32>(_flags)) == static_cast<coUint32>(_flags); }
+coFORCE_INLINE coUint32 coMakeMask(coUint32 _nbBits) { return (1 << _nbBits)-1; }
 
 coFORCE_INLINE coUint32 coNextPowerOf2(coUint32 _a)
 {
