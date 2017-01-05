@@ -9,6 +9,7 @@ class coPlane
 	coDECLARE_REFLECTED_NO_VIRTUAL();
 public:
 	coPlane() : normalAndDistance(0.f) {}
+	coPlane(const coFloatx4& _normalAndDistance) : normalAndDistance(_normalAndDistance) {}
 
 	coFloatx4 normalAndDistance;
 };

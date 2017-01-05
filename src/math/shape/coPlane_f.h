@@ -1,12 +1,28 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
-
 #include "math/shape/coPlane.h"
 #include "math/scalar/coFloat_f.h"
 #include "math/vector/coFloatx3_f.h"
 #include "math/vector/coFloatx4_f.h"
 #include "debug/log/coAssert.h"
+
+coFORCE_INLINE coBool32x3 coIsValid(const coPlane& _this)
+{
+	return coIsNormalized(reinterpret_cast<const coFloatx3&>(_this.normalAndDistance));
+}
+
+coFORCE_INLINE void coSetFromNormalAndSignedDistance(coPlane& _this, const coFloatx3& _normal, const coFloatx3& _dist)
+{
+	coASSERT(coAreXYZEqual(_dist));
+	_this.normalAndDistance = coSelectXYZ(reinterpret_cast<const coFloatx4&>(_normal), -coBroadcastX(reinterpret_cast<const coFloatx4&>(_dist)));
+	coASSERT(coIsValid(_this));
+}
+
+coFORCE_INLINE void coSetFromNormalAndPoint(coPlane& _this, const coFloatx3& _normal, const coFloatx3& _point)
+{
+	coSetFromNormalAndSignedDistance(_this, _normal, coDot(_normal, _point));
+}
 
 coFORCE_INLINE coFloatx4 coDistanceToPoint(const coPlane& _this, const coFloatx4& _point)
 {
