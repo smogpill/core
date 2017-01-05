@@ -88,10 +88,13 @@ function coSetCppProjectDefaults(_name)
 	filter { "gmake" }
 		buildoptions { "-Wno-reorder", "-Wno-deprecated" }
 		includedirs { gmakeIncludeDir }
-	filter { "vs*" }
+
+	filter { "action:vs*" }
 		defines { "_HAS_EXCEPTIONS=0" }
 		--flags { "StaticRuntime" }
-		linkoptions { "/ENTRY:mainCRTStartup" }
+		--linkoptions { "/ENTRY:mainCRTStartup" } -- TODO: Not working with DLL, should avoid that case somehow.
+		linkoptions {"/ignore:4221"} -- warns when .cpp are empty depending on the order of obj linking.
+		
 	filter { "configurations:release or prebuildRelease" }
 		flags { "OptimizeSpeed", "NoFramePointer"}
 	filter {"configurations:debug or release"}
