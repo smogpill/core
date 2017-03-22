@@ -16,6 +16,7 @@ coDynamicString& operator<<(coDynamicString& _this, coUint8 _a);
 coDynamicString& operator<<(coDynamicString& _this, coUint16 _a);
 coDynamicString& operator<<(coDynamicString& _this, coUint32 _a);
 coDynamicString& operator<<(coDynamicString& _this, coUint64 _a);
+coDynamicString& operator<<(coDynamicString& _this, coFloat _a);
 void coNullTerminate(coDynamicString& _this);
 coBool coIsNullTerminated(const coDynamicString& _this);
 void coSetFromWide(coDynamicString& _this, const coConstString16& _other);

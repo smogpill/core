@@ -8,6 +8,9 @@ class alignas(16) coQuat
 {
 	coDECLARE_REFLECTED_NO_VIRTUAL();
 public:
+	coQuat();
+	explicit coQuat(coNullPtr);
+
 	coFloat x;
 	coFloat y;
 	coFloat z;

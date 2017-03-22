@@ -3,6 +3,7 @@
 #pragma once
 
 #include "math/scalar/coFloat_f.h"
+#include "math/vector/coFloatx3_f.h"
 #include "math/vector/coFloatx4_f.h"
 #include "math/vector/coInt32x4_f.h"
 #include "math/quaternion/coQuat.h"
@@ -11,6 +12,19 @@
 coFORCE_INLINE const coFloatx4& coMake_floatx4(const coQuat& _a) { return coBitCast<coFloatx4>(_a); }
 coFORCE_INLINE const coQuat& coMake_quat(const coFloatx4& _a) { return coBitCast<coQuat>(_a); }
 coFORCE_INLINE coQuat coMake_quat(float _x, float _y, float _z, float _w) { return coMake_quat(coMake_floatx4( _x, _y, _z, _w )); }
+coFORCE_INLINE void coSetRotation(coQuat& _q, const coFloatx3& _fromUnitDir, const coFloatx3& _toUnitDir)
+{
+	// Implementation found at https://github.com/erwincoumans/sce_vectormath/blob/master/include/vectormath/SSE/cpp/quat_aos.h Quat::rotation(...)
+	coASSERT(coIsNormalized(_fromUnitDir));
+	coASSERT(coIsNormalized(_toUnitDir));
+	const coFloatx3 cosAngle = coDot(_fromUnitDir, _toUnitDir);
+	const coFloatx3 cosAngleX2Plus2 = cosAngle * coFloatx3(2.0f) + coFloatx3(2.0f);
+	const coFloatx3 invCosHalfAngleX2 = coInvSqrtFast(cosAngleX2Plus2);
+	const coFloatx3 cosHalfAngleX2 = invCosHalfAngleX2 * cosAngleX2Plus2;
+	const coFloatx3 crossVec = coCross(_fromUnitDir, _toUnitDir);
+	const coFloatx3 res = crossVec * invCosHalfAngleX2;
+	coBitCast<coFloatx4>(_q) = coSelectXYZ(coBitCast<coFloatx4>(res), coBroadcastX(coBitCast<coFloatx4>(cosAngleX2Plus2) * coFloatx4(0.5f)));
+}
 coFORCE_INLINE coQuat coConjugate(const coQuat& _a) { return coBitCast<coQuat>(coBitCast<coInt32x4>(_a) ^ coBitCast<coInt32x4>(__m128_MASK_XYZ)); }
 coFORCE_INLINE coQuat coExp(const coQuat& _a)
 {
@@ -61,4 +75,11 @@ coFORCE_INLINE coQuat operator*(const coQuat& _q, const coFloatx4& _xyzw)
 	coASSERT(false);
 	return coMake_quat(coBitCast<coFloatx4>(_q) + _xyzw);
 }
+coFORCE_INLINE coBool32x4 coIsValid(const coQuat& _this) { return coIsValid(coBitCast<coFloatx4>(_this)); }
 void coSetupSquad(coQuat& _out0, coQuat& _out1, coQuat& _out3, const coQuat& _q0, const coQuat& _q1, const coQuat& _q2, const coQuat& _q3);
+coFORCE_INLINE coFloatx3 coTransformDirection(const coQuat& _this, const coFloatx3& _dir)
+{
+	const coFloatx3& q = coBitCast<coFloatx3>(_this);
+	const coFloatx3 s = coBroadcastW(q);
+	return 2.0f * coDot(q, _dir) * q + (s*s - coDot(q, q)) * _dir + 2.0f * s * coCross(q, _dir);
+}

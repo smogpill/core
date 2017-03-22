@@ -69,6 +69,13 @@ coDynamicString& operator<<(coDynamicString& _this, coUint64 _a)
 	return _this << coConstString(s);
 }
 
+coDynamicString& operator<<(coDynamicString& _this, coFloat _a)
+{
+	coChar s[128];
+	::sprintf_s(s, coARRAY_SIZE(s), "%f", _a);
+	return _this << coConstString(s);
+}
+
 void coNullTerminate(coDynamicString& _this)
 {
 	if (!coIsNullTerminated(_this))

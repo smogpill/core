@@ -48,6 +48,8 @@ coFORCE_INLINE coFloat coConvertToDeg(coFloat _radians) { return _radians * 57.2
 coFORCE_INLINE coFloat coCos(coFloat _x) { return ::cosf(_x); }
 coFORCE_INLINE coFloat coSin(coFloat _x) { return ::sinf(_x); }
 coFORCE_INLINE coFloat coTan(coFloat _x) { return ::tanf(_x); }
+coFORCE_INLINE coBool coNearEqual(const coFloat& _a, const coFloat& _b, const coFloat& _epsilon = 0.0001f) { return coAbs(_b - _a) < _epsilon; }
+coFORCE_INLINE coBool coNearEqual0(const coFloat& _a, const coFloat& _epsilon = 0.0001f) { return coAbs(_a) < _epsilon; }
 
 coFORCE_INLINE coFloat coFloor(coFloat _x)
 {
