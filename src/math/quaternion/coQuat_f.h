@@ -23,9 +23,9 @@ coFORCE_INLINE void coSetRotation(coQuat& _q, const coFloatx3& _fromUnitDir, con
 	const coFloatx3 cosHalfAngleX2 = invCosHalfAngleX2 * cosAngleX2Plus2;
 	const coFloatx3 crossVec = coCross(_fromUnitDir, _toUnitDir);
 	const coFloatx3 res = crossVec * invCosHalfAngleX2;
-	coBitCast<coFloatx4>(_q) = coSelectXYZ(coBitCast<coFloatx4>(res), coBroadcastX(coBitCast<coFloatx4>(cosAngleX2Plus2) * coFloatx4(0.5f)));
+	coBitCast<coFloatx4>(_q) = coSelectXYZ(coBitCast<coFloatx4>(res), coBroadcastX(coBitCast<coFloatx4>(cosHalfAngleX2) * coFloatx4(0.5f)));
 }
-coFORCE_INLINE coQuat coConjugate(const coQuat& _a) { return coBitCast<coQuat>(coBitCast<coInt32x4>(_a) ^ coBitCast<coInt32x4>(__m128_MASK_XYZ)); }
+coFORCE_INLINE coQuat coConjugate(const coQuat& _a) { return coBitCast<coQuat>(coBitCast<coInt32x4>(_a) ^ coBitCast<coInt32x4>(__m128_SIGN_MASK_XYZ)); }
 coFORCE_INLINE coQuat coExp(const coQuat& _a)
 {
 	const float r = coSqrt(_a.x*_a.x + _a.y*_a.y + _a.z*_a.z);

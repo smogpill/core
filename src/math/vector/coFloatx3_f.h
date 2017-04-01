@@ -6,6 +6,7 @@
 #include "math/vector/coFloatx3.h"
 #include "math/vector/coBool32x3_f.h"
 #include "math/vector/coFloatx4_f.h"
+#include "debug/log/coAssert.h"
 
 coFORCE_INLINE coFloatx3 coMake_Floatx3(coFloat _a) { return coBitCast<coFloatx3>(_mm_set1_ps(_a)); }
 coFORCE_INLINE coFloatx3 coMake_Floatx3(coFloat _x, coFloat _y, coFloat _z) { return coBitCast<coFloatx3>(_mm_set_ps(_x, _y, _z, _z)); }
@@ -78,6 +79,6 @@ coFORCE_INLINE coBool32x3 coNearEqual(const coFloatx3& _a, const coFloatx3& _b, 
 coFORCE_INLINE coBool32x3 coNearEqual0(const coFloatx3& _a, const coFloatx3& _epsilon = coFloatx3(0.0001f)) { return coAbs(_a) < _epsilon; }
 coFORCE_INLINE coFloatx3 coSquareLength(const coFloatx3& _a) { return coDot(_a, _a); }
 coFORCE_INLINE coFloatx3 coLength(const coFloatx3& _a) { return coSqrt(coDot(_a, _a)); }
-coFORCE_INLINE coFloatx3 coNormalize(const coFloatx3& _a) { return _a * coInvSqrt(coDot(_a, _a)); }
+coFORCE_INLINE coFloatx3 coNormalize(const coFloatx3& _a) { coASSERT(!coNearEqual0(_a)); return _a*coInvSqrt(coDot(_a, _a)); }
 coFORCE_INLINE coBool32x3 coIsNormalized(const coFloatx3& _a, const coFloatx3& _squareEpsilon = coFloatx3(0.0001f)) { return coNearEqual(coSquareLength(_a), coFloatx3_ONE, _squareEpsilon); }
 coFORCE_INLINE coBool32x3 coAreXYZEqual(const coFloatx3& _a) { const coFloatx3 x = coBroadcastX(_a); return x == coBroadcastY(_a) && x == coBroadcastZ(_a); }

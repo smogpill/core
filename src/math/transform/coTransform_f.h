@@ -9,3 +9,4 @@
 
 coBool32x4 coIsValid(const coTransform& _this);
 coFloatx3 coInverseTransformDirection(const coTransform& _this, const coFloatx3& _dir);
+void coInverse(coTransform& _this);
