@@ -8,22 +8,39 @@
 #include "math/vector/coInt32x4_f.h"
 #include "math/quaternion/coQuat.h"
 #include "lang/coCppExtensions.h"
+#include "debug/log/coLog.h"
 
 coFORCE_INLINE const coFloatx4& coMake_floatx4(const coQuat& _a) { return coBitCast<coFloatx4>(_a); }
 coFORCE_INLINE const coQuat& coMake_quat(const coFloatx4& _a) { return coBitCast<coQuat>(_a); }
 coFORCE_INLINE coQuat coMake_quat(float _x, float _y, float _z, float _w) { return coMake_quat(coMake_floatx4( _x, _y, _z, _w )); }
+coFORCE_INLINE void coSetRotation(coQuat& _q, coFloat _angle, const coFloatx3& _axis)
+{
+	coASSERT(coIsNormalized(_axis));
+	const coFloatx4 halfAngle = _angle * 0.5f;
+	const coFloatx4 s = coSin(_angle);
+	const coFloatx4 c = coCos(_angle);
+	coBitCast<coFloatx4>(_q) = coSelectXYZ(coBitCast<coFloatx4>(_axis) * s, c);
+}
 coFORCE_INLINE void coSetRotation(coQuat& _q, const coFloatx3& _fromUnitDir, const coFloatx3& _toUnitDir)
 {
 	// Implementation found at https://github.com/erwincoumans/sce_vectormath/blob/master/include/vectormath/SSE/cpp/quat_aos.h Quat::rotation(...)
 	coASSERT(coIsNormalized(_fromUnitDir));
 	coASSERT(coIsNormalized(_toUnitDir));
 	const coFloatx3 cosAngle = coDot(_fromUnitDir, _toUnitDir);
-	const coFloatx3 cosAngleX2Plus2 = cosAngle * coFloatx3(2.0f) + coFloatx3(2.0f);
-	const coFloatx3 invCosHalfAngleX2 = coInvSqrtFast(cosAngleX2Plus2);
-	const coFloatx3 cosHalfAngleX2 = invCosHalfAngleX2 * cosAngleX2Plus2;
-	const coFloatx3 crossVec = coCross(_fromUnitDir, _toUnitDir);
-	const coFloatx3 res = crossVec * invCosHalfAngleX2;
-	coBitCast<coFloatx4>(_q) = coSelectXYZ(coBitCast<coFloatx4>(res), coBroadcastX(coBitCast<coFloatx4>(cosHalfAngleX2) * coFloatx4(0.5f)));
+	if (cosAngle > -0.9999f)
+	{
+		const coFloatx3 cosAngleX2Plus2 = cosAngle * coFloatx3(2.0f) + coFloatx3(2.0f);
+		const coFloatx3 invCosHalfAngleX2 = coInvSqrtFast(cosAngleX2Plus2);
+		const coFloatx3 cosHalfAngleX2 = invCosHalfAngleX2 * cosAngleX2Plus2;
+		const coFloatx3 crossVec = coCross(_fromUnitDir, _toUnitDir);
+		const coFloatx3 res = crossVec * invCosHalfAngleX2;
+		coBitCast<coFloatx4>(_q) = coSelectXYZ(coBitCast<coFloatx4>(res), coBroadcastX(coBitCast<coFloatx4>(cosHalfAngleX2) * coFloatx4(0.5f)));
+	}
+	else
+	{
+		const coFloatx3 axis = coNormalize(coAnyOrthogonal(_fromUnitDir));
+		coSetRotation(_q, coFloat_pi, axis);
+	}
 }
 coFORCE_INLINE coQuat coConjugate(const coQuat& _a) { return coBitCast<coQuat>(coBitCast<coInt32x4>(_a) ^ coBitCast<coInt32x4>(__m128_SIGN_MASK_XYZ)); }
 coFORCE_INLINE coQuat coExp(const coQuat& _a)

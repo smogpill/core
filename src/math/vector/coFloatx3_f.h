@@ -3,6 +3,7 @@
 #pragma once
 
 #include "lang/coCppExtensions.h"
+#include "math/scalar/coFloat_f.h"
 #include "math/vector/coFloatx3.h"
 #include "math/vector/coBool32x3_f.h"
 #include "math/vector/coFloatx4_f.h"
@@ -82,3 +83,14 @@ coFORCE_INLINE coFloatx3 coLength(const coFloatx3& _a) { return coSqrt(coDot(_a,
 coFORCE_INLINE coFloatx3 coNormalize(const coFloatx3& _a) { coASSERT(!coNearEqual0(_a)); return _a*coInvSqrt(coDot(_a, _a)); }
 coFORCE_INLINE coBool32x3 coIsNormalized(const coFloatx3& _a, const coFloatx3& _squareEpsilon = coFloatx3(0.0001f)) { return coNearEqual(coSquareLength(_a), coFloatx3_ONE, _squareEpsilon); }
 coFORCE_INLINE coBool32x3 coAreXYZEqual(const coFloatx3& _a) { const coFloatx3 x = coBroadcastX(_a); return x == coBroadcastY(_a) && x == coBroadcastZ(_a); }
+coFORCE_INLINE coFloatx3 coAnyOrthogonal(const coFloatx3& _a)
+{
+	const coFloatx3 absA = coAbs(_a);
+	switch (coMinIndex(absA.x, absA.y, absA.z))
+	{
+	case 0: return coCross(_a, coFloatx3(1.0f, 0.0f, 0.0f));
+	case 1: return coCross(_a, coFloatx3(0.0f, 1.0f, 0.0f));
+	case 2: return coCross(_a, coFloatx3(0.0f, 0.0f, 1.0f));
+	default: coASSERT(false); return coFloatx3(0.0f);
+	}
+}
