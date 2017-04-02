@@ -8,7 +8,8 @@ class alignas(16) coQuat
 {
 	coDECLARE_REFLECTED_NO_VIRTUAL();
 public:
-	coQuat();
+	coFORCE_INLINE coQuat() : x(0.f), y(0.f), z(0.f), w(1.0f) {}
+	coFORCE_INLINE coQuat(coFloat _x, coFloat _y, coFloat _z, coFloat _w) : x(_x), y(_y), z(_z), w(_w) {}
 	explicit coQuat(coNullPtr);
 
 	coFloat x;

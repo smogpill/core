@@ -8,5 +8,57 @@
 #include "math/quaternion/coQuat_f.h"
 
 coBool32x4 coIsValid(const coTransform& _this);
-coFloatx3 coInverseTransformDirection(const coTransform& _this, const coFloatx3& _dir);
-void coInverse(coTransform& _this);
+coFORCE_INLINE coFloatx3 coTransformPosition(const coTransform& _this, const coFloatx3& _pos)
+{
+	return coRotateVector(_this.rotation, _this.scale * _pos) + _this.translation;
+}
+coFORCE_INLINE coFloatx3 coTransformPositionNoScale(const coTransform& _this, const coFloatx3& _pos)
+{
+	return coRotateVector(_this.rotation, _pos) + _this.translation;
+}
+coFORCE_INLINE coFloatx3 coTransformVector(const coTransform& _this, const coFloatx3& _vec)
+{
+	return coRotateVector(_this.rotation, _this.scale * _vec);
+}
+coFORCE_INLINE coFloatx3 coTransformVectorNoScale(const coTransform& _this, const coFloatx3& _vec)
+{
+	return coRotateVector(_this.rotation, _vec);
+}
+coFORCE_INLINE coFloatx3 coInverseTransformPosition(const coTransform& _this, const coFloatx3& _pos)
+{
+	return coInverseRotateVector(_this.rotation, _pos - _this.translation) / _this.scale;
+}
+coFORCE_INLINE coFloatx3 coInverseTransformPositionNoScale(const coTransform& _this, const coFloatx3& _pos)
+{
+	return coInverseRotateVector(_this.rotation, _pos - _this.translation);
+}
+coFORCE_INLINE coFloatx3 coInverseTransformVector(const coTransform& _this, const coFloatx3& _vec)
+{
+	return coInverseRotateVector(_this.rotation, _vec) / _this.scale;
+}
+coFORCE_INLINE coFloatx3 coInverseTransformVectorNoScale(const coTransform& _this, const coFloatx3& _vec)
+{
+	return coInverseRotateVector(_this.rotation, _vec);
+}
+coFORCE_INLINE coTransform coInverse(const coTransform& _this)
+{
+	coTransform inv(nullptr);
+	inv.scale = 1.f / _this.scale;
+	inv.rotation = coConjugate(_this.rotation);
+	inv.translation = -coRotateVector(inv.rotation, _this.translation * inv.scale);
+	return inv;
+}
+coFORCE_INLINE coTransform operator * (const coTransform& _a, const coTransform& _b)
+{
+	coTransform r(nullptr);
+	r.rotation = _b.rotation * _a.rotation;
+	r.scale = _a.scale * _b.scale;
+	r.translation = coRotateVector(_b.rotation, _a.translation * _b.scale) + _b.translation;
+	return r;
+}
+coFORCE_INLINE coTransform coNormalize(const coTransform& _this)
+{
+	coTransform r(_this);
+	r.rotation = coNormalize(r.rotation);
+	return r;
+}

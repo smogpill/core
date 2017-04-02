@@ -9,6 +9,7 @@ class coTransform
 {
 public:
 	coTransform();
+	coTransform(coNullPtr);
 
 	coQuat rotation;
 	coFloatx3 translation;

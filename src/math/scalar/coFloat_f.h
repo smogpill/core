@@ -8,6 +8,7 @@
 const coFloat coFloat_pi = 3.14159265f;
 const coFloat coFloat_pi2 = 9.86960440f;
 const coFloat coFloat_2Pi = 6.28318531f;
+const coFloat coFloat_inv2Pi = 0.159154943092f;
 const coFloat coFloat_halfPi = 1.57079633f;
 const coFloat coFloat_inf = 0x7f800000;
 const coFloat coFloat_qNaN = 0x7fc00000;

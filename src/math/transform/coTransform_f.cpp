@@ -10,15 +10,3 @@ coBool32x4 coIsValid(const coTransform& _this)
 		&& coBool32x4(coIsValid(_this.translation), true)
 		&& coBool32x4(coIsValid(_this.scale), true);
 }
-
-coFloatx3 coInverseTransformDirection(const coTransform& _this, const coFloatx3& _dir)
-{
-	return coTransformDirection(coConjugate(_this.rotation), _dir);
-}
-
-void coInverse(coTransform& _this)
-{
-	_this.rotation = coConjugate(_this.rotation);
-	_this.translation = -_this.translation;
-	_this.scale /= _this.scale;
-}

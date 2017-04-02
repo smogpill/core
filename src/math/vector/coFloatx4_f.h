@@ -3,11 +3,19 @@
 #pragma once
 
 #include "lang/coCppExtensions.h"
+#include "math/scalar/coFloat_f.h"
 #include "math/vector/coFloatx4.h"
 #include "math/vector/coFloatx3.h"
 #include "math/vector/coBool32x4_f.h"
+#include "math/vector/coInt32x4_f.h"
 
 class coFloatx3;
+
+namespace coFloatx4_
+{
+	const coFloatx4 inv2Pi = coFloat_inv2Pi;
+	const coFloatx4 halfPi = coFloat_halfPi;
+};
 
 coFORCE_INLINE coFloatx4 coMake_floatx4(coFloat _a) { return coBitCast<coFloatx4>(_mm_set1_ps(_a)); }
 coFORCE_INLINE coFloatx4 coMake_floatx4(coFloat _x, coFloat _y, coFloat _z, coFloat _w) { return coBitCast<coFloatx4>(_mm_set_ps(_x, _y, _z, _w)); }
@@ -41,7 +49,7 @@ coFORCE_INLINE coFloatx4 operator+ (const coFloatx4& _a, const coFloatx4& _b) { 
 coFORCE_INLINE coFloatx4 operator- (const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coFloatx4>(_mm_sub_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
 coFORCE_INLINE coFloatx4 operator/ (const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coFloatx4>(_mm_div_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
 coFORCE_INLINE coFloatx4 operator* (const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coFloatx4>(_mm_mul_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
-coFORCE_INLINE coFloatx4 operator- (const coFloatx4& _a) { return coBitCast<coFloatx4>(coFloatx4_ZERO - coBitCast<coFloatx4>(_a)); }
+coFORCE_INLINE coFloatx4 operator- (const coFloatx4& _a) { return coBitCast<coFloatx4>(coBitCast<coFloatx4>(_mm_setzero_ps()) - coBitCast<coFloatx4>(_a)); }
 coFORCE_INLINE coBool32x4 coIsValid(const coFloatx4& _a) { return _a == _a; }
 template <coInt8 X, coInt8 Y, coInt8 Z, coInt8 W>
 coFORCE_INLINE coFloatx4 coShuffle(const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coFloatx4>(_mm_shuffle_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b), _MM_SHUFFLE(W, Z, Y, X))); }
@@ -49,23 +57,26 @@ coFORCE_INLINE coFloatx4 coBroadcastX(const coFloatx4& _a) { return coShuffle<0,
 coFORCE_INLINE coFloatx4 coBroadcastY(const coFloatx4& _a) { return coShuffle<1, 1, 1, 1>(_a, _a); }
 coFORCE_INLINE coFloatx4 coBroadcastZ(const coFloatx4& _a) { return coShuffle<2, 2, 2, 2>(_a, _a); }
 coFORCE_INLINE coFloatx4 coBroadcastW(const coFloatx4& _a) { return coShuffle<3, 3, 3, 3>(_a, _a); }
-
+coFORCE_INLINE coFloatx4 coSelect(const coFloatx4& _a, const coFloatx4& _b, const coInt32x4& _mask)
+{
+	return coBitCast<coFloatx4>(coBitCast<coInt32x4>(_b) ^ _mask & (coBitCast<coInt32x4>(_a) ^ coBitCast<coInt32x4>(_b)));
+}
 coFORCE_INLINE coFloatx4 coSelectXYZ(const coFloatx4& _a, const coFloatx4& _b)
 {
 	return coBitCast<coFloatx4>(_mm_or_ps(_mm_and_ps(__m128_MASK_XYZ, coBitCast<__m128>(_a)), _mm_andnot_ps(__m128_MASK_XYZ, coBitCast<__m128>(_b))));
 }
 coFORCE_INLINE coFloatx4 coMake_floatx4XYZ0(const coFloatx4& _xyz)
 {
-	return coSelectXYZ(_xyz, coFloatx4_ZERO);
+	return coBitCast<coFloatx4>(_mm_and_ps(coBitCast<__m128>(_xyz), coBitCast<__m128>(__m128_MASK_XYZ)));
 }
 coFORCE_INLINE coFloatx4 coMake_floatx4XYZ0(const coFloatx3& _xyz)
 {
-	return coSelectXYZ(coBitCast<coFloatx4>(_xyz), coFloatx4_ZERO);
+	return coBitCast<coFloatx4>(_mm_and_ps(coBitCast<__m128>(_xyz), coBitCast<__m128>(__m128_MASK_XYZ)));
 }
 coFORCE_INLINE coFloatx4 coAbs(const coFloatx4& _a) { return coBitCast<coFloatx4>(_mm_andnot_ps(__m128_SIGN_MASK, coBitCast<__m128>(_a))); }
 coFORCE_INLINE coFloatx4 coSqrt(const coFloatx4& _a) { return coBitCast<coFloatx4>(_mm_sqrt_ps(coBitCast<__m128>(_a))); }
 coFORCE_INLINE coFloatx4 coInv(const coFloatx4& _a) { return coFloatx4_ONE / _a; }
-coFORCE_INLINE coFloatx4 coInvFast(const coFloatx4& _a) { return coBitCast<coFloatx4>(_mm_rcp_ps(coBitCast<__m128>(_a))); }
+coFORCE_INLINE coFloatx4 coInvApprox(const coFloatx4& _a) { return coBitCast<coFloatx4>(_mm_rcp_ps(coBitCast<__m128>(_a))); }
 coFORCE_INLINE coFloatx4 coInvSqrt(const coFloatx4& _a)
 {
 	// newton-raphson (impl found in Vectormath)
@@ -82,6 +93,17 @@ coFORCE_INLINE coFloatx4 coDot(const coFloatx4& _a, const coFloatx4& _b)
 	const coFloatx4 mul = _a * _b;
 	return coBroadcastX(mul) + coBroadcastY(mul) + coBroadcastZ(mul) + coBroadcastW(mul);
 }
+coFORCE_INLINE coFloatx4 coTruncate(const coFloatx4& _a)
+{
+	return coBitCast<coFloatx4>(_mm_cvtepi32_ps(_mm_cvttps_epi32(coBitCast<__m128>(_a))));
+}
+coFORCE_INLINE coFloatx4 coFloor(const coFloatx4& _a)
+{
+	const coFloatx4 trunc = coTruncate(_a);
+	const coInt32x4 posMask = coBitCast<coInt32x4>(_a >= coBitCast<coFloatx4>(_mm_setzero_ps()));
+	const coFloatx4 sub = coSelect(coBitCast<coFloatx4>(_mm_setzero_ps()), coFloatx4(1.0f), posMask);
+	return trunc - sub;
+}
 coFORCE_INLINE coFloatx4 coNormalize(const coFloatx4& _a) { return _a * coInvSqrt(coDot(_a, _a)); }
 coFORCE_INLINE coFloatx4 coPow2(const coFloatx4& _a) { return  _a * _a; }
 coFORCE_INLINE coFloatx4 coPow4(const coFloatx4& _a) { return coPow2(_a * _a); }
@@ -94,3 +116,30 @@ coFORCE_INLINE coBool32x4 coNearEqual(const coFloatx4& _a, const coFloatx4& _b, 
 coFORCE_INLINE coBool32x4 coNearEqual0(const coFloatx4& _a, const coFloatx4& _epsilon = coFloatx4(0.0001f)) { return coAbs(_a) < _epsilon; }
 coFORCE_INLINE coBool32x4 coNotNearEqual0(const coFloatx4& _a, const coFloatx4& _epsilon = coFloatx4(0.0001f)) { const coFloatx4 abs = coAbs(_a); return coAbs(_a) > _epsilon; }
 coFORCE_INLINE coBool32x4 coAreXYZWEqual(const coFloatx4& _a) { const coFloatx4 x = coBroadcastX(_a); return x == coBroadcastY(_a) && x == coBroadcastZ(_a) && x == coBroadcastW(_a); }
+
+namespace _coFloatx4
+{
+	const coFloat sinConstantP = 0.225f;
+	const coFloatx4 sinConstantA = (16.0f * coSqrt(sinConstantP));
+	const coFloatx4 sinConstantB = ((1.0f - sinConstantP) / coSqrt(sinConstantP));
+};
+coFORCE_INLINE coFloatx4 coSin(const coFloatx4& _a)
+{
+	// Based on: http://forum.devmaster.net/t/fast-and-accurate-sine-cosine/9648
+	coFloatx4 y = _a * coFloatx4_::inv2Pi;
+	y = y - coFloor(y + coFloatx4(0.5f));
+	y = _coFloatx4::sinConstantA * y * (coFloatx4(0.5f) - coAbs(y));
+	return y * (_coFloatx4::sinConstantB + coAbs(y));
+}
+coFORCE_INLINE coFloatx4 coSinApprox(const coFloatx4& _a)
+{
+	return coSin(_a);
+}
+coFORCE_INLINE coFloatx4 coCos(const coFloatx4& _a)
+{
+	return coSin(_a + coFloatx4_::halfPi);
+}
+coFORCE_INLINE coFloatx4 coCosApprox(const coFloatx4& _a)
+{
+	return coSinApprox(_a + coFloatx4_::halfPi);
+}
