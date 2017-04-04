@@ -17,6 +17,23 @@ coFORCE_INLINE coQuat coNormalize(const coQuat& _this)
 {
 	return coBitCast<coQuat>(coNormalize(coBitCast<coFloatx4>(_this)));
 }
+coFORCE_INLINE coQuat coRotation(const coFloatx3& _eulerAngles)
+{
+	const coFloatx3 halfAngles = _eulerAngles * 0.5f;
+	const coFloat sx = coSin(halfAngles.x);
+	const coFloat cx = coCos(halfAngles.x);
+	const coFloat sy = coSin(halfAngles.y);
+	const coFloat cy = coCos(halfAngles.y);
+	const coFloat sz = coSin(halfAngles.z);
+	const coFloat cz = coCos(halfAngles.z);
+
+	coQuat r(nullptr);
+	r.x = cx*sy*sz - sx*cy*cz;
+	r.y = -cx*sy*cz - sx*cy*sz;
+	r.z = cx*cy*sz - sx*sy*cz;
+	r.w = cx*cy*cz + sx*sy*sz;
+	return r;
+}
 coFORCE_INLINE coQuat coRotation(const coFloatx3& _axis, coFloat _angle)
 {
 	coASSERT(coIsNormalized(_axis));
@@ -44,7 +61,7 @@ coFORCE_INLINE coQuat coRotation(const coFloatx3& _from, const coFloatx3& _to)
 {
 	return _coRotation(_from, _to, coSqrt(coSquareLength(_from) * coSquareLength(_to)));
 }
-coFORCE_INLINE coQuat coConjugate(const coQuat& _a) { return coBitCast<coQuat>(coBitCast<coInt32x4>(_a) ^ coBitCast<coInt32x4>(__m128_SIGN_MASK_XYZ)); }
+coFORCE_INLINE coQuat coConjugate(const coQuat& _a) { return coBitCast<coQuat>(coBitCast<coInt32x4>(_a) ^ coBitCast<coInt32x4>(__m128_SIGN_MASK)); }
 coFORCE_INLINE coQuat coExp(const coQuat& _a)
 {
 	const float r = coSqrt(_a.x*_a.x + _a.y*_a.y + _a.z*_a.z);
@@ -63,6 +80,7 @@ coFORCE_INLINE coQuat coSyncWith(const coQuat& _a, const coQuat& _b)
 	const coInt32x4 comp = coBitCast<coInt32x4>(coDot(coMake_floatx4(_a), coMake_floatx4(_b)) < coFloatx4_ZERO);
 	return coBitCast<coQuat>(coBitCast<coInt32x4>(_a) ^ (comp & coBitCast<coInt32x4>(__m128_SIGN_MASK)));
 }
+coFORCE_INLINE coBool32x4 coNearEqual(const coQuat& _a, const coQuat& _b, const coFloatx4& _epsilon = coFloatx4(0.0001f)) { return coNearEqual(coBitCast<coFloatx4>(_a), coBitCast<coFloatx4>(_b), _epsilon); }
 coFORCE_INLINE coQuat operator*(const coQuat& _q0, const coQuat& _q1)
 {
 	// Wa * Wb - XYZa.XYZb + Wa*XYZb + Wb*XYZa + XYZa^XYZb
@@ -85,6 +103,7 @@ coFORCE_INLINE coQuat operator*(const coQuat& _q0, const coQuat& _q1)
 	const coFloatx4 WCol = a * Wb;
 	return coMake_quat(WCol - (ZCol + XCol + YCol));
 }
+coFORCE_INLINE coBool32x4 operator== (const coQuat& _a, const coQuat& _b) { return coBitCast<coFloatx4>(_a) == coBitCast<coFloatx4>(_b); }
 coFORCE_INLINE coQuat operator+(const coQuat& _q0, const coQuat& _q1)
 {
 	return coMake_quat(coBitCast<coFloatx4>(_q0) + coBitCast<coFloatx4>(_q1));
@@ -100,7 +119,8 @@ coFORCE_INLINE coFloatx3 coRotateVector(const coQuat& _this, const coFloatx3& _v
 {
 	const coFloatx3& q = coBitCast<coFloatx3>(_this);
 	const coFloatx3 s = coBroadcastW(q);
-	return 2.0f * coDot(q, _vec) * q + (s*s - coDot(q, q)) * _vec + 2.0f * s * coCross(q, _vec);
+	const coFloatx3 r = 2.0f * coDot(q, _vec) * q + (s*s - coDot(q, q)) * _vec + 2.0f * s * coCross(q, _vec);
+	return r;
 }
 coFORCE_INLINE coFloatx3 coInverseRotateVector(const coQuat& _this, const coFloatx3& _vec)
 {
