@@ -23,7 +23,10 @@ coTEST(coQuat_f, coConjugate)
 
 coTEST(coQuat_f, coRotation)
 {
-
+	coEXPECT(coNearEqual(coRotation(coFloatx3(7, 0, 0), coFloatx3(7, 0, 0)), coRotation(coFloatx3(0, 0, 0))));
+	coEXPECT(coNearEqual(coRotation(coFloatx3(7, 0, 0), coFloatx3(0, 7, 0)), coRotation(coFloatx3(0, 0, coFloat_halfPi))));
+	coEXPECT(coNearEqual(coRotation(coFloatx3(7, 0, 0), coFloatx3(0, 0, 7)), coRotation(coFloatx3(0, coFloat_halfPi, 0))));
+	coEXPECT(coNearEqual(coRotation(coFloatx3(0, 0, 7), coFloatx3(0, 7, 0)), coRotation(coFloatx3(coFloat_halfPi, 0, 0))));
 }
 
 coTEST(coQuat_f, coRotateVector)
