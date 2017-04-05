@@ -6,6 +6,8 @@
 
 coTEST(coTransform_f, coInverseTransformVector)
 {
+	const coFloatx3 epsilon = 0.01f;
+
 	// Rotation
 	{
 		{
@@ -13,13 +15,13 @@ coTEST(coTransform_f, coInverseTransformVector)
 			t.rotation = coRotation(coFloatx3(0, 0, 1), coFloat_halfPi);
 			coFloatx3 r;
 			r = coInverseTransformVector(t, coFloatx3(0, 0, 3));
-			coEXPECT(coNearEqual(r, coFloatx3(0, 0, 3)));
+			coEXPECT(coNearEqual(r, coFloatx3(0, 0, 3), epsilon));
 			r = coInverseTransformVector(t, coFloatx3(3, 0, 0));
-			coEXPECT(coNearEqual(r, coFloatx3(0, 3, 0)));
+			coEXPECT(coNearEqual(r, coFloatx3(0, -3, 0), epsilon));
 			r = coInverseTransformVector(t, coFloatx3(-3, 0, 0));
-			coEXPECT(coNearEqual(r, coFloatx3(0, -3, 0)));
+			coEXPECT(coNearEqual(r, coFloatx3(0, 3, 0), epsilon));
 			r = coInverseTransformVector(t, coFloatx3(0, -3, 0));
-			coEXPECT(coNearEqual(r, coFloatx3(3, 0, 0)));
+			coEXPECT(coNearEqual(r, coFloatx3(-3, 0, 0), epsilon));
 		}
 		
 		{
@@ -27,13 +29,13 @@ coTEST(coTransform_f, coInverseTransformVector)
 			t.rotation = coRotation(coFloatx3(0, 1, 0), coFloat_halfPi);
 			coFloatx3 r;
 			r = coInverseTransformVector(t, coFloatx3(0, 3, 0));
-			coEXPECT(coNearEqual(r, coFloatx3(0, 3, 0)));
+			coEXPECT(coNearEqual(r, coFloatx3(0, 3, 0), epsilon));
 			r = coInverseTransformVector(t, coFloatx3(3, 0, 0));
-			coEXPECT(coNearEqual(r, coFloatx3(0, 0, -3)));
+			coEXPECT(coNearEqual(r, coFloatx3(0, 0, 3), epsilon));
 			r = coInverseTransformVector(t, coFloatx3(-3, 0, 0));
-			coEXPECT(coNearEqual(r, coFloatx3(0, 0, 3)));
+			coEXPECT(coNearEqual(r, coFloatx3(0, 0, -3), epsilon));
 			r = coInverseTransformVector(t, coFloatx3(0, 0, -3));
-			coEXPECT(coNearEqual(r, coFloatx3(-3, 0, 0)));
+			coEXPECT(coNearEqual(r, coFloatx3(3, 0, 0), epsilon));
 		}
 	}
 
@@ -43,11 +45,11 @@ coTEST(coTransform_f, coInverseTransformVector)
 		t.translation = coFloatx3(7, 8, 9);
 		coFloatx3 r;
 		r = coInverseTransformVector(t, coFloatx3(1, 0, 0));
-		coEXPECT(coNearEqual(r, coFloatx3(1, 0, 0)));
+		coEXPECT(coNearEqual(r, coFloatx3(1, 0, 0), epsilon));
 		r = coInverseTransformVector(t, coFloatx3(-1, 0, 0));
-		coEXPECT(coNearEqual(r, coFloatx3(-1, 0, 0)));
+		coEXPECT(coNearEqual(r, coFloatx3(-1, 0, 0), epsilon));
 		r = coInverseTransformVector(t, coFloatx3(0, -1, 0));
-		coEXPECT(coNearEqual(r, coFloatx3(0, -1, 0)));
+		coEXPECT(coNearEqual(r, coFloatx3(0, -1, 0), epsilon));
 	}
 
 	// Scale
@@ -56,11 +58,11 @@ coTEST(coTransform_f, coInverseTransformVector)
 		t.scale = coFloatx3(7, 8, 9);
 		coFloatx3 r;
 		r = coInverseTransformVector(t, coFloatx3(1, 0, 0));
-		coEXPECT(coNearEqual(r, coFloatx3(1.f/7.f, 0, 0)));
+		coEXPECT(coNearEqual(r, coFloatx3(1.f/7.f, 0, 0), epsilon));
 		r = coInverseTransformVector(t, coFloatx3(-1, 0, 0));
-		coEXPECT(coNearEqual(r, coFloatx3(-1.f/7.f, 0, 0)));
+		coEXPECT(coNearEqual(r, coFloatx3(-1.f/7.f, 0, 0), epsilon));
 		r = coInverseTransformVector(t, coFloatx3(0, -1, 0));
-		coEXPECT(coNearEqual(r, coFloatx3(0, -1.f/8.f, 0)));
+		coEXPECT(coNearEqual(r, coFloatx3(0, -1.f/8.f, 0), epsilon));
 	}
 
 	// Rotation Translation Scale
@@ -71,10 +73,25 @@ coTEST(coTransform_f, coInverseTransformVector)
 		t.scale = coFloatx3(7, 8, 9);
 		coFloatx3 r;
 		r = coInverseTransformVector(t, coFloatx3(1, 0, 0));
-		coEXPECT(coNearEqual(r, coFloatx3(0, 1.f / 8.f, 0)));
+		coEXPECT(coNearEqual(r, coFloatx3(0, -1.f / 8.f, 0), epsilon));
 		r = coInverseTransformVector(t, coFloatx3(-1, 0, 0));
-		coEXPECT(coNearEqual(r, coFloatx3(0, -1.f / 8.f, 0)));
+		coEXPECT(coNearEqual(r, coFloatx3(0, 1.f / 8.f, 0), epsilon));
 		r = coInverseTransformVector(t, coFloatx3(0, -1, 0));
-		coEXPECT(coNearEqual(r, coFloatx3(1.0 / 7.f, 0, 0)));
+		coEXPECT(coNearEqual(r, coFloatx3(-1.0 / 7.f, 0, 0), epsilon));
+	}
+}
+
+coTEST(coTransform_f, operatorMultiply)
+{
+	{
+		const coTransform t = coTransform() * coTransform();
+		coEXPECT(coNearEqual(t, coTransform()));
+	}
+
+	{
+		coTransform rot;
+		rot.rotation = coRotation(coFloatx3(0, 0, coFloat_halfPi));
+		coEXPECT(coNearEqual(coTransform()*rot, rot));
+		coEXPECT(coNearEqual(rot*coTransform(), rot));
 	}
 }

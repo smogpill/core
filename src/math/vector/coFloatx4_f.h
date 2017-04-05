@@ -33,11 +33,6 @@ coFORCE_INLINE coUint32 coMake_Uint32(const coFloatx4& _a) { return static_cast<
 
 const coFloatx4 coFloatx4_ONE = coMake_floatx4(1.0f);
 const coFloatx4 coFloatx4_ZERO = coMake_floatx4(0.0f);
-const __m128 __m128_SIGN_MASK = _mm_castsi128_ps(_mm_set1_epi32(0x80000000));
-const __m128 __m128_SIGN_MASK_XYZ = _mm_castsi128_ps(_mm_set_epi32(0x80000000, 0x80000000, 0x80000000, 0));
-const __m128 __m128_MASK_XYZ = _mm_castsi128_ps(_mm_set_epi32(0, 0xffffffff, 0xffffffff, 0xffffffff));
-const __m128 __m128_MASK_W = _mm_castsi128_ps(_mm_set_epi32(0xffffffff, 0, 0, 0));
-const __m128 __m128_MASK_XY = _mm_castsi128_ps(_mm_set_epi32(0, 0, 0xffffffff, 0xffffffff));
 	
 coFORCE_INLINE coBool32x4 operator== (const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coBool32x4>(_mm_cmpeq_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
 coFORCE_INLINE coBool32x4 operator!= (const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coBool32x4>(_mm_cmpneq_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
@@ -46,6 +41,7 @@ coFORCE_INLINE coBool32x4 operator<= (const coFloatx4& _a, const coFloatx4& _b) 
 coFORCE_INLINE coBool32x4 operator> (const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coBool32x4>(_mm_cmpgt_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
 coFORCE_INLINE coBool32x4 operator>= (const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coBool32x4>(_mm_cmpge_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
 coFORCE_INLINE coFloatx4 operator+ (const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coFloatx4>(_mm_add_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
+coFORCE_INLINE coFloatx4& operator+= (coFloatx4& _this, const coFloatx4& _b) { return _this = coBitCast<coFloatx4>(coBitCast<coFloatx4>(_this) + coBitCast<coFloatx4>(_b)); }
 coFORCE_INLINE coFloatx4 operator- (const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coFloatx4>(_mm_sub_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
 coFORCE_INLINE coFloatx4 operator/ (const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coFloatx4>(_mm_div_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
 coFORCE_INLINE coFloatx4 operator* (const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coFloatx4>(_mm_mul_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
@@ -53,6 +49,8 @@ coFORCE_INLINE coFloatx4 operator- (const coFloatx4& _a) { return coBitCast<coFl
 coFORCE_INLINE coBool32x4 coIsValid(const coFloatx4& _a) { return _a == _a; }
 template <coInt8 X, coInt8 Y, coInt8 Z, coInt8 W>
 coFORCE_INLINE coFloatx4 coShuffle(const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coFloatx4>(_mm_shuffle_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b), _MM_SHUFFLE(W, Z, Y, X))); }
+template <coInt8 X, coInt8 Y, coInt8 Z, coInt8 W>
+coFORCE_INLINE coFloatx4 coSwizzle(const coFloatx4& _a) { return coBitCast<coFloatx4>(_mm_shuffle_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_a), _MM_SHUFFLE(W, Z, Y, X))); }
 coFORCE_INLINE coFloatx4 coBroadcastX(const coFloatx4& _a) { return coShuffle<0, 0, 0, 0>(_a, _a); }
 coFORCE_INLINE coFloatx4 coBroadcastY(const coFloatx4& _a) { return coShuffle<1, 1, 1, 1>(_a, _a); }
 coFORCE_INLINE coFloatx4 coBroadcastZ(const coFloatx4& _a) { return coShuffle<2, 2, 2, 2>(_a, _a); }
@@ -112,9 +110,9 @@ coFORCE_INLINE coFloatx4 coMin(const coFloatx4& _a, const coFloatx4& _b) { retur
 coFORCE_INLINE coFloatx4 coMax(const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coFloatx4>(_mm_max_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
 coFORCE_INLINE coFloatx4 coClamp(const coFloatx4& _a, const coFloatx4& _min, const coFloatx4& _max) { return coMin(coMax(_a, _min), _max); }
 coFORCE_INLINE coFloatx4 coClamp01(const coFloatx4& _a) { return coClamp(_a, coFloatx4_ZERO, coFloatx4_ONE); }
-coFORCE_INLINE coBool32x4 coNearEqual(const coFloatx4& _a, const coFloatx4& _b, const coFloatx4& _epsilon = coFloatx4(0.0001f)) { return coAbs(_b - _a) < _epsilon; }
-coFORCE_INLINE coBool32x4 coNearEqual0(const coFloatx4& _a, const coFloatx4& _epsilon = coFloatx4(0.0001f)) { return coAbs(_a) < _epsilon; }
-coFORCE_INLINE coBool32x4 coNotNearEqual0(const coFloatx4& _a, const coFloatx4& _epsilon = coFloatx4(0.0001f)) { const coFloatx4 abs = coAbs(_a); return coAbs(_a) > _epsilon; }
+coFORCE_INLINE coBool32x4 coNearEqual(const coFloatx4& _a, const coFloatx4& _b, const coFloatx4& _epsilon = coFloatx4(1e-3f)) { return coAbs(_b - _a) < _epsilon; }
+coFORCE_INLINE coBool32x4 coNearEqual0(const coFloatx4& _a, const coFloatx4& _epsilon = coFloatx4(1e-3f)) { return coAbs(_a) < _epsilon; }
+coFORCE_INLINE coBool32x4 coNotNearEqual0(const coFloatx4& _a, const coFloatx4& _epsilon = coFloatx4(1e-3f)) { const coFloatx4 abs = coAbs(_a); return coAbs(_a) > _epsilon; }
 coFORCE_INLINE coBool32x4 coAreXYZWEqual(const coFloatx4& _a) { const coFloatx4 x = coBroadcastX(_a); return x == coBroadcastY(_a) && x == coBroadcastZ(_a) && x == coBroadcastW(_a); }
 
 namespace _coFloatx4

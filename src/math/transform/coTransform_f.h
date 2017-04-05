@@ -44,7 +44,7 @@ coFORCE_INLINE coTransform coInverse(const coTransform& _this)
 {
 	coTransform inv(nullptr);
 	inv.scale = 1.f / _this.scale;
-	inv.rotation = coConjugate(_this.rotation);
+	inv.rotation = coInverse(_this.rotation);
 	inv.translation = -coRotateVector(inv.rotation, _this.translation * inv.scale);
 	return inv;
 }
@@ -61,4 +61,11 @@ coFORCE_INLINE coTransform coNormalize(const coTransform& _this)
 	coTransform r(_this);
 	r.rotation = coNormalize(r.rotation);
 	return r;
+}
+coFORCE_INLINE coBool32x4 coNearEqual(const coTransform& _a, const coTransform& _b, const coFloatx4& _epsilon = 1e-3f)
+{
+	const coBool32x4 r = coNearEqual(_a.rotation, _b.rotation, _epsilon);
+	const coBool32x4 t = coBitCast<coBool32x4>(coBitCast<coInt32x4>(coNearEqual(_a.translation, _b.translation, _epsilon)) | coInt32x4_MASK_W);
+	const coBool32x4 s = coBitCast<coBool32x4>(coBitCast<coInt32x4>(coNearEqual(_a.scale, _b.scale, _epsilon)) | coInt32x4_MASK_W);
+	return r && t && s;
 }
