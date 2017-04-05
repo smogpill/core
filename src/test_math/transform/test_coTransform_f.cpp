@@ -83,15 +83,42 @@ coTEST(coTransform_f, coInverseTransformVector)
 
 coTEST(coTransform_f, operatorMultiply)
 {
+	const coFloatx4 epsilon(1e-2f);
 	{
 		const coTransform t = coTransform() * coTransform();
-		coEXPECT(coNearEqual(t, coTransform()));
+		coEXPECT(coNearEqual(t, coTransform(), epsilon));
 	}
 
+	// Rotation
 	{
-		coTransform rot;
-		rot.rotation = coRotation(coFloatx3(0, 0, coFloat_halfPi));
-		coEXPECT(coNearEqual(coTransform()*rot, rot));
-		coEXPECT(coNearEqual(rot*coTransform(), rot));
+		coTransform t;
+		t.rotation = coRotation(coFloatx3(0, 0, coFloat_halfPi));
+		coTransform t2;
+		t2.rotation = coRotation(coFloatx3(0, 0, coFloat_pi));
+		coEXPECT(coNearEqual(coTransform()*t, t, epsilon));
+		coEXPECT(coNearEqual(t*coTransform(), t, epsilon));
+		coEXPECT(coNearEqual(t*t, t2, epsilon));
+	}
+
+	// Translation
+	{
+		coTransform t;
+		t.translation = coFloatx3(0, 1, 3);
+		coTransform t2;
+		t2.translation = coFloatx3(0, 2, 6);
+		coEXPECT(coNearEqual(coTransform()*t, t, epsilon));
+		coEXPECT(coNearEqual(t*coTransform(), t, epsilon));
+		coEXPECT(coNearEqual(t*t, t2, epsilon));
+	}
+
+	// Scale
+	{
+		coTransform t;
+		t.scale = coFloatx3(0, 1, 3);
+		coTransform t2;
+		t2.scale = coFloatx3(0, 1, 9);
+		coEXPECT(coNearEqual(coTransform()*t, t, epsilon));
+		coEXPECT(coNearEqual(t*coTransform(), t, epsilon));
+		coEXPECT(coNearEqual(t*t, t2, epsilon));
 	}
 }
