@@ -61,7 +61,8 @@ coFORCE_INLINE coQuat _coRotation(const coFloatx3& _from, const coFloatx3& _to, 
 	}
 	else
 	{
-		return coNormalize(coAbs(_from.x) > coAbs(_from.y) ? coQuat(-_from.z, 0.0f, _from.x, 0.0f) : coQuat(0.0f, -_from.z, _from.y, 0.0f));
+		//return coNormalize(coAbs(_from.x) > coAbs(_from.y) ? coQuat(-_from.z, 0.0f, _from.x, 0.0f) : coQuat(0.0f, -_from.z, _from.y, 0.0f));
+		return coNormalize(coQuat(-_from.z, _from.y, _from.x, 0.0f));
 	}
 }
 coFORCE_INLINE coQuat coRotationUnitVecs(const coFloatx3& _from, const coFloatx3& _to)
