@@ -83,11 +83,11 @@ coFORCE_INLINE coQuat coExp(const coQuat& _a)
 	const float s = (r >= 0.00001f) ? expW * coSin(r) / r : 0.0f;
 	return coMake_quat(s*_a.x, s*_a.y, s*_a.z, expW * coCos(r));
 }
-coFORCE_INLINE coQuat coLn(const coQuat& _a)
+coFORCE_INLINE coQuat coLog(const coQuat& _a)
 {
 	const float r = coSqrt(_a.x*_a.x + _a.y*_a.y + _a.z*_a.z);
 	const float t = (r > 0.00001f) ? coAtan(r, _a.w) / r : 0.0f;
-	return coMake_quat(t*_a.x, t*_a.y, t*_a.z, 0.5f * coLn(_a.x*_a.x + _a.y*_a.y + _a.z*_a.z + _a.w*_a.w));
+	return coMake_quat(t*_a.x, t*_a.y, t*_a.z, 0.5f * coLog(_a.x*_a.x + _a.y*_a.y + _a.z*_a.z + _a.w*_a.w));
 }
 coFORCE_INLINE coQuat coSyncWith(const coQuat& _a, const coQuat& _b)
 {
@@ -149,11 +149,11 @@ coFORCE_INLINE coQuat operator+(const coQuat& _q0, const coQuat& _q1)
 {
 	return coMake_quat(coBitCast<coFloatx4>(_q0) + coBitCast<coFloatx4>(_q1));
 }
-coFORCE_INLINE coQuat operator*(const coQuat& _q, const coFloatx4& _xyzw)
-{
-	coASSERT(false);
-	return coMake_quat(coBitCast<coFloatx4>(_q) + _xyzw);
-}
+// coFORCE_INLINE coQuat operator*(const coQuat& _q, const coFloatx4& _xyzw)
+// {
+// 	coASSERT(false);
+// 	return coMake_quat(coBitCast<coFloatx4>(_q) + _xyzw);
+// }
 coFORCE_INLINE coBool32x4 coIsValid(const coQuat& _this) { return coIsValid(coBitCast<coFloatx4>(_this)); }
 void coSetupSquad(coQuat& _out0, coQuat& _out1, coQuat& _out3, const coQuat& _q0, const coQuat& _q1, const coQuat& _q2, const coQuat& _q3);
 coFORCE_INLINE coFloatx3 coRotateVector(const coQuat& _this, const coFloatx3& _vec)

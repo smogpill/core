@@ -37,7 +37,7 @@ coFORCE_INLINE coFloat coPow4(coFloat _x) { const coFloat x2 = _x * _x; return x
 coFORCE_INLINE coFloat coExp(coFloat _x) { return ::expf(_x); }
 coFORCE_INLINE coFloat coExp2(coFloat _x) { return ::powf(2.0f, _x); }
 coFORCE_INLINE coFloat coLog10(coFloat _x) { return ::log10f(_x); }
-coFORCE_INLINE coFloat coLn(coFloat _x) { return ::logf(_x); }
+coFORCE_INLINE coFloat coLog(coFloat _x) { return ::logf(_x); }
 coFORCE_INLINE coFloat coMod(coFloat _x, coFloat _y) { return ::fmodf(_x, _y); }
 coFORCE_INLINE coFloat coCeil(coFloat _x) { return ::ceilf(_x); }
 coFORCE_INLINE coBool coIsInRange01(coFloat _x) { return (_x >= 0.f) && (_x <= 1.f); }

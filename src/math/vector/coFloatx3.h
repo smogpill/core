@@ -15,6 +15,6 @@ public:
 	coFloat x;
 	coFloat y;
 	coFloat z;
-private:
+protected:
 	coFloat pad;
 };
