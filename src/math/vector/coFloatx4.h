@@ -9,10 +9,18 @@ class alignas(16) coFloatx4
 {
 	coDECLARE_REFLECTED_NO_VIRTUAL();
 public:
-	coFORCE_INLINE coFloatx4() {}
-	coFORCE_INLINE coFloatx4(coFloat _xyzw) : x(_xyzw), y(_xyzw), z(_xyzw), w(_xyzw) {}
-	coFORCE_INLINE coFloatx4(coFloat _x, coFloat _y, coFloat _z, coFloat _w) : x(_x), y(_y), z(_z), w(_w) {}
-	coFORCE_INLINE coFloatx4(const coFloatx3& _xyz, coFloat _w) : x(_xyz.x), y(_xyz.y), z(_xyz.z), w(_w) {}
+	coFloatx4();
+	coFORCE_INLINE coFloatx4(coFloat _xyzw) { coBitCast<__m128>(*this) = _mm_set_ps1(_xyzw); }
+	coFORCE_INLINE coFloatx4(coFloat _x, coFloat _y, coFloat _z, coFloat _w) { coBitCast<__m128>(*this) = _mm_set_ps(_w, _z, _y, _x); }
+	coFORCE_INLINE coFloatx4(coFloatx4 _xxxx, coFloatx4 _yyyy, coFloatx4 _zzzz, coFloatx4 _wwww)
+	{
+		const __m128 xxxx = coBitCast<__m128>(_xxxx);
+		const __m128 yyyy = coBitCast<__m128>(_yyyy);
+		const __m128 zzzz = coBitCast<__m128>(_zzzz);
+		const __m128 wwww = coBitCast<__m128>(_wwww);
+		*this = coBitCast<coFloatx4>(_mm_unpacklo_ps(_mm_unpacklo_ps(xxxx, zzzz), _mm_unpacklo_ps(yyyy, wwww)));
+	}
+	coFORCE_INLINE coFloatx4(const coFloatx3& _xyz, const coFloatx3& _www) : x(_xyz.x), y(_xyz.y), z(_xyz.z), w(_www.x) {}
 
 	coFORCE_INLINE operator const coFloatx3& () const { return reinterpret_cast<const coFloatx3&>(*this); }
 

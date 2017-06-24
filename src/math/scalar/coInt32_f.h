@@ -8,7 +8,7 @@ const coInt32 coInt32_lastBit = sizeof(coInt32) * 8 - 1;
 const coInt32 coInt32_lastBitMask = (1 << coInt32_lastBit);
 
 coFORCE_INLINE coInt32 coMod(coInt32 _a, coInt32 _b) { return _a % _b; }
-coFORCE_INLINE coInt32 sign(coInt32 _a) { return (_a > 0) - (_a < 0); }
+coFORCE_INLINE coInt32 coSign(coInt32 _a) { return (_a > 0) - (_a < 0); }
 coFORCE_INLINE coBool coAreSameSign(coInt32 _a, coInt32 _b) { return (_a ^ _b) >= 0; }
 coFORCE_INLINE coBool coAreOppositeSign(coInt32 _a, coInt32 _b) { return (_a ^ _b) < 0; }
 coFORCE_INLINE coInt32 coMinWith0(coInt32 _a) { return (_a & (_a >> coInt32_lastBit)); }

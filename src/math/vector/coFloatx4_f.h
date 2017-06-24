@@ -18,7 +18,7 @@ namespace coFloatx4_
 };
 
 coFORCE_INLINE coFloatx4 coMake_floatx4(coFloat _a) { return coBitCast<coFloatx4>(_mm_set1_ps(_a)); }
-coFORCE_INLINE coFloatx4 coMake_floatx4(coFloat _x, coFloat _y, coFloat _z, coFloat _w) { return coBitCast<coFloatx4>(_mm_set_ps(_x, _y, _z, _w)); }
+coFORCE_INLINE coFloatx4 coMake_floatx4(coFloat _x, coFloat _y, coFloat _z, coFloat _w) { return coBitCast<coFloatx4>(_mm_set_ps(_w, _z, _y, _x)); }
 coFORCE_INLINE coFloatx4 coMake_floatx4(const coFloatx4& _xxxx, const coFloatx4& _yyyy, const coFloatx4& _zzzz, const coFloatx4& _wwww)
 {
 	const __m128 x = coBitCast<__m128>(_xxxx);
@@ -81,16 +81,11 @@ coFORCE_INLINE coFloatx4 coInvSqrt(const coFloatx4& _a)
 	const __m128 a = coBitCast<__m128>(_a);
 	const __m128 approx = _mm_rsqrt_ps(a);
 	const __m128 muls = _mm_mul_ps(_mm_mul_ps(a, approx), approx);
-	const __m128 half4 = _mm_set_ps(0.5f, 0.5f, 0.5f, 0.5f);
-	const __m128 three = _mm_set_ps(3.0f, 3.0f, 3.0f, 3.0f);
+	const __m128 half4 = _mm_set_ps1(0.5f);
+	const __m128 three = _mm_set_ps1(3.0f);
 	return coBitCast<coFloatx4>(_mm_mul_ps(_mm_mul_ps(half4, approx), _mm_sub_ps(three, muls)));
 }
 coFORCE_INLINE coFloatx4 coInvSqrtFast(const coFloatx4& _a) { return coBitCast<coFloatx4>(_mm_rsqrt_ps(coBitCast<__m128>(_a))); }
-coFORCE_INLINE coFloatx4 coDot(const coFloatx4& _a, const coFloatx4& _b)
-{
-	const coFloatx4 mul = _a * _b;
-	return coBroadcastX(mul) + coBroadcastY(mul) + coBroadcastZ(mul) + coBroadcastW(mul);
-}
 coFORCE_INLINE coFloatx4 coTruncate(const coFloatx4& _a)
 {
 	return coBitCast<coFloatx4>(_mm_cvtepi32_ps(_mm_cvttps_epi32(coBitCast<__m128>(_a))));
@@ -102,7 +97,6 @@ coFORCE_INLINE coFloatx4 coFloor(const coFloatx4& _a)
 	const coFloatx4 sub = coSelect(coBitCast<coFloatx4>(_mm_setzero_ps()), coFloatx4(1.0f), posMask);
 	return trunc - sub;
 }
-coFORCE_INLINE coFloatx4 coNormalize(const coFloatx4& _a) { return _a * coInvSqrt(coDot(_a, _a)); }
 coFORCE_INLINE coFloatx4 coPow2(const coFloatx4& _a) { return  _a * _a; }
 coFORCE_INLINE coFloatx4 coPow4(const coFloatx4& _a) { return coPow2(_a * _a); }
 coFORCE_INLINE coFloatx4 coDenullify(const coFloatx4& _a) { return _a + coMake_floatx4(+1.0e-037f); }

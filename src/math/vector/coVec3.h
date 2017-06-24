@@ -9,9 +9,8 @@ class alignas(16) coVec3 : public coFloatx3
 {
 	coDECLARE_REFLECTED_NO_VIRTUAL();
 public:
-	coFORCE_INLINE coVec3() { *this = coBitCast<coVec3>(_mm_setzero_ps()); }
-	coFORCE_INLINE coVec3(coFloat _xyz) : coFloatx3(_xyz) {}
+	coFORCE_INLINE coVec3() { coBitCast<__m128>(*this) = _mm_setzero_ps(); }
 	coFORCE_INLINE coVec3(coFloatx3 _xyz) : coFloatx3(_xyz) {}
-	coFORCE_INLINE coVec3(coFloat _x, coFloat _y, coFloat _z) : coFloatx3(_x, _y, _z) {}
-	explicit coVec3(coNullPtr);
+	coFORCE_INLINE coVec3(coFloatx3 _xxx, coFloatx3 _yyy, coFloatx3 _zzz) : coFloatx3(_xxx, _yyy, _zzz) {}
+	coFORCE_INLINE explicit coVec3(coNullPtr) {}
 };

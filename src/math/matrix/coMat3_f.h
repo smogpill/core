@@ -4,11 +4,11 @@
 
 #include "lang/coCppExtensions.h"
 #include "math/matrix/coMat3.h"
-#include "math/vector/coFloatx3_f.h"
+#include "math/vector/coVec3_f.h"
 
-coFloatx3 coGetScale(const coMat3& _a)
+coVec3 coGetScale(const coMat3& _a)
 {
-	return coMake_Floatx3(coLength(_a.c0), coLength(_a.c1), coLength(_a.c2));
+	return coVec3(coLength(_a.c0), coLength(_a.c1), coLength(_a.c2));
 }
 
 coMat3 coRemoveScale(const coMat3& _a)

@@ -8,11 +8,9 @@
 #include "math/vector/coFloatx3.h"
 #include "math/vector/coFloatx4_f.h"
 
-const coMat4 coMat4_identity{ {1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1} };
-coFORCE_INLINE coMat4 coMake(const coFloatx4& _c0, const coFloatx4& _c1, const coFloatx4& _c2, const coFloatx4& _c3) { return{ _c0, _c1, _c2, _c3 }; }
-coMat4 coMakeLookAt(const coFloatx3& _eyePos, const coFloatx3& _lookAtPos, const coFloatx3& _upVec);
-coMat4 coMakeOrthographic(float _left, float _right, float _bottom, float _top, float _zNear, float _zFar);
-coMat4 coMakePerspective(float _fovyRadians, float _aspect, float _zNear, float _zFar);
+coMat4 coMakeLookAt(const coVec3& _eyePos, const coVec3& _lookAtPos, const coVec3& _upVec);
+coMat4 coMakeOrthographic(coFloat _left, coFloat _right, coFloat _bottom, coFloat _top, coFloat _zNear, coFloat _zFar);
+coMat4 coMakePerspective(coFloat _fovyRadians, coFloat _aspect, coFloat _zNear, coFloat _zFar);
 coFORCE_INLINE void coSetUpperMat3(coMat4& _m4, const coMat3& _m3)
 {
 	_m4.c0 = coSelectXYZ(coMake_floatx4XYZ0(_m3.c0), _m4.c0);

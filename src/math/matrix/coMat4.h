@@ -2,14 +2,18 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include "math/vector/coFloatx4.h"
+#include "math/vector/coVec4.h"
 
 class coMat4
 {
 	coDECLARE_REFLECTED_NO_VIRTUAL();
 public:
-	coFloatx4 c0;
-	coFloatx4 c1;
-	coFloatx4 c2;
-	coFloatx4 c3;
+	coFORCE_INLINE coMat4(coNullPtr) : c0(nullptr), c1(nullptr), c2(nullptr), c3(nullptr) {}
+	coFORCE_INLINE coMat4() : c0(1.0f, 0.0f, 0.0f, 0.0f), c1(0.0f, 1.0f, 0.0f, 0.0f), c2(0.0f, 0.0f, 1.0f, 0.0f), c3(0.0f, 0.0f, 0.0f, 1.0f) {}
+	coFORCE_INLINE coMat4(const coVec4& _c0, const coVec4& _c1, const coVec4& _c2, const coVec4& _c3) : c0(_c0), c1(_c1), c2(_c2), c3(_c3) {}
+
+	coVec4 c0;
+	coVec4 c1;
+	coVec4 c2;
+	coVec4 c3;
 };

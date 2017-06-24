@@ -3,15 +3,15 @@
 #pragma once
 
 #include "math/quaternion/coQuat.h"
-#include "math/vector/coFloatx3.h"
+#include "math/vector/coVec3.h"
 
 class coTransform
 {
 public:
-	coTransform();
-	coTransform(coNullPtr);
+	coFORCE_INLINE coTransform() : scale(1.0f) {}
+	coFORCE_INLINE coTransform(coNullPtr) : rotation(nullptr), translation(nullptr), scale(nullptr) {}
 
 	coQuat rotation;
-	coFloatx3 translation;
-	coFloatx3 scale;
+	coVec3 translation;
+	coVec3 scale;
 };

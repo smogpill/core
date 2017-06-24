@@ -15,6 +15,7 @@ coTEST(coQuat_f, coNormalize)
 
 coTEST(coQuat_f, coInverse)
 {
+	coQuat q = coInverse(coQuat());
 	coEXPECT(coInverse(coQuat()) == coQuat());
 	coEXPECT(coInverse(coQuat(0, 0, 0, 0)) == coQuat(0, 0, 0, 0));
 	coEXPECT(coInverse(coQuat(1, 2, 3, 4)) == coQuat(-1, -2, -3, 4));

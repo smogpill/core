@@ -5,7 +5,7 @@
 #include "math/shape/coSegment.h"
 #include "math/vector/coFloatx3_f.h"
 
-coBool coIntersectXY(const coSegment& _a, const coSegment& _b, coFloatx3& _hit)
+coBool coIntersectXY(const coSegment& _a, const coSegment& _b, coVec3& _hit)
 {
 	// http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
 	// http://ideone.com/PnPJgb

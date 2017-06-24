@@ -3,17 +3,14 @@
 #pragma once
 
 #include "lang/reflect/coTypeDecl.h"
+#include "math/vector/coFloatx4.h"
 
-class alignas(16) coQuat
+class alignas(16) coQuat : public coFloatx4
 {
 	coDECLARE_REFLECTED_NO_VIRTUAL();
 public:
-	coFORCE_INLINE coQuat() : x(0.f), y(0.f), z(0.f), w(1.0f) {}
-	coFORCE_INLINE coQuat(coFloat _x, coFloat _y, coFloat _z, coFloat _w) : x(_x), y(_y), z(_z), w(_w) {}
-	explicit coQuat(coNullPtr);
-
-	coFloat x;
-	coFloat y;
-	coFloat z;
-	coFloat w;
+	coFORCE_INLINE coQuat() : coFloatx4(0.0f, 0.0f, 0.0f, 1.0f) {}
+	coFORCE_INLINE coQuat(const coFloatx4& _xyzw) : coFloatx4(_xyzw) {}
+	coFORCE_INLINE coQuat(const coFloatx4& _xxxx, const coFloatx4& _yyyy, const coFloatx4& _zzzz, const coFloatx4& _wwww) : coFloatx4(_xxxx, _yyyy, _zzzz, _wwww) {}
+	coFORCE_INLINE explicit coQuat(coNullPtr) {}
 };

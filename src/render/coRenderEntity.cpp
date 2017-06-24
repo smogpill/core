@@ -6,7 +6,6 @@
 
 coRenderEntity::coRenderEntity()
 	: renderMesh(nullptr)
-	, worldMatrix(coMat4_identity)
 {
 
 }

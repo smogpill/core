@@ -5,7 +5,6 @@
 #include "math/matrix/coMat4_f.h"
 
 coRenderCamera::coRenderCamera()
-	: worldMatrix(coMat4_identity)
 {
 
 }

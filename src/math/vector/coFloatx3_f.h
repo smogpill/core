@@ -10,7 +10,7 @@
 #include "debug/log/coAssert.h"
 
 coFORCE_INLINE coFloatx3 coMake_Floatx3(coFloat _a) { return coBitCast<coFloatx3>(_mm_set1_ps(_a)); }
-coFORCE_INLINE coFloatx3 coMake_Floatx3(coFloat _x, coFloat _y, coFloat _z) { return coBitCast<coFloatx3>(_mm_set_ps(_x, _y, _z, _z)); }
+coFORCE_INLINE coFloatx3 coMake_Floatx3(coFloat _x, coFloat _y, coFloat _z) { return coBitCast<coFloatx3>(_mm_set_ps(_z, _z, _y, _x)); }
 coFORCE_INLINE coFloatx3 coMake_Floatx3(const coFloatx3& _xxx, const coFloatx3& _yyy, const coFloatx3& _zzz)
 {
 	const __m128 x = coBitCast<__m128>(_xxx);
@@ -55,20 +55,7 @@ coFORCE_INLINE coFloatx3 coInv(const coFloatx3& _a) { return coBitCast<coFloatx3
 coFORCE_INLINE coFloatx3 coInvFast(const coFloatx3& _a) { return coBitCast<coFloatx3>(coInvFast(coBitCast<coFloatx4>(_a))); }
 coFORCE_INLINE coFloatx3 coInvSqrt(const coFloatx3& _a) { return coBitCast<coFloatx3>(coInvSqrt(coBitCast<coFloatx4>(_a))); }
 coFORCE_INLINE coFloatx3 coInvSqrtFast(const coFloatx3& _a) { return coBitCast<coFloatx3>(coInvSqrtFast(coBitCast<coFloatx4>(_a))); }
-coFORCE_INLINE coFloatx3 coDot(const coFloatx3& _a, const coFloatx3& _b)
-{
-	const coFloatx3 mul = _a * _b;
-	return coBroadcastX(mul) + coBroadcastY(mul) + coBroadcastZ(mul);
-}
 coFORCE_INLINE coFloatx3 coLerp(const coFloatx3& _from, const coFloatx3& _to, const coFloatx3& _ratio) { return _from + (_to - _from) * _ratio; }
-coFORCE_INLINE coFloatx3 coCross(const coFloatx3& _a, const coFloatx3& _b)
-{
-	const coFloatx3 tmp0 = coShuffle<1, 2, 0>(_a, _a);
-	const coFloatx3 tmp1 = coShuffle<2, 0, 1>(_b, _b);
-	const coFloatx3 tmp2 = coShuffle<2, 0, 1>(_a, _a);
-	const coFloatx3 tmp3 = coShuffle<1, 2, 0>(_b, _b);
-	return tmp0 * tmp1 - tmp2 * tmp3;
-}
 coFORCE_INLINE coFloatx3 coPow2(const coFloatx3& _a) { return  _a * _a; }
 coFORCE_INLINE coFloatx3 coPow4(const coFloatx3& _a) { return coPow2(_a * _a); }
 coFORCE_INLINE coFloatx3 coDenullify(const coFloatx3& _a) { return _a + coMake_Floatx3(+1.0e-037f); }
@@ -78,21 +65,6 @@ coFORCE_INLINE coFloatx3 coClamp(const coFloatx3& _a, const coFloatx3& _min, con
 coFORCE_INLINE coFloatx3 coClamp01(const coFloatx3& _a) { return coBitCast<coFloatx3>(coClamp01(coBitCast<coFloatx4>(_a))); }
 coFORCE_INLINE coBool32x3 coNearEqual(const coFloatx3& _a, const coFloatx3& _b, const coFloatx3& _epsilon = coFloatx3(1e-3f)) { return coAbs(_b - _a) < _epsilon; }
 coFORCE_INLINE coBool32x3 coNearEqual0(const coFloatx3& _a, const coFloatx3& _epsilon = coFloatx3(1e-3f)) { return coAbs(_a) < _epsilon; }
-coFORCE_INLINE coFloatx3 coSquareLength(const coFloatx3& _a) { return coDot(_a, _a); }
-coFORCE_INLINE coFloatx3 coLength(const coFloatx3& _a) { return coSqrt(coDot(_a, _a)); }
-coFORCE_INLINE coFloatx3 coNormalize(const coFloatx3& _a) { coASSERT(!coNearEqual0(_a)); return _a*coInvSqrt(coDot(_a, _a)); }
-coFORCE_INLINE coBool32x3 coIsNormalized(const coFloatx3& _a, const coFloatx3& _squareEpsilon = coFloatx3(1e-3f)) { return coNearEqual(coSquareLength(_a), coFloatx3_ONE, _squareEpsilon); }
 coFORCE_INLINE coBool32x3 coAreXYZEqual(const coFloatx3& _a) { const coFloatx3 x = coBroadcastX(_a); return x == coBroadcastY(_a) && x == coBroadcastZ(_a); }
 coFORCE_INLINE coFloatx3 coSin(const coFloatx3& _a) { return coBitCast<coFloatx3>(coSin(coBitCast<coFloatx4>(_a))); }
 coFORCE_INLINE coFloatx3 coCos(const coFloatx3& _a) { return coBitCast<coFloatx3>(coCos(coBitCast<coFloatx4>(_a))); }
-coFORCE_INLINE coFloatx3 coAnyOrthogonal(const coFloatx3& _a)
-{
-	const coFloatx3 absA = coAbs(_a);
-	switch (coMinIndex(absA.x, absA.y, absA.z))
-	{
-	case 0: return coCross(_a, coFloatx3(1.0f, 0.0f, 0.0f));
-	case 1: return coCross(_a, coFloatx3(0.0f, 1.0f, 0.0f));
-	case 2: return coCross(_a, coFloatx3(0.0f, 0.0f, 1.0f));
-	default: coASSERT(false); return coFloatx3(0.0f);
-	}
-}
