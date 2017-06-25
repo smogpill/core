@@ -5,7 +5,7 @@
 #include "lang/reflect/coTypeDecl.h"
 #include "math/vector/coFloatx3.h"
 
-class alignas(16) coVec3 : public coFloatx3
+class coVec3 : public coFloatx3
 {
 	coDECLARE_REFLECTED_NO_VIRTUAL();
 public:

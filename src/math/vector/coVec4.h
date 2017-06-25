@@ -8,7 +8,7 @@
 
 class coVec3;
 
-class alignas(16) coVec4 : public coFloatx4
+class coVec4 : public coFloatx4
 {
 	coDECLARE_REFLECTED_NO_VIRTUAL();
 public:

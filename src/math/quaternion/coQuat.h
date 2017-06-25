@@ -5,7 +5,7 @@
 #include "lang/reflect/coTypeDecl.h"
 #include "math/vector/coFloatx4.h"
 
-class alignas(16) coQuat : public coFloatx4
+class coQuat : public coFloatx4
 {
 	coDECLARE_REFLECTED_NO_VIRTUAL();
 public:
