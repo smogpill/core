@@ -4,7 +4,7 @@
 
 #include "lang/coCppExtensions.h"
 
-void coAssignAsDeleted(void* _ptr, coUint _size8);
+void coFillAsDeleted(void* _ptr, coUint _size8);
 
 coFORCE_INLINE coBool coIsAligned(const void* _ptr, coUint _alignment8)
 {
@@ -21,7 +21,7 @@ coFORCE_INLINE void coMemMove(void* _dest, const void* _src, coUint _size8)
 }
 
 template <class T>
-void coAssign(void* _ptr, coUint _count, const T& _val)
+void coFill(void* _ptr, coUint _count, const T& _val)
 {
 	T* p = static_cast<T*>(_ptr);
 	for (coUint i = 0; i < _count; ++i)

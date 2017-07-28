@@ -46,9 +46,16 @@ template <class T>
 void coClear(coArray<T>& _this)
 {
 #ifdef coDEBUG
-	coAssignAsDeleted(_this.data, _this.count * sizeof(T));
+	coFillAsDeleted(_this.data, _this.count * sizeof(T));
 #endif
 	_this.count = 0;
+}
+
+template <class T>
+void coFill(coArray<T>& _this, const T& _val)
+{
+	for (T& e : _this)
+		e = _val;
 }
 
 template <class T>

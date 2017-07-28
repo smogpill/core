@@ -63,10 +63,10 @@ void coReserve(coHashMap<T>& _this, coUint32 _desiredCapacity)
 template <class T>
 void coClear(coHashMap<T>& _this)
 {
-	coAssign(_this.buckets, _coGetBucketCount(_this), _coHashMap_INVALID_INDEX);
+	coFill(_this.buckets, _coGetBucketCount(_this), _coHashMap_INVALID_INDEX);
 	_this.count = 0;
 #ifdef coDEBUG
-	coAssignAsDeleted(_this.entries, _this.count * sizeof(T));
+	coFillAsDeleted(_this.entries, _this.count * sizeof(T));
 #endif
 }
 
