@@ -6,22 +6,16 @@
 
 class coNeuralLayer;
 class coNeuralLayerData;
+class coNeuralDataSet;
 
 class coNeuralNet : public coObject
 {
 	coDECLARE_SUPER(coObject);
 public:
-	class DataSet
-	{
-	public:
-		coUint nbSamples;
-		coArray<coFloat> inputs;
-		coArray<coFloat> outputs;
-	};
 	coNeuralNet(const coArray<coNeuralLayerData*> _datas);
 	virtual ~coNeuralNet();
 	coResult Compute(const coArray<coFloat>& _inputs, coArray<coFloat>& _outputs);
-	coResult Train(const DataSet& _dataSet, coFloat _targetError, coUint _nbMaxEpochs);
+	coResult Train(const coNeuralDataSet& _dataSet, coFloat _targetError, coUint _nbMaxEpochs);
 	coUint GetNbInputs() const;
 	coUint GetNbOutputs() const;
 

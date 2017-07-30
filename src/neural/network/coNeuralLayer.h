@@ -15,10 +15,6 @@ public:
 
 	const coNeuralLayerData* GetData() const { return data; }
 	coNeuralLayerData* GetData() { return data; }
-	void Compute(const coArray<coFloat>& _inputs, coArray<coFloat>& _outputs) const;
-
-	static coFloat ComputeSigmoid(coFloat _x);
-	static coFloat ComputeSigmoidDerivative(coFloat _x);
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;

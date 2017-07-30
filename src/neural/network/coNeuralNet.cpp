@@ -5,6 +5,9 @@
 #include "neural/network/coNeuralLayer.h"
 #include "neural/network/coNeuralLayerData.h"
 #include "neural/process/training/coNeuralTrainingLayer.h"
+#include "neural/process/training/coNeuralDataSet.h"
+#include "neural/process/compute/coNeuralComputeOutputs.h"
+#include "neural/process/coNeuralSigmoid_f.h"
 #include "lang/result/coResult_f.h"
 #include "math/scalar/coFloat_f.h"
 #include "math/scalar/coUint32_f.h"
@@ -60,7 +63,7 @@ coResult coNeuralNet::Compute(const coArray<coFloat>& _inputs, coArray<coFloat>&
 	{
 		coArray<coFloat> inputs = coArray<coFloat>(in->data, layer->GetData()->GetNbInputs());
 		coArray<coFloat> outputs = coArray<coFloat>(out->data, layer->GetData()->GetNbOutputs());
-		layer->Compute(inputs, outputs);
+		coComputeNeuralLayerOutputs(*layer->GetData(), inputs, outputs);
 		coSwap(tempInputs, tempOutputs);
 		in = &tempInputs;
 		out = &tempOutputs;
@@ -74,7 +77,7 @@ coResult coNeuralNet::Compute(const coArray<coFloat>& _inputs, coArray<coFloat>&
 	return true;
 }
 
-coResult coNeuralNet::Train(const DataSet& _dataSet, coFloat _targetError, coUint _nbMaxEpochs)
+coResult coNeuralNet::Train(const coNeuralDataSet& _dataSet, coFloat _targetError, coUint _nbMaxEpochs)
 {
 	// References:
 	// - "On Large-Batch Training for Deep Learning: Generalization Gap and Sharp Minima" (arXiv:1609.04836).
@@ -148,7 +151,7 @@ coResult coNeuralNet::Train(const DataSet& _dataSet, coFloat _targetError, coUin
 				for (coNeuralTrainingLayer* trainingLayer : trainingLayers)
 				{
 					coNeuralLayer* layer = trainingLayer->layer;
-					layer->Compute(inputs, trainingLayer->outputs);
+					coComputeNeuralLayerOutputs(*layer->GetData(), inputs, trainingLayer->outputs);
 					inputs = trainingLayer->outputs;
 				}
 			}
@@ -168,7 +171,7 @@ coResult coNeuralNet::Train(const DataSet& _dataSet, coFloat _targetError, coUin
 							const coFloat value = values[i];
 							const coFloat targetValue = sampleOutputs[i];
 							const coFloat error = targetValue - value;
-							gradients[i] = error * coNeuralLayer::ComputeSigmoidDerivative(value);
+							gradients[i] = error * coComputeNeuralSigmoidDerivative(value);
 						}
 					}
 
@@ -195,7 +198,7 @@ coResult coNeuralNet::Train(const DataSet& _dataSet, coFloat _targetError, coUin
 								sum += nextGradients[l] * nextWeights[weightIndex];
 							}
 							const coFloat output = curOutputs[k];
-							curGradients[k] = sum * coNeuralLayer::ComputeSigmoidDerivative(output);
+							curGradients[k] = sum * coComputeNeuralSigmoidDerivative(output);
 						}
 					}
 				}

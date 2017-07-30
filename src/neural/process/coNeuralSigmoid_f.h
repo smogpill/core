@@ -4,7 +4,7 @@
 
 #include "math/scalar/coFloat_f.h"
 
-coFORCE_INLINE coFloat coNeuralSigmoid(coFloat _x)
+coFORCE_INLINE coFloat coComputeNeuralSigmoid(coFloat _x)
 {
 	return _x < -45.0f ? 0.0f : _x > 45.0f ? 1.0f : 1.0f / (1.0f + coExp(-_x));
 
@@ -18,7 +18,7 @@ coFORCE_INLINE coFloat coNeuralSigmoid(coFloat _x)
 	// 	return (b - 1.0f) / (b + 1.0f);
 }
 
-coFORCE_INLINE coFloat coNeuralSigmoidDerivative(coFloat _x)
+coFORCE_INLINE coFloat coComputeNeuralSigmoidDerivative(coFloat _x)
 {
 	return _x * (1 - _x);
 }

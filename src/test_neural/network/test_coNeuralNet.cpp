@@ -4,6 +4,7 @@
 #include "test/unit/coTest.h"
 #include "neural/network/coNeuralNet.h"
 #include "neural/network/coNeuralLayerData.h"
+#include "neural/process/training/coNeuralDataSet.h"
 #include "math/scalar/coFloat_f.h"
 
 coTEST(coNeuralNet, Init)
@@ -74,7 +75,7 @@ coTEST(coNeuralNet, TrainALine)
 			}
 		}
 
-		coNeuralNet::DataSet dataSet;
+		coNeuralDataSet dataSet;
 		{
 			dataSet.nbSamples = nbSamples;
 			dataSet.inputs = inputs;
