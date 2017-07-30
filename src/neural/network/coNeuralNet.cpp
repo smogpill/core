@@ -3,7 +3,10 @@
 #include "neural/pch.h"
 #include "neural/network/coNeuralNet.h"
 #include "neural/network/coNeuralLayer.h"
+#include "neural/process/coNeuralNet_f.h"
+#include "neural/process/coNeuralLayer_f.h"
 #include "neural/process/training/coNeuralTrainingLayer.h"
+#include "neural/process/training/coNeuralTrainingNet.h"
 #include "neural/process/training/coNeuralDataSet.h"
 #include "neural/process/compute/coNeuralComputeOutputs.h"
 #include "neural/process/coNeuralSigmoid_f.h"
@@ -12,8 +15,8 @@
 #include "math/scalar/coUint32_f.h"
 
 coNeuralNet::coNeuralNet(const coArray<coNeuralLayer*> _layers)
+	: layers(_layers)
 {
-	coPushBackArray(layers, _layers);
 }
 
 coResult coNeuralNet::OnInit(const coObject::InitConfig& _config)
@@ -39,45 +42,12 @@ coResult coNeuralNet::Train(const coNeuralDataSet& _dataSet, coFloat _targetErro
 	const coUint nbNetOutputs = GetNbOutputs();
 
 	// Init weights
-	{
-		coUint32 seed = 1;
-		for (coNeuralLayer* layer : layers)
-		{
-			for (coFloat& weight : layer->GetWeightBuffer())
-			{
-				weight = coRand11(seed);
-			}
-			for (coFloat& bias : layer->GetBiasBuffer())
-			{
-				bias = coRand11(seed);
-			}
-		}
-	}
+	coUint32 seed = 777777777;
+	coRandomizeWeightsAndBiases(*this, seed);
 
 	// Training layers
-	coDynamicArray<coNeuralTrainingLayer*> trainingLayers;
-	{
-		coReserve(trainingLayers, layers.count);
-		coArray<coFloat> inputs;
-		for (coNeuralLayer* layer : layers)
-		{
-			coNeuralTrainingLayer* trainingLayer = new coNeuralTrainingLayer();
-			trainingLayer->layer = layer;
-			const coUint nbInputs = layer->GetNbInputs();
-			const coUint nbOutputs = layer->GetNbOutputs();
-			coResize(trainingLayer->weightDeltas, nbInputs * nbOutputs);
-			coFill(trainingLayer->weightDeltas, 0.0f);
-			coResize(trainingLayer->biasDeltas, nbOutputs);
-			coFill(trainingLayer->biasDeltas, 0.0f);
-			coResize(trainingLayer->outputs, nbOutputs);
-			coResize(trainingLayer->gradients, nbOutputs);
-			coPushBack(trainingLayers, trainingLayer);
-			trainingLayer->inputs.data = inputs.data;
-			trainingLayer->inputs.count = inputs.count;
-			inputs.data = trainingLayer->outputs.data;
-			inputs.count = trainingLayer->outputs.count;
-		}
-	}
+	coNeuralTrainingNet trainingNet(*this);
+	const coArray<coNeuralTrainingLayer*>& trainingLayers = trainingNet.GetTrainingLayers();
 
 	coFloat err;
 	coUint nbEpochs = 0;

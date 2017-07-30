@@ -23,5 +23,5 @@ protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 private:
-	coDynamicArray<coNeuralLayer*> layers;
+	coArray<coNeuralLayer*> layers;
 };
