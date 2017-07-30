@@ -4,7 +4,7 @@
 
 #include "container/array/coArray.h"
 
-class coNeuralLayerData;
+class coNeuralLayer;
 
 //coResult coCompute(const coArray<coFloat>& _inputs, coArray<coFloat>& _outputs);
-void coComputeNeuralLayerOutputs(const coNeuralLayerData& _layerData, const coArray<coFloat>& _inputs, coArray<coFloat>& _outputs);
+void coComputeNeuralLayerOutputs(const coNeuralLayer& _layerData, const coArray<coFloat>& _inputs, coArray<coFloat>& _outputs);

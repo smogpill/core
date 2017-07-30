@@ -3,3 +3,8 @@
 #include "neural/pch.h"
 #include "neural/process/training/coNeuralTrainingLayer.h"
 
+coNeuralTrainingLayer::coNeuralTrainingLayer()
+	: layer(nullptr)
+{
+
+}

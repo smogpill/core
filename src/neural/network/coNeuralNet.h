@@ -4,16 +4,16 @@
 
 #include "pattern/object/coObject.h"
 
+class coNeuralLayerOld;
 class coNeuralLayer;
-class coNeuralLayerData;
 class coNeuralDataSet;
 
 class coNeuralNet : public coObject
 {
 	coDECLARE_SUPER(coObject);
 public:
-	coNeuralNet(const coArray<coNeuralLayerData*> _datas);
-	virtual ~coNeuralNet();
+	coNeuralNet(const coArray<coNeuralLayer*> _datas);
+	virtual ~coNeuralNet() {}
 	coResult Compute(const coArray<coFloat>& _inputs, coArray<coFloat>& _outputs);
 	coResult Train(const coNeuralDataSet& _dataSet, coFloat _targetError, coUint _nbMaxEpochs);
 	coUint GetNbInputs() const;

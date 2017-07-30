@@ -9,6 +9,7 @@ class coNeuralLayer;
 class coNeuralTrainingLayer
 {
 public:
+	coNeuralTrainingLayer();
 	coNeuralLayer* layer;
 	coDynamicArray<coFloat> weightDeltas;
 	coDynamicArray<coFloat> biasDeltas;

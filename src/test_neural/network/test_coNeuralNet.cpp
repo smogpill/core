@@ -3,15 +3,15 @@
 #include "test_neural/pch.h"
 #include "test/unit/coTest.h"
 #include "neural/network/coNeuralNet.h"
-#include "neural/network/coNeuralLayerData.h"
+#include "neural/network/coNeuralLayer.h"
 #include "neural/process/training/coNeuralDataSet.h"
 #include "math/scalar/coFloat_f.h"
 
 coTEST(coNeuralNet, Init)
 {
-	coNeuralLayerData data(1, 1);
-	coEXPECT(data.Init(coNeuralLayerData::InitConfig()));
-	coArray<coNeuralLayerData*> layerDatas = { &data };
+	coNeuralLayer data(1, 1);
+	coEXPECT(data.Init(coNeuralLayer::InitConfig()));
+	coArray<coNeuralLayer*> layerDatas = { &data };
 	coNeuralNet net(layerDatas);
 	coEXPECT(net.Init(coNeuralNet::InitConfig()));
 }
@@ -28,11 +28,11 @@ coTEST(coNeuralNet, TrainALine)
 	const coFloat yRange = yMax - yMin;
 	//coASSERT(yRange > 0.0f);
 	const coFloat error = 0.01f;
-	coNeuralLayerData data0(1, 8);
-	coNeuralLayerData data1(8, 1);
-	coEXPECT(data0.Init(coNeuralLayerData::InitConfig()));
-	coEXPECT(data1.Init(coNeuralLayerData::InitConfig()));
-	coArray<coNeuralLayerData*> layerDatas = { &data0, &data1 };
+	coNeuralLayer data0(1, 8);
+	coNeuralLayer data1(8, 1);
+	coEXPECT(data0.Init(coNeuralLayer::InitConfig()));
+	coEXPECT(data1.Init(coNeuralLayer::InitConfig()));
+	coArray<coNeuralLayer*> layerDatas = { &data0, &data1 };
 	coNeuralNet net(layerDatas);
 	coEXPECT(net.Init(coNeuralNet::InitConfig()));
 

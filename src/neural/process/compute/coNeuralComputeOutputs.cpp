@@ -3,9 +3,9 @@
 #include "neural/pch.h"
 #include "neural/process/compute/coNeuralComputeOutputs.h"
 #include "neural/process/coNeuralSigmoid_f.h"
-#include "neural/network/coNeuralLayerData.h"
+#include "neural/network/coNeuralLayer.h"
 
-void coComputeNeuralLayerOutputs(const coNeuralLayerData& _layerData, const coArray<coFloat>& _inputs, coArray<coFloat>& _outputs)
+void coComputeNeuralLayerOutputs(const coNeuralLayer& _layerData, const coArray<coFloat>& _inputs, coArray<coFloat>& _outputs)
 {
 	const coUint nbInputs = _layerData.GetNbInputs();
 	const coUint nbOutputs = _layerData.GetNbOutputs();
