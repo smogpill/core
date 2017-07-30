@@ -262,10 +262,11 @@ coResult coNeuralNet::Train(const DataSet& _dataSet, coFloat _targetError, coUin
 
 		coASSERT(_dataSet.nbSamples);
 		err /= coFloat(_dataSet.nbSamples);
+		err *= 0.5f;
 
 		++nbEpochs;
 	}
-	while (err > _targetError && nbEpochs < _nbMaxEpochs);
+	while (/*err > _targetError && */nbEpochs < _nbMaxEpochs);
 
 	for (TrainingLayer* trainingLayer : trainingLayers)
 		delete trainingLayer;

@@ -81,7 +81,7 @@ coTEST(coNeuralNet, TrainALine)
 			dataSet.outputs = outputs;
 		}
 
-		const coUint nbMaxEpochs = 10000;
+		const coUint nbMaxEpochs = 1000;
 		coEXPECT(net.Train(dataSet, error, nbMaxEpochs));
 	}
 
