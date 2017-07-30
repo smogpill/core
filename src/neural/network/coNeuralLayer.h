@@ -10,7 +10,7 @@ class coNeuralLayer : public coObject
 {
 	coDECLARE_SUPER(coObject);
 public:
-	coNeuralLayer();
+	coNeuralLayer(coNeuralLayerData& _data);
 	virtual ~coNeuralLayer();
 
 	const coNeuralLayerData* GetData() const { return data; }

@@ -7,8 +7,8 @@
 #include "math/scalar/coFloat_f.h"
 #include "math/scalar/coUint32_f.h"
 
-coNeuralLayer::coNeuralLayer()
-	: data(nullptr)
+coNeuralLayer::coNeuralLayer(coNeuralLayerData& _data)
+	: data(&_data)
 {
 
 }
@@ -45,8 +45,7 @@ void coNeuralLayer::Compute(const coArray<coFloat>& _inputs, coArray<coFloat>& _
 			o += _inputs[i] * weightBuffer[weightIndex];
 			++weightIndex;
 		}
-		o = ComputeSigmoid(o);
-		_outputs[j] = o;
+		_outputs[j] = ComputeSigmoid(o);
 	}
 }
 

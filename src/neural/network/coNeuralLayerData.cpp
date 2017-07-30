@@ -4,9 +4,9 @@
 #include "neural/network/coNeuralLayerData.h"
 #include "lang/result/coResult_f.h"
 
-coNeuralLayerData::coNeuralLayerData()
-	: nbInputs(0)
-	, nbOutputs(0)
+coNeuralLayerData::coNeuralLayerData(coUint _nbInputs, coUint _nbOutputs)
+	: nbInputs(_nbInputs)
+	, nbOutputs(_nbOutputs)
 {
 
 }

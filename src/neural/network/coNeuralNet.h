@@ -5,6 +5,7 @@
 #include "pattern/object/coObject.h"
 
 class coNeuralLayer;
+class coNeuralLayerData;
 
 class coNeuralNet : public coObject
 {
@@ -17,8 +18,10 @@ public:
 		coArray<coFloat> inputs;
 		coArray<coFloat> outputs;
 	};
+	coNeuralNet(const coArray<coNeuralLayerData*> _datas);
+	virtual ~coNeuralNet();
 	coResult Compute(const coArray<coFloat>& _inputs, coArray<coFloat>& _outputs);
-	coResult Train(const DataSet& _dataSet, coFloat _targetError);
+	coResult Train(const DataSet& _dataSet, coFloat _targetError, coUint _nbMaxEpochs);
 	coUint GetNbInputs() const;
 	coUint GetNbOutputs() const;
 
@@ -26,6 +29,5 @@ protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 private:
-
 	coDynamicArray<coNeuralLayer*> layers;
 };

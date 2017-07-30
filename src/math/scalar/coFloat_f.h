@@ -4,6 +4,7 @@
 
 #include "lang/coCppExtensions.h"
 #include "debug/log/coAssert.h"
+#include "math/scalar/coUint32_f.h"
 
 const coFloat coFloat_pi = 3.14159265f;
 const coFloat coFloat_pi2 = 9.86960440f;
@@ -115,9 +116,27 @@ coFORCE_INLINE coFloat coAtan(coFloat _x, coFloat _y)
 
 coFORCE_INLINE coFloat coRandFloat(coUint32& _seed)
 {
-	coASSERT(_seed);
+	coASSERT(false);
+	return coFloat(coRand(_seed));
+// 	coASSERT(_seed);
+// 	_seed *= 16807;
+// 	return (static_cast<coFloat>(_seed)) / static_cast<coFloat>(0x80000000);
+}
+
+coFORCE_INLINE coFloat coRand11(coUint32& _seed)
+{
+	coASSERT(_seed != 0);
+	// http://iquilezles.org/www/articles/sfrand/sfrand.htm
 	_seed *= 16807;
-	return (static_cast<coFloat>(_seed)) / static_cast<coFloat>(0x80000000);
+	return coBitCast<coFloat>((_seed >> 9) | 0x40000000) - 3.0f;
+}
+
+coFORCE_INLINE coFloat coRand01(coUint32& _seed)
+{
+	coASSERT(_seed != 0);
+	// http://iquilezles.org/www/articles/sfrand/sfrand.htm
+	_seed *= 16807;
+	return coBitCast<coFloat>((_seed >> 9) | 0x3f800000) - 1.0f;
 }
 
 /// If 0, returns a very small coFloat. Returns the same value instead.

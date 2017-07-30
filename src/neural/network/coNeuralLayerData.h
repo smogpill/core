@@ -8,7 +8,7 @@ class coNeuralLayerData : public coObject
 {
 	coDECLARE_SUPER(coObject);
 public:
-	coNeuralLayerData();
+	coNeuralLayerData(coUint _nbInputs, coUint _nbOutputs);
 	virtual ~coNeuralLayerData();
 
 	coUint GetNbInputs() const { return nbInputs; }

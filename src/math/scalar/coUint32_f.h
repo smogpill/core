@@ -90,10 +90,11 @@ coFORCE_INLINE coUint32 coCountBits32(coUint32 _mask)
 #endif
 }
 
-/// From Intel.
+/// From Intel. https://software.intel.com/en-us/articles/fast-random-number-generator-on-the-intel-pentiumr-4-processor/
 /// [opt] should be 2x faster than normal rand
 coFORCE_INLINE coUint32 coRand(coUint32& _seed)
 {
+	coASSERT(false); // only on the 0x7FFF range, not full range.
 	_seed = (214013 * _seed + 2531011);
 	return (_seed >> 16) & 0x7FFF;
 }
