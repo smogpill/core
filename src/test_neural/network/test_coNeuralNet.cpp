@@ -5,6 +5,7 @@
 #include "neural/network/coNeuralNet.h"
 #include "neural/network/coNeuralLayer.h"
 #include "neural/process/training/coNeuralDataSet.h"
+#include "neural/process/compute/coNeuralComputeOutputs.h"
 #include "math/scalar/coFloat_f.h"
 
 coTEST(coNeuralNet, Init)
@@ -96,7 +97,7 @@ coTEST(coNeuralNet, TrainALine)
 		{
 			const coFloat x = GetRandomX();
 			const coFloat input = ConvertXToNet(x);
-			coEXPECT(net.Compute({ input }, outputs));
+			coComputeNeuralOutputs(net, { input }, outputs);
 			const coFloat value = ConvertYFromNet(outputs[0]);
 			const coFloat expectedValue = a * x + b;
 			coEXPECT(coNearEqual(value, expectedValue, error));

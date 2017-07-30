@@ -12,10 +12,10 @@ class coNeuralNet : public coObject
 {
 	coDECLARE_SUPER(coObject);
 public:
-	coNeuralNet(const coArray<coNeuralLayer*> _datas);
+	coNeuralNet(const coArray<coNeuralLayer*> _layers);
 	virtual ~coNeuralNet() {}
-	coResult Compute(const coArray<coFloat>& _inputs, coArray<coFloat>& _outputs);
 	coResult Train(const coNeuralDataSet& _dataSet, coFloat _targetError, coUint _nbMaxEpochs);
+	const coArray<coNeuralLayer*> GetLayers() const { return layers; }
 	coUint GetNbInputs() const;
 	coUint GetNbOutputs() const;
 

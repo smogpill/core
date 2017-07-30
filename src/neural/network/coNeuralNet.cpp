@@ -11,54 +11,15 @@
 #include "math/scalar/coFloat_f.h"
 #include "math/scalar/coUint32_f.h"
 
-coNeuralNet::coNeuralNet(const coArray<coNeuralLayer*> _datas)
+coNeuralNet::coNeuralNet(const coArray<coNeuralLayer*> _layers)
 {
-	coPushBackArray(layers, _datas);
+	coPushBackArray(layers, _layers);
 }
 
 coResult coNeuralNet::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 	coTRY(layers.count, nullptr);
-	return true;
-}
-
-coResult coNeuralNet::Compute(const coArray<coFloat>& _inputs, coArray<coFloat>& _outputs)
-{
-	coTRY(layers.count > 0, nullptr);
-	coTRY(layers[0]->GetNbInputs() == _inputs.count, nullptr);
-	coTRY(coBack(layers)->GetNbOutputs() == _outputs.count, nullptr);
-
-	// Compute max nb outputs
-	coUint nbMaxOutputs = 0;
-	for (const coNeuralLayer* layer : layers)
-	{
-		nbMaxOutputs = coMax(nbMaxOutputs, layer->GetNbOutputs());
-	}
-
-	coDynamicArray<coFloat> tempInputs;
-	coDynamicArray<coFloat> tempOutputs;
-	coResize(tempInputs, nbMaxOutputs);
-	coResize(tempOutputs, nbMaxOutputs);
-
-	const coArray<coFloat>* in = &_inputs;
-	coArray<coFloat>* out = &tempOutputs;
-
-	for (const coNeuralLayer* layer : layers)
-	{
-		coArray<coFloat> inputs = coArray<coFloat>(in->data, layer->GetNbInputs());
-		coArray<coFloat> outputs = coArray<coFloat>(out->data, layer->GetNbOutputs());
-		coComputeNeuralLayerOutputs(*layer, inputs, outputs);
-		coSwap(tempInputs, tempOutputs);
-		in = &tempInputs;
-		out = &tempOutputs;
-	}
-
-	for (coUint i = 0; i < _outputs.count; ++i)
-	{
-		_outputs[i] = (*in)[i];
-	}
-
 	return true;
 }
 
@@ -134,7 +95,7 @@ coResult coNeuralNet::Train(const coNeuralDataSet& _dataSet, coFloat _targetErro
 				for (coNeuralTrainingLayer* trainingLayer : trainingLayers)
 				{
 					coNeuralLayer* layer = trainingLayer->layer;
-					coComputeNeuralLayerOutputs(*layer, inputs, trainingLayer->outputs);
+					coComputeNeuralOutputs(*layer, inputs, trainingLayer->outputs);
 					inputs = trainingLayer->outputs;
 				}
 			}
