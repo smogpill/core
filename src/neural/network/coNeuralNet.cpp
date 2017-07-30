@@ -4,6 +4,7 @@
 #include "neural/network/coNeuralNet.h"
 #include "neural/network/coNeuralLayer.h"
 #include "neural/network/coNeuralLayerData.h"
+#include "neural/process/training/coNeuralTrainingLayer.h"
 #include "lang/result/coResult_f.h"
 #include "math/scalar/coFloat_f.h"
 #include "math/scalar/coUint32_f.h"
@@ -106,24 +107,14 @@ coResult coNeuralNet::Train(const DataSet& _dataSet, coFloat _targetError, coUin
 	}
 
 	// Training layers
-	class TrainingLayer
-	{
-	public:
-		coNeuralLayer* layer;
-		coDynamicArray<coFloat> weightDeltas;
-		coDynamicArray<coFloat> biasDeltas;
-		coDynamicArray<coFloat> gradients;
-		coDynamicArray<coFloat> outputs;
-		coArray<coFloat> inputs;
-	};
-	coDynamicArray<TrainingLayer*> trainingLayers;
+	coDynamicArray<coNeuralTrainingLayer*> trainingLayers;
 	{
 		coReserve(trainingLayers, layers.count);
 		coArray<coFloat> inputs;
 		for (coNeuralLayer* layer : layers)
 		{
 			const coNeuralLayerData* data = layer->GetData();
-			TrainingLayer* trainingLayer = new TrainingLayer();
+			coNeuralTrainingLayer* trainingLayer = new coNeuralTrainingLayer();
 			trainingLayer->layer = layer;
 			const coUint nbInputs = data->GetNbInputs();
 			const coUint nbOutputs = data->GetNbOutputs();
@@ -154,7 +145,7 @@ coResult coNeuralNet::Train(const DataSet& _dataSet, coFloat _targetError, coUin
 			// Forward pass
 			{
 				coArray<coFloat> inputs = sampleInputs;
-				for (TrainingLayer* trainingLayer : trainingLayers)
+				for (coNeuralTrainingLayer* trainingLayer : trainingLayers)
 				{
 					coNeuralLayer* layer = trainingLayer->layer;
 					layer->Compute(inputs, trainingLayer->outputs);
@@ -168,7 +159,7 @@ coResult coNeuralNet::Train(const DataSet& _dataSet, coFloat _targetError, coUin
 				{
 					// Last layer
 					{
-						TrainingLayer* trainingLayer = coBack(trainingLayers);
+						coNeuralTrainingLayer* trainingLayer = coBack(trainingLayers);
 						const coUint nbOutputs = trainingLayer->outputs.count;
 						coArray<coFloat>& gradients = trainingLayer->gradients;
 						const coArray<coFloat>& values = trainingLayer->outputs;
@@ -184,8 +175,8 @@ coResult coNeuralNet::Train(const DataSet& _dataSet, coFloat _targetError, coUin
 					// Rest of the layers
 					for (coInt j = trainingLayers.count - 2; j >= 0; --j)
 					{
-						TrainingLayer* curTrainingLayer = trainingLayers[j];
-						TrainingLayer* nextTrainingLayer = trainingLayers[j + 1];
+						coNeuralTrainingLayer* curTrainingLayer = trainingLayers[j];
+						coNeuralTrainingLayer* nextTrainingLayer = trainingLayers[j + 1];
 						coArray<coFloat>& curGradients = curTrainingLayer->gradients;
 						const coArray<coFloat>& nextGradients = nextTrainingLayer->gradients;
 						const coArray<coFloat>& curOutputs = curTrainingLayer->outputs;
@@ -211,7 +202,7 @@ coResult coNeuralNet::Train(const DataSet& _dataSet, coFloat _targetError, coUin
 
 				// Update weights
 				coArray<coFloat> layerInputs(sampleInputs);
-				for (TrainingLayer* trainingLayer : trainingLayers)
+				for (coNeuralTrainingLayer* trainingLayer : trainingLayers)
 				{
 					coNeuralLayerData* data = trainingLayer->layer->GetData();
 					const coUint nbInputs = data->GetNbInputs();
@@ -251,7 +242,7 @@ coResult coNeuralNet::Train(const DataSet& _dataSet, coFloat _targetError, coUin
 
 			// Compute error
 			{
-				TrainingLayer* lastTrainingLayer = coBack(trainingLayers);
+				coNeuralTrainingLayer* lastTrainingLayer = coBack(trainingLayers);
 				const coArray<coFloat>& outputs = lastTrainingLayer->outputs;
 				for (coUint i = 0; i < nbNetOutputs; ++i)
 				{
@@ -266,9 +257,9 @@ coResult coNeuralNet::Train(const DataSet& _dataSet, coFloat _targetError, coUin
 
 		++nbEpochs;
 	}
-	while (/*err > _targetError && */nbEpochs < _nbMaxEpochs);
+	while (err > _targetError && nbEpochs < _nbMaxEpochs);
 
-	for (TrainingLayer* trainingLayer : trainingLayers)
+	for (coNeuralTrainingLayer* trainingLayer : trainingLayers)
 		delete trainingLayer;
 
 	return true;
