@@ -9,4 +9,3 @@ class coNeuralTrainingNet;
 class coNeuralDataSet;
 
 coResult coTrain(coNeuralTrainingNet& _net, const coNeuralDataSet& _dataSet, coFloat _targetError, coUint _nbMaxEpochs);
-void coComputeForwardPass(coNeuralTrainingNet& _net, const coArray<coFloat>& _inputs);

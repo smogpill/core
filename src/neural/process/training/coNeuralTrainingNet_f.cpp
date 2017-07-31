@@ -23,6 +23,53 @@ void coComputeForwardPass(coNeuralTrainingNet& _net, const coArray<coFloat>& _in
 	}
 }
 
+void coComputeGradients(coNeuralTrainingNet& _net, const coArray<coFloat>& _outputs)
+{
+	const coArray<coNeuralTrainingLayer*>& trainingLayers = _net.GetTrainingLayers();
+
+	// Last layer
+	{
+		coNeuralTrainingLayer* trainingLayer = coBack(trainingLayers);
+		const coUint nbOutputs = trainingLayer->outputs.count;
+		coArray<coFloat>& gradients = trainingLayer->gradients;
+		const coArray<coFloat>& values = trainingLayer->outputs;
+		for (coUint i = 0; i < nbOutputs; ++i)
+		{
+			const coFloat value = values[i];
+			const coFloat targetValue = _outputs[i];
+			const coFloat error = targetValue - value;
+			gradients[i] = error * coComputeNeuralSigmoidDerivative(value);
+		}
+	}
+
+	// Rest of the layers
+	for (coInt j = trainingLayers.count - 2; j >= 0; --j)
+	{
+		coNeuralTrainingLayer* curTrainingLayer = trainingLayers[j];
+		coNeuralTrainingLayer* nextTrainingLayer = trainingLayers[j + 1];
+		coArray<coFloat>& curGradients = curTrainingLayer->gradients;
+		const coArray<coFloat>& nextGradients = nextTrainingLayer->gradients;
+		const coArray<coFloat>& curOutputs = curTrainingLayer->outputs;
+
+		const coNeuralLayer* curData = curTrainingLayer->layer;
+		const coNeuralLayer* nextData = nextTrainingLayer->layer;
+		const coArray<coFloat>& nextWeights = nextData->GetWeightBuffer();
+		const coUint nbCurOutputs = curData->GetNbOutputs();
+		const coUint nbNextOutputs = nextData->GetNbOutputs();
+		for (coUint k = 0; k < nbCurOutputs; ++k)
+		{
+			coFloat sum = 0.0f;
+			for (coUint l = 0; l < nbNextOutputs; ++l)
+			{
+				const coUint weightIndex = l * nbCurOutputs + k;
+				sum += nextGradients[l] * nextWeights[weightIndex];
+			}
+			const coFloat output = curOutputs[k];
+			curGradients[k] = sum * coComputeNeuralSigmoidDerivative(output);
+		}
+	}
+}
+
 coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _dataSet, coFloat _targetError, coUint _nbMaxEpochs)
 {
 	// References:
@@ -64,49 +111,7 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 			// Backward pass
 			{
 				// Compute gradients
-				{
-					// Last layer
-					{
-						coNeuralTrainingLayer* trainingLayer = coBack(trainingLayers);
-						const coUint nbOutputs = trainingLayer->outputs.count;
-						coArray<coFloat>& gradients = trainingLayer->gradients;
-						const coArray<coFloat>& values = trainingLayer->outputs;
-						for (coUint i = 0; i < nbOutputs; ++i)
-						{
-							const coFloat value = values[i];
-							const coFloat targetValue = sampleOutputs[i];
-							const coFloat error = targetValue - value;
-							gradients[i] = error * coComputeNeuralSigmoidDerivative(value);
-						}
-					}
-
-					// Rest of the layers
-					for (coInt j = trainingLayers.count - 2; j >= 0; --j)
-					{
-						coNeuralTrainingLayer* curTrainingLayer = trainingLayers[j];
-						coNeuralTrainingLayer* nextTrainingLayer = trainingLayers[j + 1];
-						coArray<coFloat>& curGradients = curTrainingLayer->gradients;
-						const coArray<coFloat>& nextGradients = nextTrainingLayer->gradients;
-						const coArray<coFloat>& curOutputs = curTrainingLayer->outputs;
-
-						const coNeuralLayer* curData = curTrainingLayer->layer;
-						const coNeuralLayer* nextData = nextTrainingLayer->layer;
-						const coArray<coFloat>& nextWeights = nextData->GetWeightBuffer();
-						const coUint nbCurOutputs = curData->GetNbOutputs();
-						const coUint nbNextOutputs = nextData->GetNbOutputs();
-						for (coUint k = 0; k < nbCurOutputs; ++k)
-						{
-							coFloat sum = 0.0f;
-							for (coUint l = 0; l < nbNextOutputs; ++l)
-							{
-								const coUint weightIndex = l * nbCurOutputs + k;
-								sum += nextGradients[l] * nextWeights[weightIndex];
-							}
-							const coFloat output = curOutputs[k];
-							curGradients[k] = sum * coComputeNeuralSigmoidDerivative(output);
-						}
-					}
-				}
+				coComputeGradients(_trainingNet, sampleOutputs);
 
 				// Update weights
 				coArray<coFloat> layerInputs(sampleInputs);
