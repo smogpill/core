@@ -4,7 +4,10 @@
 #include "test/unit/coTest.h"
 #include "neural/network/coNeuralNet.h"
 #include "neural/network/coNeuralLayer.h"
+#include "neural/process/coNeuralNet_f.h"
 #include "neural/process/training/coNeuralDataSet.h"
+#include "neural/process/training/coNeuralTrainingNet.h"
+#include "neural/process/training/coNeuralTrainingNet_f.h"
 #include "neural/process/compute/coNeuralComputeOutputs.h"
 #include "math/scalar/coFloat_f.h"
 
@@ -83,8 +86,13 @@ coTEST(coNeuralNet, TrainALine)
 			dataSet.outputs = outputs;
 		}
 
+		coNeuralTrainingNet trainingNet(net);
+		coEXPECT(trainingNet.Init(coObject::InitConfig()));
+
+		coRandomizeWeightsAndBiases(net, seed);
+
 		const coUint nbMaxEpochs = 1000;
-		coEXPECT(net.Train(dataSet, error, nbMaxEpochs));
+		coEXPECT(coTrain(trainingNet, dataSet, error, nbMaxEpochs));
 	}
 
 	// Checks

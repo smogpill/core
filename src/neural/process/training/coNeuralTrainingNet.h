@@ -12,15 +12,16 @@ class coNeuralTrainingNet : public coObject
 {
 	coDECLARE_SUPER(coObject);
 public:
-	coNeuralTrainingNet(const coNeuralNet& _net);
+	coNeuralTrainingNet(coNeuralNet& _net);
 	virtual ~coNeuralTrainingNet();
 
+	coNeuralNet* GetNet() const { return net; }
 	const coArray<coNeuralTrainingLayer*> GetTrainingLayers() const { return trainingLayers; }
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 private:
-	const coNeuralNet* net;
+	coNeuralNet* net;
 	coDynamicArray<coNeuralTrainingLayer*> trainingLayers;
 };

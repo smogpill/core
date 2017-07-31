@@ -8,7 +8,7 @@
 #include "container/array/coDynamicArray_f.h"
 #include "lang/result/coResult_f.h"
 
-coNeuralTrainingNet::coNeuralTrainingNet(const coNeuralNet& _net)
+coNeuralTrainingNet::coNeuralTrainingNet(coNeuralNet& _net)
 	: net(&_net)
 {
 

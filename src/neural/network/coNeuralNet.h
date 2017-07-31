@@ -14,7 +14,6 @@ class coNeuralNet : public coObject
 public:
 	coNeuralNet(const coArray<coNeuralLayer*> _layers);
 	virtual ~coNeuralNet() {}
-	coResult Train(const coNeuralDataSet& _dataSet, coFloat _targetError, coUint _nbMaxEpochs);
 	const coArray<coNeuralLayer*> GetLayers() const { return layers; }
 	coUint GetNbInputs() const;
 	coUint GetNbOutputs() const;
