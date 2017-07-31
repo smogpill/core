@@ -12,10 +12,10 @@
 #include "neural/network/coNeuralLayer.h"
 #include "lang/result/coResult_f.h"
 
-void coComputeForwardPass(coNeuralTrainingNet& _net, const coArray<coFloat>& _inputs)
+void coComputeForwardPass(coNeuralTrainingNet& _trainingNet, const coArray<coFloat>& _targetInputs)
 {
-	coArray<coFloat> inputs = _inputs;
-	for (coNeuralTrainingLayer* trainingLayer : _net.GetTrainingLayers())
+	coArray<coFloat> inputs = _targetInputs;
+	for (coNeuralTrainingLayer* trainingLayer : _trainingNet.GetTrainingLayers())
 	{
 		coNeuralLayer* layer = trainingLayer->layer;
 		coComputeNeuralOutputs(*layer, inputs, trainingLayer->outputs);
@@ -23,9 +23,9 @@ void coComputeForwardPass(coNeuralTrainingNet& _net, const coArray<coFloat>& _in
 	}
 }
 
-void coComputeGradients(coNeuralTrainingNet& _net, const coArray<coFloat>& _outputs)
+void coComputeGradients(coNeuralTrainingNet& _trainingNet, const coArray<coFloat>& _targetOutputs)
 {
-	const coArray<coNeuralTrainingLayer*>& trainingLayers = _net.GetTrainingLayers();
+	const coArray<coNeuralTrainingLayer*>& trainingLayers = _trainingNet.GetTrainingLayers();
 
 	// Last layer
 	{
@@ -36,7 +36,7 @@ void coComputeGradients(coNeuralTrainingNet& _net, const coArray<coFloat>& _outp
 		for (coUint i = 0; i < nbOutputs; ++i)
 		{
 			const coFloat value = values[i];
-			const coFloat targetValue = _outputs[i];
+			const coFloat targetValue = _targetOutputs[i];
 			const coFloat error = targetValue - value;
 			gradients[i] = error * coComputeNeuralSigmoidDerivative(value);
 		}
@@ -67,6 +67,48 @@ void coComputeGradients(coNeuralTrainingNet& _net, const coArray<coFloat>& _outp
 			const coFloat output = curOutputs[k];
 			curGradients[k] = sum * coComputeNeuralSigmoidDerivative(output);
 		}
+	}
+}
+
+void coUpdateWeights(coNeuralTrainingNet& _trainingNet, coFloat _learnRate, coFloat _momentum, const coArray<coFloat>& _inputs)
+{
+	const coArray<coNeuralTrainingLayer*>& trainingLayers = _trainingNet.GetTrainingLayers();
+	coArray<coFloat> layerInputs(_inputs);
+	for (coNeuralTrainingLayer* trainingLayer : trainingLayers)
+	{
+		coNeuralLayer* data = trainingLayer->layer;
+		const coUint nbInputs = data->GetNbInputs();
+		const coUint nbOutputs = data->GetNbOutputs();
+		coArray<coFloat>& biasBuffer = data->GetBiasBuffer();
+		coArray<coFloat>& weightBuffer = data->GetWeightBuffer();
+		coArray<coFloat>& biasDeltas = trainingLayer->biasDeltas;
+		coArray<coFloat>& weightDeltas = trainingLayer->weightDeltas;
+		const coArray<coFloat>& gradients = trainingLayer->gradients;
+		coUint weightIndex = 0;
+		for (coUint k = 0; k < nbOutputs; ++k)
+		{
+			const coFloat gradient = gradients[k];
+
+			// Biases
+			{
+				coFloat& curDelta = biasDeltas[k];
+				const coFloat prevDelta = curDelta;
+				curDelta = _learnRate * gradient;
+				biasBuffer[k] += curDelta + _momentum * prevDelta;
+			}
+
+			// Weights
+			for (coUint l = 0; l < nbInputs; ++l)
+			{
+				coFloat& curDelta = weightDeltas[weightIndex];
+				const coFloat prevDelta = curDelta;
+				curDelta = _learnRate * gradient * layerInputs[l];
+				weightBuffer[weightIndex] += curDelta + _momentum * prevDelta;
+				++weightIndex;
+			}
+		}
+
+		layerInputs = trainingLayer->outputs;
 	}
 }
 
@@ -105,53 +147,9 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 			coArray<coFloat> sampleInputs(_dataSet.inputs.data + s * nbNetInputs, nbNetInputs);
 			coArray<coFloat> sampleOutputs(_dataSet.outputs.data + s * nbNetOutputs, nbNetOutputs);
 
-			// Forward pass
 			coComputeForwardPass(_trainingNet, sampleInputs);
-
-			// Backward pass
-			{
-				// Compute gradients
-				coComputeGradients(_trainingNet, sampleOutputs);
-
-				// Update weights
-				coArray<coFloat> layerInputs(sampleInputs);
-				for (coNeuralTrainingLayer* trainingLayer : trainingLayers)
-				{
-					coNeuralLayer* data = trainingLayer->layer;
-					const coUint nbInputs = data->GetNbInputs();
-					const coUint nbOutputs = data->GetNbOutputs();
-					coArray<coFloat>& biasBuffer = data->GetBiasBuffer();
-					coArray<coFloat>& weightBuffer = data->GetWeightBuffer();
-					coArray<coFloat>& biasDeltas = trainingLayer->biasDeltas;
-					coArray<coFloat>& weightDeltas = trainingLayer->weightDeltas;
-					const coArray<coFloat>& gradients = trainingLayer->gradients;
-					coUint weightIndex = 0;
-					for (coUint k = 0; k < nbOutputs; ++k)
-					{
-						const coFloat gradient = gradients[k];
-
-						// Biases
-						{
-							coFloat& curDelta = biasDeltas[k];
-							const coFloat prevDelta = curDelta;
-							curDelta = learnRate * gradient;
-							biasBuffer[k] += curDelta + momentum * prevDelta;
-						}
-
-						// Weights
-						for (coUint l = 0; l < nbInputs; ++l)
-						{
-							coFloat& curDelta = weightDeltas[weightIndex];
-							const coFloat prevDelta = curDelta;
-							curDelta = learnRate * gradient * layerInputs[l];
-							weightBuffer[weightIndex] += curDelta + momentum * prevDelta;
-							++weightIndex;
-						}
-					}
-
-					layerInputs = trainingLayer->outputs;
-				}
-			}
+			coComputeGradients(_trainingNet, sampleOutputs);
+			coUpdateWeights(_trainingNet, learnRate, momentum, sampleInputs);
 
 			// Compute error
 			{
