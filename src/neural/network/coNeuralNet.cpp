@@ -8,6 +8,7 @@
 #include "neural/process/training/coNeuralTrainingLayer.h"
 #include "neural/process/training/coNeuralTrainingNet.h"
 #include "neural/process/training/coNeuralDataSet.h"
+#include "neural/process/training/coNeuralTrainingNet_f.h"
 #include "neural/process/compute/coNeuralComputeOutputs.h"
 #include "neural/process/coNeuralSigmoid_f.h"
 #include "lang/result/coResult_f.h"
@@ -47,6 +48,7 @@ coResult coNeuralNet::Train(const coNeuralDataSet& _dataSet, coFloat _targetErro
 
 	// Training layers
 	coNeuralTrainingNet trainingNet(*this);
+	coTRY(trainingNet.Init(coObject::InitConfig()), nullptr);
 	const coArray<coNeuralTrainingLayer*>& trainingLayers = trainingNet.GetTrainingLayers();
 
 	coFloat err;
@@ -60,15 +62,7 @@ coResult coNeuralNet::Train(const coNeuralDataSet& _dataSet, coFloat _targetErro
 			coArray<coFloat> sampleOutputs(_dataSet.outputs.data + s * nbNetOutputs, nbNetOutputs);
 
 			// Forward pass
-			{
-				coArray<coFloat> inputs = sampleInputs;
-				for (coNeuralTrainingLayer* trainingLayer : trainingLayers)
-				{
-					coNeuralLayer* layer = trainingLayer->layer;
-					coComputeNeuralOutputs(*layer, inputs, trainingLayer->outputs);
-					inputs = trainingLayer->outputs;
-				}
-			}
+			coComputeForwardPass(trainingNet, sampleInputs);
 
 			// Backward pass
 			{
@@ -175,9 +169,6 @@ coResult coNeuralNet::Train(const coNeuralDataSet& _dataSet, coFloat _targetErro
 		++nbEpochs;
 	}
 	while (err > _targetError && nbEpochs < _nbMaxEpochs);
-
-	for (coNeuralTrainingLayer* trainingLayer : trainingLayers)
-		delete trainingLayer;
 
 	return true;
 }
