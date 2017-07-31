@@ -112,6 +112,21 @@ void coUpdateWeights(coNeuralTrainingNet& _trainingNet, coFloat _learnRate, coFl
 	}
 }
 
+coFloat coComputeErrors(const coNeuralTrainingNet& _trainingNet, const coArray<coFloat>& _targetOutputs)
+{
+	coFloat error = 0.0f;
+	const coArray<coNeuralTrainingLayer*>& trainingLayers = _trainingNet.GetTrainingLayers();
+	coNeuralTrainingLayer* lastTrainingLayer = coBack(trainingLayers);
+	const coArray<coFloat>& outputs = lastTrainingLayer->outputs;
+	coASSERT(outputs.count == _targetOutputs.count);
+	const coUint nbOutputs = lastTrainingLayer->outputs.count;
+	for (coUint i = 0; i < nbOutputs; ++i)
+	{
+		error += coPow2(_targetOutputs[i] - outputs[i]);
+	}
+	return error;
+}
+
 coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _dataSet, coFloat _targetError, coUint _nbMaxEpochs)
 {
 	// References:
@@ -130,13 +145,6 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 	const coUint nbNetInputs = net->GetNbInputs();
 	const coUint nbNetOutputs = net->GetNbOutputs();
 
-	// Init weights
-	coUint32 seed = 777777777;
-	coRandomizeWeightsAndBiases(*net, seed);
-
-	// Training layers
-	const coArray<coNeuralTrainingLayer*>& trainingLayers = _trainingNet.GetTrainingLayers();
-
 	coFloat err;
 	coUint nbEpochs = 0;
 	do
@@ -150,16 +158,7 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 			coComputeForwardPass(_trainingNet, sampleInputs);
 			coComputeGradients(_trainingNet, sampleOutputs);
 			coUpdateWeights(_trainingNet, learnRate, momentum, sampleInputs);
-
-			// Compute error
-			{
-				coNeuralTrainingLayer* lastTrainingLayer = coBack(trainingLayers);
-				const coArray<coFloat>& outputs = lastTrainingLayer->outputs;
-				for (coUint i = 0; i < nbNetOutputs; ++i)
-				{
-					err += coPow2(sampleOutputs[i] - outputs[i]);
-				}
-			}
+			err += coComputeErrors(_trainingNet, sampleOutputs);
 		}
 
 		coASSERT(_dataSet.nbSamples);
