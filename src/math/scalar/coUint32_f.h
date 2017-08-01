@@ -90,13 +90,27 @@ coFORCE_INLINE coUint32 coCountBits32(coUint32 _mask)
 #endif
 }
 
-/// From Intel. https://software.intel.com/en-us/articles/fast-random-number-generator-on-the-intel-pentiumr-4-processor/
-/// [opt] should be 2x faster than normal rand
+enum
+{
+	coRAND_MAX = 0x7fffffff,
+};
+
+coFORCE_INLINE coUint32 coNextRand(const coUint32 _previous)
+{
+	// Linear congruential generator
+	// std::minstd_rand implementation
+	return (48271 * _previous) % coRAND_MAX;
+}
+
 coFORCE_INLINE coUint32 coRand(coUint32& _seed)
 {
-	coASSERT(false); // only on the 0x7FFF range, not full range.
-	_seed = (214013 * _seed + 2531011);
-	return (_seed >> 16) & 0x7FFF;
+	_seed = coNextRand(_seed);
+	return _seed;
+}
+
+coFORCE_INLINE coUint32 coRand(coUint32& _seed, coUint32 _range)
+{
+	return coRand(_seed) % _range;
 }
 
 /// @param 0 returns 0

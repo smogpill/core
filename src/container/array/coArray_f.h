@@ -218,3 +218,14 @@ coBool coIsSorted(const coArray<T>& _this)
 	auto defaultCompare = [](const T& _a, const T& _b) { return _a < _b; };
 	return coIsSorted(_this, defaultCompare);
 }
+
+template <class T>
+void coShuffle(coArray<T>& _this, coUint32& _seed)
+{
+	// Fisher–Yates impl
+	for (coUint i = _this.count - 1; i > 0; --i)
+	{
+		const coUint j = coRand(_seed, i+1);
+		coSwap(_this.data[i], _this.data[j]);
+	}
+}

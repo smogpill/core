@@ -145,16 +145,28 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 	const coUint nbNetInputs = net->GetNbInputs();
 	const coUint nbNetOutputs = net->GetNbOutputs();
 
+	coDynamicArray<coUint> sampleIndices;
+	coResize(sampleIndices, _dataSet.nbSamples);
+	for (coUint i = 0; i < sampleIndices.count; ++i)
+		sampleIndices[i] = i;
+
+	coUint32 seed = 77777777;
+
+	// For each epoch
 	coFloat err;
 	coUint nbEpochs = 0;
 	do
 	{
 		err = 0.0f;
-		for (coUint s = 0; s < _dataSet.nbSamples; ++s)
-		{
-			coArray<coFloat> sampleInputs(_dataSet.inputs.data + s * nbNetInputs, nbNetInputs);
-			coArray<coFloat> sampleOutputs(_dataSet.outputs.data + s * nbNetOutputs, nbNetOutputs);
 
+		coShuffle(sampleIndices, seed);
+
+		// For each sample
+		for (coUint i = 0; i < _dataSet.nbSamples; ++i)
+		{
+			const coUint sampleIndex = sampleIndices[i];
+			const coArray<coFloat> sampleInputs(_dataSet.inputs.data + sampleIndex * nbNetInputs, nbNetInputs);
+			const coArray<coFloat> sampleOutputs(_dataSet.outputs.data + sampleIndex * nbNetOutputs, nbNetOutputs);
 			coComputeForwardPass(_trainingNet, sampleInputs);
 			coComputeGradients(_trainingNet, sampleOutputs);
 			coUpdateWeights(_trainingNet, learnRate, momentum, sampleInputs);
@@ -166,7 +178,7 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 		err *= 0.5f;
 
 		++nbEpochs;
-	} while (err > _targetError && nbEpochs < _nbMaxEpochs);
+	} while (/*err > _targetError && */nbEpochs < _nbMaxEpochs);
 
 	return true;
 }

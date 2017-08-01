@@ -36,7 +36,9 @@ coTEST(coNeuralNet, TrainALine)
 	coNeuralLayer data1(8, 1);
 	coEXPECT(data0.Init(coNeuralLayer::InitConfig()));
 	coEXPECT(data1.Init(coNeuralLayer::InitConfig()));
-	coArray<coNeuralLayer*> layerDatas = { &data0, &data1 };
+	coDynamicArray<coNeuralLayer*> layerDatas;
+	coPushBack(layerDatas, &data0);
+	coPushBack(layerDatas, &data1);
 	coNeuralNet net(layerDatas);
 	coEXPECT(net.Init(coNeuralNet::InitConfig()));
 
@@ -65,7 +67,7 @@ coTEST(coNeuralNet, TrainALine)
 
 	// Train
 	{
-		const coUint nbSamples = 10000;
+		const coUint nbSamples = 1000;
 		coDynamicArray<coFloat> inputs;
 		coDynamicArray<coFloat> outputs;
 		{
@@ -108,7 +110,7 @@ coTEST(coNeuralNet, TrainALine)
 			coComputeNeuralOutputs(net, { input }, outputs);
 			const coFloat value = ConvertYFromNet(outputs[0]);
 			const coFloat expectedValue = a * x + b;
-			coEXPECT(coNearEqual(value, expectedValue, error));
+			coEXPECT(coNearEqual(value, expectedValue, error * yRange));
 		}
 	}
 }
