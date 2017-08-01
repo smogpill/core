@@ -31,7 +31,7 @@ coTEST(coNeuralNet, TrainALine)
 	const coFloat yMax = a * xMax + b;
 	const coFloat yRange = yMax - yMin;
 	//coASSERT(yRange > 0.0f);
-	const coFloat error = 0.01f;
+	const coFloat desiredError = 0.01f;
 	coNeuralLayer data0(1, 8);
 	coNeuralLayer data1(8, 1);
 	coEXPECT(data0.Init(coNeuralLayer::InitConfig()));
@@ -67,7 +67,7 @@ coTEST(coNeuralNet, TrainALine)
 
 	// Train
 	{
-		const coUint nbSamples = 1000;
+		const coUint nbSamples = 10000;
 		coDynamicArray<coFloat> inputs;
 		coDynamicArray<coFloat> outputs;
 		{
@@ -94,7 +94,7 @@ coTEST(coNeuralNet, TrainALine)
 		coRandomizeWeightsAndBiases(net, seed);
 
 		const coUint nbMaxEpochs = 1000;
-		coEXPECT(coTrain(trainingNet, dataSet, error, nbMaxEpochs));
+		coEXPECT(coTrain(trainingNet, dataSet, desiredError, nbMaxEpochs));
 	}
 
 	// Checks
@@ -102,15 +102,19 @@ coTEST(coNeuralNet, TrainALine)
 		coDynamicArray<coFloat> outputs;
 		coResize(outputs, 1);
 
-		coUint nbChecks = 100;
+		coFloat error = 0.0f;
+		coUint nbChecks = 1000;
 		for (coUint i = 0; i < nbChecks; ++i)
 		{
 			const coFloat x = GetRandomX();
 			const coFloat input = ConvertXToNet(x);
 			coComputeNeuralOutputs(net, { input }, outputs);
-			const coFloat value = ConvertYFromNet(outputs[0]);
-			const coFloat expectedValue = a * x + b;
-			coEXPECT(coNearEqual(value, expectedValue, error * yRange));
+			const coFloat output = outputs[0];
+			const coFloat expectedOutput = ConvertYToNet(a * x + b);
+			error += coPow2(expectedOutput - output);
 		}
+		error *= 0.5f / nbChecks;
+
+		coEXPECT(error <= desiredError);
 	}
 }
