@@ -7,7 +7,7 @@
 #include "neural/process/training/coNeuralDataSet.h"
 #include "neural/process/coNeuralLayer_f.h"
 #include "neural/process/coNeuralNet_f.h"
-#include "neural/process/coNeuralSigmoid_f.h"
+#include "neural/process/coNeuralActivation_f.h"
 #include "neural/network/coNeuralNet.h"
 #include "neural/network/coNeuralLayer.h"
 #include "lang/result/coResult_f.h"

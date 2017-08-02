@@ -10,7 +10,7 @@
 #include "neural/process/training/coNeuralDataSet.h"
 #include "neural/process/training/coNeuralTrainingNet_f.h"
 #include "neural/process/compute/coNeuralComputeOutputs.h"
-#include "neural/process/coNeuralSigmoid_f.h"
+#include "neural/process/coNeuralActivation_f.h"
 #include "lang/result/coResult_f.h"
 #include "math/scalar/coFloat_f.h"
 #include "math/scalar/coUint32_f.h"
