@@ -135,7 +135,7 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 	coTRY(_targetError >= 0.0f, nullptr);
 
 	const coFloat learnRate = 0.4f;
-	const coFloat momentum = 0.9f;
+	const coFloat momentum = 0.8f;
 
 	//coTRY(learnRate < 1.0f, nullptr);
 
@@ -151,6 +151,11 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 		sampleIndices[i] = i;
 
 	coUint32 seed = 77777777;
+
+#ifdef coDEBUG
+	coDynamicArray<coFloat> errors;
+	coReserve(errors, _dataSet.nbSamples);
+#endif
 
 	// For each epoch
 	coFloat err;
@@ -188,6 +193,10 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 			coASSERT(nbValidationSamples);
 			err /= coFloat(nbValidationSamples);
 			err *= 0.5f;
+
+#ifdef coDEBUG
+			coPushBack(errors, err);
+#endif
 		}
 
 		++nbEpochs;
