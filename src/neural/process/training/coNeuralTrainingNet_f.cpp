@@ -38,7 +38,7 @@ void coComputeGradients(coNeuralTrainingNet& _trainingNet, const coArray<coFloat
 			const coFloat value = values[i];
 			const coFloat targetValue = _targetOutputs[i];
 			const coFloat error = targetValue - value;
-			gradients[i] = error * coComputeNeuralSigmoidDerivative(value);
+			gradients[i] = error * coComputeNeuralActivationDerivativeTransfer(value);
 		}
 	}
 
@@ -65,7 +65,7 @@ void coComputeGradients(coNeuralTrainingNet& _trainingNet, const coArray<coFloat
 				sum += nextGradients[l] * nextWeights[weightIndex];
 			}
 			const coFloat output = curOutputs[k];
-			curGradients[k] = sum * coComputeNeuralSigmoidDerivative(output);
+			curGradients[k] = sum * coComputeNeuralActivationDerivativeTransfer(output);
 		}
 	}
 }

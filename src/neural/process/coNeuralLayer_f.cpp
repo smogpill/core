@@ -36,6 +36,6 @@ void coComputeNeuralOutputs(const coNeuralLayer& _this, const coArray<coFloat>& 
 			o += _inputs[i] * weightBuffer[weightIndex];
 			++weightIndex;
 		}
-		_outputs[j] = coComputeNeuralSigmoid(o);
+		_outputs[j] = coComputeNeuralActivation(o);
 	}
 }

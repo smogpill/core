@@ -67,7 +67,7 @@ coTEST(coNeuralNet, TrainALine)
 
 	// Train
 	{
-		const coUint nbSamples = 10000;
+		const coUint nbSamples = 1000;
 		coDynamicArray<coFloat> inputs;
 		coDynamicArray<coFloat> outputs;
 		{

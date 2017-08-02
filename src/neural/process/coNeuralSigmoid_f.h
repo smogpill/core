@@ -4,9 +4,9 @@
 
 #include "math/scalar/coFloat_f.h"
 
-coFORCE_INLINE coFloat coComputeNeuralSigmoid(coFloat _x)
+coFORCE_INLINE coFloat coComputeNeuralActivation(coFloat _x)
 {
-	return _x < -45.0f ? 0.0f : _x > 45.0f ? 1.0f : 1.0f / (1.0f + coExp(-_x));
+	return 1.0f / (1.0f + coExp(-_x));
 
 	// Not used for now, because:
 	// - Have to find a good derivative form
@@ -18,7 +18,9 @@ coFORCE_INLINE coFloat coComputeNeuralSigmoid(coFloat _x)
 	// 	return (b - 1.0f) / (b + 1.0f);
 }
 
-coFORCE_INLINE coFloat coComputeNeuralSigmoidDerivative(coFloat _x)
+// Not the direct activation derivative, this takes the output as a parameter
+coFORCE_INLINE coFloat coComputeNeuralActivationDerivativeTransfer(coFloat _output)
 {
-	return _x * (1 - _x);
+	// The derivative is coComputeNeuralActivation(x) * (1 - coComputeNeuralActivation(x))
+	return _output * (1 - _output);
 }
