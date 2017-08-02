@@ -2,18 +2,22 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "neural/pch.h"
 #include "neural/process/coNeuralLayer_f.h"
-#include "neural/process/coNeuralSigmoid_f.h"
+#include "neural/process/coNeuralActivation_f.h"
 #include "neural/network/coNeuralLayer.h"
+#include "math/scalar/coFloat_f.h"
 
-void coRandomizeWeightsAndBiases(coNeuralLayer& _this, coUint32& _seed)
+void coResetWeightsAndBiases(coNeuralLayer& _this, coUint32& _seed)
 {
+	// Xavier initialization (Caffe library).
+	// Original paper: http://proceedings.mlr.press/v9/glorot10a/glorot10a.pdf
+	const coFloat scale = coInvSqrt(coFloat(_this.GetNbInputs()));
 	for (coFloat& weight : _this.GetWeightBuffer())
 	{
-		weight = coRand11(_seed);
+		weight = coRand11(_seed) * scale;
 	}
 	for (coFloat& bias : _this.GetBiasBuffer())
 	{
-		bias = coRand11(_seed);
+		bias = 0.0f;
 	}
 }
 

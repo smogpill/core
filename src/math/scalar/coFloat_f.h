@@ -31,6 +31,7 @@ coFORCE_INLINE coBool coEqual0(coFloat _x, coFloat _eps = 0.0001f) { return ::fa
 coFORCE_INLINE coBool coNotEqual(coFloat _x, coFloat _y, coFloat _eps = 0.0001f) { return ::fabsf(_x - _y) > _eps; }
 coFORCE_INLINE coBool coNotEqual0(coFloat _x, coFloat _eps = 0.0001f) { return ::fabsf(_x) > _eps; }
 coFORCE_INLINE coFloat coSqrt(coFloat _x) { return ::sqrtf(_x); }
+coFORCE_INLINE coFloat coInvSqrt(coFloat _x) { return 1.0f / ::sqrtf(_x); }
 coFORCE_INLINE coFloat coPow(coFloat _x, coFloat _exponent) { return ::powf(_x, _exponent); }
 coFORCE_INLINE coFloat coPow2(coFloat _x) { return _x * _x; }
 coFORCE_INLINE coFloat coPow3(coFloat _x) { return _x * _x * _x; }

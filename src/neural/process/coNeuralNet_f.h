@@ -5,5 +5,5 @@
 template<class T> class coArray;
 class coNeuralNet;
 
-void coRandomizeWeightsAndBiases(coNeuralNet& _this, coUint32& _seed);
+void coResetWeightsAndBiases(coNeuralNet& _this, coUint32& _seed);
 void coComputeNeuralOutputs(const coNeuralNet& _this, const coArray<coFloat>& _inputs, coArray<coFloat>& _outputs);

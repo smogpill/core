@@ -7,11 +7,11 @@
 #include "neural/network/coNeuralLayer.h"
 #include "math/scalar/coFloat_f.h"
 
-void coRandomizeWeightsAndBiases(coNeuralNet& _this, coUint32& _seed)
+void coResetWeightsAndBiases(coNeuralNet& _this, coUint32& _seed)
 {
 	for (coNeuralLayer* layer : _this.GetLayers())
 	{
-		coRandomizeWeightsAndBiases(*layer, _seed);
+		coResetWeightsAndBiases(*layer, _seed);
 	}
 }
 
