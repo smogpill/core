@@ -30,10 +30,12 @@ coTEST(coNeuralNet, TrainALine)
 	const coFloat yMin = a * xMin + b;
 	const coFloat yMax = a * xMax + b;
 	const coFloat yRange = yMax - yMin;
+
+	const coUint nbHiddenNeurons = 4;
 	//coASSERT(yRange > 0.0f);
 	const coFloat desiredError = 0.01f;
-	coNeuralLayer data0(1, 8);
-	coNeuralLayer data1(8, 1);
+	coNeuralLayer data0(1, nbHiddenNeurons);
+	coNeuralLayer data1(nbHiddenNeurons, 1);
 	coEXPECT(data0.Init(coNeuralLayer::InitConfig()));
 	coEXPECT(data1.Init(coNeuralLayer::InitConfig()));
 	coDynamicArray<coNeuralLayer*> layerDatas;
@@ -99,17 +101,21 @@ coTEST(coNeuralNet, TrainALine)
 
 	// Checks
 	{
+		const coUint nbChecks = 1000;
+
+		coDynamicArray<coFloat> allOutputs; // can be plotted 
+		coResize(allOutputs, nbChecks);
 		coDynamicArray<coFloat> outputs;
 		coResize(outputs, 1);
-
+		
 		coFloat error = 0.0f;
-		coUint nbChecks = 1000;
 		for (coUint i = 0; i < nbChecks; ++i)
 		{
-			const coFloat x = GetRandomX();
+			const coFloat x = xMin + xRange * i / (nbChecks - 1);
 			const coFloat input = ConvertXToNet(x);
 			coComputeNeuralOutputs(net, { input }, outputs);
 			const coFloat output = outputs[0];
+			allOutputs[i] = output;
 			const coFloat expectedOutput = ConvertYToNet(a * x + b);
 			error += coPow2(expectedOutput - output);
 		}
