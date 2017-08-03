@@ -22,16 +22,14 @@ coTEST(coNeuralNet, Init)
 
 coTEST(coNeuralNet, TrainALine)
 {
-	const coFloat a = 7.0f;
-	const coFloat b = 17.0f;
-	const coFloat xMin = -100.0f;
-	const coFloat xMax = 100.0f;
+	const coFloat xMin = -20.0f;
+	const coFloat xMax = 20.0f;
 	const coFloat xRange = xMax - xMin;
-	const coFloat yMin = a * xMin + b;
-	const coFloat yMax = a * xMax + b;
+	const coFloat yMin = -1.0f;
+	const coFloat yMax = 1.0f;
 	const coFloat yRange = yMax - yMin;
 
-	const coUint nbHiddenNeurons = 4;
+	const coUint nbHiddenNeurons = 16;
 	//coASSERT(yRange > 0.0f);
 	const coFloat desiredError = 0.01f;
 	coNeuralLayer data0(1, nbHiddenNeurons);
@@ -46,25 +44,25 @@ coTEST(coNeuralNet, TrainALine)
 
 	coUint32 seed = 777777777;
 
-	auto GetRandomX = [&]()
-	{
-		return coRand01(seed) * xRange + xMin;
-	};
 	auto ConvertXToNet = [&](coFloat _x)
 	{
 		return coClamp01((_x - xMin) / xRange);
-	};
-	auto ConvertXFromNet = [&](coFloat _x)
-	{
-		return _x * xRange + xMin;
 	};
 	auto ConvertYToNet = [&](coFloat _y)
 	{
 		return coClamp01((_y - yMin) / yRange);
 	};
+	auto ConvertXFromNet = [&](coFloat _x)
+	{
+		return xMin + _x * xRange;
+	};
 	auto ConvertYFromNet = [&](coFloat _y)
 	{
-		return _y * yRange + yMin;
+		return yMin + _y * yRange;
+	};
+	auto ComputeValue = [&](coFloat _x)
+	{
+		return coSin(_x);
 	};
 
 	// Train
@@ -77,9 +75,10 @@ coTEST(coNeuralNet, TrainALine)
 			coResize(outputs, nbSamples);
 			for (coUint i = 0; i < nbSamples; ++i)
 			{
-				const coFloat x = GetRandomX();
+				const coFloat x = xMin + coRand01(seed) * xRange;
+				const coFloat y = ComputeValue(x);
 				inputs[i] = ConvertXToNet(x);
-				outputs[i] = ConvertYToNet(a * x + b);
+				outputs[i] = ConvertYToNet(y);
 			}
 		}
 
@@ -105,18 +104,28 @@ coTEST(coNeuralNet, TrainALine)
 
 		coDynamicArray<coFloat> allOutputs; // can be plotted 
 		coResize(allOutputs, nbChecks);
+		coDynamicArray<coFloat> inputs;
 		coDynamicArray<coFloat> outputs;
+		coResize(inputs, 1);
 		coResize(outputs, 1);
 		
 		coFloat error = 0.0f;
 		for (coUint i = 0; i < nbChecks; ++i)
 		{
-			const coFloat x = xMin + xRange * i / (nbChecks - 1);
+			const coFloat x = xMin + xRange * coFloat(i) / (nbChecks - 1);
+			const coFloat y = ComputeValue(x);
+
 			const coFloat input = ConvertXToNet(x);
-			coComputeNeuralOutputs(net, { input }, outputs);
-			const coFloat output = outputs[0];
+			const coFloat expectedOutput = ConvertYToNet(y);
+
+			coFloat output;
+			{
+				inputs[0] = input;
+				coComputeNeuralOutputs(net, inputs, outputs);
+				output = outputs[0];
+			}
+
 			allOutputs[i] = output;
-			const coFloat expectedOutput = ConvertYToNet(a * x + b);
 			error += coPow2(expectedOutput - output);
 		}
 		error *= 0.5f / nbChecks;
