@@ -62,10 +62,10 @@ void coComputeGradients(coNeuralTrainingNet& _trainingNet, const coArray<coFloat
 			for (coUint l = 0; l < nbNextOutputs; ++l)
 			{
 				const coUint weightIndex = l * nbCurOutputs + k;
-				sum += nextGradients[l] * nextWeights[weightIndex];
+				sum += nextGradients.data[l] * nextWeights.data[weightIndex];
 			}
-			const coFloat output = curOutputs[k];
-			curGradients[k] = sum * coComputeNeuralActivationDerivativeTransfer(output);
+			const coFloat output = curOutputs.data[k];
+			curGradients.data[k] = sum * coComputeNeuralActivationDerivativeTransfer(output);
 		}
 	}
 }
@@ -87,23 +87,23 @@ void coUpdateWeights(coNeuralTrainingNet& _trainingNet, coFloat _learnRate, coFl
 		coUint weightIndex = 0;
 		for (coUint k = 0; k < nbOutputs; ++k)
 		{
-			const coFloat gradient = gradients[k];
+			const coFloat gradient = gradients.data[k];
 
 			// Biases
 			{
-				coFloat& curDelta = biasDeltas[k];
+				coFloat& curDelta = biasDeltas.data[k];
 				const coFloat prevDelta = curDelta;
 				curDelta = _learnRate * gradient;
-				biasBuffer[k] += curDelta + _momentum * prevDelta;
+				biasBuffer.data[k] += curDelta + _momentum * prevDelta;
 			}
 
 			// Weights
 			for (coUint l = 0; l < nbInputs; ++l)
 			{
-				coFloat& curDelta = weightDeltas[weightIndex];
+				coFloat& curDelta = weightDeltas.data[weightIndex];
 				const coFloat prevDelta = curDelta;
-				curDelta = _learnRate * gradient * layerInputs[l];
-				weightBuffer[weightIndex] += curDelta + _momentum * prevDelta;
+				curDelta = _learnRate * gradient * layerInputs.data[l];
+				weightBuffer.data[weightIndex] += curDelta + _momentum * prevDelta;
 				++weightIndex;
 			}
 		}

@@ -24,23 +24,28 @@ void coResetWeightsAndBiases(coNeuralLayer& _this, coUint32& _seed)
 
 void coComputeNeuralOutputs(const coNeuralLayer& _this, const coArray<coFloat>& _inputs, coArray<coFloat>& _outputs)
 {
-	const coUint nbInputs = _this.GetNbInputs();
-	const coUint nbOutputs = _this.GetNbOutputs();
-	coASSERT(_inputs.count == nbInputs);
-	coASSERT(_outputs.count == nbOutputs);
+	coASSERT(_inputs.count == _this.GetNbInputs());
+	coASSERT(_outputs.count == _this.GetNbOutputs());
 
-	const coArray<coFloat>& weightBuffer = _this.GetWeightBuffer();
-	const coArray<coFloat>& biasBuffer = _this.GetBiasBuffer();
-
-	coUint weightIndex = 0;
-	for (coUint j = 0; j < nbOutputs; ++j)
+	// Keep this optimized
 	{
-		coFloat o = biasBuffer[j];
-		for (coUint i = 0; i < nbInputs; ++i)
+		const coUint nbInputs = _this.GetNbInputs();
+		const coUint nbOutputs = _this.GetNbOutputs();
+		const coFloat* weights = _this.GetWeightBuffer().data;
+		const coFloat* bias = _this.GetBiasBuffer().data;
+		const coFloat* inputs = _inputs.data;
+		coFloat* outputs = _outputs.data;
+
+		coUint weightIndex = 0;
+		for (coUint j = 0; j < nbOutputs; ++j)
 		{
-			o += _inputs[i] * weightBuffer[weightIndex];
-			++weightIndex;
+			coFloat o = bias[j];
+			for (coUint i = 0; i < nbInputs; ++i)
+			{
+				o += inputs[i] * weights[weightIndex];
+				++weightIndex;
+			}
+			outputs[j] = coComputeNeuralActivation(o);
 		}
-		_outputs[j] = coComputeNeuralActivation(o);
 	}
 }
