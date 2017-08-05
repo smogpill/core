@@ -10,8 +10,7 @@ void coResetWeightsAndBiases(coNeuralLayer& _this, coUint32& _seed)
 {
 	// Xavier normalized initialization (Glorot & Bengio paper).
 	// Original paper: http://proceedings.mlr.press/v9/glorot10a/glorot10a.pdf
-	const coFloat sqrt6(2.449489742783); // coSqrt(6.0f)
-	const coFloat scale = sqrt6 * coInvSqrt(coFloat(_this.GetNbInputs() + _this.GetNbOutputs()));
+	const coFloat scale = coInvSqrt(6.f / coFloat(_this.GetNbInputs() + _this.GetNbOutputs()));
 	for (coFloat& weight : _this.GetWeightBuffer())
 	{
 		weight = coRand11(_seed) * scale;

@@ -22,7 +22,7 @@ coFORCE_INLINE coFloat coComputeNeuralActivation(coFloat _x)
 	//return 2.0f / (1.0f + coExp(-2.0f * _x)) - 1.0f;
 	//const coFloat a = coExp(2.0f * _x);
 	//return (a - 1.0f) / (a + 1.0f);
-	return ::tanhf(_x);
+	return coTanh(_x);
 #elif coNEURAL_CURRENT_ACTIVATION == coNEURAL_RELU_ACTIVATION
 	return coMax(0.0f, _x);
 #elif coNEURAL_CURRENT_ACTIVATION == coNEURAL_LEAKY_RELU_ACTIVATION

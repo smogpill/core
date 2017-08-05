@@ -4,6 +4,7 @@
 #include "neural/process/training/coNeuralTrainingNet_f.h"
 #include "neural/process/training/coNeuralTrainingNet.h"
 #include "neural/process/training/coNeuralTrainingLayer.h"
+#include "neural/process/training/coNeuralTrainingLayer_f.h"
 #include "neural/process/training/coNeuralDataSet.h"
 #include "neural/process/coNeuralLayer_f.h"
 #include "neural/process/coNeuralNet_f.h"
@@ -66,6 +67,14 @@ void coComputeGradients(coNeuralTrainingNet& _trainingNet, const coArray<coFloat
 			const coFloat output = curOutputs.data[k];
 			curGradients.data[k] = sum * coComputeNeuralActivationDerivativeTransfer(output);
 		}
+	}
+}
+
+void coClearForEpoch(coNeuralTrainingNet& _trainingNet)
+{
+	for (coNeuralTrainingLayer* trainingLayer : _trainingNet.GetTrainingLayers())
+	{
+		coClearForEpoch(*trainingLayer);
 	}
 }
 
@@ -167,6 +176,7 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 	coUint nbEpochs = 0;
 	do
 	{
+		coClearForEpoch(_trainingNet);
 		coShuffle(sampleIndices, seed);
 
 		const coUint32 nbTrainingSamples = coUint32(trainingSamplesRatio * _dataSet.nbSamples);
