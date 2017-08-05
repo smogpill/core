@@ -137,7 +137,7 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 	const coFloat meanSquareErrorTarget = coPow2(_targetError);
 
 	const coFloat learnRate = 0.4f;
-	const coFloat momentum = 0.8f;
+	const coFloat momentum = 0.9f;
 
 	//coTRY(learnRate < 1.0f, nullptr);
 

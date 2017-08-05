@@ -15,7 +15,8 @@ coFORCE_INLINE coFloat coComputeNeuralActivation(coFloat _x)
 	// (output: [-1, 1])
 	//return 2.0f / (1.0f + coExp(-2.0f * _x)) - 1.0f;
 	const coFloat a = coExp(2.0f * _x);
-	return (a - 1.0f) / (a + 1.0f);
+	//return (a - 1.0f) / (a + 1.0f);
+	return ::tanhf(_x);
 #elif coNEURAL_CURRENT_ACTIVATION == coNEURAL_LOGISTIC_ACTIVATION
 	// Logistic
 	// (output: [0, 1], not good)
