@@ -37,11 +37,11 @@ coTEST(coNeuralNet, TrainALine)
 	const coFloat yRange = yMax - yMin;
 	auto NormalizeX = [&](coFloat _x)
 	{
-		return coClamp01((_x - xMin) / xRange);
+		return coClamp01((_x - xMin) / xRange);// *2.0f - 1.0f;
 	};
 	auto NormalizeY = [&](coFloat _y)
 	{
-		return coClamp01((_y - yMin) / yRange);
+		return coClamp01((_y - yMin) / yRange);// *2.0f - 1.0f;
 	};
 	auto ComputeValue = [&](coFloat _x)
 	{
@@ -125,7 +125,7 @@ coTEST(coNeuralNet, TrainALine)
 			coFloat output;
 			{
 				inputs[0] = input;
-				coComputeNeuralOutputs(net, inputs, outputs);
+				coComputeOutputs(net, inputs, outputs);
 				output = outputs[0];
 			}
 

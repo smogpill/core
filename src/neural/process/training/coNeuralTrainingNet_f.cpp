@@ -17,8 +17,7 @@ void coComputeForwardPass(coNeuralTrainingNet& _trainingNet, const coArray<coFlo
 	coArray<coFloat> inputs = _targetInputs;
 	for (coNeuralTrainingLayer* trainingLayer : _trainingNet.GetTrainingLayers())
 	{
-		coNeuralLayer* layer = trainingLayer->layer;
-		coComputeNeuralOutputs(*layer, inputs, trainingLayer->outputs);
+		coComputeOutputs(*trainingLayer->layer, inputs, trainingLayer->outputs);
 		inputs = trainingLayer->outputs;
 	}
 }
@@ -93,8 +92,8 @@ void coUpdateWeights(coNeuralTrainingNet& _trainingNet, coFloat _learnRate, coFl
 			{
 				coFloat& curDelta = biasDeltas.data[k];
 				const coFloat prevDelta = curDelta;
-				curDelta = _learnRate * gradient;
-				biasBuffer.data[k] += curDelta + _momentum * prevDelta;
+				curDelta = _learnRate * gradient + _momentum * prevDelta;
+				biasBuffer.data[k] += curDelta;
 			}
 
 			// Weights
@@ -102,8 +101,8 @@ void coUpdateWeights(coNeuralTrainingNet& _trainingNet, coFloat _learnRate, coFl
 			{
 				coFloat& curDelta = weightDeltas.data[weightIndex];
 				const coFloat prevDelta = curDelta;
-				curDelta = _learnRate * gradient * layerInputs.data[l];
-				weightBuffer.data[weightIndex] += curDelta + _momentum * prevDelta;
+				curDelta = _learnRate * gradient * layerInputs.data[l] + _momentum * prevDelta;
+				weightBuffer.data[weightIndex] += curDelta;
 				++weightIndex;
 			}
 		}

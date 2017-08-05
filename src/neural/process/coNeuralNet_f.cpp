@@ -15,7 +15,7 @@ void coResetWeightsAndBiases(coNeuralNet& _this, coUint32& _seed)
 	}
 }
 
-void coComputeNeuralOutputs(const coNeuralNet& _this, const coArray<coFloat>& _inputs, coArray<coFloat>& _outputs)
+void coComputeOutputs(const coNeuralNet& _this, const coArray<coFloat>& _inputs, coArray<coFloat>& _outputs)
 {
 	const coArray<coNeuralLayer*> layers = _this.GetLayers();
 	coASSERT(layers.count > 0);
@@ -41,7 +41,7 @@ void coComputeNeuralOutputs(const coNeuralNet& _this, const coArray<coFloat>& _i
 	{
 		coArray<coFloat> inputs = coArray<coFloat>(in->data, layer->GetNbInputs());
 		coArray<coFloat> outputs = coArray<coFloat>(out->data, layer->GetNbOutputs());
-		coComputeNeuralOutputs(*layer, inputs, outputs);
+		coComputeOutputs(*layer, inputs, outputs);
 		coSwap(tempInputs, tempOutputs);
 		in = &tempInputs;
 		out = &tempOutputs;

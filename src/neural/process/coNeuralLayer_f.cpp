@@ -16,13 +16,10 @@ void coResetWeightsAndBiases(coNeuralLayer& _this, coUint32& _seed)
 	{
 		weight = coRand11(_seed) * scale;
 	}
-	for (coFloat& bias : _this.GetBiasBuffer())
-	{
-		bias = 0.0f;
-	}
+	coFill(_this.GetBiasBuffer(), 0.0f);
 }
 
-void coComputeNeuralOutputs(const coNeuralLayer& _this, const coArray<coFloat>& _inputs, coArray<coFloat>& _outputs)
+void coComputeOutputs(const coNeuralLayer& _this, const coArray<coFloat>& _inputs, coArray<coFloat>& _outputs)
 {
 	coASSERT(_inputs.count == _this.GetNbInputs());
 	coASSERT(_outputs.count == _this.GetNbOutputs());

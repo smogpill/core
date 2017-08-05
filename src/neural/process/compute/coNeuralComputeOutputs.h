@@ -6,4 +6,4 @@ template<class T> class coArray;
 class coNeuralLayer;
 class coNeuralNet;
 
-void coComputeNeuralOutputs(const coNeuralNet& _net, const coArray<coFloat>& _inputs, coArray<coFloat>& _outputs);
+void coComputeOutputs(const coNeuralNet& _net, const coArray<coFloat>& _inputs, coArray<coFloat>& _outputs);
