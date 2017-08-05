@@ -95,7 +95,7 @@ void coUpdateWeights(coNeuralTrainingNet& _trainingNet, coFloat _learnRate, coFl
 			{
 				coFloat& curBias = biasBuffer.data[k];
 				coFloat& curDelta = biasDeltas.data[k];
-				curDelta = _learnRate * gradient - decay * curBias + _momentum * curDelta;
+				curDelta = _learnRate * gradient + _momentum * curDelta - decay * curBias;
 				curBias += curDelta;
 			}
 
@@ -104,7 +104,7 @@ void coUpdateWeights(coNeuralTrainingNet& _trainingNet, coFloat _learnRate, coFl
 			{
 				coFloat& curWeight = weightBuffer.data[weightIndex];
 				coFloat& curDelta = weightDeltas.data[weightIndex];
-				curDelta = _learnRate * gradient * layerInputs.data[l] - decay * curWeight + _momentum * curDelta;
+				curDelta = _learnRate * gradient * layerInputs.data[l] + _momentum * curDelta - decay * curWeight;
 				curWeight += curDelta;
 				++weightIndex;
 			}
