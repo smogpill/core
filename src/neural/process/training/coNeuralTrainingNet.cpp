@@ -15,8 +15,7 @@ coNeuralTrainingNet::coNeuralTrainingNet(coNeuralNet& _net)
 
 coNeuralTrainingNet::~coNeuralTrainingNet()
 {
-	for (coNeuralTrainingLayer* layer : trainingLayers)
-		delete layer;
+	coDeleteElementsAndClear(trainingLayers);
 }
 
 coResult coNeuralTrainingNet::OnInit(const coObject::InitConfig& _config)
@@ -32,18 +31,14 @@ coResult coNeuralTrainingNet::OnInit(const coObject::InitConfig& _config)
 		trainingLayer->layer = layer;
 		const coUint nbInputs = layer->GetNbInputs();
 		const coUint nbOutputs = layer->GetNbOutputs();
-		coINFO(nbInputs);
-		coINFO(nbOutputs);
 		coResize(trainingLayer->weightDeltas, nbInputs * nbOutputs);
-		int x = 0;
-		++x;
 		coFill(trainingLayer->weightDeltas, 0.0f);
-		int y = 0;
-		++y;
 		coResize(trainingLayer->biasDeltas, nbOutputs);
 		coFill(trainingLayer->biasDeltas, 0.0f);
 		coResize(trainingLayer->outputs, nbOutputs);
+		coFill(trainingLayer->outputs, 0.0f);
 		coResize(trainingLayer->gradients, nbOutputs);
+		coFill(trainingLayer->gradients, 0.0f);
 		coPushBack(trainingLayers, trainingLayer);
 		trainingLayer->inputs = inputs;
 		inputs = trainingLayer->outputs;
