@@ -138,8 +138,9 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 
 	const coFloat meanSquareErrorTarget = coPow2(_targetError);
 
-	const coFloat learnRate = 0.4f;
+	const coFloat learnRate = 0.3f;
 	const coFloat momentum = 0.9f;
+	const coFloat trainingSamplesRatio = 0.6f;
 
 	//coTRY(learnRate < 1.0f, nullptr);
 
@@ -168,7 +169,7 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 	{
 		coShuffle(sampleIndices, seed);
 
-		const coUint32 nbTrainingSamples = _dataSet.nbSamples * 60 / 100;
+		const coUint32 nbTrainingSamples = coUint32(trainingSamplesRatio * _dataSet.nbSamples);
 		const coUint32 nbValidationSamples = _dataSet.nbSamples - nbTrainingSamples;
 
 		// For each sample
