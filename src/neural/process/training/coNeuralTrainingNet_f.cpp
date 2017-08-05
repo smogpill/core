@@ -134,6 +134,8 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 
 	coTRY(_targetError >= 0.0f, nullptr);
 
+	const coFloat meanSquareErrorTarget = coPow2(_targetError);
+
 	const coFloat learnRate = 0.4f;
 	const coFloat momentum = 0.8f;
 
@@ -200,7 +202,7 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 		}
 
 		++nbEpochs;
-	} while (/*err > _targetError && */nbEpochs < _nbMaxEpochs);
+	} while (err > meanSquareErrorTarget && nbEpochs < _nbMaxEpochs);
 
 	return true;
 }

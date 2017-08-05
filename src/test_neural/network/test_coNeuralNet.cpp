@@ -33,8 +33,8 @@ coTEST(coNeuralNet, TrainALine)
 	coDynamicArray<coNeuralLayer*> layerDatas;
 	coDEFER() { coDeleteElementsAndClear(layerDatas); };
 
-	const coUint nbHiddenLayers = 3;
-	const coUint nbHiddenNeurons = 8;
+	const coUint nbHiddenLayers = 1;
+	const coUint nbHiddenNeurons = 16;
 	for (coUint i = 0; i < nbHiddenLayers; ++i)
 	{
 		coNeuralLayer* hiddenLayer = new coNeuralLayer(i ? nbHiddenNeurons : 1, nbHiddenNeurons);
@@ -67,7 +67,7 @@ coTEST(coNeuralNet, TrainALine)
 
 	// Train
 	{
-		const coUint nbSamples = 10000;
+		const coUint nbSamples = 100000;
 		coDynamicArray<coFloat> inputs;
 		coDynamicArray<coFloat> outputs;
 		{
@@ -134,6 +134,8 @@ coTEST(coNeuralNet, TrainALine)
 		}
 		error *= 0.5f / nbChecks;
 
-		coEXPECT(error <= desiredError);
+		const coFloat expectedMeanSquareError = desiredError * desiredError;
+
+		coEXPECT(error <= expectedMeanSquareError);
 	}
 }
