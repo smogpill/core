@@ -8,7 +8,7 @@ coNeuralTrainingConfig::coNeuralTrainingConfig()
 	, maxNbEpochs(1000)
 	, sampleRatio(0.6f)
 	, learningRate(0.03f)
-	, momentum(0.0f)
+	, momentum(0.1f)
 	, decay(0.0f)
 {
 }
