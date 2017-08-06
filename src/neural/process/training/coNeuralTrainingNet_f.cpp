@@ -169,7 +169,7 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 #endif
 
 	// For each epoch
-	coFloat err;
+	coFloat err = coFloat_inf;
 	coUint nbEpochs = 0;
 	do
 	{
@@ -190,7 +190,10 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 			coUpdateWeights(_trainingNet, _config.learningRate, _config.momentum, sampleInputs);
 		}
 
+		++nbEpochs;
+
 		// Error
+		if (nbEpochs % _config.nbEpochsBeforeValidation == 0 && nbEpochs < _config.maxNbEpochs)
 		{
 			err = 0.0f;
 			for (coUint i = nbTrainingSamples; i < _dataSet.nbSamples; ++i)
@@ -210,7 +213,7 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 #endif
 		}
 
-		++nbEpochs;
+		
 	} while (err > meanSquareErrorTarget && nbEpochs < _config.maxNbEpochs);
 
 	return true;

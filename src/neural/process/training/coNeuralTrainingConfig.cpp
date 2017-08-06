@@ -10,5 +10,6 @@ coNeuralTrainingConfig::coNeuralTrainingConfig()
 	, learningRate(0.03f)
 	, momentum(0.1f)
 	, decay(0.0f)
+	, nbEpochsBeforeValidation(16)
 {
 }

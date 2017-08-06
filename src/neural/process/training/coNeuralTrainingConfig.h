@@ -12,4 +12,5 @@ public:
 	coFloat learningRate;
 	coFloat momentum;
 	coFloat decay;
+	coUint nbEpochsBeforeValidation;
 };
