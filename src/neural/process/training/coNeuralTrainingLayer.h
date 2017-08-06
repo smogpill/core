@@ -13,7 +13,9 @@ public:
 	coNeuralLayer* layer;
 	coDynamicArray<coFloat> weightDeltas;
 	coDynamicArray<coFloat> biasDeltas;
-	coDynamicArray<coFloat> gradients;
+	coDynamicArray<coFloat> biasAccs;
+	coDynamicArray<coFloat> weightAccs;
+	coDynamicArray<coFloat> deltas;
 	coDynamicArray<coFloat> outputs;
 	coArray<coFloat> inputs;
 };

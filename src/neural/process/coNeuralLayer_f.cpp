@@ -15,7 +15,7 @@ void coResetWeightsAndBiases(coNeuralLayer& _this, coUint32& _seed)
 	{
 		weight = coRand11(_seed) * scale;
 	}
-	coFill(_this.GetBiasBuffer(), 0.1f); // Initialized to non-zero so that it can help ReLU firing. Should not care for other activation functions. 
+	coFill(_this.GetBiasBuffer(), 0.0f);
 }
 
 void coComputeOutputs(const coNeuralLayer& _this, const coArray<coFloat>& _inputs, coArray<coFloat>& _outputs)

@@ -37,8 +37,12 @@ coResult coNeuralTrainingNet::OnInit(const coObject::InitConfig& _config)
 		coFill(trainingLayer->biasDeltas, 0.0f);
 		coResize(trainingLayer->outputs, nbOutputs);
 		coFill(trainingLayer->outputs, 0.0f);
-		coResize(trainingLayer->gradients, nbOutputs);
-		coFill(trainingLayer->gradients, 0.0f);
+		coResize(trainingLayer->deltas, nbOutputs);
+		coFill(trainingLayer->deltas, 0.0f);
+		coResize(trainingLayer->biasAccs, nbOutputs);
+		coFill(trainingLayer->biasAccs, 0.0f);
+		coResize(trainingLayer->weightAccs, nbInputs * nbOutputs);
+		coFill(trainingLayer->weightAccs, 0.0f);
 		coPushBack(trainingLayers, trainingLayer);
 		trainingLayer->inputs = inputs;
 		inputs = trainingLayer->outputs;

@@ -16,6 +16,6 @@ public:
 	coFloat learningRate;
 	coFloat momentum;
 	coFloat decay;
-	coUint nbEpochsBeforeValidation;
-	coUint miniBatchSize;
+	coUint nbEpochsPerValidation;
+	coUint nbSamplesPerMiniBatch;
 };
