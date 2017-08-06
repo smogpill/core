@@ -137,7 +137,7 @@ coTEST(coNeuralNet, TrainALine)
 
 			error += coPow2(expectedOutput - output);
 		}
-		error *= 0.5f / nbChecks;
+		error *= 1.0f / nbChecks;
 
 		const coFloat expectedMeanSquareError = desiredError * desiredError;
 		coEXPECT(error <= expectedMeanSquareError);

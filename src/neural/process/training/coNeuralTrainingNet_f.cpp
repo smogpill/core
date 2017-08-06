@@ -204,7 +204,6 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 
 			coASSERT(nbValidationSamples);
 			err /= coFloat(nbValidationSamples);
-			err *= 0.5f;
 
 #ifdef coDEBUG
 			coPushBack(errors, err);
