@@ -110,19 +110,25 @@ void coClearForEpoch(coNeuralTrainingNet& _trainingNet)
 
 void coUpdateWeights(coNeuralTrainingNet& _trainingNet, const coNeuralTrainingConfig& _config, coFloat _miniBatchFactor)
 {
+	// Learning rate scaled linearly by the mini-batch size to keep the same performance when using mini-batches.
+	// Paper: Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour (imagenet1kin1h5)
+	// https://research.fb.com/wp-content/uploads/2017/06/imagenet1kin1h5.pdf
+	const coFloat learningRate = _config.learningRate * _config.nbSamplesPerMiniBatch;
+
+	const coFloat decayLearningRate = _config.decay * learningRate;
+
 	const coArray<coNeuralTrainingLayer*>& trainingLayers = _trainingNet.GetTrainingLayers();
 	for (coNeuralTrainingLayer* trainingLayer : trainingLayers)
 	{
-		coNeuralLayer* data = trainingLayer->layer;
-		const coUint nbInputs = data->GetNbInputs();
-		const coUint nbOutputs = data->GetNbOutputs();
-		coArray<coFloat>& biasBuffer = data->GetBiasBuffer();
-		coArray<coFloat>& weightBuffer = data->GetWeightBuffer();
+		coNeuralLayer* layer = trainingLayer->layer;
+		const coUint nbInputs = layer->GetNbInputs();
+		const coUint nbOutputs = layer->GetNbOutputs();
+		coArray<coFloat>& biasBuffer = layer->GetBiasBuffer();
+		coArray<coFloat>& weightBuffer = layer->GetWeightBuffer();
 		coArray<coFloat>& biasDeltas = trainingLayer->biasDeltas;
 		coArray<coFloat>& weightDeltas = trainingLayer->weightDeltas;
 		const coArray<coFloat>& biasAccs = trainingLayer->biasAccs;
 		const coArray<coFloat>& weightAccs = trainingLayer->weightAccs;
-		const coFloat decayLearningRate = _config.decay * _config.learningRate;
 
 		coUint weightIndex = 0;
 		for (coUint o = 0; o < nbOutputs; ++o)
@@ -132,7 +138,7 @@ void coUpdateWeights(coNeuralTrainingNet& _trainingNet, const coNeuralTrainingCo
 				const coFloat biasAcc = biasAccs.data[o] * _miniBatchFactor;
 				coFloat& bias = biasBuffer.data[o];
 				coFloat& biasDelta = biasDeltas.data[o];
-				biasDelta = _config.learningRate * biasAcc + _config.momentum * biasDelta - decayLearningRate * bias;
+				biasDelta = learningRate * biasAcc + _config.momentum * biasDelta - decayLearningRate * bias;
 				bias += biasDelta;
 				biasAccs.data[o] = 0.0f;
 			}
@@ -143,7 +149,7 @@ void coUpdateWeights(coNeuralTrainingNet& _trainingNet, const coNeuralTrainingCo
 				coFloat& weight = weightBuffer.data[weightIndex];
 				coFloat& weightDelta = weightDeltas.data[weightIndex];
 				const coFloat weightAcc = weightAccs.data[weightIndex] * _miniBatchFactor;
-				weightDelta = _config.learningRate * weightAcc + _config.momentum * weightDelta - decayLearningRate * weight;
+				weightDelta = learningRate * weightAcc + _config.momentum * weightDelta - decayLearningRate * weight;
 				weight += weightDelta;
 				weightAccs.data[weightIndex] = 0.0f;
 				++weightIndex;
