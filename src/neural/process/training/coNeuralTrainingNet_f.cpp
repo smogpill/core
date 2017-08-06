@@ -144,11 +144,9 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 	// References:
 	// - "On Large-Batch Training for Deep Learning: Generalization Gap and Sharp Minima" (arXiv:1609.04836).
 
-	coTRY(_config.targetError >= 0.0f, nullptr);
+	coTRY(_config.Validate(), "Invalid config.");
 
 	const coFloat meanSquareErrorTarget = coPow2(_config.targetError);
-
-	//coTRY(learnRate < 1.0f, nullptr);
 
 	coNeuralNet* net = _trainingNet.GetNet();
 	coTRY(net, nullptr);
