@@ -7,5 +7,6 @@
 template<class T> class coArray;
 class coNeuralTrainingNet;
 class coNeuralDataSet;
+class coNeuralTrainingConfig;
 
-coResult coTrain(coNeuralTrainingNet& _net, const coNeuralDataSet& _dataSet, coFloat _targetError, coUint _nbMaxEpochs);
+coResult coTrain(coNeuralTrainingNet& _net, const coNeuralDataSet& _dataSet, const coNeuralTrainingConfig& _config);

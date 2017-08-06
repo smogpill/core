@@ -6,6 +6,7 @@
 #include "neural/process/training/coNeuralTrainingLayer.h"
 #include "neural/process/training/coNeuralTrainingLayer_f.h"
 #include "neural/process/training/coNeuralDataSet.h"
+#include "neural/process/training/coNeuralTrainingConfig.h"
 #include "neural/process/coNeuralLayer_f.h"
 #include "neural/process/coNeuralNet_f.h"
 #include "neural/process/coNeuralActivation_f.h"
@@ -138,18 +139,14 @@ coFloat coComputeErrors(const coNeuralTrainingNet& _trainingNet, const coArray<c
 	return error;
 }
 
-coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _dataSet, coFloat _targetError, coUint _nbMaxEpochs)
+coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _dataSet, const coNeuralTrainingConfig& _config)
 {
 	// References:
 	// - "On Large-Batch Training for Deep Learning: Generalization Gap and Sharp Minima" (arXiv:1609.04836).
 
-	coTRY(_targetError >= 0.0f, nullptr);
+	coTRY(_config.targetError >= 0.0f, nullptr);
 
-	const coFloat meanSquareErrorTarget = coPow2(_targetError);
-
-	const coFloat learnRate = 0.03f;
-	const coFloat momentum = 0.0f;//0.9f;
-	const coFloat trainingSamplesRatio = 0.6f;
+	const coFloat meanSquareErrorTarget = coPow2(_config.targetError);
 
 	//coTRY(learnRate < 1.0f, nullptr);
 
@@ -179,7 +176,7 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 		coClearForEpoch(_trainingNet);
 		coShuffle(sampleIndices, seed);
 
-		const coUint32 nbTrainingSamples = coUint32(trainingSamplesRatio * _dataSet.nbSamples);
+		const coUint32 nbTrainingSamples = coUint32(_config.sampleRatio * _dataSet.nbSamples);
 		const coUint32 nbValidationSamples = _dataSet.nbSamples - nbTrainingSamples;
 
 		// For each sample
@@ -190,7 +187,7 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 			const coArray<coFloat> sampleOutputs(_dataSet.outputs.data + sampleIndex * nbNetOutputs, nbNetOutputs);
 			coComputeForwardPass(_trainingNet, sampleInputs);
 			coComputeGradients(_trainingNet, sampleOutputs);
-			coUpdateWeights(_trainingNet, learnRate, momentum, sampleInputs);
+			coUpdateWeights(_trainingNet, _config.learningRate, _config.momentum, sampleInputs);
 		}
 
 		// Error
@@ -215,7 +212,7 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 		}
 
 		++nbEpochs;
-	} while (err > meanSquareErrorTarget && nbEpochs < _nbMaxEpochs);
+	} while (err > meanSquareErrorTarget && nbEpochs < _config.maxNbEpochs);
 
 	return true;
 }

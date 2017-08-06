@@ -8,6 +8,7 @@
 #include "neural/process/training/coNeuralDataSet.h"
 #include "neural/process/training/coNeuralTrainingNet.h"
 #include "neural/process/training/coNeuralTrainingNet_f.h"
+#include "neural/process/training/coNeuralTrainingConfig.h"
 #include "neural/process/compute/coNeuralComputeOutputs.h"
 #include "math/scalar/coFloat_f.h"
 #include "pattern/scope/coDefer.h"
@@ -96,8 +97,10 @@ coTEST(coNeuralNet, TrainALine)
 
 		coResetWeightsAndBiases(net, seed);
 
-		const coUint nbMaxEpochs = 250;
-		coEXPECT(coTrain(trainingNet, dataSet, desiredError, nbMaxEpochs));
+		coNeuralTrainingConfig config;
+		config.targetError = desiredError;
+		config.maxNbEpochs = 250;
+		coEXPECT(coTrain(trainingNet, dataSet, config));
 	}
 
 	// Checks
