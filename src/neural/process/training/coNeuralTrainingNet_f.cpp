@@ -124,7 +124,7 @@ void coUpdateWeights(coNeuralTrainingNet& _trainingNet, coFloat _learningRate, c
 	}
 }
 
-coFloat coComputeErrors(const coNeuralTrainingNet& _trainingNet, const coArray<coFloat>& _targetOutputs)
+coFloat coComputeErrorSum(const coNeuralTrainingNet& _trainingNet, const coArray<coFloat>& _targetOutputs)
 {
 	coFloat error = 0.0f;
 	const coArray<coNeuralTrainingLayer*>& trainingLayers = _trainingNet.GetTrainingLayers();
@@ -199,11 +199,11 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 				const coArray<coFloat> sampleInputs(_dataSet.inputs.data + sampleIndex * nbNetInputs, nbNetInputs);
 				const coArray<coFloat> sampleOutputs(_dataSet.outputs.data + sampleIndex * nbNetOutputs, nbNetOutputs);
 				coComputeForwardPass(_trainingNet, sampleInputs);
-				err += coComputeErrors(_trainingNet, sampleOutputs);
+				err += coComputeErrorSum(_trainingNet, sampleOutputs);
 			}
 
 			coASSERT(nbValidationSamples);
-			err /= coFloat(nbValidationSamples);
+			err /= coFloat(nbValidationSamples * nbNetOutputs);
 
 #ifdef coDEBUG
 			coPushBack(errors, err);
