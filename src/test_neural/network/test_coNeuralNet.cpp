@@ -96,7 +96,7 @@ coTEST(coNeuralNet, TrainALine)
 
 		coResetWeightsAndBiases(net, seed);
 
-		const coUint nbMaxEpochs = 1000;
+		const coUint nbMaxEpochs = 250;
 		coEXPECT(coTrain(trainingNet, dataSet, desiredError, nbMaxEpochs));
 	}
 
