@@ -108,7 +108,7 @@ void coClearForEpoch(coNeuralTrainingNet& _trainingNet)
 	}
 }
 
-void coUpdateWeights(coNeuralTrainingNet& _trainingNet, coFloat _learningRate, coFloat _momentum, coFloat _miniBatchFactor)
+void coUpdateWeights(coNeuralTrainingNet& _trainingNet, const coNeuralTrainingConfig& _config, coFloat _miniBatchFactor)
 {
 	const coArray<coNeuralTrainingLayer*>& trainingLayers = _trainingNet.GetTrainingLayers();
 	for (coNeuralTrainingLayer* trainingLayer : trainingLayers)
@@ -122,8 +122,7 @@ void coUpdateWeights(coNeuralTrainingNet& _trainingNet, coFloat _learningRate, c
 		coArray<coFloat>& weightDeltas = trainingLayer->weightDeltas;
 		const coArray<coFloat>& biasAccs = trainingLayer->biasAccs;
 		const coArray<coFloat>& weightAccs = trainingLayer->weightAccs;
-
-		const coFloat decay = 0.0f;//0.000001f;
+		const coFloat decayLearningRate = _config.decay * _config.learningRate;
 
 		coUint weightIndex = 0;
 		for (coUint o = 0; o < nbOutputs; ++o)
@@ -133,7 +132,7 @@ void coUpdateWeights(coNeuralTrainingNet& _trainingNet, coFloat _learningRate, c
 				const coFloat biasAcc = biasAccs.data[o] * _miniBatchFactor;
 				coFloat& bias = biasBuffer.data[o];
 				coFloat& biasDelta = biasDeltas.data[o];
-				biasDelta = _learningRate * biasAcc + _momentum * biasDelta - decay * _learningRate * bias;
+				biasDelta = _config.learningRate * biasAcc + _config.momentum * biasDelta - decayLearningRate * bias;
 				bias += biasDelta;
 				biasAccs.data[o] = 0.0f;
 			}
@@ -144,7 +143,7 @@ void coUpdateWeights(coNeuralTrainingNet& _trainingNet, coFloat _learningRate, c
 				coFloat& weight = weightBuffer.data[weightIndex];
 				coFloat& weightDelta = weightDeltas.data[weightIndex];
 				const coFloat weightAcc = weightAccs.data[weightIndex] * _miniBatchFactor;
-				weightDelta = _learningRate * weightAcc + _momentum * weightDelta - decay * _learningRate* weight;
+				weightDelta = _config.learningRate * weightAcc + _config.momentum * weightDelta - decayLearningRate * weight;
 				weight += weightDelta;
 				weightAccs.data[weightIndex] = 0.0f;
 				++weightIndex;
@@ -226,7 +225,7 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 					++tableIndex;
 				}
 				
-				coUpdateWeights(_trainingNet, _config.learningRate, _config.momentum, miniBatchFactor);
+				coUpdateWeights(_trainingNet, _config, miniBatchFactor);
 			}
 
 			int x = 0;
