@@ -24,8 +24,8 @@ coTEST(coNeuralNet, Init)
 coTEST(coNeuralNet, TrainALine)
 {
 	// Neural network
-	const coUint nbHiddenLayers = 1;
-	const coUint nbHiddenNeurons = 16;
+	const coUint nbHiddenLayers = 2;
+	const coUint nbHiddenNeurons = 8;
 	const coFloat desiredError = 0.01f;
 
 	// Function

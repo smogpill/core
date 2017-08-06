@@ -37,7 +37,7 @@ void coComputeGradients(coNeuralTrainingNet& _trainingNet, const coArray<coFloat
 		{
 			const coFloat value = values[i];
 			const coFloat targetValue = _targetOutputs[i];
-			const coFloat error = value - targetValue;
+			const coFloat error = targetValue - value;
 			gradients[i] = error * coComputeNeuralActivationDerivativeTransfer(value);
 		}
 	}
@@ -78,7 +78,7 @@ void coClearForEpoch(coNeuralTrainingNet& _trainingNet)
 	}
 }
 
-void coUpdateWeights(coNeuralTrainingNet& _trainingNet, coFloat _learnRate, coFloat _momentum, const coArray<coFloat>& _inputs)
+void coUpdateWeights(coNeuralTrainingNet& _trainingNet, coFloat _learningRate, coFloat _momentum, const coArray<coFloat>& _inputs)
 {
 	const coArray<coNeuralTrainingLayer*>& trainingLayers = _trainingNet.GetTrainingLayers();
 	coArray<coFloat> layerInputs(_inputs);
@@ -104,7 +104,7 @@ void coUpdateWeights(coNeuralTrainingNet& _trainingNet, coFloat _learnRate, coFl
 			{
 				coFloat& curBias = biasBuffer.data[k];
 				coFloat& curDelta = biasDeltas.data[k];
-				curDelta = -_learnRate * gradient + _momentum * curDelta - decay * curBias;
+				curDelta = _learningRate * gradient + _momentum * curDelta - decay * curBias;
 				curBias += curDelta;
 			}
 
@@ -113,7 +113,7 @@ void coUpdateWeights(coNeuralTrainingNet& _trainingNet, coFloat _learnRate, coFl
 			{
 				coFloat& curWeight = weightBuffer.data[weightIndex];
 				coFloat& curDelta = weightDeltas.data[weightIndex];
-				curDelta = -_learnRate * gradient * layerInputs.data[l] + _momentum * curDelta - decay * curWeight;
+				curDelta = _learningRate * gradient * layerInputs.data[l] + _momentum * curDelta - decay * curWeight;
 				curWeight += curDelta;
 				++weightIndex;
 			}
@@ -147,7 +147,7 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 
 	const coFloat meanSquareErrorTarget = coPow2(_targetError);
 
-	const coFloat learnRate = 0.3f;
+	const coFloat learnRate = 0.03f;
 	const coFloat momentum = 0.0f;//0.9f;
 	const coFloat trainingSamplesRatio = 0.6f;
 
