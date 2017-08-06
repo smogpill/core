@@ -172,12 +172,14 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 	do
 	{
 		coClearForEpoch(_trainingNet);
+
+		// Shuffle samples
 		coShuffle(sampleIndices, _seed);
 
 		const coUint32 nbTrainingSamples = coUint32(_config.sampleRatio * _dataSet.nbSamples);
 		const coUint32 nbValidationSamples = _dataSet.nbSamples - nbTrainingSamples;
 
-		// For each sample
+		// Train
 		for (coUint i = 0; i < nbTrainingSamples; ++i)
 		{
 			const coUint sampleIndex = sampleIndices[i];
@@ -190,7 +192,7 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 
 		++nbEpochs;
 
-		// Error
+		// Update validation error
 		if (nbEpochs % _config.nbEpochsBeforeValidation == 0 && nbEpochs < _config.maxNbEpochs)
 		{
 			err = 0.0f;
@@ -204,7 +206,7 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 			}
 
 			coASSERT(nbValidationSamples);
-			err /= coFloat(nbValidationSamples * nbNetOutputs);
+			err /= coFloat(nbValidationSamples);
 
 #ifdef coDEBUG
 			coPushBack(errors, err);
