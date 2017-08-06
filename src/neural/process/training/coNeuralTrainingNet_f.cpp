@@ -233,9 +233,6 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 				
 				coUpdateWeights(_trainingNet, _config, miniBatchFactor);
 			}
-
-			int x = 0;
-			++x;
 		}
 
 		++nbEpochs;
