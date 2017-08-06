@@ -139,7 +139,7 @@ coFloat coComputeErrorSum(const coNeuralTrainingNet& _trainingNet, const coArray
 	return error;
 }
 
-coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _dataSet, const coNeuralTrainingConfig& _config)
+coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _dataSet, const coNeuralTrainingConfig& _config, coUint32& _seed)
 {
 	// References:
 	// - "On Large-Batch Training for Deep Learning: Generalization Gap and Sharp Minima" (arXiv:1609.04836).
@@ -161,8 +161,6 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 	for (coUint i = 0; i < sampleIndices.count; ++i)
 		sampleIndices[i] = i;
 
-	coUint32 seed = 77777777;
-
 #ifdef coDEBUG
 	coDynamicArray<coFloat> errors;
 	coReserve(errors, _dataSet.nbSamples);
@@ -174,7 +172,7 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 	do
 	{
 		coClearForEpoch(_trainingNet);
-		coShuffle(sampleIndices, seed);
+		coShuffle(sampleIndices, _seed);
 
 		const coUint32 nbTrainingSamples = coUint32(_config.sampleRatio * _dataSet.nbSamples);
 		const coUint32 nbValidationSamples = _dataSet.nbSamples - nbTrainingSamples;
