@@ -45,3 +45,11 @@ coFORCE_INLINE T& coBitCast(A& _a)
 #else
 #	define coFORCE_SYMBOL_INCLUSION_ATTRIBUTE __attribute__ ((used))
 #endif
+
+#ifdef coMSVC_COMPILER
+#	define coLIKELY(_x_) (_x_)
+#	define coUNLIKELY(_x_) (_x_)
+#else
+#	define coLIKELY(_x_) __builtin_expect(!!(_x_), true)
+#	define coUNLIKELY(_x_) __builtin_expect(!!(_x_), false)
+#endif

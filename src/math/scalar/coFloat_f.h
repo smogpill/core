@@ -31,7 +31,7 @@ coFORCE_INLINE coBool coEqual0(coFloat _x, coFloat _eps = 0.0001f) { return coAb
 coFORCE_INLINE coBool coNotEqual(coFloat _x, coFloat _y, coFloat _eps = 0.0001f) { return coAbs(_x - _y) > _eps; }
 coFORCE_INLINE coBool coNotEqual0(coFloat _x, coFloat _eps = 0.0001f) { return coAbs(_x) > _eps; }
 coFORCE_INLINE coFloat coSqrt(coFloat _x) { return std::sqrt(_x); }
-coFORCE_INLINE coFloat coInvSqrt(coFloat _x) { return 1.0f / std::sqrt(_x); }
+coFORCE_INLINE coFloat coInvSqrt(coFloat _x) { coASSERT(_x > 0.0f); return 1.0f / std::sqrt(_x); }
 coFORCE_INLINE coFloat coPow(coFloat _x, coFloat _exponent) { return std::pow(_x, _exponent); }
 coFORCE_INLINE coFloat coPow2(coFloat _x) { return _x * _x; }
 coFORCE_INLINE coFloat coPow3(coFloat _x) { return _x * _x * _x; }

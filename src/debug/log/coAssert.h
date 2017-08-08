@@ -6,7 +6,7 @@
 #include "lang/coCppExtensions.h"
 
 #ifdef coDEBUG
-#	define coASSERT(_cond_) coSAFE_SCOPE( if(!(_cond_) && coReturnTrue()){ coBREAK(); } )
+#	define coASSERT(_cond_) coSAFE_SCOPE( if(coUNLIKELY(!(_cond_) && coReturnTrue())){ coBREAK(); } )
 #else
 #	define coASSERT(_cond_)
 #endif
