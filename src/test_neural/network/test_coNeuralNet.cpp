@@ -69,6 +69,7 @@ coTEST(coNeuralNet, TrainALine)
 	coUint32 seed = 777777777;
 
 	// Train
+	coUint32 nbEpochs = 0;
 	{
 		const coUint nbSamples = 100000;
 		coDynamicArray<coFloat> inputs;
@@ -99,11 +100,9 @@ coTEST(coNeuralNet, TrainALine)
 
 		coNeuralTrainingConfig config;
 		config.targetError = desiredError;
-		config.maxNbEpochs = 250;
-		//config.nbSamplesPerMiniBatch = 1; // temp
+		config.maxNbEpochs = 100;
 		config.momentum = 0.0f; // temp
-		config.learningRate = 0.0001f;
-		coUint32 nbEpochs;
+		config.learningRate = 0.001f;
 		coEXPECT(coTrain(trainingNet, dataSet, config, seed, nbEpochs));
 	}
 

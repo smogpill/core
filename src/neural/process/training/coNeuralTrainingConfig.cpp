@@ -13,6 +13,8 @@ coNeuralTrainingConfig::coNeuralTrainingConfig()
 	, momentum(0.1f)
 	, decay(0.0f)
 	, RMSpropDecay(0.99f)
+	, adamBeta1(0.9f)
+	, adamBeta2(0.999f)
 	, nbEpochsPerValidation(16)
 	, nbSamplesPerMiniBatch(32) // Default value of 32 proposed by:: "Practical Recommendations for Gradient-Based Training of Deep Architectures" (https://arxiv.org/pdf/1206.5533v2).
 {

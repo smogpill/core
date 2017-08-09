@@ -17,6 +17,8 @@ public:
 	coFloat momentum;
 	coFloat decay;
 	coFloat RMSpropDecay;
+	coFloat adamBeta1;
+	coFloat adamBeta2;
 	coUint nbEpochsPerValidation;
 	coUint nbSamplesPerMiniBatch;
 };

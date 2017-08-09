@@ -90,9 +90,11 @@ void coComputeBackwardPass(coNeuralTrainingNet& _trainingNet, const coArray<coFl
 		{
 			const coFloat d = deltas.data[o];
 			biasAccs.data[o] += d;
+			coASSERT(coIsValid(biasAccs.data[o]));
 			for (coUint i = 0; i < nbInputs; ++i)
 			{
 				weightAccs[weightIndex] += d * inputs.data[i];
+				coASSERT(coIsValid(weightAccs[weightIndex]));
 				++weightIndex;
 			}
 		}
@@ -108,7 +110,7 @@ void coClearForEpoch(coNeuralTrainingNet& _trainingNet)
 	}
 }
 
-void coUpdateWeights(coNeuralTrainingNet& _trainingNet, const coNeuralTrainingConfig& _config, coFloat _miniBatchFactor)
+void coUpdateWeights(coNeuralTrainingNet& _trainingNet, const coNeuralTrainingConfig& _config, coFloat _miniBatchFactor, coUint32 _nbEpochs)
 {
 	// Learning rate scaled linearly by the mini-batch size to keep the same performance when using mini-batches.
 	// Paper: Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour (imagenet1kin1h5)
@@ -116,6 +118,12 @@ void coUpdateWeights(coNeuralTrainingNet& _trainingNet, const coNeuralTrainingCo
 	const coFloat learningRate = _config.learningRate * _config.nbSamplesPerMiniBatch;
 
 	const coFloat decayLearningRate = _config.decay * learningRate;
+
+	const coFloat t = coFloat(_nbEpochs + 1);
+	const coFloat beta1 = _config.adamBeta1;
+	const coFloat beta2 = _config.adamBeta2;
+	const coFloat beta1_t = coPow(beta1, t);
+	const coFloat beta2_t = coPow(beta2, t);
 
 	const coArray<coNeuralTrainingLayer*>& trainingLayers = _trainingNet.GetTrainingLayers();
 	for (coNeuralTrainingLayer* trainingLayer : trainingLayers)
@@ -127,8 +135,10 @@ void coUpdateWeights(coNeuralTrainingNet& _trainingNet, const coNeuralTrainingCo
 		coArray<coFloat>& weightBuffer = layer->GetWeightBuffer();
 		coArray<coFloat>& biasDeltas = trainingLayer->biasDeltas;
 		coArray<coFloat>& weightDeltas = trainingLayer->weightDeltas;
-		coArray<coFloat>& biasRunningAverages = trainingLayer->biasRunningAverages;
-		coArray<coFloat>& weightRunningAverages = trainingLayer->weightRunningAverages;
+		coArray<coFloat>& biasMs = trainingLayer->biasMs;
+		coArray<coFloat>& weightMs = trainingLayer->weightMs;
+		coArray<coFloat>& biasVs = trainingLayer->biasVs;
+		coArray<coFloat>& weightVs = trainingLayer->weightVs;
 		const coArray<coFloat>& biasAccs = trainingLayer->biasAccs;
 		const coArray<coFloat>& weightAccs = trainingLayer->weightAccs;
 
@@ -140,10 +150,15 @@ void coUpdateWeights(coNeuralTrainingNet& _trainingNet, const coNeuralTrainingCo
 				const coFloat biasAcc = biasAccs.data[o] * _miniBatchFactor;
 				coFloat& bias = biasBuffer.data[o];
 				coFloat& biasDelta = biasDeltas.data[o];
-				coFloat& runningAverage = biasRunningAverages.data[o];
-				runningAverage = _config.RMSpropDecay * runningAverage + (1.0f - _config.RMSpropDecay) * coPow2(biasAcc);
-				const coFloat RMSPropFactor = 1.0f / (coSqrt(runningAverage) + 1e-6f);
-				biasDelta = -learningRate * RMSPropFactor * biasAcc + _config.momentum * biasDelta - decayLearningRate * bias;
+				coFloat& m = biasMs.data[o];
+				coFloat& v = biasVs.data[o];
+				m = beta1 * m + (1.0f - beta1) * biasAcc;
+				v = beta2 * v + (1.0f - beta2) * coPow2(biasAcc);
+				const coFloat mt = m / (1.0f - beta1_t);
+				const coFloat vt = v / (1.0f - beta2_t);
+				const coFloat adamFactor = mt / (coSqrt(vt) + 1e-8f);
+				coASSERT(coIsValid(adamFactor));
+				biasDelta = -learningRate * adamFactor + _config.momentum * biasDelta - decayLearningRate * bias;
 				bias += biasDelta;
 				coASSERT(coIsValid(bias));
 				biasAccs.data[o] = 0.0f;
@@ -152,14 +167,18 @@ void coUpdateWeights(coNeuralTrainingNet& _trainingNet, const coNeuralTrainingCo
 			// Weights
 			for (coUint i = 0; i < nbInputs; ++i)
 			{
+				const coFloat weightAcc = weightAccs.data[weightIndex] * _miniBatchFactor;
 				coFloat& weight = weightBuffer.data[weightIndex];
 				coFloat& weightDelta = weightDeltas.data[weightIndex];
-				const coFloat weightAcc = weightAccs.data[weightIndex] * _miniBatchFactor;
-				coFloat& runningAverage = weightRunningAverages.data[weightIndex];
-				runningAverage = _config.RMSpropDecay * runningAverage + (1.0f - _config.RMSpropDecay) * coPow2(weightAcc);
-				const coFloat RMSPropFactor = 1.0f / (coSqrt(runningAverage) + 1e-6f);
-				coASSERT(coIsValid(RMSPropFactor));
-				weightDelta = -learningRate * RMSPropFactor * weightAcc + _config.momentum * weightDelta - decayLearningRate * weight;
+				coFloat& m = weightMs.data[weightIndex];
+				coFloat& v = weightVs.data[weightIndex];
+				m = beta1 * m + (1.0f - beta1) * weightAcc;
+				v = beta2 * v + (1.0f - beta2) * coPow2(weightAcc);
+				const coFloat mt = m / (1.0f - beta1_t);
+				const coFloat vt = v / (1.0f - beta2_t);
+				const coFloat adamFactor = mt / (coSqrt(vt) + 1e-8f);
+				coASSERT(coIsValid(adamFactor));
+				weightDelta = -learningRate * adamFactor + _config.momentum * weightDelta - decayLearningRate * weight;
 				weight += weightDelta;
 				coASSERT(coIsValid(weight));
 				weightAccs.data[weightIndex] = 0.0f;
@@ -243,7 +262,7 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 					++tableIndex;
 				}
 				
-				coUpdateWeights(_trainingNet, _config, miniBatchFactor);
+				coUpdateWeights(_trainingNet, _config, miniBatchFactor, _nbEpochs);
 			}
 		}
 

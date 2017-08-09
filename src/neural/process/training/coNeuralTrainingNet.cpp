@@ -43,10 +43,14 @@ coResult coNeuralTrainingNet::OnInit(const coObject::InitConfig& _config)
 		coFill(trainingLayer->biasAccs, 0.0f);
 		coResize(trainingLayer->weightAccs, nbWeights);
 		coFill(trainingLayer->weightAccs, 0.0f);
-		coResize(trainingLayer->biasRunningAverages, nbOutputs);
-		coFill(trainingLayer->biasRunningAverages, 0.0f);
-		coResize(trainingLayer->weightRunningAverages, nbWeights);
-		coFill(trainingLayer->weightRunningAverages, 0.0f);
+		coResize(trainingLayer->biasMs, nbOutputs);
+		coFill(trainingLayer->biasMs, 0.0f);
+		coResize(trainingLayer->weightMs, nbWeights);
+		coFill(trainingLayer->weightMs, 0.0f);
+		coResize(trainingLayer->biasVs, nbOutputs);
+		coFill(trainingLayer->biasVs, 0.0f);
+		coResize(trainingLayer->weightVs, nbWeights);
+		coFill(trainingLayer->weightVs, 0.0f);
 		coPushBack(trainingLayers, trainingLayer);
 	}
 
