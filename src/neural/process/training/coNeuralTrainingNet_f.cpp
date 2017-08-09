@@ -40,7 +40,7 @@ void coComputeBackwardPass(coNeuralTrainingNet& _trainingNet, const coArray<coFl
 			{
 				const coFloat output = outputs.data[o];
 				const coFloat targetOutput = _targetOutputs.data[o];
-				const coFloat error = targetOutput - output;
+				const coFloat error = output - targetOutput;
 				deltas.data[o] = error * coComputeNeuralActivationDerivativeTransfer(output);
 			}
 		}
@@ -127,6 +127,8 @@ void coUpdateWeights(coNeuralTrainingNet& _trainingNet, const coNeuralTrainingCo
 		coArray<coFloat>& weightBuffer = layer->GetWeightBuffer();
 		coArray<coFloat>& biasDeltas = trainingLayer->biasDeltas;
 		coArray<coFloat>& weightDeltas = trainingLayer->weightDeltas;
+		coArray<coFloat>& biasRunningAverages = trainingLayer->biasRunningAverages;
+		coArray<coFloat>& weightRunningAverages = trainingLayer->weightRunningAverages;
 		const coArray<coFloat>& biasAccs = trainingLayer->biasAccs;
 		const coArray<coFloat>& weightAccs = trainingLayer->weightAccs;
 
@@ -138,8 +140,12 @@ void coUpdateWeights(coNeuralTrainingNet& _trainingNet, const coNeuralTrainingCo
 				const coFloat biasAcc = biasAccs.data[o] * _miniBatchFactor;
 				coFloat& bias = biasBuffer.data[o];
 				coFloat& biasDelta = biasDeltas.data[o];
-				biasDelta = learningRate * biasAcc + _config.momentum * biasDelta - decayLearningRate * bias;
+				coFloat& runningAverage = biasRunningAverages.data[o];
+				runningAverage = _config.RMSpropDecay * runningAverage + (1.0f - _config.RMSpropDecay) * coPow2(biasAcc);
+				const coFloat RMSPropFactor = 1.0f / (coSqrt(runningAverage) + 1e-6f);
+				biasDelta = -learningRate * RMSPropFactor * biasAcc + _config.momentum * biasDelta - decayLearningRate * bias;
 				bias += biasDelta;
+				coASSERT(coIsValid(bias));
 				biasAccs.data[o] = 0.0f;
 			}
 
@@ -149,8 +155,13 @@ void coUpdateWeights(coNeuralTrainingNet& _trainingNet, const coNeuralTrainingCo
 				coFloat& weight = weightBuffer.data[weightIndex];
 				coFloat& weightDelta = weightDeltas.data[weightIndex];
 				const coFloat weightAcc = weightAccs.data[weightIndex] * _miniBatchFactor;
-				weightDelta = learningRate * weightAcc + _config.momentum * weightDelta - decayLearningRate * weight;
+				coFloat& runningAverage = weightRunningAverages.data[weightIndex];
+				runningAverage = _config.RMSpropDecay * runningAverage + (1.0f - _config.RMSpropDecay) * coPow2(weightAcc);
+				const coFloat RMSPropFactor = 1.0f / (coSqrt(runningAverage) + 1e-6f);
+				coASSERT(coIsValid(RMSPropFactor));
+				weightDelta = -learningRate * RMSPropFactor * weightAcc + _config.momentum * weightDelta - decayLearningRate * weight;
 				weight += weightDelta;
+				coASSERT(coIsValid(weight));
 				weightAccs.data[weightIndex] = 0.0f;
 				++weightIndex;
 			}
@@ -173,8 +184,9 @@ coFloat coComputeErrorSum(const coNeuralTrainingNet& _trainingNet, const coArray
 	return error;
 }
 
-coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _dataSet, const coNeuralTrainingConfig& _config, coUint32& _seed)
+coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _dataSet, const coNeuralTrainingConfig& _config, coUint32& _seed, coUint32& _nbEpochs)
 {
+	_nbEpochs = 0;
 	// References:
 	// - "On Large-Batch Training for Deep Learning: Generalization Gap and Sharp Minima" (arXiv:1609.04836).
 
@@ -205,10 +217,10 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 
 	const coUint nbMiniBatches = nbTrainingSamples / _config.nbSamplesPerMiniBatch;
 	const coFloat miniBatchFactor = 1.0f / _config.nbSamplesPerMiniBatch;
+	coASSERT(coIsValid(miniBatchFactor));
 
 	// For each epoch
 	coFloat err = coFloat_inf;
-	coUint nbEpochs = 0;
 	do
 	{
 		coClearForEpoch(_trainingNet);
@@ -235,10 +247,10 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 			}
 		}
 
-		++nbEpochs;
+		++_nbEpochs;
 
 		// Update validation error
-		if (nbEpochs % _config.nbEpochsPerValidation == 0 && nbEpochs < _config.maxNbEpochs)
+		if (_nbEpochs % _config.nbEpochsPerValidation == 0 && _nbEpochs < _config.maxNbEpochs)
 		{
 			err = 0.0f;
 			for (coUint i = nbTrainingSamples; i < _dataSet.nbSamples; ++i)
@@ -252,12 +264,13 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 
 			coASSERT(nbValidationSamples);
 			err /= coFloat(nbValidationSamples);
+			coASSERT(coIsValid(err));
 
 #ifdef coDEBUG
 			coPushBack(errors, err);
 #endif
 		}
-	} while (err > meanSquareErrorTarget && nbEpochs < _config.maxNbEpochs);
+	} while (err > meanSquareErrorTarget && _nbEpochs < _config.maxNbEpochs);
 
 	return true;
 }

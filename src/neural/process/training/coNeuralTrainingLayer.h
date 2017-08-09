@@ -16,6 +16,7 @@ public:
 	coDynamicArray<coFloat> biasAccs;
 	coDynamicArray<coFloat> weightAccs;
 	coDynamicArray<coFloat> deltas;
+	coDynamicArray<coFloat> biasRunningAverages; // used by RMSProp
+	coDynamicArray<coFloat> weightRunningAverages; // used by RMSProp
 	coDynamicArray<coFloat> outputs;
-	coArray<coFloat> inputs;
 };

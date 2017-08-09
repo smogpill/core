@@ -24,14 +24,14 @@ coResult coNeuralTrainingNet::OnInit(const coObject::InitConfig& _config)
 	coTRY(net, nullptr);
 	const coArray<coNeuralLayer*>& layers = net->GetLayers();
 	coReserve(trainingLayers, layers.count);
-	coArray<coFloat> inputs;
 	for (coNeuralLayer* layer : layers)
 	{
 		coNeuralTrainingLayer* trainingLayer = new coNeuralTrainingLayer();
 		trainingLayer->layer = layer;
 		const coUint nbInputs = layer->GetNbInputs();
 		const coUint nbOutputs = layer->GetNbOutputs();
-		coResize(trainingLayer->weightDeltas, nbInputs * nbOutputs);
+		const coUint nbWeights = nbInputs * nbOutputs;
+		coResize(trainingLayer->weightDeltas, nbWeights);
 		coFill(trainingLayer->weightDeltas, 0.0f);
 		coResize(trainingLayer->biasDeltas, nbOutputs);
 		coFill(trainingLayer->biasDeltas, 0.0f);
@@ -41,11 +41,13 @@ coResult coNeuralTrainingNet::OnInit(const coObject::InitConfig& _config)
 		coFill(trainingLayer->deltas, 0.0f);
 		coResize(trainingLayer->biasAccs, nbOutputs);
 		coFill(trainingLayer->biasAccs, 0.0f);
-		coResize(trainingLayer->weightAccs, nbInputs * nbOutputs);
+		coResize(trainingLayer->weightAccs, nbWeights);
 		coFill(trainingLayer->weightAccs, 0.0f);
+		coResize(trainingLayer->biasRunningAverages, nbOutputs);
+		coFill(trainingLayer->biasRunningAverages, 0.0f);
+		coResize(trainingLayer->weightRunningAverages, nbWeights);
+		coFill(trainingLayer->weightRunningAverages, 0.0f);
 		coPushBack(trainingLayers, trainingLayer);
-		trainingLayer->inputs = inputs;
-		inputs = trainingLayer->outputs;
 	}
 
 	return true;

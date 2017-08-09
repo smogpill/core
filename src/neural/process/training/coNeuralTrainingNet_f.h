@@ -9,4 +9,4 @@ class coNeuralTrainingNet;
 class coNeuralDataSet;
 class coNeuralTrainingConfig;
 
-coResult coTrain(coNeuralTrainingNet& _net, const coNeuralDataSet& _dataSet, const coNeuralTrainingConfig& _config, coUint32& _seed);
+coResult coTrain(coNeuralTrainingNet& _net, const coNeuralDataSet& _dataSet, const coNeuralTrainingConfig& _config, coUint32& _seed, coUint32& _nbEpochs);

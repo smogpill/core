@@ -16,6 +16,7 @@ public:
 	coFloat learningRate;
 	coFloat momentum;
 	coFloat decay;
+	coFloat RMSpropDecay;
 	coUint nbEpochsPerValidation;
 	coUint nbSamplesPerMiniBatch;
 };

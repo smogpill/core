@@ -100,7 +100,11 @@ coTEST(coNeuralNet, TrainALine)
 		coNeuralTrainingConfig config;
 		config.targetError = desiredError;
 		config.maxNbEpochs = 250;
-		coEXPECT(coTrain(trainingNet, dataSet, config, seed));
+		//config.nbSamplesPerMiniBatch = 1; // temp
+		config.momentum = 0.0f; // temp
+		config.learningRate = 0.0001f;
+		coUint32 nbEpochs;
+		coEXPECT(coTrain(trainingNet, dataSet, config, seed, nbEpochs));
 	}
 
 	// Checks
