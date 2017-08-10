@@ -3,7 +3,7 @@
 #pragma once
 
 template<class T> class coArray;
-class coNeuralNet;
+class coNeuralModel;
 
-void coResetWeightsAndBiases(coNeuralNet& _this, coUint32& _seed);
-void coComputeOutputs(const coNeuralNet& _this, const coArray<coFloat>& _inputs, coArray<coFloat>& _outputs);
+void coResetWeightsAndBiases(coNeuralModel& _this, coUint32& _seed);
+void coComputeOutputs(const coNeuralModel& _this, const coArray<coFloat>& _inputs, coArray<coFloat>& _outputs);

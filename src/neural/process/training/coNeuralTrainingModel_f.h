@@ -5,8 +5,8 @@
 #include "lang/result/coResult.h"
 
 template<class T> class coArray;
-class coNeuralTrainingNet;
+class coNeuralTrainingModel;
 class coNeuralDataSet;
 class coNeuralTrainingConfig;
 
-coResult coTrain(coNeuralTrainingNet& _net, const coNeuralDataSet& _dataSet, const coNeuralTrainingConfig& _config, coUint32& _seed, coUint32& _nbEpochs);
+coResult coTrain(coNeuralTrainingModel& _net, const coNeuralDataSet& _dataSet, const coNeuralTrainingConfig& _config, coUint32& _seed, coUint32& _nbEpochs);

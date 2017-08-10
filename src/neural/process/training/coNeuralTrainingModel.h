@@ -6,22 +6,22 @@
 #include "pattern/object/coObject.h"
 
 class coNeuralTrainingLayer;
-class coNeuralNet;
+class coNeuralModel;
 
-class coNeuralTrainingNet : public coObject
+class coNeuralTrainingModel : public coObject
 {
 	coDECLARE_SUPER(coObject);
 public:
-	coNeuralTrainingNet(coNeuralNet& _net);
-	virtual ~coNeuralTrainingNet();
+	coNeuralTrainingModel(coNeuralModel& _net);
+	virtual ~coNeuralTrainingModel();
 
-	coNeuralNet* GetNet() const { return net; }
+	coNeuralModel* GetNet() const { return net; }
 	const coArray<coNeuralTrainingLayer*> GetTrainingLayers() const { return trainingLayers; }
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 private:
-	coNeuralNet* net;
+	coNeuralModel* net;
 	coDynamicArray<coNeuralTrainingLayer*> trainingLayers;
 };

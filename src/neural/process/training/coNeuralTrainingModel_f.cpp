@@ -1,8 +1,8 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "neural/pch.h"
-#include "neural/process/training/coNeuralTrainingNet_f.h"
-#include "neural/process/training/coNeuralTrainingNet.h"
+#include "neural/process/training/coNeuralTrainingModel_f.h"
+#include "neural/process/training/coNeuralTrainingModel.h"
 #include "neural/process/training/coNeuralTrainingLayer.h"
 #include "neural/process/training/coNeuralTrainingLayer_f.h"
 #include "neural/process/training/coNeuralDataSet.h"
@@ -10,11 +10,11 @@
 #include "neural/process/coNeuralLayer_f.h"
 #include "neural/process/coNeuralNet_f.h"
 #include "neural/process/coNeuralActivation_f.h"
-#include "neural/network/coNeuralNet.h"
+#include "neural/network/coNeuralModel.h"
 #include "neural/network/coNeuralLayer.h"
 #include "lang/result/coResult_f.h"
 
-void coComputeForwardPass(coNeuralTrainingNet& _trainingNet, const coArray<coFloat>& _targetInputs)
+void coComputeForwardPass(coNeuralTrainingModel& _trainingNet, const coArray<coFloat>& _targetInputs)
 {
 	coArray<coFloat> inputs = _targetInputs;
 	for (coNeuralTrainingLayer* trainingLayer : _trainingNet.GetTrainingLayers())
@@ -24,7 +24,7 @@ void coComputeForwardPass(coNeuralTrainingNet& _trainingNet, const coArray<coFlo
 	}
 }
 
-void coComputeBackwardPass(coNeuralTrainingNet& _trainingNet, const coArray<coFloat>& _targetInputs, const coArray<coFloat>& _targetOutputs)
+void coComputeBackwardPass(coNeuralTrainingModel& _trainingNet, const coArray<coFloat>& _targetInputs, const coArray<coFloat>& _targetOutputs)
 {
 	const coArray<coNeuralTrainingLayer*>& trainingLayers = _trainingNet.GetTrainingLayers();
 	
@@ -102,7 +102,7 @@ void coComputeBackwardPass(coNeuralTrainingNet& _trainingNet, const coArray<coFl
 	}
 }
 
-void coClearForEpoch(coNeuralTrainingNet& _trainingNet)
+void coClearForEpoch(coNeuralTrainingModel& _trainingNet)
 {
 	for (coNeuralTrainingLayer* trainingLayer : _trainingNet.GetTrainingLayers())
 	{
@@ -110,7 +110,7 @@ void coClearForEpoch(coNeuralTrainingNet& _trainingNet)
 	}
 }
 
-void coUpdateWeights(coNeuralTrainingNet& _trainingNet, const coNeuralTrainingConfig& _config, coFloat _miniBatchFactor, coUint32 _nbEpochs)
+void coUpdateWeights(coNeuralTrainingModel& _trainingNet, const coNeuralTrainingConfig& _config, coFloat _miniBatchFactor, coUint32 _nbEpochs)
 {
 	// Learning rate scaled linearly by the mini-batch size to keep the same performance when using mini-batches.
 	// Paper: Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour (imagenet1kin1h5)
@@ -188,7 +188,7 @@ void coUpdateWeights(coNeuralTrainingNet& _trainingNet, const coNeuralTrainingCo
 	}
 }
 
-coFloat coComputeErrorSum(const coNeuralTrainingNet& _trainingNet, const coArray<coFloat>& _targetOutputs)
+coFloat coComputeErrorSum(const coNeuralTrainingModel& _trainingNet, const coArray<coFloat>& _targetOutputs)
 {
 	coFloat error = 0.0f;
 	const coArray<coNeuralTrainingLayer*>& trainingLayers = _trainingNet.GetTrainingLayers();
@@ -203,7 +203,7 @@ coFloat coComputeErrorSum(const coNeuralTrainingNet& _trainingNet, const coArray
 	return error;
 }
 
-coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _dataSet, const coNeuralTrainingConfig& _config, coUint32& _seed, coUint32& _nbEpochs)
+coResult coTrain(coNeuralTrainingModel& _trainingNet, const coNeuralDataSet& _dataSet, const coNeuralTrainingConfig& _config, coUint32& _seed, coUint32& _nbEpochs)
 {
 	_nbEpochs = 0;
 	// References:
@@ -213,7 +213,7 @@ coResult coTrain(coNeuralTrainingNet& _trainingNet, const coNeuralDataSet& _data
 
 	const coFloat meanSquareErrorTarget = coPow2(_config.targetError);
 
-	coNeuralNet* net = _trainingNet.GetNet();
+	coNeuralModel* net = _trainingNet.GetNet();
 	coTRY(net, nullptr);
 
 	const coUint nbNetInputs = net->GetNbInputs();

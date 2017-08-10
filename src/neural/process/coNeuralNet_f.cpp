@@ -3,11 +3,11 @@
 #include "neural/pch.h"
 #include "neural/process/coNeuralNet_f.h"
 #include "neural/process/coNeuralLayer_f.h"
-#include "neural/network/coNeuralNet.h"
+#include "neural/network/coNeuralModel.h"
 #include "neural/network/coNeuralLayer.h"
 #include "math/scalar/coFloat_f.h"
 
-void coResetWeightsAndBiases(coNeuralNet& _this, coUint32& _seed)
+void coResetWeightsAndBiases(coNeuralModel& _this, coUint32& _seed)
 {
 	for (coNeuralLayer* layer : _this.GetLayers())
 	{
@@ -15,7 +15,7 @@ void coResetWeightsAndBiases(coNeuralNet& _this, coUint32& _seed)
 	}
 }
 
-void coComputeOutputs(const coNeuralNet& _this, const coArray<coFloat>& _inputs, coArray<coFloat>& _outputs)
+void coComputeOutputs(const coNeuralModel& _this, const coArray<coFloat>& _inputs, coArray<coFloat>& _outputs)
 {
 	const coArray<coNeuralLayer*> layers = _this.GetLayers();
 	coASSERT(layers.count > 0);

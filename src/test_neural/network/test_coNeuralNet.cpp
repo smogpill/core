@@ -2,27 +2,27 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "test_neural/pch.h"
 #include "test/unit/coTest.h"
-#include "neural/network/coNeuralNet.h"
+#include "neural/network/coNeuralModel.h"
 #include "neural/network/coNeuralLayer.h"
 #include "neural/process/coNeuralNet_f.h"
 #include "neural/process/training/coNeuralDataSet.h"
-#include "neural/process/training/coNeuralTrainingNet.h"
-#include "neural/process/training/coNeuralTrainingNet_f.h"
+#include "neural/process/training/coNeuralTrainingModel.h"
+#include "neural/process/training/coNeuralTrainingModel_f.h"
 #include "neural/process/training/coNeuralTrainingConfig.h"
 #include "neural/process/compute/coNeuralComputeOutputs.h"
 #include "math/scalar/coFloat_f.h"
 #include "pattern/scope/coDefer.h"
 
-coTEST(coNeuralNet, Init)
+coTEST(coNeuralModel, Init)
 {
 	coNeuralLayer data(1, 1);
 	coEXPECT(data.Init(coNeuralLayer::InitConfig()));
 	coArray<coNeuralLayer*> layerDatas = { &data };
-	coNeuralNet net(layerDatas);
-	coEXPECT(net.Init(coNeuralNet::InitConfig()));
+	coNeuralModel net(layerDatas);
+	coEXPECT(net.Init(coNeuralModel::InitConfig()));
 }
 
-coTEST(coNeuralNet, TrainALine)
+coTEST(coNeuralModel, TrainALine)
 {
 	// Neural network
 	const coUint nbHiddenLayers = 2;
@@ -63,8 +63,8 @@ coTEST(coNeuralNet, TrainALine)
 	coEXPECT(outputLayer->Init(coNeuralLayer::InitConfig()));
 	coPushBack(layerDatas, outputLayer);
 
-	coNeuralNet net(layerDatas);
-	coEXPECT(net.Init(coNeuralNet::InitConfig()));
+	coNeuralModel net(layerDatas);
+	coEXPECT(net.Init(coNeuralModel::InitConfig()));
 
 	coUint32 seed = 777777777;
 
@@ -93,7 +93,7 @@ coTEST(coNeuralNet, TrainALine)
 			dataSet.outputs = outputs;
 		}
 
-		coNeuralTrainingNet trainingNet(net);
+		coNeuralTrainingModel trainingNet(net);
 		coEXPECT(trainingNet.Init(coObject::InitConfig()));
 
 		coResetWeightsAndBiases(net, seed);

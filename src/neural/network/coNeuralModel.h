@@ -8,12 +8,12 @@ class coNeuralLayerOld;
 class coNeuralLayer;
 class coNeuralDataSet;
 
-class coNeuralNet : public coObject
+class coNeuralModel : public coObject
 {
 	coDECLARE_SUPER(coObject);
 public:
-	coNeuralNet(const coArray<coNeuralLayer*> _layers);
-	virtual ~coNeuralNet() {}
+	coNeuralModel(const coArray<coNeuralLayer*> _layers);
+	virtual ~coNeuralModel() {}
 	const coArray<coNeuralLayer*> GetLayers() const { return layers; }
 	coUint GetNbInputs() const;
 	coUint GetNbOutputs() const;

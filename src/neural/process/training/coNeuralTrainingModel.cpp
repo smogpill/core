@@ -1,24 +1,24 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "neural/pch.h"
-#include "neural/process/training/coNeuralTrainingNet.h"
+#include "neural/process/training/coNeuralTrainingModel.h"
 #include "neural/process/training/coNeuralTrainingLayer.h"
-#include "neural/network/coNeuralNet.h"
+#include "neural/network/coNeuralModel.h"
 #include "neural/network/coNeuralLayer.h"
 #include "container/array/coDynamicArray_f.h"
 #include "lang/result/coResult_f.h"
 
-coNeuralTrainingNet::coNeuralTrainingNet(coNeuralNet& _net)
+coNeuralTrainingModel::coNeuralTrainingModel(coNeuralModel& _net)
 	: net(&_net)
 {
 }
 
-coNeuralTrainingNet::~coNeuralTrainingNet()
+coNeuralTrainingModel::~coNeuralTrainingModel()
 {
 	coDeleteElementsAndClear(trainingLayers);
 }
 
-coResult coNeuralTrainingNet::OnInit(const coObject::InitConfig& _config)
+coResult coNeuralTrainingModel::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 	coTRY(net, nullptr);
