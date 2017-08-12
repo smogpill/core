@@ -3,11 +3,12 @@
 #pragma once
 
 #include "container/array/coArray.h"
-#include "neural/network/coNeuralTensor.h"
 
-class coNeuralDataSet
+class coNeuralNormalizationConfig
 {
 public:
-	coNeuralTensor inputs;
-	coNeuralTensor outputs;
+	coArray<coFloat> inputMins;
+	coArray<coFloat> inputMaxs;
+	coArray<coFloat> outputMins;
+	coArray<coFloat> outputMaxs;
 };

@@ -5,8 +5,3 @@
 #include "neural/process/training/coNeuralTrainingLayer.h"
 #include "container/array/coArray_f.h"
 
-void coClearForEpoch(coNeuralTrainingLayer& /*_trainingLayer*/)
-{
-// 	coFill(_trainingLayer.biasDeltas, 0.0f);
-// 	coFill(_trainingLayer.weightDeltas, 0.0f);
-}

@@ -102,14 +102,6 @@ void coComputeBackwardPass(coNeuralTrainingModel& _trainingNet, const coArray<co
 	}
 }
 
-void coClearForEpoch(coNeuralTrainingModel& _trainingNet)
-{
-	for (coNeuralTrainingLayer* trainingLayer : _trainingNet.GetTrainingLayers())
-	{
-		coClearForEpoch(*trainingLayer);
-	}
-}
-
 void coUpdateWeights(coNeuralTrainingModel& _trainingNet, const coNeuralTrainingConfig& _config, coFloat _miniBatchFactor, coUint32 _nbEpochs)
 {
 	// Learning rate scaled linearly by the mini-batch size to keep the same performance when using mini-batches.
@@ -219,20 +211,22 @@ coResult coTrain(coNeuralTrainingModel& _trainingNet, const coNeuralDataSet& _da
 	const coUint nbNetInputs = net->GetNbInputs();
 	const coUint nbNetOutputs = net->GetNbOutputs();
 
+	const coUint nbSamples = _dataSet.inputs.values.count;
+
 	coDynamicArray<coUint> sampleIndices;
-	coResize(sampleIndices, _dataSet.nbSamples);
+	coResize(sampleIndices, nbSamples);
 	for (coUint i = 0; i < sampleIndices.count; ++i)
 		sampleIndices[i] = i;
 
 #ifdef coDEBUG
 	coDynamicArray<coFloat> errors;
-	coReserve(errors, _dataSet.nbSamples);
+	coReserve(errors, nbSamples);
 #endif
 
 	coASSERT(coIsInRange01(_config.sampleRatio));
-	const coUint32 nbTrainingSamples = coUint32(_config.sampleRatio * _dataSet.nbSamples);
-	coASSERT(nbTrainingSamples < _dataSet.nbSamples);
-	const coUint32 nbValidationSamples = _dataSet.nbSamples - nbTrainingSamples;
+	const coUint32 nbTrainingSamples = coUint32(_config.sampleRatio * nbSamples);
+	coASSERT(nbTrainingSamples < nbSamples);
+	const coUint32 nbValidationSamples = nbSamples - nbTrainingSamples;
 
 	const coUint nbMiniBatches = nbTrainingSamples / _config.nbSamplesPerMiniBatch;
 	const coFloat miniBatchFactor = 1.0f / _config.nbSamplesPerMiniBatch;
@@ -242,8 +236,6 @@ coResult coTrain(coNeuralTrainingModel& _trainingNet, const coNeuralDataSet& _da
 	coFloat err = coFloat_inf;
 	do
 	{
-		coClearForEpoch(_trainingNet);
-
 		// Shuffle samples
 		coShuffle(sampleIndices, _seed);
 
@@ -255,8 +247,8 @@ coResult coTrain(coNeuralTrainingModel& _trainingNet, const coNeuralDataSet& _da
 				for (coUint j = 0; j < _config.nbSamplesPerMiniBatch; ++j)
 				{
 					const coUint sampleIndex = sampleIndices[tableIndex];
-					const coArray<coFloat> sampleInputs(_dataSet.inputs.data + sampleIndex * nbNetInputs, nbNetInputs);
-					const coArray<coFloat> sampleOutputs(_dataSet.outputs.data + sampleIndex * nbNetOutputs, nbNetOutputs);
+					const coArray<coFloat> sampleInputs(_dataSet.inputs.values.data + sampleIndex * nbNetInputs, nbNetInputs);
+					const coArray<coFloat> sampleOutputs(_dataSet.outputs.values.data + sampleIndex * nbNetOutputs, nbNetOutputs);
 					coComputeForwardPass(_trainingNet, sampleInputs);
 					coComputeBackwardPass(_trainingNet, sampleInputs, sampleOutputs);
 					++tableIndex;
@@ -272,11 +264,11 @@ coResult coTrain(coNeuralTrainingModel& _trainingNet, const coNeuralDataSet& _da
 		if (_nbEpochs % _config.nbEpochsPerValidation == 0 && _nbEpochs < _config.maxNbEpochs)
 		{
 			err = 0.0f;
-			for (coUint i = nbTrainingSamples; i < _dataSet.nbSamples; ++i)
+			for (coUint i = nbTrainingSamples; i < nbSamples; ++i)
 			{
 				const coUint sampleIndex = sampleIndices[i];
-				const coArray<coFloat> sampleInputs(_dataSet.inputs.data + sampleIndex * nbNetInputs, nbNetInputs);
-				const coArray<coFloat> sampleOutputs(_dataSet.outputs.data + sampleIndex * nbNetOutputs, nbNetOutputs);
+				const coArray<coFloat> sampleInputs(_dataSet.inputs.values.data + sampleIndex * nbNetInputs, nbNetInputs);
+				const coArray<coFloat> sampleOutputs(_dataSet.outputs.values.data + sampleIndex * nbNetOutputs, nbNetOutputs);
 				coComputeForwardPass(_trainingNet, sampleInputs);
 				err += coComputeErrorSum(_trainingNet, sampleOutputs);
 			}

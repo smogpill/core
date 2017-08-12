@@ -88,9 +88,8 @@ coTEST(coNeuralModel, TrainALine)
 
 		coNeuralDataSet dataSet;
 		{
-			dataSet.nbSamples = nbSamples;
-			dataSet.inputs = inputs;
-			dataSet.outputs = outputs;
+			dataSet.inputs.values = inputs;
+			dataSet.outputs.values = outputs;
 		}
 
 		coNeuralTrainingModel trainingNet(net);
@@ -102,7 +101,6 @@ coTEST(coNeuralModel, TrainALine)
 		config.targetError = desiredError;
 		config.maxNbEpochs = 100;
 		config.momentum = 0.0f; // temp
-		config.learningRate = 0.001f;
 		coEXPECT(coTrain(trainingNet, dataSet, config, seed, nbEpochs));
 	}
 
