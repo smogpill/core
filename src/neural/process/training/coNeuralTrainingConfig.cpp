@@ -10,9 +10,7 @@ coNeuralTrainingConfig::coNeuralTrainingConfig()
 	, maxNbEpochs(1000)
 	, sampleRatio(0.6f)
 	, learningRate(0.001f)
-	, momentum(0.1f)
 	, decay(0.0f)
-	, RMSpropDecay(0.99f)
 	, adamBeta1(0.9f)
 	, adamBeta2(0.999f)
 	, nbEpochsPerValidation(16)
@@ -25,8 +23,10 @@ coResult coNeuralTrainingConfig::Validate() const
 	coTRY(targetError >= 0.0f, nullptr);
 	coTRY(coIsInRange01(sampleRatio), nullptr);
 	coTRY(learningRate >= 0.0f, nullptr);
-	coTRY(coIsInRange01(momentum), nullptr);
 	coTRY(coIsInRange01(decay), nullptr);
+	coTRY(coIsInRange01(adamBeta1), nullptr);
+	coTRY(coIsInRange01(adamBeta2), nullptr);
+	coTRY(nbEpochsPerValidation > 0, nullptr);
 	coTRY(nbSamplesPerMiniBatch > 0, nullptr);
 	return true;
 }

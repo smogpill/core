@@ -150,7 +150,7 @@ void coUpdateWeights(coNeuralTrainingModel& _trainingNet, const coNeuralTraining
 				const coFloat vt = v / (1.0f - beta2_t);
 				const coFloat adamFactor = mt / (coSqrt(vt) + 1e-8f);
 				coASSERT(coIsValid(adamFactor));
-				biasDelta = -learningRate * adamFactor + _config.momentum * biasDelta - decayLearningRate * bias;
+				biasDelta = -learningRate * adamFactor - decayLearningRate * bias;
 				bias += biasDelta;
 				coASSERT(coIsValid(bias));
 				biasAccs.data[o] = 0.0f;
@@ -170,7 +170,7 @@ void coUpdateWeights(coNeuralTrainingModel& _trainingNet, const coNeuralTraining
 				const coFloat vt = v / (1.0f - beta2_t);
 				const coFloat adamFactor = mt / (coSqrt(vt) + 1e-8f);
 				coASSERT(coIsValid(adamFactor));
-				weightDelta = -learningRate * adamFactor + _config.momentum * weightDelta - decayLearningRate * weight;
+				weightDelta = -learningRate * adamFactor - decayLearningRate * weight;
 				weight += weightDelta;
 				coASSERT(coIsValid(weight));
 				weightAccs.data[weightIndex] = 0.0f;

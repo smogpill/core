@@ -14,9 +14,7 @@ public:
 	coUint maxNbEpochs;
 	coFloat sampleRatio;
 	coFloat learningRate;
-	coFloat momentum;
 	coFloat decay;
-	coFloat RMSpropDecay;
 	coFloat adamBeta1;
 	coFloat adamBeta2;
 	coUint nbEpochsPerValidation;
