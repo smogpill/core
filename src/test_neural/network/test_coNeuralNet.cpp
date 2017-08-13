@@ -31,18 +31,16 @@ coTEST(coNeuralModel, TrainALine)
 	const coUint nbHiddenNeurons = 8;
 	const coFloat desiredError = 0.01f;
 
+	// Function
 	const coFloat xMin = -10.0f;
 	const coFloat xMax = 10.0f;
 	const coFloat xRange = xMax - xMin;
-
-	// Function
 	coNeuralNormalizationConfig inputNormalizationConfig;
 	inputNormalizationConfig.means = { (xMin + xMax) * 0.5f };
 	inputNormalizationConfig.deviations = { xRange * 0.5f };
 	coNeuralNormalizationConfig outputNormalizationConfig;
 	outputNormalizationConfig.means = { 0.0f };
 	outputNormalizationConfig.deviations = { 1.0f };
-
 	auto ComputeValue = [&](coFloat _x)
 	{
 		return 0.5f * coSin(_x);
@@ -56,21 +54,23 @@ coTEST(coNeuralModel, TrainALine)
 		}
 	};
 
-	coDynamicArray<coNeuralLayer*> layerDatas;
-	coDEFER() { coDeleteElementsAndClear(layerDatas); };
-	
-	for (coUint i = 0; i < nbHiddenLayers; ++i)
+	// Setup layers
+	coDynamicArray<coNeuralLayer*> layers;
+	coDEFER() { coDeleteElementsAndClear(layers); };
 	{
-		coNeuralLayer* hiddenLayer = new coNeuralLayer(i ? nbHiddenNeurons : 1, nbHiddenNeurons);
-		coEXPECT(hiddenLayer->Init(coNeuralLayer::InitConfig()));
-		coPushBack(layerDatas, hiddenLayer);
+		for (coUint i = 0; i < nbHiddenLayers; ++i)
+		{
+			coNeuralLayer* hiddenLayer = new coNeuralLayer(i ? nbHiddenNeurons : 1, nbHiddenNeurons);
+			coEXPECT(hiddenLayer->Init(coNeuralLayer::InitConfig()));
+			coPushBack(layers, hiddenLayer);
+		}
+
+		coNeuralLayer* outputLayer = new coNeuralLayer(nbHiddenNeurons, 1);
+		coEXPECT(outputLayer->Init(coNeuralLayer::InitConfig()));
+		coPushBack(layers, outputLayer);
 	}
 
-	coNeuralLayer* outputLayer = new coNeuralLayer(nbHiddenNeurons, 1);
-	coEXPECT(outputLayer->Init(coNeuralLayer::InitConfig()));
-	coPushBack(layerDatas, outputLayer);
-
-	coNeuralModel model(layerDatas);
+	coNeuralModel model(layers);
 	coEXPECT(model.Init(coNeuralModel::InitConfig()));
 
 	coUint32 seed = 777777777;
