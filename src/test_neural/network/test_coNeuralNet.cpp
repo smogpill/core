@@ -10,6 +10,8 @@
 #include "neural/process/training/coNeuralTrainingModel_f.h"
 #include "neural/process/training/coNeuralTrainingConfig.h"
 #include "neural/process/compute/coNeuralComputeOutputs.h"
+#include "neural/process/tensor/coNeuralNormalizationConfig.h"
+#include "neural/process/tensor/coNeuralTensor_f.h"
 #include "math/scalar/coFloat_f.h"
 #include "pattern/scope/coDefer.h"
 
@@ -29,24 +31,29 @@ coTEST(coNeuralModel, TrainALine)
 	const coUint nbHiddenNeurons = 8;
 	const coFloat desiredError = 0.01f;
 
-	// Function
 	const coFloat xMin = -10.0f;
 	const coFloat xMax = 10.0f;
 	const coFloat xRange = xMax - xMin;
-	const coFloat yMin = -1.0f;
-	const coFloat yMax = 1.0f;
-	const coFloat yRange = yMax - yMin;
-	auto NormalizeX = [&](coFloat _x)
-	{
-		return coClamp01((_x - xMin) / xRange);// *2.0f - 1.0f;
-	};
-	auto NormalizeY = [&](coFloat _y)
-	{
-		return coClamp01((_y - yMin) / yRange);// *2.0f - 1.0f;
-	};
+
+	// Function
+	coNeuralNormalizationConfig inputNormalizationConfig;
+	inputNormalizationConfig.mins = { xMin };
+	inputNormalizationConfig.maxs = { xMax };
+	coNeuralNormalizationConfig outputNormalizationConfig;
+	outputNormalizationConfig.mins = { -1.0f };
+	outputNormalizationConfig.maxs = { 1.0f };
+
 	auto ComputeValue = [&](coFloat _x)
 	{
 		return 0.5f * coSin(_x);
+	};
+	auto ComputeSet = [&](coArray<coFloat>& _outputs, const coArray<coFloat>& _inputs)
+	{
+		coASSERT(_outputs.count == _inputs.count);
+		for (coUint i = 0; i < _inputs.count; ++i)
+		{
+			_outputs[i] = ComputeValue(_inputs[i]);
+		}
 	};
 
 	coDynamicArray<coNeuralLayer*> layerDatas;
@@ -63,8 +70,8 @@ coTEST(coNeuralModel, TrainALine)
 	coEXPECT(outputLayer->Init(coNeuralLayer::InitConfig()));
 	coPushBack(layerDatas, outputLayer);
 
-	coNeuralModel net(layerDatas);
-	coEXPECT(net.Init(coNeuralModel::InitConfig()));
+	coNeuralModel model(layerDatas);
+	coEXPECT(model.Init(coNeuralModel::InitConfig()));
 
 	coUint32 seed = 777777777;
 
@@ -74,16 +81,16 @@ coTEST(coNeuralModel, TrainALine)
 		const coUint nbSamples = 100000;
 		coDynamicArray<coFloat> inputs;
 		coDynamicArray<coFloat> outputs;
+		coResize(inputs, nbSamples);
+		coResize(outputs, nbSamples);
 		{
-			coResize(inputs, nbSamples);
-			coResize(outputs, nbSamples);
 			for (coUint i = 0; i < nbSamples; ++i)
 			{
-				const coFloat x = xMin + coRand01(seed) * xRange;
-				const coFloat y = ComputeValue(x);
-				inputs[i] = NormalizeX(x);
-				outputs[i] = NormalizeY(y);
+				inputs[i] = xMin + coRand01(seed) * xRange;
 			}
+			ComputeSet(outputs, inputs);
+			coNormalizeSet(inputs, nbSamples, inputNormalizationConfig);
+			coNormalizeSet(outputs, nbSamples, outputNormalizationConfig);
 		}
 
 		coNeuralDataSet dataSet;
@@ -92,54 +99,38 @@ coTEST(coNeuralModel, TrainALine)
 			dataSet.outputs.values = outputs;
 		}
 
-		coNeuralTrainingModel trainingNet(net);
-		coEXPECT(trainingNet.Init(coObject::InitConfig()));
+		coNeuralTrainingModel trainingModel(model);
+		coEXPECT(trainingModel.Init(coObject::InitConfig()));
 
-		coResetWeightsAndBiases(net, seed);
+		coResetWeightsAndBiases(model, seed);
 
 		coNeuralTrainingConfig config;
 		config.targetError = desiredError;
 		config.maxNbEpochs = 100;
 		config.momentum = 0.0f; // temp
-		coEXPECT(coTrain(trainingNet, dataSet, config, seed, nbEpochs));
+		coEXPECT(coTrain(trainingModel, dataSet, config, seed, nbEpochs));
 	}
 
-	// Checks
+	// Tests
 	{
-		const coUint nbChecks = 1000;
+		const coUint nbSamples = 1000;
 
-		coDynamicArray<coFloat> allExpectedOutputs; // can be plotted 
-		coDynamicArray<coFloat> allOutputs; // can be plotted 
 		coDynamicArray<coFloat> inputs;
 		coDynamicArray<coFloat> outputs;
-		coResize(allExpectedOutputs, nbChecks);
-		coResize(allOutputs, nbChecks);
-		coResize(inputs, 1);
-		coResize(outputs, 1);
+		coDynamicArray<coFloat> expectedOutputs;
+		coResize(inputs, nbSamples);
+		coResize(outputs, nbSamples);
+		coResize(expectedOutputs, nbSamples);
 		
-		coFloat error = 0.0f;
-		for (coUint i = 0; i < nbChecks; ++i)
+		for (coUint i = 0; i < nbSamples; ++i)
 		{
-			const coFloat x = xMin + xRange * coFloat(i) / (nbChecks - 1);
-			const coFloat y = ComputeValue(x);
-
-			const coFloat input = NormalizeX(x);
-			const coFloat expectedOutput = NormalizeY(y);
-
-			coFloat output;
-			{
-				inputs[0] = input;
-				coComputeOutputs(net, inputs, outputs);
-				output = outputs[0];
-			}
-
-			allOutputs[i] = output;
-			allExpectedOutputs[i] = expectedOutput;
-
-			error += coPow2(expectedOutput - output);
+			inputs[i] = xMin + xRange * coFloat(i) / (nbSamples - 1);
 		}
-		error *= 1.0f / nbChecks;
-
+		ComputeSet(expectedOutputs, inputs);
+		coNormalizeSet(inputs, nbSamples, inputNormalizationConfig);
+		coNormalizeSet(expectedOutputs, nbSamples, outputNormalizationConfig);
+		coComputeOutputSet(model, inputs, outputs, nbSamples);
+		const coFloat error = coComputeMeanSquaredError(outputs, expectedOutputs);
 		const coFloat expectedMeanSquareError = desiredError * desiredError;
 		coEXPECT(error <= expectedMeanSquareError);
 	}

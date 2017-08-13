@@ -5,4 +5,3 @@
 #include "neural/process/coNeuralActivation_f.h"
 #include "neural/network/coNeuralModel.h"
 #include "neural/network/coNeuralLayer.h"
-

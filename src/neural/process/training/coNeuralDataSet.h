@@ -8,6 +8,6 @@
 class coNeuralDataSet
 {
 public:
-	coNeuralTensor inputs;
-	coNeuralTensor outputs;
+	coNeuralTensor2 inputs;
+	coNeuralTensor2 outputs;
 };

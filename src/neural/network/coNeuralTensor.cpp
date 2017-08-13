@@ -3,8 +3,15 @@
 #include "neural/pch.h"
 #include "neural/network/coNeuralTensor.h"
 
+coNeuralTensor2::coNeuralTensor2()
+	: nbX(0)
+	, nbY(0)
+{
+
+}
+
 coNeuralTensor::coNeuralTensor()
-	: nbDimensions(1)
+	: nbX(0)
 {
 
 }

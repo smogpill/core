@@ -7,3 +7,4 @@ class coNeuralModel;
 
 void coResetWeightsAndBiases(coNeuralModel& _this, coUint32& _seed);
 void coComputeOutputs(const coNeuralModel& _this, const coArray<coFloat>& _inputs, coArray<coFloat>& _outputs);
+void coComputeOutputSet(const coNeuralModel& _model, const coArray<coFloat>& _inputSet, coArray<coFloat>& _outputSet, coUint _nbElements);

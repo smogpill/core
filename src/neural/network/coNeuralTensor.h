@@ -8,7 +8,15 @@ class coNeuralTensor
 {
 public:
 	coNeuralTensor();
-
 	coArray<coFloat> values;
-	coUint32 nbDimensions;
+	coUint nbX;
+};
+
+class coNeuralTensor2
+{
+public:
+	coNeuralTensor2();
+	coArray<coFloat> values;
+	coUint nbX;
+	coUint nbY;
 };

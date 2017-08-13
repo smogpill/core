@@ -2,6 +2,11 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-class coNeuralTensor;
+#include "container/array/coArray.h"
 
-void coNormalize(coNeuralTensor& _tensor);
+class coNeuralNormalizationConfig
+{
+public:
+	coArray<coFloat> mins;
+	coArray<coFloat> maxs;
+};
