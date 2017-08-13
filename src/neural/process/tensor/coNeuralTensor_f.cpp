@@ -7,40 +7,6 @@
 #include "debug/log/coAssert.h"
 #include "math/scalar/coFloat_f.h"
 
-void coNormalize(coArray<coFloat>& _values, const coNeuralNormalizationConfig& _config)
-{
-	coASSERT(_values.count == _config.mins.count);
-	coASSERT(_values.count == _config.maxs.count);
-	const coArray<coFloat>& mins = _config.mins;
-	const coArray<coFloat>& maxs = _config.maxs;
-	const coUint nb = _values.count;
-	for (coUint i = 0; i < nb; ++i)
-	{
-		const coFloat min = mins[i];
-		const coFloat max = maxs[i];
-		coASSERT(max > min);
-		const coFloat range = max - min;
-		_values[i] = (_values[i] - min) / range;
-	}
-}
-
-void coDenormalize(coArray<coFloat>& _values, const coNeuralNormalizationConfig& _config)
-{
-	coASSERT(_values.count == _config.mins.count);
-	coASSERT(_values.count == _config.maxs.count);
-	const coArray<coFloat>& mins = _config.mins;
-	const coArray<coFloat>& maxs = _config.maxs;
-	const coUint nb = mins.count;
-	for (coUint i = 0; i < nb; ++i)
-	{
-		const coFloat min = mins[i];
-		const coFloat max = maxs[i];
-		coASSERT(max > min);
-		const coFloat range = max - min;
-		_values[i] = _values[i] * range + min;
-	}
-}
-
 void coNormalizeSet(coArray<coFloat>& _values, coUint _nbElements, const coNeuralNormalizationConfig& _config)
 {
 	const coArray<coFloat>& mins = _config.mins;
@@ -55,12 +21,17 @@ void coNormalizeSet(coArray<coFloat>& _values, coUint _nbElements, const coNeura
 		const coFloat min = mins[i];
 		const coFloat max = maxs[i];
 		coASSERT(max > min);
-		const coFloat invRange = 1.0f / (max - min);
+		const coFloat a = 2.0f / (max - min);
 		for (coUint index = i; index < _values.count; index += nbX)
 		{
-			_values[index] = (_values[index] - min) * invRange;
+			_values[index] = (_values[index] - min) * a - 1.0f; // [-1, 1]
 		}
 	}
+}
+
+void coNormalize(coArray<coFloat>& _values, const coNeuralNormalizationConfig& _config)
+{
+	coNormalizeSet(_values, 1, _config);
 }
 
 void coDenormalizeSet(coArray<coFloat>& _values, coUint _nbElements, const coNeuralNormalizationConfig& _config)
@@ -76,12 +47,17 @@ void coDenormalizeSet(coArray<coFloat>& _values, coUint _nbElements, const coNeu
 		const coFloat min = mins[i];
 		const coFloat max = maxs[i];
 		coASSERT(max > min);
-		const coFloat range = max - min;
+		const coFloat a = (max - min) * 0.5f;
 		for (coUint index = i; index < _values.count; index += nbX)
 		{
-			_values[index] = _values[index] * range + min;
+			_values[index] = (_values[index]+1.0f) * a + min;
 		}
 	}
+}
+
+void coDenormalize(coArray<coFloat>& _values, const coNeuralNormalizationConfig& _config)
+{
+	coDenormalizeSet(_values, 1, _config);
 }
 
 coFloat coComputeMeanSquaredError(const coArray<coFloat>& _values, const coArray<coFloat>& _targets)
