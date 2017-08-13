@@ -3,6 +3,7 @@
 #include "neural/pch.h"
 #include "neural/process/tensor/coNeuralTensor_f.h"
 #include "neural/process/tensor/coNeuralNormalizationConfig.h"
+#include "neural/process/coNeuralActivation_f.h"
 #include "neural/network/coNeuralTensor.h"
 #include "debug/log/coAssert.h"
 #include "math/scalar/coFloat_f.h"
@@ -16,8 +17,8 @@ void coNormalizeSet(coArray<coFloat>& _values, coUint _nbElements, const coNeura
 	coASSERT(_values.count == nbX * _nbElements);
 	_nbElements;
 
-	const coFloat targetMean = 0.0f;
-	const coFloat targetDeviation = 1.0f;
+	const coFloat targetMean = coNEURAL_ACTIVATION_MEAN;
+	const coFloat targetDeviation = coNEURAL_ACTIVATION_DEVIATION;
 	
 	for (coUint i = 0; i < nbX; ++i)
 	{
@@ -46,8 +47,8 @@ void coDenormalizeSet(coArray<coFloat>& _values, coUint _nbElements, const coNeu
 	coASSERT(_values.count == nbX * _nbElements);
 	_nbElements;
 
-	const coFloat targetMean = 0.0f;
-	const coFloat targetDeviation = 1.0f;
+	const coFloat targetMean = coNEURAL_ACTIVATION_MEAN;
+	const coFloat targetDeviation = coNEURAL_ACTIVATION_DEVIATION;
 	for (coUint i = 0; i < nbX; ++i)
 	{
 		const coFloat mean = means[i];
