@@ -9,22 +9,25 @@
 
 void coNormalizeSet(coArray<coFloat>& _values, coUint _nbElements, const coNeuralNormalizationConfig& _config)
 {
-	const coArray<coFloat>& mins = _config.mins;
-	const coArray<coFloat>& maxs = _config.maxs;
-	const coUint nbX = mins.count;
-	coASSERT(mins.count == maxs.count);
+	const coArray<coFloat>& means = _config.means;
+	const coArray<coFloat>& deviations = _config.deviations;
+	const coUint nbX = means.count;
+	coASSERT(means.count == deviations.count);
 	coASSERT(_values.count == nbX * _nbElements);
 	_nbElements;
+
+	const coFloat targetMean = 0.0f;
+	const coFloat targetDeviation = 1.0f;
 	
 	for (coUint i = 0; i < nbX; ++i)
 	{
-		const coFloat min = mins[i];
-		const coFloat max = maxs[i];
-		coASSERT(max > min);
-		const coFloat a = 2.0f / (max - min);
+		const coFloat mean = means[i];
+		const coFloat deviation = deviations[i];
+		coASSERT(deviation >= 0.0f);
+		const coFloat a = targetDeviation / deviation;
 		for (coUint index = i; index < _values.count; index += nbX)
 		{
-			_values[index] = (_values[index] - min) * a - 1.0f; // [-1, 1]
+			_values[index] = (_values[index] - mean) * a + targetMean; // [-1, 1]
 		}
 	}
 }
@@ -36,21 +39,24 @@ void coNormalize(coArray<coFloat>& _values, const coNeuralNormalizationConfig& _
 
 void coDenormalizeSet(coArray<coFloat>& _values, coUint _nbElements, const coNeuralNormalizationConfig& _config)
 {
-	const coArray<coFloat>& mins = _config.mins;
-	const coArray<coFloat>& maxs = _config.maxs;
-	const coUint nbX = mins.count;
-	coASSERT(mins.count == maxs.count);
+	const coArray<coFloat>& means = _config.means;
+	const coArray<coFloat>& deviations = _config.deviations;
+	const coUint nbX = means.count;
+	coASSERT(means.count == deviations.count);
 	coASSERT(_values.count == nbX * _nbElements);
 	_nbElements;
+
+	const coFloat targetMean = 0.0f;
+	const coFloat targetDeviation = 1.0f;
 	for (coUint i = 0; i < nbX; ++i)
 	{
-		const coFloat min = mins[i];
-		const coFloat max = maxs[i];
-		coASSERT(max > min);
-		const coFloat a = (max - min) * 0.5f;
+		const coFloat mean = means[i];
+		const coFloat deviation = deviations[i];
+		coASSERT(deviation > mean);
+		const coFloat a = deviation / targetDeviation;
 		for (coUint index = i; index < _values.count; index += nbX)
 		{
-			_values[index] = (_values[index]+1.0f) * a + min;
+			_values[index] = (_values[index] - targetMean) * a + mean;
 		}
 	}
 }

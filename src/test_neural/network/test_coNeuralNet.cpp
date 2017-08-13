@@ -37,11 +37,11 @@ coTEST(coNeuralModel, TrainALine)
 
 	// Function
 	coNeuralNormalizationConfig inputNormalizationConfig;
-	inputNormalizationConfig.mins = { xMin };
-	inputNormalizationConfig.maxs = { xMax };
+	inputNormalizationConfig.means = { (xMin + xMax) * 0.5f };
+	inputNormalizationConfig.deviations = { xRange * 0.5f };
 	coNeuralNormalizationConfig outputNormalizationConfig;
-	outputNormalizationConfig.mins = { -1.0f };
-	outputNormalizationConfig.maxs = { 1.0f };
+	outputNormalizationConfig.means = { 0.0f };
+	outputNormalizationConfig.deviations = { 1.0f };
 
 	auto ComputeValue = [&](coFloat _x)
 	{

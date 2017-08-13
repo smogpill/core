@@ -7,6 +7,6 @@
 class coNeuralNormalizationConfig
 {
 public:
-	coArray<coFloat> mins;
-	coArray<coFloat> maxs;
+	coArray<coFloat> means;
+	coArray<coFloat> deviations;
 };
