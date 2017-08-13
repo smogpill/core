@@ -6,9 +6,10 @@
 
 #define coNEURAL_LOGISTIC_ACTIVATION 0
 #define coNEURAL_TANH_ACTIVATION 1
-#define coNEURAL_RELU_ACTIVATION 2
-#define coNEURAL_LEAKY_RELU_ACTIVATION 3
-#define coNEURAL_CURRENT_ACTIVATION coNEURAL_TANH_ACTIVATION
+#define coNEURAL_RESCALED_TANH_ACTIVATION 2 // Version proposed by the Efficient Back-Prop paper by Yann LeCun, to avoid saturation effects.
+#define coNEURAL_RELU_ACTIVATION 3
+#define coNEURAL_LEAKY_RELU_ACTIVATION 4
+#define coNEURAL_CURRENT_ACTIVATION coNEURAL_RESCALED_TANH_ACTIVATION
 
 coFORCE_INLINE coFloat coComputeNeuralActivation(coFloat _x)
 {
@@ -23,6 +24,8 @@ coFORCE_INLINE coFloat coComputeNeuralActivation(coFloat _x)
 	//const coFloat a = coExp(2.0f * _x);
 	//return (a - 1.0f) / (a + 1.0f);
 	return coTanh(_x);
+#elif coNEURAL_CURRENT_ACTIVATION == coNEURAL_RESCALED_TANH_ACTIVATION
+	return 1.7159f * coTanh(_x * 2.0f / 3.0f);
 #elif coNEURAL_CURRENT_ACTIVATION == coNEURAL_RELU_ACTIVATION
 	return coMax(0.0f, _x);
 #elif coNEURAL_CURRENT_ACTIVATION == coNEURAL_LEAKY_RELU_ACTIVATION
@@ -39,6 +42,8 @@ coFORCE_INLINE coFloat coComputeNeuralActivationDerivativeTransfer(coFloat _outp
 #elif coNEURAL_CURRENT_ACTIVATION == coNEURAL_TANH_ACTIVATION
 	// The derivative is 1 - (coComputeNeuralActivation(x))^2
 	return 1.0f - _output * _output; // tanh
+#elif coNEURAL_CURRENT_ACTIVATION == coNEURAL_RESCALED_TANH_ACTIVATION
+	return 0.6667f / 1.7159f * (1.7159f - _output) * (1.7159f + _output);
 #elif coNEURAL_CURRENT_ACTIVATION == coNEURAL_RELU_ACTIVATION
 	return _output > 0.0f ? 1.0f : 0.0f;
 #elif coNEURAL_CURRENT_ACTIVATION == coNEURAL_LEAKY_RELU_ACTIVATION
