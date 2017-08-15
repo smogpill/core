@@ -116,6 +116,8 @@ coResult coPrebuildApp::ParseArgs(const InitConfig& _config)
 			}
 
 			coNormalizePath(*path);
+			coTRY(coGetAbsolutePath(*path, *path), "Failed to retrieve the absolute path of: '"<<*path<<"'.");
+			coTRY(coExists(*path), "Invalid include path: "<<value<<" ("<<*path<<").");
 			coPushBack(includeDirs, path);
 		}
 	}

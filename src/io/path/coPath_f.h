@@ -18,6 +18,7 @@ void coGetFileName(coConstString& _out, const coConstString& _this);
 void coGetBaseName(coConstString& _out, const coConstString& _this);
 void coGetExtension(coConstString& _out, const coConstString& _this);
 void coGetParentDir(coConstString& _out, const coConstString& _this);
+coResult coGetAbsolutePath(coDynamicString& _out, const coConstString& _this);
 coBool coIsDot(const coConstString& _this);
 coBool coIsDoubleDot(const coConstString& _this);
 coBool coIsDotOrDoubleDot(const coConstString& _this);

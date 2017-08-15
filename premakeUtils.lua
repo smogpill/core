@@ -101,6 +101,9 @@ function coSetCppProjectDefaults(_name)
 		if os.isfile("reflect.cpp") then
 			local command = prebuildPath .. ' "' .. path.getabsolute(co_projectDir, baseAbsPath) .. "/.." .. '" "' .. genAbsPath .. '" "' .. _name .. '" "'.. _name ..'/pch.h"'
 			command = command .. ' -I="$(UniversalCRT_IncludePath)"'
+			for _, d in pairs(co_srcDirs) do
+				command = command .. ' -I="'..d..'"'
+			end
 			prebuildcommands{command}
 		end
 	filter {}
@@ -156,6 +159,10 @@ function coIncludeProject(_srcDirs, _projectName)
 end
 
 function coGenerateProjectWorkspace(_params)
+	co_srcDirs = _params.srcDirs
+	for k, d in pairs(co_srcDirs) do
+		co_srcDirs[k] = path.getabsolute(d)
+	end
 	coSetWorkspaceDefaults(_params.name, _params.srcDirs)
 	startproject(_params.projects[0])
 	for _, p in pairs(_params.projects) do

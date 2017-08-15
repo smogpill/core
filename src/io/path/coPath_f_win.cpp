@@ -5,6 +5,8 @@
 #include "io/path/coPathStatus.h"
 #include "container/string/coDynamicString16.h"
 #include "container/string/coDynamicString16_f.h"
+#include "container/string/coConstString16.h"
+#include "lang/result/coResult_f.h"
 #include "platform/coOs.h"
 
 coResult coGetPathStatus(coPathStatus& _status, const coConstString& _path)
@@ -50,5 +52,32 @@ coResult coGetPathStatus(coPathStatus& _status, const coConstString& _path)
 			coPathStatus::Status::directory : coPathStatus::Status::regularFile;
 	}
 
+	return true;
+}
+
+coResult coGetAbsolutePath(coDynamicString& _out, const coConstString& _this)
+{
+	coTRY(coIsPathNormalized(_this), nullptr);
+	coDynamicString16 p;
+	coSetFromUTF8(p, _this);
+	coNullTerminate(p);
+	coClear(_out);
+	WCHAR buffer[MAX_PATH];
+	const DWORD ret = ::GetFullPathNameW(p.data, coARRAY_SIZE(buffer), buffer, NULL);
+	if (ret == 0)
+	{
+		const DWORD errval = ::GetLastError();
+		coDynamicString error;
+		coDumpOsError(errval, error);
+		coERROR("Path error for '" << _this << "': " << error);
+		return false;
+	}
+	else if (ret >= coARRAY_SIZE(buffer))
+	{
+		coERROR("Path buffer is too small to retrieve the absolute path of: '" << _this << "'.");
+		return false;
+	}
+	coSetFromWide(_out, buffer);
+	coASSERT(coIsPathNormalized(_out));
 	return true;
 }
