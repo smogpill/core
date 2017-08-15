@@ -4,22 +4,22 @@
 
 #include "lang/coCompiler.h"
 
-coFORCE_INLINE bool coReturnFalse() { return false; }
-coFORCE_INLINE bool coReturnTrue() { return true; }
+coFORCE_INLINE constexpr bool coReturnFalse() { return false; }
+coFORCE_INLINE constexpr bool coReturnTrue() { return true; }
 
 #define coSAFE_SCOPE(_x_) do { _x_ } while (coReturnFalse())
 
 template <class T, class A>
-coFORCE_INLINE const T& coBitCast(const A& _a)
+coFORCE_INLINE constexpr const T& coBitCast(const A& _a)
 {
-	static_assert(sizeof(A) == sizeof(T), "");
+	//static_assert(sizeof(A) == sizeof(T), "");
 	return reinterpret_cast<const T&>(_a);
 }
 
 template <class T, class A>
-coFORCE_INLINE T& coBitCast(A& _a)
+coFORCE_INLINE constexpr T& coBitCast(A& _a)
 {
-	static_assert(sizeof(A) == sizeof(T), "");
+	//static_assert(sizeof(A) == sizeof(T), "");
 	return reinterpret_cast<T&>(_a);
 }
 
