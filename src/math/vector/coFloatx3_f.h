@@ -50,10 +50,10 @@ coFORCE_INLINE coFloatx3 coBroadcastY(const coFloatx3& _a) { return coBitCast<co
 coFORCE_INLINE coFloatx3 coBroadcastZ(const coFloatx3& _a) { return coBitCast<coFloatx3>(coShuffle<2, 2, 2, 2>(coBitCast<coFloatx4>(_a), coBitCast<coFloatx4>(_a))); }
 coFORCE_INLINE coFloatx3 coBroadcastW(const coFloatx3& _a) { return coBitCast<coFloatx3>(coShuffle<3, 3, 3, 3>(coBitCast<coFloatx4>(_a), coBitCast<coFloatx4>(_a))); }
 coFORCE_INLINE coFloatx3 coAbs(const coFloatx3& _a) { return coBitCast<coFloatx3>(coAbs(coBitCast<coFloatx4>(_a))); }
-coFORCE_INLINE coFloatx3 coSqrt(const coFloatx3& _a) { return coBitCast<coFloatx3>(coSqrt(coBitCast<coFloatx4>(_a))); }
+coFORCE_INLINE coFloatx3 coSquareRoot(const coFloatx3& _a) { return coBitCast<coFloatx3>(coSquareRoot(coBitCast<coFloatx4>(_a))); }
 coFORCE_INLINE coFloatx3 coInv(const coFloatx3& _a) { return coBitCast<coFloatx3>(coInv(coBitCast<coFloatx4>(_a))); }
 coFORCE_INLINE coFloatx3 coInvFast(const coFloatx3& _a) { return coBitCast<coFloatx3>(coInvFast(coBitCast<coFloatx4>(_a))); }
-coFORCE_INLINE coFloatx3 coInvSqrt(const coFloatx3& _a) { return coBitCast<coFloatx3>(coInvSqrt(coBitCast<coFloatx4>(_a))); }
+coFORCE_INLINE coFloatx3 coInvSquareRoot(const coFloatx3& _a) { return coBitCast<coFloatx3>(coInvSquareRoot(coBitCast<coFloatx4>(_a))); }
 coFORCE_INLINE coFloatx3 coInvSqrtFast(const coFloatx3& _a) { return coBitCast<coFloatx3>(coInvSqrtFast(coBitCast<coFloatx4>(_a))); }
 coFORCE_INLINE coFloatx3 coLerp(const coFloatx3& _from, const coFloatx3& _to, const coFloatx3& _ratio) { return _from + (_to - _from) * _ratio; }
 coFORCE_INLINE coFloatx3 coPow2(const coFloatx3& _a) { return  _a * _a; }

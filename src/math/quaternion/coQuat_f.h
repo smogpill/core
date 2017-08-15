@@ -70,19 +70,19 @@ coFORCE_INLINE coQuat coRotationUnitVecs(const coVec3& _from, const coVec3& _to)
 }
 coFORCE_INLINE coQuat coRotation(const coVec3& _from, const coVec3& _to)
 {
-	return _coRotation(_from, _to, coSqrt(coSquareLength(_from) * coSquareLength(_to)));
+	return _coRotation(_from, _to, coSquareRoot(coSquareLength(_from) * coSquareLength(_to)));
 }
 coFORCE_INLINE coQuat coInverse(const coQuat& _a) { return coBitCast<coQuat>(coBitCast<coInt32x4>(_a) ^ coInt32x4_SIGN_MASK_XYZ); }
 coFORCE_INLINE coQuat coExp(const coQuat& _a)
 {
-	const float r = coSqrt(_a.x*_a.x + _a.y*_a.y + _a.z*_a.z);
+	const float r = coSquareRoot(_a.x*_a.x + _a.y*_a.y + _a.z*_a.z);
 	const float expW = coExp(_a.w);
 	const float s = (r >= 0.00001f) ? expW * coSin(r) / r : 0.0f;
 	return coQuat(s*_a.x, s*_a.y, s*_a.z, expW * coCos(r));
 }
 coFORCE_INLINE coQuat coLog(const coQuat& _a)
 {
-	const float r = coSqrt(_a.x*_a.x + _a.y*_a.y + _a.z*_a.z);
+	const float r = coSquareRoot(_a.x*_a.x + _a.y*_a.y + _a.z*_a.z);
 	const float t = (r > 0.00001f) ? coAtan(r, _a.w) / r : 0.0f;
 	return coQuat(t*_a.x, t*_a.y, t*_a.z, 0.5f * coLog(_a.x*_a.x + _a.y*_a.y + _a.z*_a.z + _a.w*_a.w));
 }

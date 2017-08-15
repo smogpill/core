@@ -23,8 +23,8 @@ coFORCE_INLINE coVec3 coCross(const coVec3& _a, const coVec3& _b)
 	return tmp0 * tmp1 - tmp2 * tmp3;
 }
 coFORCE_INLINE coFloatx4 coSquareLength(const coVec3& _a) { return coDot(_a, _a); }
-coFORCE_INLINE coFloatx4 coLength(const coVec3& _a) { return coSqrt(coDot(_a, _a)); }
-coFORCE_INLINE coVec3 coNormalize(const coVec3& _a) { coASSERT(!coNearEqual0(_a)); return _a*coInvSqrt(coDot(_a, _a)); }
+coFORCE_INLINE coFloatx4 coLength(const coVec3& _a) { return coSquareRoot(coDot(_a, _a)); }
+coFORCE_INLINE coVec3 coNormalize(const coVec3& _a) { coASSERT(!coNearEqual0(_a)); return _a*coInvSquareRoot(coDot(_a, _a)); }
 coFORCE_INLINE coBool32x3 coIsNormalized(const coVec3& _a, const coVec3& _squareEpsilon = coVec3(1e-3f)) { return coNearEqual(coSquareLength(_a), coVec3(1.0f), _squareEpsilon); }
 coFORCE_INLINE coVec3 coAnyOrthogonal(const coVec3& _a)
 {

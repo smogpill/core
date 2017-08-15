@@ -72,10 +72,10 @@ coFORCE_INLINE coFloatx4 coMake_floatx4XYZ0(const coFloatx3& _xyz)
 	return coBitCast<coFloatx4>(_mm_and_ps(coBitCast<__m128>(_xyz), coBitCast<__m128>(__m128_MASK_XYZ)));
 }
 coFORCE_INLINE coFloatx4 coAbs(const coFloatx4& _a) { return coBitCast<coFloatx4>(_mm_andnot_ps(__m128_SIGN_MASK, coBitCast<__m128>(_a))); }
-coFORCE_INLINE coFloatx4 coSqrt(const coFloatx4& _a) { return coBitCast<coFloatx4>(_mm_sqrt_ps(coBitCast<__m128>(_a))); }
+coFORCE_INLINE coFloatx4 coSquareRoot(const coFloatx4& _a) { return coBitCast<coFloatx4>(_mm_sqrt_ps(coBitCast<__m128>(_a))); }
 coFORCE_INLINE coFloatx4 coInv(const coFloatx4& _a) { return coFloatx4_ONE / _a; }
 coFORCE_INLINE coFloatx4 coInvApprox(const coFloatx4& _a) { return coBitCast<coFloatx4>(_mm_rcp_ps(coBitCast<__m128>(_a))); }
-coFORCE_INLINE coFloatx4 coInvSqrt(const coFloatx4& _a)
+coFORCE_INLINE coFloatx4 coInvSquareRoot(const coFloatx4& _a)
 {
 	// newton-raphson (impl found in Vectormath)
 	const __m128 a = coBitCast<__m128>(_a);
@@ -112,8 +112,8 @@ coFORCE_INLINE coBool32x4 coAreXYZWEqual(const coFloatx4& _a) { const coFloatx4 
 namespace _coFloatx4
 {
 	const coFloat sinConstantP = 0.225f;
-	const coFloatx4 sinConstantA = (16.0f * coSqrt(sinConstantP));
-	const coFloatx4 sinConstantB = ((1.0f - sinConstantP) / coSqrt(sinConstantP));
+	const coFloatx4 sinConstantA = (16.0f * coSquareRoot(sinConstantP));
+	const coFloatx4 sinConstantB = ((1.0f - sinConstantP) * coInvSquareRoot(sinConstantP));
 };
 coFORCE_INLINE coFloatx4 coSin(const coFloatx4& _a)
 {

@@ -15,4 +15,4 @@ coFORCE_INLINE coVec4 coDot(const coVec4& _a, const coVec4& _b)
 	const coVec4 mul = _a * _b;
 	return coVec4(coBroadcastX(mul) + coBroadcastY(mul) + coBroadcastZ(mul) + coBroadcastW(mul));
 }
-coFORCE_INLINE coVec4 coNormalize(const coVec4& _a) { return _a * coInvSqrt(coDot(_a, _a)); }
+coFORCE_INLINE coVec4 coNormalize(const coVec4& _a) { return _a * coInvSquareRoot(coDot(_a, _a)); }
