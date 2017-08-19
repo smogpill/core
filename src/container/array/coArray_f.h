@@ -42,6 +42,21 @@ void coResize(A& _this, coUint32 _newCount)
 	}
 }
 
+template <class A>
+void coResize(A& _this, coUint32 _newCount, const typename A::ValueType& _defaultValue)
+{
+	//static_assert(std::is_base_of<coArray, A>::value, "_a should be an array");
+	if (_this.count != _newCount)
+	{
+		coReserve(_this, _newCount);
+		for (coUint i = _this.count; i < _newCount; ++i)
+		{
+			::new (&_this.data[i]) A::ValueType(_defaultValue);
+		}
+		_this.count = _newCount;
+	}
+}
+
 template <class T>
 void coClear(coArray<T>& _this)
 {
