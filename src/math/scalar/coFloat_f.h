@@ -125,7 +125,9 @@ coFORCE_INLINE coFloat coRand11(coUint32& _seed)
 	coASSERT(_seed != 0);
 	// http://iquilezles.org/www/articles/sfrand/sfrand.htm
 	_seed *= 16807;
-	return coBitCast<coFloat>((_seed >> 9) | 0x40000000) - 3.0f;
+	const coFloat r = coBitCast<coFloat>((_seed >> 9) | 0x40000000) - 3.0f;
+	coASSERT(coIsInRange(r, -1.0f, 1.0f));
+	return r;
 }
 
 coFORCE_INLINE coFloat coRand01(coUint32& _seed)

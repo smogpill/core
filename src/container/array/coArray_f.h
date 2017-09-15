@@ -7,12 +7,12 @@
 
 #define coARRAY_SIZE(_array_) (sizeof(_array_) / sizeof(_array_[0]))
 
-template <class T>
-coArray<T>::coArray(std::initializer_list<T> _l)
-	: data(const_cast<T*>(_l.begin()))
-	, count(static_cast<coUint32>(_l.size()))
-{
-}
+// template <class T>
+// coArray<T>::coArray(std::initializer_list<T> _l)
+// 	: data(const_cast<T*>(_l.begin()))
+// 	, count(static_cast<coUint32>(_l.size()))
+// {
+// }
 
 template <class T>
 template <coUint N>
