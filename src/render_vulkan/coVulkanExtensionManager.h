@@ -24,4 +24,3 @@ private:
 	coDynamicArray<VkExtensionProperties> supportedExtensions;
 	coDynamicArray<coDynamicString*> requestedExtensions;
 };
-

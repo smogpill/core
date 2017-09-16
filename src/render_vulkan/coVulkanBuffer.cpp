@@ -84,6 +84,7 @@ const VkDevice& coVulkanBuffer::GetVkDevice() const
 coResult coVulkanBuffer::InitMemoryHack()
 {
 	VkMemoryAllocateInfo allocInfo{};
+	coWARN_NOT_AVAILABLE();
 	// 	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	// 	allocInfo.allocationSize = 256 * 1024 * 1024;
 	// 	allocInfo.memoryTypeIndex = ;
@@ -97,6 +98,7 @@ coResult coVulkanBuffer::InitMemoryHack()
 coResult coVulkanBuffer::OnStart()
 {
 	coTRY(Super::OnStart(), nullptr);
+	coWARN_NOT_AVAILABLE();
 // 	coTRY(buffer_vk != VK_NULL_HANDLE, nullptr);
 // 	coVulkanLogicalDevice* vulkanDevice = static_cast<coVulkanLogicalDevice*>(device);
 // 	coTRY(vulkanDevice, nullptr);
