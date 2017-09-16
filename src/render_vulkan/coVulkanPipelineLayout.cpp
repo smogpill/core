@@ -4,13 +4,15 @@
 #include "render_vulkan/coVulkanPipelineLayout.h"
 #include "render_vulkan/coVulkanLogicalDevice.h"
 #include "render_vulkan/coVulkanResult_f.h"
+#include "render_vulkan/coVulkanDescriptorSetLayout.h"
 #include "lang/result/coResult.h"
 #include "lang/result/coResult_f.h"
 
 coVulkanPipelineLayout::coVulkanPipelineLayout()
 	: pipelineLayout_vk(VK_NULL_HANDLE)
+	, vulkandescriptorSetLayout(nullptr)
 {
-
+	vulkandescriptorSetLayout = new coVulkanDescriptorSetLayout();
 }
 
 coVulkanPipelineLayout::~coVulkanPipelineLayout()
@@ -20,17 +22,28 @@ coVulkanPipelineLayout::~coVulkanPipelineLayout()
 		const VkDevice& device_vk = GetVkDevice();
 		vkDestroyPipelineLayout(device_vk, pipelineLayout_vk, nullptr);
 	}
+	delete vulkandescriptorSetLayout;
 }
 
 coResult coVulkanPipelineLayout::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
-	//const InitConfig& config = static_cast<const InitConfig&>(_config);
+	const InitConfig& config = static_cast<const InitConfig&>(_config);
+
+	{
+		coHACK("Hard coded vulkan descriptor set layout");
+		coVulkanDescriptorSetLayout::InitConfig c;
+		c.debugName = "Hacked descriptor set layout";
+		c.device = config.device;
+		coTRY(vulkandescriptorSetLayout->Init(c), nullptr);
+	}
+
+	coDynamicArray<VkDescriptorSetLayout> descriptorSetLayouts_vk{ vulkandescriptorSetLayout->GetVkDescriptorSetLayout() };
 
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-	pipelineLayoutInfo.setLayoutCount = 0;
-	pipelineLayoutInfo.pSetLayouts = nullptr;
+	pipelineLayoutInfo.setLayoutCount = descriptorSetLayouts_vk.count;
+	pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts_vk.data;
 	pipelineLayoutInfo.pushConstantRangeCount = 0;
 	pipelineLayoutInfo.pPushConstantRanges = 0;
 

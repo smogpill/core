@@ -4,6 +4,8 @@
 
 #include "render/coRenderPipelineLayout.h"
 
+class coVulkanDescriptorSetLayout;
+
 class coVulkanPipelineLayout : public coRenderPipelineLayout
 {
 	coDECLARE_SUPER(coRenderPipelineLayout);
@@ -20,4 +22,7 @@ private:
 	const VkDevice& GetVkDevice() const;
 
 	VkPipelineLayout pipelineLayout_vk;
+
+	// hack
+	coVulkanDescriptorSetLayout* vulkandescriptorSetLayout;
 };
