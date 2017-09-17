@@ -14,6 +14,11 @@ coFORCE_INLINE coQuat coNormalize(const coQuat& _this)
 {
 	return coBitCast<coQuat>(coNormalize(coBitCast<coVec4>(_this)));
 }
+coFORCE_INLINE coBool32x4 coIsNormalized(const coQuat& _this, const coVec4& _squareEpsilon = coVec4(1e-3f))
+{
+	return coIsNormalized(coBitCast<coVec4>(_this), _squareEpsilon);
+}
+
 coFORCE_INLINE coQuat coRotation(const coFloatx3& _eulerAngles)
 {
 	const coFloatx3 halfAngles = _eulerAngles * 0.5f;

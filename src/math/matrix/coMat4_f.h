@@ -3,14 +3,25 @@
 #pragma once
 
 #include "lang/coCppExtensions.h"
-#include "math/matrix/coMat3.h"
+#include "math/matrix/coMat3_f.h"
 #include "math/matrix/coMat4.h"
+#include "math/transform/coTransform.h"
 #include "math/vector/coFloatx3.h"
 #include "math/vector/coFloatx4_f.h"
 
+coFORCE_INLINE coVec4 operator* (const coMat4& _this, const coVec4& _a)
+{
+	return coVec4(coDot(_this.c0, _a), coDot(_this.c1, _a), coDot(_this.c2, _a), coDot(_this.c3, _a));
+}
+
+coFORCE_INLINE coMat4 operator* (const coMat4& _a, const coMat4& _b)
+{
+	return coMat4(_a * _b.c0, _a * _b.c1, _a * _b.c2, _a * _b.c3);
+}
+
 coMat4 coMakeLookAt(const coVec3& _eyePos, const coVec3& _lookAtPos, const coVec3& _upVec);
 coMat4 coMakeOrthographic(coFloat _left, coFloat _right, coFloat _bottom, coFloat _top, coFloat _zNear, coFloat _zFar);
-coMat4 coMakePerspective(coFloat _fovyRadians, coFloat _aspect, coFloat _zNear, coFloat _zFar);
+void coSetPerspective(coMat4& _this, coFloat _fovyRadians, coFloat _aspect, coFloat _zNear, coFloat _zFar);
 coFORCE_INLINE void coSetUpperMat3(coMat4& _m4, const coMat3& _m3)
 {
 	_m4.c0 = coSelectXYZ(coMake_floatx4XYZ0(_m3.c0), _m4.c0);
@@ -39,4 +50,23 @@ coFORCE_INLINE coBool32x4 coEqual(const coMat4& _m1, const coMat4& _m2, const co
 	const coBool32x4 b2 = coNearEqual(_m1.c2, _m2.c2, _epsilon);
 	const coBool32x4 b3 = coNearEqual(_m1.c3, _m2.c3, _epsilon);
 	return b0 && b1 && b2 && b3;
+}
+
+coFORCE_INLINE void coSetWithoutScale(coMat4& _this, const coTransform& _t)
+{
+	coMat3 m;
+	coSetRotation(m, _t.rotation);
+	_this.c0 = coVec4(m.c0, 0.0f);
+	_this.c1 = coVec4(m.c1, 0.0f);
+	_this.c2 = coVec4(m.c2, 0.0f);
+	_this.c3 = coVec4(_t.translation, 1.0f);
+}
+
+coFORCE_INLINE void coSetWithScale(coMat4& _this, const coTransform& _t)
+{
+	coSetWithoutScale(_this, _t);
+	const coVec3 scale = _t.scale;
+	_this.c0 *= coBroadcastX(coBitCast<coFloatx4>(scale));
+	_this.c1 *= coBroadcastY(coBitCast<coFloatx4>(scale));
+	_this.c2 *= coBroadcastZ(coBitCast<coFloatx4>(scale));
 }

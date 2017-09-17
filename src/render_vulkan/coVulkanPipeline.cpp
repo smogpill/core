@@ -17,7 +17,9 @@
 #include "math/vector/coFloatx2.h"
 #include "math/vector/coFloatx3.h"
 #include "math/vector/coFloatx4.h"
-#include "math/matrix/coMat4.h"
+#include "math/matrix/coMat4_f.h"
+#include "math/quaternion/coQuat_f.h"
+#include "math/transform/coTransform.h"
 
 coVulkanPipeline::coVulkanPipeline()
 	: pipeline_vk(VK_NULL_HANDLE)
@@ -60,9 +62,31 @@ coResult coVulkanPipeline::OnInit(const coObject::InitConfig& _config)
 		c.usage = coVulkanBuffer::Usage::uniform;
 		coTRY(vulkanBuffer->Init(c), nullptr);
 
+		coMat4 model;
+		{
+			coTransform t;
+			//t.rotation = coRotation(coFloatx3(0, 0, coFloat_pi * 0.25f * 2.f));
+			coSetWithoutScale(model, t);
+		}
+		
+		coMat4 view;
+		{
+			coTransform t;
+			t.translation = coVec3(0, 0, -5);
+			coSetWithoutScale(view, t);
+		}
+
+		coMat4 proj;
+		{
+			coSetPerspective(proj, coFloat_halfPi, 16.f / 9.f, 0.05f, 1000.0f);
+		}
+
+		ModelConstants constants;
+		constants.modelViewProj = proj * view * model;
+
 		void* data = nullptr;
 		coTRY(vulkanBuffer->Map(data), nullptr);
-		*reinterpret_cast<ModelConstants*>(data) = ModelConstants();
+		*reinterpret_cast<ModelConstants*>(data) = constants;
 		vulkanBuffer->Unmap();
 	}
 

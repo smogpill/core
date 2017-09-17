@@ -41,11 +41,12 @@ coFORCE_INLINE coBool32x4 operator<= (const coFloatx4& _a, const coFloatx4& _b) 
 coFORCE_INLINE coBool32x4 operator> (const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coBool32x4>(_mm_cmpgt_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
 coFORCE_INLINE coBool32x4 operator>= (const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coBool32x4>(_mm_cmpge_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
 coFORCE_INLINE coFloatx4 operator+ (const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coFloatx4>(_mm_add_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
-coFORCE_INLINE coFloatx4& operator+= (coFloatx4& _this, const coFloatx4& _b) { return _this = coBitCast<coFloatx4>(coBitCast<coFloatx4>(_this) + coBitCast<coFloatx4>(_b)); }
 coFORCE_INLINE coFloatx4 operator- (const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coFloatx4>(_mm_sub_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
 coFORCE_INLINE coFloatx4 operator/ (const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coFloatx4>(_mm_div_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
 coFORCE_INLINE coFloatx4 operator* (const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coFloatx4>(_mm_mul_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
 coFORCE_INLINE coFloatx4 operator- (const coFloatx4& _a) { return coBitCast<coFloatx4>(coBitCast<coFloatx4>(_mm_setzero_ps()) - coBitCast<coFloatx4>(_a)); }
+coFORCE_INLINE coFloatx4& operator+= (coFloatx4& _this, const coFloatx4& _b) { return _this = coBitCast<coFloatx4>(coBitCast<coFloatx4>(_this) + coBitCast<coFloatx4>(_b)); }
+coFORCE_INLINE coFloatx4& operator*= (coFloatx4& _this, const coFloatx4& _b) { return _this = coBitCast<coFloatx4>(coBitCast<coFloatx4>(_this) * coBitCast<coFloatx4>(_b)); }
 coFORCE_INLINE coBool32x4 coIsValid(const coFloatx4& _a) { return _a == _a; }
 template <coInt8 X, coInt8 Y, coInt8 Z, coInt8 W>
 coFORCE_INLINE coFloatx4 coShuffle(const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coFloatx4>(_mm_shuffle_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b), _MM_SHUFFLE(W, Z, Y, X))); }
@@ -58,6 +59,18 @@ coFORCE_INLINE coFloatx4 coBroadcastW(const coFloatx4& _a) { return coShuffle<3,
 coFORCE_INLINE coFloatx4 coSelect(const coFloatx4& _a, const coFloatx4& _b, const coInt32x4& _mask)
 {
 	return coBitCast<coFloatx4>(coBitCast<coInt32x4>(_b) ^ _mask & (coBitCast<coInt32x4>(_a) ^ coBitCast<coInt32x4>(_b)));
+}
+coFORCE_INLINE coFloatx4 coSelectX(const coFloatx4& _a, const coFloatx4& _b)
+{
+	return coBitCast<coFloatx4>(_mm_or_ps(_mm_and_ps(__m128_MASK_X, coBitCast<__m128>(_a)), _mm_andnot_ps(__m128_MASK_X, coBitCast<__m128>(_b))));
+}
+coFORCE_INLINE coFloatx4 coSelectY(const coFloatx4& _a, const coFloatx4& _b)
+{
+	return coBitCast<coFloatx4>(_mm_or_ps(_mm_and_ps(__m128_MASK_Y, coBitCast<__m128>(_a)), _mm_andnot_ps(__m128_MASK_Y, coBitCast<__m128>(_b))));
+}
+coFORCE_INLINE coFloatx4 coSelectZ(const coFloatx4& _a, const coFloatx4& _b)
+{
+	return coBitCast<coFloatx4>(_mm_or_ps(_mm_and_ps(__m128_MASK_Z, coBitCast<__m128>(_a)), _mm_andnot_ps(__m128_MASK_Z, coBitCast<__m128>(_b))));
 }
 coFORCE_INLINE coFloatx4 coSelectXYZ(const coFloatx4& _a, const coFloatx4& _b)
 {
