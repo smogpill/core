@@ -7,6 +7,8 @@
 #include "render_vulkan/coVulkanPipelineLayout.h"
 #include "render_vulkan/coVulkanPass.h"
 #include "render_vulkan/coVulkanResult_f.h"
+#include "render_vulkan/coVulkanDescriptorSet.h"
+#include "render_vulkan/coVulkanBuffer.h"
 #include "lang/result/coResult.h"
 #include "lang/result/coResult_f.h"
 #include "lang/reflect/coType.h"
@@ -15,11 +17,16 @@
 #include "math/vector/coFloatx2.h"
 #include "math/vector/coFloatx3.h"
 #include "math/vector/coFloatx4.h"
+#include "math/matrix/coMat4.h"
 
 coVulkanPipeline::coVulkanPipeline()
 	: pipeline_vk(VK_NULL_HANDLE)
+	, vulkanDescriptorSet(nullptr)
+	, vulkanBuffer(nullptr)
+	, vulkanPipelineLayout(nullptr)
 {
-
+	vulkanBuffer = new coVulkanBuffer();
+	vulkanDescriptorSet = new coVulkanDescriptorSet();
 }
 
 coVulkanPipeline::~coVulkanPipeline()
@@ -29,12 +36,46 @@ coVulkanPipeline::~coVulkanPipeline()
 		const VkDevice& device_vk = GetVkDevice();
 		vkDestroyPipeline(device_vk, pipeline_vk, nullptr);
 	}
+
+	delete vulkanDescriptorSet;
+	delete vulkanBuffer;
 }
 
 coResult coVulkanPipeline::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
+
+	{
+		coHACK("Hard coded vulkan buffer");
+		struct ModelConstants
+		{
+			coMat4 modelViewProj;
+		};
+		coVulkanBuffer::InitConfig c;
+		c.debugName = "Hard coded vulkan buffer";
+		c.device = config.device;
+		c.size8 = sizeof(ModelConstants);
+		c.type = coVulkanBuffer::dynamic;
+		c.usage = coVulkanBuffer::Usage::uniform;
+		coTRY(vulkanBuffer->Init(c), nullptr);
+
+		void* data = nullptr;
+		coTRY(vulkanBuffer->Map(data), nullptr);
+		*reinterpret_cast<ModelConstants*>(data) = ModelConstants();
+		vulkanBuffer->Unmap();
+	}
+
+	{
+		coHACK("Hard coded descriptor set.");
+		coVulkanLogicalDevice* vulkanLogicalDevice = static_cast<coVulkanLogicalDevice*>(config.device);
+		coVulkanDescriptorSet::InitConfig c;
+		c.device = config.device;
+		c.debugName = "Hard coded descriptor set";
+		c.vulkanBuffer = vulkanBuffer;
+		c.vulkanDescriptorPool = vulkanLogicalDevice->GetVulkanDescriptorPool();
+		coTRY(vulkanDescriptorSet->Init(c), nullptr);
+	}
 
 	// Shader stages
 	coDynamicArray<VkPipelineShaderStageCreateInfo> shaderInfos;
@@ -73,6 +114,7 @@ coResult coVulkanPipeline::OnInit(const coObject::InitConfig& _config)
 	const coVulkanPipelineLayout* vulkanLayout = static_cast<const coVulkanPipelineLayout*>(config.layout);
 	coTRY(vulkanLayout, nullptr);
 	const VkPipelineLayout& layout_vk = vulkanLayout->GetVkPipelineLayout();
+	vulkanPipelineLayout = vulkanLayout;
 
 	// Render pass
 	const coVulkanPass* vulkanPass = static_cast<const coVulkanPass*>(config.renderPass);

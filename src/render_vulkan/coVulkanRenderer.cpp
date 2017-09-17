@@ -50,6 +50,14 @@ coResult coVulkanRenderer::FillCommandBuffer(const FillConfig& _config)
 	coTRY(_config.pipeline, nullptr);
 	vulkanCommandBuffer->PushBindPipeline(*_config.pipeline);
 
+	{
+		coHACK("Hacked bind descriptor set.");
+		coVulkanPipeline* vulkanPipeline = static_cast<coVulkanPipeline*>(_config.pipeline);
+		coVulkanDescriptorSet* vulkanDescriptorSet = vulkanPipeline->GetVulkanDescriptorSet();
+		const coVulkanPipelineLayout* vulkanPipelineLayout = vulkanPipeline->GetVulkanPipelineLayout();
+		vulkanCommandBuffer->PushBindDescriptorSet(*vulkanDescriptorSet, *vulkanPipelineLayout, 0);
+	}
+
 	//vulkanCommandBuffer->PushDrawEmptyTriangle();
 
 	if (_config.world)

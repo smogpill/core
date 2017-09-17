@@ -22,6 +22,11 @@ coVulkanDescriptorPool::~coVulkanDescriptorPool()
 	}
 }
 
+coVulkanDescriptorPool::InitConfig::InitConfig()
+{
+
+}
+
 coResult coVulkanDescriptorPool::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);

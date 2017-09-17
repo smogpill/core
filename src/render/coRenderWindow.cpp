@@ -29,6 +29,7 @@ coRenderWindow::coRenderWindow()
 	, device(nullptr)
 	, renderer(nullptr)
 	, pipelineLayout(nullptr)
+	, pipeline(nullptr)
 {
 
 }
@@ -39,6 +40,7 @@ coRenderWindow::~coRenderWindow()
 	{
 		coCHECK(device->WaitForIdle(), nullptr);
 	}
+	delete pipeline;
 	delete pipelineLayout;
 	delete renderFinishedSemaphore;
 	delete swapChain;
@@ -69,6 +71,8 @@ coResult coRenderWindow::OnInit(const coObject::InitConfig& _config)
 	coTRY(InitSwapChain(config), "Failed to init the swap chain.");
 	coTRY(InitSemaphores(), "Failed to init the semaphores.");
 	coTRY(InitPipelineLayout(), "Failed to init the pipeline layout.");
+
+	pipeline = coCreateRenderPipeline();
 
 	return true;
 }
@@ -151,8 +155,6 @@ coResult coRenderWindow::SelectDevice()
 
 coResult coRenderWindow::Render(const coRenderWorld& _world)
 {
-	coRenderPipeline* pipeline = coCreateRenderPipeline();
-	coDEFER() { delete pipeline; };
 	const coArray<coRenderEntity*>& entities = _world.GetEntities();
 	coTRY(entities.count, nullptr);
 	coRenderEntity* arbitraryEntity = entities[0];

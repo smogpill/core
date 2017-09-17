@@ -16,6 +16,7 @@ coResult coVulkanDeviceAllocator::OnInit(const coObject::InitConfig& _config)
 
 // 	coVulkanLogicalDevice* vulkanDevice = static_cast<coVulkanLogicalDevice*>(device);
 // 	coTRY(vulkanDevice, nullptr);
+// 	const VkDevice& device_vk = GetVkDevice();
 // 	const coVulkanPhysicalDevice* vulkanPhysicalDevice = vulkanDevice->GetPhysicalDevice();
 // 	coTRY(vulkanPhysicalDevice, nullptr);
 // 	const VkPhysicalDeviceMemoryProperties& memProps_vk = vulkanPhysicalDevice->GetMemoryProperties();
@@ -39,17 +40,14 @@ const VkDevice& coVulkanDeviceAllocator::GetVkDevice() const
 	return vulkanLogicalDevice ? vulkanLogicalDevice->GetVkDevice() : nullDevice_vk;
 }
 
-coResult coVulkanDeviceAllocator::Allocate(coVulkanDeviceAllocation*& _alloc, const VkMemoryPropertyFlags& _flags_vk, const VkDeviceSize& _size_vk)
+coResult coVulkanDeviceAllocator::Allocate(coVulkanDeviceAllocation*& _alloc, const VkMemoryPropertyFlags& _flags_vk, const VkDeviceSize& _size_vk, const VkDeviceSize& _alignment)
 {
 	delete _alloc;
 	_alloc = nullptr;
 
 	// Initial raw implementation from https://cpp-rendering.io/vulkan-and-pipelines/. 
 
-	VkDeviceSize size_vk = _size_vk;
-	if (size_vk % 128 != 0)
-		size_vk = size_vk + (128 - (size_vk % 128)); // 128 bytes alignment
-	coASSERT(size_vk % 128 == 0);
+	VkDeviceSize size_vk = coAlignSize(_size_vk, _alignment);
 
 	// Find chunk
 	for (coVulkanDeviceMemoryChunk* chunk : chunks)
@@ -103,7 +101,7 @@ coResult coVulkanDeviceAllocator::Allocate(coVulkanDeviceAllocation*& _alloc, co
 	coTRY(AllocateChunk(chunk, _flags_vk, 256 * 1024 * 1024), "Failed to allocate new Vulkan memory chunk.");
 	coASSERT(chunk);
 
-	return Allocate(_alloc, _flags_vk, _size_vk);
+	return Allocate(_alloc, _flags_vk, _size_vk, _alignment);
 }
 
 void coVulkanDeviceAllocator::Free(coVulkanDeviceAllocation& _alloc)

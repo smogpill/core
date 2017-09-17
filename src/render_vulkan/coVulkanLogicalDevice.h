@@ -10,6 +10,7 @@ class coVulkanPhysicalDevice;
 class coSwapChain;
 class coVulkanCommandPool;
 class coVulkanDeviceAllocator;
+class coVulkanDescriptorPool;
 
 class coVulkanLogicalDevice : public coRenderDevice
 {
@@ -39,6 +40,7 @@ public:
 	const VkQueue& GetVkQueue(QueueType _type) const { return queues_vk[_type]; }
 	const VkCommandPool& GetVkCommandPool(QueueType _type) const;
 	coVulkanCommandPool* GetVulkanCommandPool(QueueType _type) const;
+	coVulkanDescriptorPool* GetVulkanDescriptorPool() const { return vulkanDescriptorPool; }
 	coResult GetVkQueue(VkQueue& _out, coUint _queueFamilyIndex, coUint _index);
 	virtual coResult WaitForIdle() override;
 	virtual DeviceType GetDeviceType() const override;
@@ -57,6 +59,7 @@ private:
 	coResult InitQueues();
 	coResult InitLogicalDevice();
 	coResult InitCommandPools();
+	coResult InitDescriptorPools();
 	coResult InitFences();
 	coResult InitAllocator();
 	coResult GetAllRequestedExtensions(coDynamicArray<const coChar*>& _extensions) const;
@@ -70,5 +73,6 @@ private:
 	coDynamicArray<coDynamicString*> requestedExtensions;
 	coVulkanLayerManager* vulkanLayerManager;
 	coVulkanCommandPool* vulkanCommandPools[QueueType::count];
+	coVulkanDescriptorPool* vulkanDescriptorPool;
 	coVulkanDeviceAllocator* vulkanDeviceAllocator;
 };

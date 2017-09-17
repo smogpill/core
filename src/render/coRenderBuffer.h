@@ -33,6 +33,8 @@ public:
 	virtual coResult Map(void*& _data);
 	virtual void Unmap();
 
+	coUint32 GetSize8() const { return size8; }
+
 protected:
 	coRenderBuffer();
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;

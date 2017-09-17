@@ -11,6 +11,7 @@
 #include "render_vulkan/coVulkanCommandPool.h"
 #include "render_vulkan/coVulkanCommandBuffer.h"
 #include "render_vulkan/coVulkanDeviceAllocator.h"
+#include "render_vulkan/coVulkanDescriptorPool.h"
 #include "lang/result/coResult_f.h"
 #include "lang/reflect/coNumericLimits.h"
 #include "pattern/scope/coDefer.h"
@@ -21,6 +22,7 @@ coVulkanLogicalDevice::coVulkanLogicalDevice()
 	//, queues_vk{ VK_NULL_HANDLE }
 	, vulkanLayerManager(nullptr)
 	, vulkanDeviceAllocator(nullptr)
+	, vulkanDescriptorPool(nullptr)
 {
 	for (auto& x : queueFamilyIndices)
 		x = -1;
@@ -66,6 +68,7 @@ coResult coVulkanLogicalDevice::OnStart()
 	coTRY(InitAllocator(), "Failed to init the allocator.");
 	coTRY(InitQueues(), "Failed to init queues.");
 	coTRY(InitCommandPools(), "Failed to init command pools.");
+	coTRY(InitDescriptorPools(), "Failed to init descriptor pools.");
 	coTRY(InitFences(), "Failed to init fences.");
 	return true;
 }
@@ -168,6 +171,18 @@ coResult coVulkanLogicalDevice::InitCommandPools()
 	coTRY(cp->Init(c), "Failed to init command pool.");
 	coASSERT(!vulkanCommandPools[QueueType::graphics]);
 	coSwap(vulkanCommandPools[QueueType::graphics], cp);
+	return true;
+}
+
+coResult coVulkanLogicalDevice::InitDescriptorPools()
+{
+	coVulkanDescriptorPool* dp = new coVulkanDescriptorPool();
+	coDEFER() { delete dp; };
+	coVulkanDescriptorPool::InitConfig c;
+	c.device = this;
+	coTRY(dp->Init(c), "Failed to init descriptor pool.");
+	coASSERT(!vulkanDescriptorPool);
+	coSwap(vulkanDescriptorPool, dp);
 	return true;
 }
 

@@ -14,7 +14,7 @@ public:
 	virtual ~coVulkanBuffer();
 
 	const VkBuffer& GetVkBuffer() const { return buffer_vk; }
-	VkDeviceSize GetVkDeviceSize() const;
+	VkDeviceSize GetVkAllocatedSize() const;
 	virtual coResult Map(void*& _data) override;
 	virtual void Unmap() override;
 

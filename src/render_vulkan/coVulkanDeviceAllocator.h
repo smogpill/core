@@ -20,7 +20,7 @@ public:
 	};
 	virtual ~coVulkanDeviceAllocator();
 
-	coResult Allocate(coVulkanDeviceAllocation*& _alloc, const VkMemoryPropertyFlags& _flags_vk, const VkDeviceSize& _size_vk);
+	coResult Allocate(coVulkanDeviceAllocation*& _alloc, const VkMemoryPropertyFlags& _flags_vk, const VkDeviceSize& _size_vk, const VkDeviceSize& _alignment);
 	void Free(coVulkanDeviceAllocation& _alloc);
 
 protected:

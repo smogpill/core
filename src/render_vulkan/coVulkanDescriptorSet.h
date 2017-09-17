@@ -7,6 +7,8 @@
 class coVulkanDescriptorPool;
 class coVulkanBuffer;
 
+class coVulkanDescriptorSetLayout;
+
 class coVulkanDescriptorSet : public coRenderDeviceObject
 {
 	coDECLARE_SUPER(coRenderDeviceObject);
@@ -16,6 +18,7 @@ public:
 	public:
 		InitConfig();
 		coVulkanBuffer* vulkanBuffer;
+		coVulkanDescriptorPool* vulkanDescriptorPool;
 	};
 	coVulkanDescriptorSet();
 	virtual ~coVulkanDescriptorSet();
@@ -31,4 +34,7 @@ private:
 
 	coVulkanDescriptorPool* vulkanDescriptorPool;
 	VkDescriptorSet descriptorSet_vk;
+
+	// HACK
+	coVulkanDescriptorSetLayout* vulkanDescriptorSetLayout;
 };

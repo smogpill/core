@@ -6,9 +6,19 @@
 
 void coFillAsDeleted(void* _ptr, coUint _size8);
 
-coFORCE_INLINE coBool coIsAligned(const void* _ptr, coUint _alignment8)
+coFORCE_INLINE constexpr coBool coIsAligned(const void* _ptr, coUint _alignment8)
 {
 	return (coBitCast<coUintPtr>(_ptr) & (_alignment8 - 1)) == 0;
+}
+
+coFORCE_INLINE constexpr coUint32 coAlignSize(const coUint32 _size8, const coUint32 _alignment)
+{
+	return _size8 % _alignment ? (_size8 & ~_alignment + _alignment) : _size8;
+}
+
+coFORCE_INLINE constexpr coUint64 coAlignSize(const coUint64 _size8, const coUint64 _alignment)
+{
+	return _size8 % _alignment ? (_size8 & ~_alignment + _alignment) : _size8;
 }
 
 coFORCE_INLINE void coMemCopy(void* _dest, const void* _src, coUint _size8)

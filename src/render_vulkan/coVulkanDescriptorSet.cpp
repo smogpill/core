@@ -4,14 +4,17 @@
 #include "render_vulkan/coVulkanDescriptorSet.h"
 #include "render_vulkan/coVulkanDescriptorPool.h"
 #include "render_vulkan/coVulkanLogicalDevice.h"
+#include "render_vulkan/coVulkanDescriptorSetLayout.h"
+#include "render_vulkan/coVulkanBuffer.h"
 #include "render_vulkan/coVulkanResult_f.h"
 #include "lang/result/coResult_f.h"
 
 coVulkanDescriptorSet::coVulkanDescriptorSet()
 	: descriptorSet_vk(VK_NULL_HANDLE)
 	, vulkanDescriptorPool(nullptr)
+	, vulkanDescriptorSetLayout(nullptr)
 {
-
+	vulkanDescriptorSetLayout = new coVulkanDescriptorSetLayout();
 }
 
 coVulkanDescriptorSet::~coVulkanDescriptorSet()
@@ -24,26 +27,41 @@ coVulkanDescriptorSet::~coVulkanDescriptorSet()
 		coASSERT(descriptorPool_vk != VK_NULL_HANDLE);
 		vkFreeDescriptorSets(device_vk, descriptorPool_vk, 1, &descriptorSet_vk);
 	}
+
+	delete vulkanDescriptorSetLayout;
 }
 
 coVulkanDescriptorSet::InitConfig::InitConfig()
 	: vulkanBuffer(nullptr)
+	, vulkanDescriptorPool(nullptr)
 {
 
 }
 
-coResult coVulkanDescriptorSet::OnInit(const coObject::InitConfig& /*_config*/)
+coResult coVulkanDescriptorSet::OnInit(const coObject::InitConfig& _config)
 {
-	coWARN_NOT_AVAILABLE();
-	/*coTRY(Super::OnInit(_config), nullptr);
+	coTRY(Super::OnInit(_config), nullptr);
 
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
 	coASSERT(descriptorSet_vk == VK_NULL_HANDLE);
 
+	vulkanDescriptorPool = config.vulkanDescriptorPool;
+	coTRY(vulkanDescriptorPool, nullptr);
+
 	const VkDescriptorPool& descriptorPool_vk = GetVkDescriptorPool();
 	coTRY(descriptorPool_vk != VK_NULL_HANDLE, nullptr);
 
-	VkDescriptorSetLayout layouts_vk[] = { descriptorSetLayout };
+	{
+		coHACK("Hard coded descriptor set layout.");
+		coVulkanDescriptorSetLayout::InitConfig c;
+		c.debugName = "Hard coded coVulkanDescriptorSetLayout";
+		c.device = config.device;
+		coTRY(vulkanDescriptorSetLayout->Init(c), nullptr);
+	}
+
+	const VkDescriptorSetLayout& descriptorSetLayout_vk = vulkanDescriptorSetLayout->GetVkDescriptorSetLayout();
+
+	VkDescriptorSetLayout layouts_vk[]{ descriptorSetLayout_vk };
 
 	VkDescriptorSetAllocateInfo allocInfo_vk{};
 	allocInfo_vk.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -61,7 +79,7 @@ coResult coVulkanDescriptorSet::OnInit(const coObject::InitConfig& /*_config*/)
 	VkDescriptorBufferInfo bufferInfo_vk{};
 	bufferInfo_vk.buffer = buffer_vk;
 	bufferInfo_vk.offset = 0;
-	bufferInfo_vk.range = config.vulkanBuffer->GetVkDeviceSize();
+	bufferInfo_vk.range = config.vulkanBuffer->GetSize8();
 
 	VkWriteDescriptorSet descriptorWrite_vk{};
 	descriptorWrite_vk.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -74,7 +92,7 @@ coResult coVulkanDescriptorSet::OnInit(const coObject::InitConfig& /*_config*/)
 	descriptorWrite_vk.pImageInfo = nullptr; // Optional
 	descriptorWrite_vk.pTexelBufferView = nullptr; // Optional
 
-	vkUpdateDescriptorSets(device_vk, 1, &descriptorWrite_vk, 0, nullptr);*/
+	vkUpdateDescriptorSets(device_vk, 1, &descriptorWrite_vk, 0, nullptr);
 
 	return true;
 }

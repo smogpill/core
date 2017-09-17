@@ -67,8 +67,11 @@ coResult coVulkanBuffer::OnInit(const coObject::InitConfig& _config)
 	case coRenderBuffer::dynamic: flags_vk = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT; break;
 	default: coWARN_NOT_AVAILABLE();
 	}
-	VkDeviceSize size_vk = size8;
-	coTRY(allocator->Allocate(deviceAllocation, flags_vk, size_vk), "Failed to allocate the buffer in the device memory");
+
+	VkMemoryRequirements memoryRequirements_vk{};
+	vkGetBufferMemoryRequirements(device_vk, buffer_vk, &memoryRequirements_vk);
+
+	coTRY(allocator->Allocate(deviceAllocation, flags_vk, memoryRequirements_vk.size, memoryRequirements_vk.alignment), "Failed to allocate the buffer in the device memory");
 	coVULKAN_TRY(vkBindBufferMemory(device_vk, buffer_vk, deviceAllocation->chunk->deviceMemory_vk, deviceAllocation->offset_vk), "Failed to bind the buffer to the device memory.");
 
 	return true;
@@ -141,7 +144,7 @@ void coVulkanBuffer::Unmap()
 	Super::Unmap();
 }
 
-VkDeviceSize coVulkanBuffer::GetVkDeviceSize() const
+VkDeviceSize coVulkanBuffer::GetVkAllocatedSize() const
 {
 	return deviceAllocation ? deviceAllocation->size_vk : VkDeviceSize(0);
 }

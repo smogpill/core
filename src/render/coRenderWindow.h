@@ -57,4 +57,7 @@ private:
 	coRenderDevice* device;
 	coRenderSemaphore* renderFinishedSemaphore;
 	coRenderPipelineLayout* pipelineLayout;
+
+	// Hack
+	coRenderPipeline* pipeline;
 };

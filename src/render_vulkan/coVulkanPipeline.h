@@ -5,6 +5,9 @@
 #include "render/coRenderPipeline.h"
 
 class coRenderDevice;
+class coVulkanDescriptorSet;
+class coVulkanPipelineLayout;
+class coVulkanBuffer;
 
 class coVulkanPipeline : public coRenderPipeline
 {
@@ -14,6 +17,10 @@ public:
 	virtual ~coVulkanPipeline();
 
 	const VkPipeline& GetVkPipeline() const { return pipeline_vk; }
+
+	// Hack
+	coVulkanDescriptorSet* GetVulkanDescriptorSet() const { return vulkanDescriptorSet; }
+	const coVulkanPipelineLayout* GetVulkanPipelineLayout() const { return vulkanPipelineLayout; }
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
@@ -30,4 +37,9 @@ private:
 	coResult InitColorBlending(VkPipelineColorBlendStateCreateInfo& _out, coDynamicArray<VkPipelineColorBlendAttachmentState>& _outAttachments, const InitConfig& _config);
 
 	VkPipeline pipeline_vk;
+
+	// hack 
+	coVulkanBuffer* vulkanBuffer;
+	coVulkanDescriptorSet* vulkanDescriptorSet;
+	const coVulkanPipelineLayout* vulkanPipelineLayout;
 };
