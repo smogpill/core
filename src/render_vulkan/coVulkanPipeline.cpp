@@ -21,20 +21,9 @@
 #include "math/quaternion/coQuat_f.h"
 #include "math/transform/coTransform.h"
 
-// Hack
-struct ModelConstants
-{
-	coMat4 modelViewProj;
-};
-
 coVulkanPipeline::coVulkanPipeline()
 	: pipeline_vk(VK_NULL_HANDLE)
-	, vulkanDescriptorSet(nullptr)
-	, vulkanBuffer(nullptr)
-	, vulkanPipelineLayout(nullptr)
 {
-	vulkanBuffer = new coVulkanBuffer();
-	vulkanDescriptorSet = new coVulkanDescriptorSet();
 }
 
 coVulkanPipeline::~coVulkanPipeline()
@@ -44,40 +33,12 @@ coVulkanPipeline::~coVulkanPipeline()
 		const VkDevice& device_vk = GetVkDevice();
 		vkDestroyPipeline(device_vk, pipeline_vk, nullptr);
 	}
-
-	delete vulkanDescriptorSet;
-	delete vulkanBuffer;
 }
 
 coResult coVulkanPipeline::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
-
-	{
-		coHACK("Hard coded vulkan buffer");
-	
-		coVulkanBuffer::InitConfig c;
-		c.debugName = "Hard coded vulkan buffer";
-		c.device = config.device;
-		c.size8 = sizeof(ModelConstants);
-		c.type = coVulkanBuffer::dynamic;
-		c.usage = coVulkanBuffer::Usage::uniform;
-		coTRY(vulkanBuffer->Init(c), nullptr);
-
-		coTRY(UpdateConstants(coVec3(0.0f)), nullptr);
-	}
-
-	{
-		coHACK("Hard coded descriptor set.");
-		coVulkanLogicalDevice* vulkanLogicalDevice = static_cast<coVulkanLogicalDevice*>(config.device);
-		coVulkanDescriptorSet::InitConfig c;
-		c.device = config.device;
-		c.debugName = "Hard coded descriptor set";
-		c.vulkanBuffer = vulkanBuffer;
-		c.vulkanDescriptorPool = vulkanLogicalDevice->GetVulkanDescriptorPool();
-		coTRY(vulkanDescriptorSet->Init(c), nullptr);
-	}
 
 	// Shader stages
 	coDynamicArray<VkPipelineShaderStageCreateInfo> shaderInfos;
@@ -144,37 +105,6 @@ coResult coVulkanPipeline::OnInit(const coObject::InitConfig& _config)
 	const VkDevice& device_vk = GetVkDevice();
 	coVULKAN_TRY(vkCreateGraphicsPipelines(device_vk, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline_vk), "Failed to create the vulkan pipeline.");
 
-	return true;
-}
-
-coResult coVulkanPipeline::UpdateConstants(const coVec3& _rotation)
-{
-	coMat4 model;
-	{
-		coTransform t;
-		t.rotation = coRotation(_rotation);
-		coSetWithoutScale(model, t);
-	}
-
-	coMat4 view;
-	{
-		coTransform t;
-		t.translation = coVec3(0, 0, -5);
-		coSetWithoutScale(view, t);
-	}
-
-	coMat4 proj;
-	{
-		coSetPerspective(proj, coFloat_halfPi, 16.f / 9.f, 0.05f, 1000.0f);
-	}
-
-	ModelConstants constants;
-	constants.modelViewProj = proj * view * model;
-
-	void* data = nullptr;
-	coTRY(vulkanBuffer->Map(data), nullptr);
-	*reinterpret_cast<ModelConstants*>(data) = constants;
-	vulkanBuffer->Unmap();
 	return true;
 }
 

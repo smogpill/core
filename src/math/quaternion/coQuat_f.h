@@ -39,6 +39,8 @@ coFORCE_INLINE coQuat coRotation(const coFloatx3& _eulerAngles)
 	r.y = cr * cp * sy - sr * sp * cy;
 	r.z = sr * cp * cy - cr * sp * sy;
 	r.w = cr * cp * cy + sr * sp * sy;
+
+	r  = coNormalize(r); // HACK
 	return r;
 }
 coFORCE_INLINE coQuat coRotation(const coVec3& _axis, coFloat _angle)

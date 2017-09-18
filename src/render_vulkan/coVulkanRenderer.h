@@ -5,6 +5,9 @@
 #include "render/coRenderer.h"
 
 class coRenderPipeline;
+class coVec3;
+class coVulkanBuffer;
+class coVulkanDescriptorSet;
 
 class coVulkanRenderer final : public coRenderer
 {
@@ -19,5 +22,8 @@ protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 private:
-	coRenderPipeline* testPipeline;
+	// Hack
+	coResult UpdateConstants(const coVec3& _rotation);
+	coVulkanBuffer* vulkanBuffer;
+	coVulkanDescriptorSet* vulkanDescriptorSet;
 };

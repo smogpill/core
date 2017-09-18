@@ -30,6 +30,7 @@ public:
 	coRenderContext* GetContext() const { return context; }
 
 	virtual coResult FillCommandBuffer(const FillConfig& _config);
+	const coArray<coRenderDevice*>& GetDevices() const { return devices; }
 
 protected:
 	coRenderer();

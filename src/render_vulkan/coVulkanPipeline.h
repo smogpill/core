@@ -18,9 +18,6 @@ public:
 	virtual ~coVulkanPipeline();
 
 	const VkPipeline& GetVkPipeline() const { return pipeline_vk; }
-
-	// Hack
-	coVulkanDescriptorSet* GetVulkanDescriptorSet() const { return vulkanDescriptorSet; }
 	const coVulkanPipelineLayout* GetVulkanPipelineLayout() const { return vulkanPipelineLayout; }
 
 protected:
@@ -38,10 +35,5 @@ private:
 	coResult InitColorBlending(VkPipelineColorBlendStateCreateInfo& _out, coDynamicArray<VkPipelineColorBlendAttachmentState>& _outAttachments, const InitConfig& _config);
 
 	VkPipeline pipeline_vk;
-
-	// hack 
-	coResult UpdateConstants(const coVec3& _rotation);
-	coVulkanBuffer* vulkanBuffer;
-	coVulkanDescriptorSet* vulkanDescriptorSet;
 	const coVulkanPipelineLayout* vulkanPipelineLayout;
 };
