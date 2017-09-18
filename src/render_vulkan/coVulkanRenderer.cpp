@@ -139,7 +139,7 @@ coResult coVulkanRenderer::UpdateConstants(const coVec3& _rotation)
 
 	coMat4 proj;
 	{
-		coSetPerspective(proj, coFloat_halfPi, 16.f / 9.f, 0.05f, 1000.0f);
+		coSetPerspective(proj, coConvertToRad(90.0f), 16.f / 9.f, 0.05f, 1000.0f);
 	}
 
 	ModelConstants constants;
