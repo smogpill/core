@@ -75,19 +75,78 @@ coResult coTestScene::InitMesh()
 	coMesh* p = new coMesh();
 	coDEFER() { delete p; };
 
-	const coFloat halfSize = 0.5f;
+	const coFloat s = 0.5f;
+
+	const coFloatx3 v[] =
+	{
+		coFloatx3(-s, s, s),
+		coFloatx3(s, s, s),
+		coFloatx3(s, -s, s),
+		coFloatx3(-s, -s, s),
+		coFloatx3(-s, s, -s),
+		coFloatx3(s, s, -s),
+		coFloatx3(s, -s, -s),
+		coFloatx3(-s, -s, -s)
+	};
+
+	const coFloatx3 n[] =
+	{
+		coFloatx3(0, 0, 1),
+		coFloatx3(-1, 0, 0),
+		coFloatx3(0, 1, 0),
+		coFloatx3(1, 0, 0),
+		coFloatx3(0, -1, 0),
+		coFloatx3(0, 0, -1)
+	};
+
+	const coFloatx2 u[] = 
+	{
+		coFloatx2(0, 0),
+		coFloatx2(0, 1),
+		coFloatx2(1, 1),
+		coFloatx2(1, 0),
+	};
+	
 	const coFloatx3 positions[] = 
 	{
-		coFloatx3(-halfSize, -halfSize, -halfSize),
-		coFloatx3(halfSize, -halfSize, -halfSize),
-		coFloatx3(-halfSize, halfSize, -halfSize),
-		coFloatx3(halfSize, halfSize, -halfSize),
-		coFloatx3(-halfSize, -halfSize, halfSize),
-		coFloatx3(halfSize, -halfSize, halfSize),
-		coFloatx3(-halfSize, halfSize, halfSize),
-		coFloatx3(halfSize, halfSize, halfSize),
+		v[0], v[1], v[2], v[3],
+		v[4], v[0], v[3], v[7],
+		v[5], v[1], v[0], v[4],
+		v[6], v[2], v[1], v[5],
+		v[7], v[3], v[2], v[6],
+		v[7], v[6], v[5], v[4]
 	};
 	coPushBackArray(p->positions, coArray<coFloatx3>(positions));
+	const coFloatx3 normals[] = 
+	{
+		n[0], n[0], n[0], n[0],
+		n[1], n[1], n[1], n[1],
+		n[2], n[2], n[2], n[2],
+		n[3], n[3], n[3], n[3],
+		n[4], n[4], n[4], n[4],
+		n[5], n[5], n[5], n[5]
+	};
+	coPushBackArray(p->normals, coArray<coFloatx3>(normals));
+	const coFloatx2 uvs[] =
+	{
+		u[0], u[1], u[2], u[3],
+		u[0], u[1], u[2], u[3],
+		u[0], u[1], u[2], u[3],
+		u[0], u[1], u[2], u[3],
+		u[0], u[1], u[2], u[3],
+		u[0], u[1], u[2], u[3]
+	};
+	coPushBackArray(p->uvs, coArray<coFloatx2>(uvs));
+	const coUint32 indices[] = 
+	{
+		0, 1, 2, 2, 3, 0,
+		4, 5, 6, 6, 7, 4,
+		8, 9, 10, 10, 11, 8,
+		12, 13, 14, 14, 15, 12,
+		16, 17, 18, 18, 19, 16,
+		20, 21, 22, 22, 23, 20
+	};
+	coPushBackArray(p->indices, coArray<coUint32>(indices));
 	coSwap(mesh, p);
 	return true;
 }
