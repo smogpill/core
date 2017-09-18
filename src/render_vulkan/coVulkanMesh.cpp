@@ -27,6 +27,7 @@ coResult coVulkanMesh::OnInit(const coObject::InitConfig& _config)
 	coASSERT(mesh);
 	const auto& positions = mesh->GetPositions();
 	const auto& normals = mesh->GetNormals();
+	const auto& tangents = mesh->GetTangents();
 	const auto& uvs = mesh->GetUvs();
 	const auto& indices = mesh->GetIndices();
 	const coUint32 vertexBufferSize = positions.count * sizeof(coRenderVertex_PosNormalTangentUv);
@@ -54,6 +55,7 @@ coResult coVulkanMesh::OnInit(const coObject::InitConfig& _config)
 		{
 			posData->pos = positions[i];
 			posData->normal = normals[i];
+			posData->tangent = tangents[i];
 			posData->uv = uvs[i];
 			++posData;
 		}

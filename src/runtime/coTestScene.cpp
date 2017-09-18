@@ -99,6 +99,16 @@ coResult coTestScene::InitMesh()
 		coFloatx3(0, 0, -1)
 	};
 
+	const coFloatx3 t[] =
+	{
+		coFloatx3(0, -1, 0),
+		coFloatx3(0, -1, 0),
+		coFloatx3(-1, 0, 0),
+		coFloatx3(0, 1, 0),
+		coFloatx3(1, 0, 0),
+		coFloatx3(0, 1, 0),
+	};
+
 	const coFloatx2 u[] = 
 	{
 		coFloatx2(0, 0),
@@ -127,6 +137,16 @@ coResult coTestScene::InitMesh()
 		n[5], n[5], n[5], n[5]
 	};
 	coPushBackArray(p->normals, coArray<coFloatx3>(normals));
+	const coFloatx3 tangents[] =
+	{
+		t[0], t[0], t[0], t[0],
+		t[1], t[1], t[1], t[1],
+		t[2], t[2], t[2], t[2],
+		t[3], t[3], t[3], t[3],
+		t[4], t[4], t[4], t[4],
+		t[5], t[5], t[5], t[5]
+	};
+	coPushBackArray(p->tangents, coArray<coFloatx3>(tangents));
 	const coFloatx2 uvs[] =
 	{
 		u[0], u[1], u[2], u[3],
