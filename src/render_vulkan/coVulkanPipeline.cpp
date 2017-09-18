@@ -21,6 +21,12 @@
 #include "math/quaternion/coQuat_f.h"
 #include "math/transform/coTransform.h"
 
+// Hack
+struct ModelConstants
+{
+	coMat4 modelViewProj;
+};
+
 coVulkanPipeline::coVulkanPipeline()
 	: pipeline_vk(VK_NULL_HANDLE)
 	, vulkanDescriptorSet(nullptr)
@@ -50,10 +56,7 @@ coResult coVulkanPipeline::OnInit(const coObject::InitConfig& _config)
 
 	{
 		coHACK("Hard coded vulkan buffer");
-		struct ModelConstants
-		{
-			coMat4 modelViewProj;
-		};
+	
 		coVulkanBuffer::InitConfig c;
 		c.debugName = "Hard coded vulkan buffer";
 		c.device = config.device;
@@ -62,32 +65,7 @@ coResult coVulkanPipeline::OnInit(const coObject::InitConfig& _config)
 		c.usage = coVulkanBuffer::Usage::uniform;
 		coTRY(vulkanBuffer->Init(c), nullptr);
 
-		coMat4 model;
-		{
-			coTransform t;
-			//t.rotation = coRotation(coFloatx3(0, 0, coFloat_pi * 0.25f * 2.f));
-			coSetWithoutScale(model, t);
-		}
-		
-		coMat4 view;
-		{
-			coTransform t;
-			t.translation = coVec3(0, 0, -5);
-			coSetWithoutScale(view, t);
-		}
-
-		coMat4 proj;
-		{
-			coSetPerspective(proj, coFloat_halfPi, 16.f / 9.f, 0.05f, 1000.0f);
-		}
-
-		ModelConstants constants;
-		constants.modelViewProj = proj * view * model;
-
-		void* data = nullptr;
-		coTRY(vulkanBuffer->Map(data), nullptr);
-		*reinterpret_cast<ModelConstants*>(data) = constants;
-		vulkanBuffer->Unmap();
+		coTRY(UpdateConstants(coVec3(0.0f)), nullptr);
 	}
 
 	{
@@ -166,6 +144,37 @@ coResult coVulkanPipeline::OnInit(const coObject::InitConfig& _config)
 	const VkDevice& device_vk = GetVkDevice();
 	coVULKAN_TRY(vkCreateGraphicsPipelines(device_vk, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline_vk), "Failed to create the vulkan pipeline.");
 
+	return true;
+}
+
+coResult coVulkanPipeline::UpdateConstants(const coVec3& _rotation)
+{
+	coMat4 model;
+	{
+		coTransform t;
+		t.rotation = coRotation(_rotation);
+		coSetWithoutScale(model, t);
+	}
+
+	coMat4 view;
+	{
+		coTransform t;
+		t.translation = coVec3(0, 0, -5);
+		coSetWithoutScale(view, t);
+	}
+
+	coMat4 proj;
+	{
+		coSetPerspective(proj, coFloat_halfPi, 16.f / 9.f, 0.05f, 1000.0f);
+	}
+
+	ModelConstants constants;
+	constants.modelViewProj = proj * view * model;
+
+	void* data = nullptr;
+	coTRY(vulkanBuffer->Map(data), nullptr);
+	*reinterpret_cast<ModelConstants*>(data) = constants;
+	vulkanBuffer->Unmap();
 	return true;
 }
 

@@ -8,6 +8,7 @@ class coRenderDevice;
 class coVulkanDescriptorSet;
 class coVulkanPipelineLayout;
 class coVulkanBuffer;
+class coVec3;
 
 class coVulkanPipeline : public coRenderPipeline
 {
@@ -39,6 +40,7 @@ private:
 	VkPipeline pipeline_vk;
 
 	// hack 
+	coResult UpdateConstants(const coVec3& _rotation);
 	coVulkanBuffer* vulkanBuffer;
 	coVulkanDescriptorSet* vulkanDescriptorSet;
 	const coVulkanPipelineLayout* vulkanPipelineLayout;
