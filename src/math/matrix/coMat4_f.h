@@ -11,7 +11,17 @@
 
 coFORCE_INLINE coVec4 operator* (const coMat4& _this, const coVec4& _a)
 {
-	return coVec4(coDot(_this.c0, _a), coDot(_this.c1, _a), coDot(_this.c2, _a), coDot(_this.c3, _a));
+	const coFloatx4 ax = coBroadcastX(_a);
+	const coFloatx4 ay = coBroadcastY(_a);
+	const coFloatx4 az = coBroadcastZ(_a);
+	const coFloatx4 aw = coBroadcastW(_a);
+
+	const coFloatx4 mx = _this.c0 * ax;
+	const coFloatx4 my = _this.c1 * ay;
+	const coFloatx4 mz = _this.c2 * az;
+	const coFloatx4 mw = _this.c3 * aw;
+
+	return coBitCast<coVec4>(mx + my + mz + mw);
 }
 
 coFORCE_INLINE coMat4 operator* (const coMat4& _a, const coMat4& _b)

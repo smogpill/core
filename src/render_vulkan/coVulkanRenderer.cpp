@@ -133,7 +133,7 @@ coResult coVulkanRenderer::UpdateConstants(const coVec3& _rotation)
 	coMat4 view;
 	{
 		coTransform t;
-		t.translation = coVec3(0, 0, -10);
+		t.translation = coVec3(0, 0, 5);
 		coSetWithoutScale(view, t);
 	}
 

@@ -28,36 +28,32 @@ void coSetPerspective(coMat4& _this, coFloat _fovyRadians, coFloat _aspect, coFl
 // 	m[14] = 2.0f*(zNear*zFar) / neg_depth;
 // 	m[15] = 0;
 
+	coASSERT(_aspect > 0.0001f);
+	coASSERT(_zFar - _zNear > 0.0001f);
+
 	const coFloat h = 1.0f / coTan(_fovyRadians * 0.5f);
-	const coFloat rangeInv = 1.0f / (_zNear - _zFar);
+	const coFloat rangeInv = 1.0f / (_zFar -_zNear);
 	_this.c0 = coFloatx4(h / _aspect, 0, 0, 0);
 	_this.c1 = coFloatx4(0, h, 0, 0);
-	_this.c2 = coFloatx4(0, 0, (_zNear + _zFar) * rangeInv, -1);
-	_this.c3 = coFloatx4(0, 0, 2.0f * _zNear * _zFar * rangeInv, 0);
+	_this.c2 = coFloatx4(0, 0, _zFar * rangeInv, 1);
+	_this.c3 = coFloatx4(0, 0, -_zFar * _zNear * rangeInv, 0);
 
-// 	float f, rangeInv;
-// 	__m128 zero, col0, col1, col2, col3;
-// 	union { __m128 v; float s[4]; } tmp;
-// 	f = tanf(_VECTORMATH_PI_OVER_2 - fovyRadians * 0.5f);
-// 	rangeInv = 1.0f / (zNear - zFar);
-// 	zero = _mm_setzero_ps();
-// 	tmp.v = zero;
-// 	tmp.s[0] = f / aspect;
-// 	col0 = tmp.v;
-// 	tmp.v = zero;
-// 	tmp.s[1] = f;
-// 	col1 = tmp.v;
-// 	tmp.v = zero;
-// 	tmp.s[2] = (zNear + zFar) * rangeInv;
-// 	tmp.s[3] = -1.0f;
-// 	col2 = tmp.v;
-// 	tmp.v = zero;
-// 	tmp.s[2] = zNear * zFar * rangeInv * 2.0f;
-// 	col3 = tmp.v;
-// 	return Matrix4(
-// 		Vector4(col0),
-// 		Vector4(col1),
-// 		Vector4(col2),
-// 		Vector4(col3)
-// 	);
+// 	assert(abs(aspect - std::numeric_limits<T>::epsilon()) > static_cast<T>(0));
+// 
+// 	T const tanHalfFovy = tan(fovy / static_cast<T>(2));
+// 
+// 	mat<4, 4, T, defaultp> Result(static_cast<T>(0));
+// 	Result[0][0] = static_cast<T>(1) / (aspect * tanHalfFovy);
+// 	Result[1][1] = static_cast<T>(1) / (tanHalfFovy);
+// 	Result[2][3] = static_cast<T>(1);
+// 
+// #		if GLM_DEPTH_CLIP_SPACE == GLM_DEPTH_ZERO_TO_ONE
+// 	Result[2][2] = zFar / (zFar - zNear);
+// 	Result[3][2] = -(zFar * zNear) / (zFar - zNear);
+// #		else
+// 	Result[2][2] = (zFar + zNear) / (zFar - zNear);
+// 	Result[3][2] = -(static_cast<T>(2) * zFar * zNear) / (zFar - zNear);
+// #		endif
+// 
+// 	return Result;
 }
