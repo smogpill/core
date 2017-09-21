@@ -16,10 +16,12 @@ out gl_PerVertex
 };
 
 layout(location = 0) out vec3 fragColor;
+layout(location = 1) out vec3 fragNormal;
 
 void main()
 {
     gl_Position = ubo.modelViewProj * vec4(inPos, 1.0f);
-    //fragColor = vec3(dot(inNormal, normalize(vec3(1, 1, 0))));
-	fragColor = abs(inNormal);
+    fragColor = vec3(1, 1, 1);
+	fragNormal = inNormal;
+	//fragColor = abs(inNormal);
 }
