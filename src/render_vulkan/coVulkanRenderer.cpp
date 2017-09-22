@@ -25,16 +25,16 @@ struct ModelConstants
 };
 
 coVulkanRenderer::coVulkanRenderer()
-	: vulkanBuffer(nullptr)
+	: modelConstantsBuffer(nullptr)
 	, vulkanDescriptorSet(nullptr)
 {
-	vulkanBuffer = new coVulkanBuffer();
+	modelConstantsBuffer = new coVulkanBuffer();
 	vulkanDescriptorSet = new coVulkanDescriptorSet();
 }
 
 coVulkanRenderer::~coVulkanRenderer()
 {
-	delete vulkanBuffer;
+	delete modelConstantsBuffer;
 	delete vulkanDescriptorSet;
 }
 
@@ -42,16 +42,15 @@ coResult coVulkanRenderer::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 
+	// Init model constants buffer
 	{
-		coHACK("Hard coded Vulkan buffer.");
-
 		coVulkanBuffer::InitConfig c;
-		c.debugName = "Hard coded Vulkan buffer";
+		c.debugName = "ModelConstantsBuffer";
 		c.device = GetDevices()[0];
 		c.size8 = sizeof(ModelConstants);
 		c.type = coVulkanBuffer::dynamic;
 		c.usage = coVulkanBuffer::Usage::uniform;
-		coTRY(vulkanBuffer->Init(c), nullptr);
+		coTRY(modelConstantsBuffer->Init(c), nullptr);
 
 		coTRY(UpdateConstants(coVec3(0.0f)), nullptr);
 	}
@@ -62,7 +61,7 @@ coResult coVulkanRenderer::OnInit(const coObject::InitConfig& _config)
 		coVulkanDescriptorSet::InitConfig c;
 		c.device = vulkanLogicalDevice;
 		c.debugName = "Hard coded descriptor set";
-		c.vulkanBuffer = vulkanBuffer;
+		c.vulkanBuffer = modelConstantsBuffer;
 		c.vulkanDescriptorPool = vulkanLogicalDevice->GetVulkanDescriptorPool();
 		coTRY(vulkanDescriptorSet->Init(c), nullptr);
 	}
@@ -146,8 +145,8 @@ coResult coVulkanRenderer::UpdateConstants(const coVec3& _rotation)
 	constants.modelViewProj = proj * view * model;
 
 	void* data = nullptr;
-	coTRY(vulkanBuffer->Map(data), nullptr);
+	coTRY(modelConstantsBuffer->Map(data), nullptr);
 	*reinterpret_cast<ModelConstants*>(data) = constants;
-	vulkanBuffer->Unmap();
+	modelConstantsBuffer->Unmap();
 	return true;
 }
