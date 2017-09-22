@@ -22,7 +22,7 @@ protected:
 	virtual coResult OnStart() override;
 
 private:
-	coResult Render();
+	coResult Update();
 	coResult InitRenderer();
 	coResult InitRenderWorld();
 	coResult InitTestScene();

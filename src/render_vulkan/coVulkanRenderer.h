@@ -23,7 +23,7 @@ protected:
 
 private:
 	// Hack
-	coResult UpdateConstants(const coVec3& _rotation);
+	coResult UpdateConstants();
 	coVulkanBuffer* modelConstantsBuffer;
 	coVulkanDescriptorSet* vulkanDescriptorSet;
 };

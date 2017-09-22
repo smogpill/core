@@ -26,6 +26,7 @@ public:
 	void PushBindPipeline(const coRenderPipeline& _pipeline);
 	void PushExecuteCommands(const coArray<const coRenderCommandBuffer*>& _commandBuffers);
 	void PushBindDescriptorSet(const coVulkanDescriptorSet& _vulkanDescriptorSet, const coVulkanPipelineLayout& _vulkanPipelineLayout, coUint _index);
+	void PushConstants(const coVulkanPipelineLayout& _vulkanPipelineLayout, coUint _offset, coUint _size, const void* _data);
 	void PushDraw(const coRenderMesh& _mesh);
 	void PushDrawEmptyTriangle();
 	const VkCommandBuffer& GetVkCommandBuffer() const { return commandBuffer_vk; }

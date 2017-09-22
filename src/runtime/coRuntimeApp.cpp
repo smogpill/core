@@ -53,15 +53,20 @@ coResult coRuntimeApp::OnStart()
 		if (exitRequested)
 			break;
 
-		coCHECK(Render(), "Failed to render");
+		coCHECK(Update(), "Failed to render.");
 	}
 	return true;
 }
 
-coResult coRuntimeApp::Render()
+coResult coRuntimeApp::Update()
 {
+	if (testScene)
+	{
+		coCHECK(testScene->Update(), "Failed to update.");
+	}
+	
 	if (renderWindow)
-	{	
+	{
 		coTRY(renderWorld, nullptr);
 		coTRY(renderWindow->Render(*renderWorld), "Failed to render the render window: " << *renderWindow);
 	}

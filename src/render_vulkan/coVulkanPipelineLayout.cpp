@@ -8,6 +8,9 @@
 #include "lang/result/coResult.h"
 #include "lang/result/coResult_f.h"
 
+// Hack
+#include "math/matrix/coMat4.h"
+
 coVulkanPipelineLayout::coVulkanPipelineLayout()
 	: pipelineLayout_vk(VK_NULL_HANDLE)
 	, vulkandescriptorSetLayout(nullptr)
@@ -38,14 +41,22 @@ coResult coVulkanPipelineLayout::OnInit(const coObject::InitConfig& _config)
 		coTRY(vulkandescriptorSetLayout->Init(c), nullptr);
 	}
 
+	coHACK("Hard coded constants.");
+	VkPushConstantRange constantRange_vk{};
+	{
+		constantRange_vk.offset = 0;
+		constantRange_vk.size = sizeof(coMat4);
+		constantRange_vk.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+	}
+
 	coDynamicArray<VkDescriptorSetLayout> descriptorSetLayouts_vk{ vulkandescriptorSetLayout->GetVkDescriptorSetLayout() };
 
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 	pipelineLayoutInfo.setLayoutCount = descriptorSetLayouts_vk.count;
 	pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts_vk.data;
-	pipelineLayoutInfo.pushConstantRangeCount = 0;
-	pipelineLayoutInfo.pPushConstantRanges = 0;
+	pipelineLayoutInfo.pushConstantRangeCount = 1;
+	pipelineLayoutInfo.pPushConstantRanges = &constantRange_vk;
 
 	const VkDevice& device_vk = GetVkDevice();
 	coTRY(pipelineLayout_vk == VK_NULL_HANDLE, nullptr);

@@ -13,9 +13,7 @@
 #include "render/coRenderWorld.h"
 #include "lang/result/coResult_f.h"
 #include "pattern/scope/coDefer.h"
-#include "math/vector/coFloatx4.h"
 #include "math/matrix/coMat4_f.h"
-#include "math/quaternion/coQuat_f.h"
 #include "math/transform/coTransform.h"
 
 // Hack
@@ -52,7 +50,7 @@ coResult coVulkanRenderer::OnInit(const coObject::InitConfig& _config)
 		c.usage = coVulkanBuffer::Usage::uniform;
 		coTRY(modelConstantsBuffer->Init(c), nullptr);
 
-		coTRY(UpdateConstants(coVec3(0.0f)), nullptr);
+		coTRY(UpdateConstants(), nullptr);
 	}
 
 	{
@@ -73,9 +71,18 @@ coResult coVulkanRenderer::FillCommandBuffer(const FillConfig& _config)
 {
 	coTRY(Super::FillCommandBuffer(_config), nullptr);
 
-	static coFloat x = 0.0f;
-	x += 0.01f;
-	coTRY(UpdateConstants(coVec3(x)), nullptr);
+	coTRY(UpdateConstants(), nullptr);
+	coMat4 viewMatrix;
+	{
+		coTransform t;
+		t.translation = coVec3(0, 0, 2);
+		coSetWithoutScale(viewMatrix, t);
+	}
+
+	coMat4 projMatrix;
+	{
+		coSetPerspective(projMatrix, coConvertToRad(90.0f), 16.f / 9.f, 0.05f, 1000.0f);
+	}
 
 	coVulkanCommandBuffer* vulkanCommandBuffer = static_cast<coVulkanCommandBuffer*>(_config.commandBuffer);
 	coTRY(vulkanCommandBuffer, nullptr);
@@ -94,14 +101,26 @@ coResult coVulkanRenderer::FillCommandBuffer(const FillConfig& _config)
 	coTRY(_config.pipeline, nullptr);
 	vulkanCommandBuffer->PushBindPipeline(*_config.pipeline);
 
+	coVulkanPipeline* vulkanPipeline = static_cast<coVulkanPipeline*>(_config.pipeline);
+	const coVulkanPipelineLayout* vulkanPipelineLayout = vulkanPipeline->GetVulkanPipelineLayout();
+
 	{
 		coHACK("Hacked bind descriptor set.");
-		coVulkanPipeline* vulkanPipeline = static_cast<coVulkanPipeline*>(_config.pipeline);
-		const coVulkanPipelineLayout* vulkanPipelineLayout = vulkanPipeline->GetVulkanPipelineLayout();
+		
 		vulkanCommandBuffer->PushBindDescriptorSet(*vulkanDescriptorSet, *vulkanPipelineLayout, 0);
 	}
 
 	//vulkanCommandBuffer->PushDrawEmptyTriangle();
+
+// 	coMat4 model;
+// 	{
+// 		coTransform t;
+// 		t.rotation = coRotation(_rotation);
+// 		coSetWithoutScale(model, t);
+// 	}
+
+// 	static coFloat x = 0.0f;
+// 	x += 0.01f;
 
 	if (_config.world)
 	{
@@ -109,9 +128,15 @@ coResult coVulkanRenderer::FillCommandBuffer(const FillConfig& _config)
 		for (const coRenderEntity* entity : entities)
 		{
 			coASSERT(entity);
+			const coMat4& modelMatrix = entity->GetWorldMatrix();
+			const coMat4 modelViewProj = projMatrix * viewMatrix * modelMatrix;
+			coASSERT(vulkanPipelineLayout);
+			vulkanCommandBuffer->PushConstants(*vulkanPipelineLayout, 0, sizeof(modelViewProj), &modelViewProj);
+
 			const coRenderMesh* mesh = entity->GetRenderMesh();
 			if (mesh)
 			{
+
 				vulkanCommandBuffer->PushDraw(*mesh);
 			}
 		}
@@ -120,29 +145,9 @@ coResult coVulkanRenderer::FillCommandBuffer(const FillConfig& _config)
 	return true;
 }
 
-coResult coVulkanRenderer::UpdateConstants(const coVec3& _rotation)
+coResult coVulkanRenderer::UpdateConstants()
 {
-	coMat4 model;
-	{
-		coTransform t;
-		t.rotation = coRotation(_rotation);
-		coSetWithoutScale(model, t);
-	}
-
-	coMat4 view;
-	{
-		coTransform t;
-		t.translation = coVec3(0, 0, 2);
-		coSetWithoutScale(view, t);
-	}
-
-	coMat4 proj;
-	{
-		coSetPerspective(proj, coConvertToRad(90.0f), 16.f / 9.f, 0.05f, 1000.0f);
-	}
-
 	ModelConstants constants;
-	constants.modelViewProj = proj * view * model;
 
 	void* data = nullptr;
 	coTRY(modelConstantsBuffer->Map(data), nullptr);

@@ -27,6 +27,7 @@ public:
 	virtual ~coTestScene();
 
 	const coArray<coRenderEntity*>& GetEntities() const { return entities; }
+	coResult Update();
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;

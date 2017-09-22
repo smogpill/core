@@ -14,6 +14,8 @@
 #include "io/file/coFileAccess.h"
 #include "io/file/coFile_f.h"
 #include "container/array/coDynamicArray_f.h"
+#include "math/matrix/coMat4_f.h"
+#include "math/transform/coTransform.h"
 
 coTestScene::coTestScene()
 	: mesh(nullptr)
@@ -35,6 +37,23 @@ coTestScene::~coTestScene()
 	delete material;
 	delete fragmentShader;
 	delete vertexShader;
+}
+
+coResult coTestScene::Update()
+{
+	coMat4 model;
+	{
+		static coFloat x = 0.0f;
+		x += 0.01f;
+		coTransform t;
+		t.rotation = coRotation(x);
+		coSetWithoutScale(model, t);
+	}
+
+	for (coRenderEntity* p : entities)
+		p->SetWorldMatrix(model);
+
+	return true;
 }
 
 coTestScene::InitConfig::InitConfig()

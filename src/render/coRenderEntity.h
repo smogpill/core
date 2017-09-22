@@ -15,6 +15,8 @@ public:
 
 	coResult SetRenderMesh(coRenderMesh* _renderMesh);
 	coRenderMesh* GetRenderMesh() const { return renderMesh; }
+	void SetWorldMatrix(const coMat4& _m) { worldMatrix = _m; }
+	const coMat4& GetWorldMatrix() const { return worldMatrix; }
 
 private:
 	coRenderMesh* renderMesh;

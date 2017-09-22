@@ -184,6 +184,15 @@ void coVulkanCommandBuffer::PushDraw(const coRenderMesh& _mesh)
 	}
 }
 
+void coVulkanCommandBuffer::PushConstants(const coVulkanPipelineLayout& _vulkanPipelineLayout, coUint _offset, coUint _size, const void* _data)
+{
+	coASSERT(CheckReadyForPassCommands());
+	coASSERT(_size);
+	coASSERT(_data);
+	const VkPipelineLayout& pipelineLayout_vk = _vulkanPipelineLayout.GetVkPipelineLayout();
+	vkCmdPushConstants(commandBuffer_vk, pipelineLayout_vk, VK_SHADER_STAGE_VERTEX_BIT, _offset, _size, _data);
+}
+
 void coVulkanCommandBuffer::PushDrawEmptyTriangle()
 {
 	coASSERT(CheckReadyForPassCommands());
