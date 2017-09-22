@@ -6,12 +6,15 @@
 coResult coApp::ProcessEvents()
 {
 	MSG msg;
-	if (::GetMessageW(&msg, NULL, 0, 0))
+
+	while (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 	{
+		// Translate the message and dispatch it to WindowProc()
 		::TranslateMessage(&msg);
-		::DispatchMessageW(&msg);
+		::DispatchMessage(&msg);
 	}
-	else
+
+	if (msg.message == WM_QUIT)
 	{
 		exitRequested = true;
 		return msg.wParam == 0;
