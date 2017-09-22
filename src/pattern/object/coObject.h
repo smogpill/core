@@ -29,6 +29,7 @@ public:
 	virtual ~coObject();
 
 	coResult Init(const InitConfig& _config);
+	coResult Init();
 	coResult Start();
 	void Stop();
 	const coConstString& GetDebugName() const;
@@ -38,6 +39,7 @@ public:
 	virtual coBool IsValid() const { return true; }
 
 protected:
+	virtual coResult OnInit();
 	virtual coResult OnInit(const InitConfig& _config);
 	virtual coResult OnStart();
 	virtual void OnStop();

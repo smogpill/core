@@ -26,6 +26,16 @@ coResult coObject::Init(const InitConfig& _config)
 	return true;
 }
 
+coResult coObject::Init()
+{
+	if (objectState >= ObjectState::initialized)
+		return true;
+
+	coTRY(OnInit(), "Init failed");
+	objectState = ObjectState::initialized;
+	return true;
+}
+
 coResult coObject::Start()
 {
 	if (objectState >= ObjectState::started)
@@ -43,6 +53,11 @@ void coObject::Stop()
 
 	OnStop();
 	objectState = ObjectState::initialized;
+}
+
+coResult coObject::OnInit()
+{
+	return true;
 }
 
 coResult coObject::OnInit(const InitConfig& _config)
