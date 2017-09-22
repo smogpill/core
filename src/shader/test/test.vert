@@ -5,7 +5,7 @@
     mat4 modelViewProj;
 } ubo;*/
 
-layout(push_constant, std430) uniform PushConstants
+layout(push_constant) uniform PushConstants
 {
 	mat4 modelViewProj;
 } constants;
