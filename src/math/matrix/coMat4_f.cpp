@@ -55,5 +55,6 @@ void coSetPerspective(coMat4& _this, coFloat _fovyRadians, coFloat _aspect, coFl
 // 	Result[3][2] = -(static_cast<T>(2) * zFar * zNear) / (zFar - zNear);
 // #		endif
 // 
-// 	return Result;
+// 	return Result;
+
 }
