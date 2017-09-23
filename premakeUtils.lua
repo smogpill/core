@@ -140,7 +140,7 @@ end
 
 function coFindDir(_srcDirs, _dirName)
 	for _, d in pairs(_srcDirs) do
-		local foundDirs = os.matchdirs(d.."/**".._dirName)
+		local foundDirs = os.matchdirs(d.."/".._dirName)
 		for _, e in pairs(foundDirs) do
 			return e
 		end
@@ -151,7 +151,7 @@ end
 function coIncludeProject(_srcDirs, _projectName)
 	local foundDir = coFindDir(_srcDirs, _projectName)
 	if foundDir == nil then
-		error("Failed to find the project: "..p)
+		error("Failed to find the project: ".._projectName)
 	else
 		co_projectDir = foundDir
 		include(foundDir)
