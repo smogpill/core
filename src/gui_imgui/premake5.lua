@@ -1,0 +1,1 @@
+coSetCppProjectDefaults("gui_imgui")
