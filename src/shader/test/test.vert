@@ -20,13 +20,13 @@ out gl_PerVertex
     vec4 gl_Position;
 };
 
-layout(location = 0) out vec3 fragColor;
-layout(location = 1) out vec3 fragNormal;
+layout(location = 0) out vec3 outColor;
+layout(location = 1) out vec3 outNormal;
 
 void main()
 {
     gl_Position = constants.modelViewProj * vec4(inPos, 1.0f);
-    fragColor = vec3(1, 1, 1);
-	fragNormal = inNormal;
+    outColor = vec3(1, 1, 1);
+	outNormal = inNormal;
 	//fragColor = abs(inNormal);
 }
