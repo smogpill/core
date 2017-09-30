@@ -174,7 +174,7 @@ void coVulkanCommandBuffer::PushDraw(const coRenderMesh& _mesh)
 	const coUint32 nbIndices = _mesh.GetNbIndices();
 	if (nbIndices)
 	{
-		vkCmdBindIndexBuffer(commandBuffer_vk, buffer_vk, vulkanMesh.GetIndexBufferOffset(), VK_INDEX_TYPE_UINT32);
+		vkCmdBindIndexBuffer(commandBuffer_vk, buffer_vk, vulkanMesh.GetIndexBufferOffset(), vulkanMesh.GetVkIndexType());
 		vkCmdDrawIndexed(commandBuffer_vk, nbIndices, 1, 0, 0, 0);
 	}
 	else
@@ -198,6 +198,18 @@ void coVulkanCommandBuffer::PushDrawEmptyTriangle()
 	coASSERT(CheckReadyForPassCommands());
 
 	vkCmdDraw(commandBuffer_vk, 3, 1, 0, 0);
+}
+
+void coVulkanCommandBuffer::PushSetScissor(coUint32 _x, coUint32 _y, coUint32 _width, coUint32 _height)
+{
+	coASSERT(CheckReadyForPassCommands());
+
+	VkRect2D rect_vk;
+	rect_vk.offset.x = _x;
+	rect_vk.offset.y = _y;
+	rect_vk.extent.width = _width;
+	rect_vk.extent.height = _height;
+	vkCmdSetScissor(commandBuffer_vk, 0, 1, &rect_vk);
 }
 
 coBool coVulkanCommandBuffer::CheckReadyForPassCommands() const

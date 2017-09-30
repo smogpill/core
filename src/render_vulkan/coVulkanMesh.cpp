@@ -29,9 +29,11 @@ coResult coVulkanMesh::OnInit(const coObject::InitConfig& _config)
 	const auto& normals = mesh->GetNormals();
 	const auto& tangents = mesh->GetTangents();
 	const auto& uvs = mesh->GetUvs();
-	const auto& indices = mesh->GetIndices();
+	const auto& indexBuffer = mesh->GetIndexBuffer();
 	const coUint32 vertexBufferSize = positions.count * sizeof(coRenderVertex_PosNormalTangentUv);
-	const coUint32 indexBufferSize = indices.count * sizeof(indices[0]);
+	const coUint32 indexBufferSize = indexBuffer.count * sizeof(indexBuffer[0]);
+
+	coTRY(mesh->indexSize8 == 2 || mesh->indexSize8 == 4, "Only 16 or 32 bits indices supported.");
 
 	coVulkanBuffer* b = new coVulkanBuffer();
 	coDEFER() { delete b; };
@@ -60,9 +62,23 @@ coResult coVulkanMesh::OnInit(const coObject::InitConfig& _config)
 			++posData;
 		}
 		coByte* index = static_cast<coByte*>(data) + indexBufferOffset;
-		coMemCopy(index, indices.data, indexBufferSize);
+		coMemCopy(index, indexBuffer.data, indexBufferSize);
 	}
 
 	coSwap(vulkanBuffer, b);
 	return true;
+}
+
+VkIndexType coVulkanMesh::GetVkIndexType() const
+{
+	switch (mesh->indexSize8)
+	{
+	case 2: return VK_INDEX_TYPE_UINT16;
+	case 4: return VK_INDEX_TYPE_UINT32;
+	default:
+	{
+		coERROR("Unsupported index type: "<<mesh->indexSize8<<".");
+		return VK_INDEX_TYPE_MAX_ENUM;
+	}
+	}
 }

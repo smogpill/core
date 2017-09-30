@@ -35,7 +35,7 @@ coResult coRenderMesh::OnInit(const coObject::InitConfig& _config)
 
 coUint coRenderMesh::GetNbIndices() const
 {
-	return mesh ? mesh->GetIndices().count : 0;
+	return mesh ? mesh->GetNbIndices() : 0;
 }
 
 coUint coRenderMesh::GetNbVertices() const

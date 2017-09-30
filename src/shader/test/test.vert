@@ -28,5 +28,4 @@ void main()
     gl_Position = constants.modelViewProj * vec4(inPos, 1.0f);
     outColor = vec3(1, 1, 1);
 	outNormal = inNormal;
-	//fragColor = abs(inNormal);
 }

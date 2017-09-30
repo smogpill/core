@@ -176,7 +176,7 @@ coResult coTestScene::InitMesh()
 		u[0], u[1], u[2], u[3]
 	};
 	coPushBackArray(p->uvs, coArray<coFloatx2>(uvs));
-	const coUint32 indices[] = 
+	const coUint16 indices[] = 
 	{
 		0, 1, 2, 2, 3, 0,
 		4, 5, 6, 6, 7, 4,
@@ -185,7 +185,8 @@ coResult coTestScene::InitMesh()
 		16, 17, 18, 18, 19, 16,
 		20, 21, 22, 22, 23, 20
 	};
-	coPushBackArray(p->indices, coArray<coUint32>(indices));
+	coPushBackArray(p->indexBuffer, coArray<const coUint8>(reinterpret_cast<const coUint8*>(indices), sizeof(indices)));
+	p->indexSize8 = sizeof(indices[0]);
 	coSwap(mesh, p);
 	return true;
 }
