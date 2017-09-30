@@ -8,4 +8,5 @@ class coDearImGuiImpl : public coImGuiImpl
 {
 	coDECLARE_SUPER(coImGuiImpl);
 public:
+
 };

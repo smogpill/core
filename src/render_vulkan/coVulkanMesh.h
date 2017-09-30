@@ -16,6 +16,7 @@ public:
 	const coVulkanBuffer* GetVulkanBuffer() const { return vulkanBuffer; }
 	coUint32 GetVertexBufferOffset() const { return 0; }
 	VkDeviceSize GetIndexBufferOffset() const { return indexBufferOffset; }
+	VkIndexType GetVkIndexType() const;
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;

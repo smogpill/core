@@ -2,3 +2,9 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "render/pch.h"
 #include "render/coMesh.h"
+
+coMesh::coMesh()
+	: indexSize8(2)
+{
+
+}
