@@ -10,3 +10,8 @@ coImGui::coImGui(coImGuiImpl& _impl)
 {
 
 }
+
+void coImGui::SetRenderDevice(coRenderDevice& _device)
+{
+	impl->device = &_device;
+}

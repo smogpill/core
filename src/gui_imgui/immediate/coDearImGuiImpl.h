@@ -4,8 +4,20 @@
 
 #include "gui/immediate/coImGuiImpl.h"
 
+class coShader;
+class coRenderSampler;
+
 class coDearImGuiImpl : public coImGuiImpl
 {
 	coDECLARE_SUPER(coImGuiImpl);
 public:
+	coDearImGuiImpl();
+	virtual ~coDearImGuiImpl();
+
+	coResult InitShaders();
+
+private:
+	coShader* vertexShader;
+	coShader* fragmentShader;
+	coRenderSampler* sampler;
 };

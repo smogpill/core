@@ -7,6 +7,8 @@
 
 class coImGuiImpl;
 class coRenderCommandBuffer;
+class coShader;
+class coRenderDevice;
 
 class coImGui : public coObject
 {
@@ -16,6 +18,8 @@ public:
 	coImGui();
 	coImGui(coImGuiImpl& _impl);
 	virtual ~coImGui();
+
+	void SetRenderDevice(coRenderDevice& _device);
 
 	void BeginWindow(const coChar* _name);
 	void EndWindow();
