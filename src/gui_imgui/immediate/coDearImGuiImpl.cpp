@@ -38,7 +38,7 @@ coResult coDearImGuiImpl::InitShaders()
 		c.device = device;
 		c.code = code;
 		c.stage = coShader::vertex;
-		coTRY(shader->Init(c), "Failed to init the vertex shader.");
+		coTRY(shader->Init(c), "Failed to init the ImGui vertex shader.");
 		coSwap(vertexShader, shader);
 	}
 
@@ -50,8 +50,16 @@ coResult coDearImGuiImpl::InitShaders()
 		c.device = device;
 		c.code = code;
 		c.stage = coShader::fragment;
-		coTRY(shader->Init(c), "Failed to init the fragment shader.");
+		coTRY(shader->Init(c), "Failed to init the ImGui fragment shader.");
 		coSwap(fragmentShader, shader);
+	}
+
+	{
+		sampler = coCreateRenderSampler();
+		coRenderSampler::InitConfig c;
+		c.debugName = "ImGui ";
+		c.device = device;
+		coTRY(sampler->Init(c), "Failed to init the ImGui sampler.");
 	}
 
 	return true;

@@ -11,6 +11,7 @@ class coRenderPipeline;
 class coRenderPipelineLayout;
 class coShader;
 class coRenderMesh;
+class coRenderSampler;
 
 coRenderer* coCreateRenderer();
 coRenderContext* coCreateRenderContext();
@@ -21,3 +22,4 @@ coRenderPipeline* coCreateRenderPipeline();
 coRenderPipelineLayout* coCreateRenderPipelineLayout();
 coShader* coCreateShader();
 coRenderMesh* coCreateRenderMesh();
+coRenderSampler* coCreateRenderSampler();
