@@ -7,6 +7,8 @@
 #include "lang/result/coResult_f.h"
 #include "math/scalar/coUint32_f.h"
 #include "render/coRenderCommandBuffer.h"
+#include "render/coRenderFactory.h"
+#include "io/file/coFile_f.h"
 
 coImGui::coImGui()
 	: coImGui(*(new coDearImGuiImpl()))
@@ -23,6 +25,9 @@ coImGui::~coImGui()
 coResult coImGui::OnInit()
 {
 	coTRY(Super::OnInit(), nullptr);
+
+	coImGuiImpl* p = static_cast<coImGuiImpl*>(impl);
+	coTRY(p->device, nullptr);
 
 	ImGuiIO& io = ImGui::GetIO();
 	io.DisplaySize = ImVec2(800, 600);

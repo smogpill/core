@@ -2,19 +2,12 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include "pattern/object/coObject.h"
+#include "render/coRenderDeviceObject.h"
 
-class coImGui;
-class coRenderDevice;
-
-class coImGuiImpl : public coObject
+class coRenderSampler : public coRenderDeviceObject
 {
-	coDECLARE_SUPER(coObject);
+	coDECLARE_SUPER(coRenderDeviceObject);
 public:
-	coImGuiImpl();
-
-	coRenderDevice* device;
-
 protected:
-	coImGui* parent;
+	coRenderSampler() {}
 };
