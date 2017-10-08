@@ -159,7 +159,7 @@ void coVulkanCommandBuffer::PushExecuteCommands(const coArray<const coRenderComm
 	vkCmdExecuteCommands(commandBuffer_vk, commandBuffers_vk.count, commandBuffers_vk.data);
 }
 
-void coVulkanCommandBuffer::PushDraw(const coRenderMesh& _mesh)
+void coVulkanCommandBuffer::PushBind(const coRenderMesh& _mesh)
 {
 	coASSERT(CheckReadyForPassCommands());
 
@@ -170,7 +170,30 @@ void coVulkanCommandBuffer::PushDraw(const coRenderMesh& _mesh)
 	coASSERT(buffer_vk != VK_NULL_HANDLE);
 	VkDeviceSize offset_vk = 0;
 	vkCmdBindVertexBuffers(commandBuffer_vk, 0, 1, &buffer_vk, &offset_vk);
+	const coUint32 nbIndices = _mesh.GetNbIndices();
+	if (nbIndices)
+	{
+		vkCmdBindIndexBuffer(commandBuffer_vk, buffer_vk, vulkanMesh.GetIndexBufferOffset(), vulkanMesh.GetVkIndexType());
+	}
+}
 
+void coVulkanCommandBuffer::PushDraw(const coUint _nbIndices, const coUint _vertexOffset, const coUint _indexOffset)
+{
+	coASSERT(CheckReadyForPassCommands());
+	vkCmdDrawIndexed(commandBuffer_vk, _nbIndices, 1, _indexOffset, _vertexOffset, 0);
+}
+
+void coVulkanCommandBuffer::PushBindAndDraw(const coRenderMesh& _mesh)
+{
+	coASSERT(CheckReadyForPassCommands());
+
+	const coVulkanMesh& vulkanMesh = static_cast<const coVulkanMesh&>(_mesh);
+	const coVulkanBuffer* vulkanBuffer = vulkanMesh.GetVulkanBuffer();
+	coASSERT(vulkanBuffer);
+	const VkBuffer& buffer_vk = vulkanBuffer->GetVkBuffer();
+	coASSERT(buffer_vk != VK_NULL_HANDLE);
+	VkDeviceSize offset_vk = 0;
+	vkCmdBindVertexBuffers(commandBuffer_vk, 0, 1, &buffer_vk, &offset_vk);
 	const coUint32 nbIndices = _mesh.GetNbIndices();
 	if (nbIndices)
 	{

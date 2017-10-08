@@ -19,7 +19,9 @@ public:
 	};
 
 	virtual void PushExecuteCommands(const coArray<const coRenderCommandBuffer*>& _commandBuffers) = 0;
-	virtual void PushDraw(const coRenderMesh& _mesh) = 0;
+	virtual void PushBind(const coRenderMesh& _mesh) = 0;
+	virtual void PushDraw(const coUint _nbIndices, const coUint _vertexOffset, const coUint _indexOffset) = 0;
+	virtual void PushBindAndDraw(const coRenderMesh& _mesh) = 0;
 	virtual void PushSetScissor(coUint32 _x, coUint32 _y, coUint32 _width, coUint32 _height) = 0;
 
 protected:

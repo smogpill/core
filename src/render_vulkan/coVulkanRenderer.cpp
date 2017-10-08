@@ -137,7 +137,7 @@ coResult coVulkanRenderer::FillCommandBuffer(const FillConfig& _config)
 			if (mesh)
 			{
 
-				vulkanCommandBuffer->PushDraw(*mesh);
+				vulkanCommandBuffer->PushBindAndDraw(*mesh);
 			}
 		}
 	}

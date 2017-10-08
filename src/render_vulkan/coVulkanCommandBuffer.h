@@ -28,7 +28,9 @@ public:
 	virtual void PushExecuteCommands(const coArray<const coRenderCommandBuffer*>& _commandBuffers) override;
 	void PushBindDescriptorSet(const coVulkanDescriptorSet& _vulkanDescriptorSet, const coVulkanPipelineLayout& _vulkanPipelineLayout, coUint _index);
 	void PushConstants(const coVulkanPipelineLayout& _vulkanPipelineLayout, coUint _offset, coUint _size, const void* _data);
-	virtual void PushDraw(const coRenderMesh& _mesh) override;
+	virtual void PushBind(const coRenderMesh& _mesh) override;
+	virtual void PushDraw(const coUint _nbIndices, const coUint _vertexOffset, const coUint _indexOffset) override;
+	virtual void PushBindAndDraw(const coRenderMesh& _mesh) override;
 	void PushDrawEmptyTriangle();
 	virtual void PushSetScissor(coUint32 _x, coUint32 _y, coUint32 _width, coUint32 _height) override;
 	const VkCommandBuffer& GetVkCommandBuffer() const { return commandBuffer_vk; }
