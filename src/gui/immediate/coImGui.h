@@ -6,6 +6,7 @@
 #include "pattern/singleton/coSingleton.h"
 
 class coImGuiImpl;
+class coRenderCommandBuffer;
 
 class coImGui : public coObject
 {
@@ -23,7 +24,7 @@ public:
 
 	coResult BeginFrame();
 	coResult EndFrame();
-	coResult Render();
+	coResult Render(coRenderCommandBuffer& _commandBuffer);
 
 protected:
 	virtual coResult OnInit() override;

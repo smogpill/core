@@ -5,6 +5,8 @@
 #include "gui/immediate/coImGui.h"
 #include "gui/immediate/coImGuiImpl.h"
 #include "lang/result/coResult_f.h"
+#include "math/scalar/coUint32_f.h"
+#include "render/coRenderCommandBuffer.h"
 
 coImGui::coImGui()
 	: coImGui(*(new coDearImGuiImpl()))
@@ -62,9 +64,37 @@ coResult coImGui::EndFrame()
 	return true;
 }
 
-coResult Render()
+coResult Render(coRenderCommandBuffer& _commandBuffer)
 {
 	ImGui::Render();
-	//ImDrawData* data_di = ImGui::GetDrawData();
+	ImDrawData* data = ImGui::GetDrawData();
+
+	coUint vertexOffset = 0;
+	coUint indexOffset = 0;
+	for (coUint i = 0; i < coUint(data->CmdListsCount); ++i)
+	{
+		const ImDrawList* cmdList = data->CmdLists[i];
+		const auto& cmdBuffer = cmdList->CmdBuffer;
+		for (coUint j = 0; j < coUint(cmdBuffer.Size); ++j)
+		{
+			const ImDrawCmd& cmd = cmdBuffer[j];
+			if (cmd.UserCallback)
+			{
+				cmd.UserCallback(cmdList, &cmd);
+			}
+			else
+			{
+				const coUint x = coUint(coMax(0, coInt(cmd.ClipRect.x)));
+				const coUint y = coUint(coMax(0, coInt(cmd.ClipRect.y)));
+				const coUint width = coUint(cmd.ClipRect.z - cmd.ClipRect.x);
+				const coUint height = coUint(cmd.ClipRect.w - cmd.ClipRect.y + 1); // FIXME: Why +1 here?
+				_commandBuffer.PushSetScissor(x, y, width, height);
+				_commandBuffer.PushDraw(cmd.ElemCount, vertexOffset, indexOffset);
+			}
+			indexOffset += cmd.ElemCount;
+		}
+		vertexOffset += cmdList->VtxBuffer.Size;
+	}
+
 	return true;
 }
