@@ -9,6 +9,7 @@ class coRenderer;
 class coRenderWindow;
 class coRenderWorld;
 class coTestScene;
+class coImGui;
 
 class coRuntimeApp : public coApp
 {
@@ -25,6 +26,7 @@ private:
 	coResult Update();
 	coResult InitRenderer();
 	coResult InitRenderWorld();
+	coResult InitImGui();
 	coResult InitTestScene();
 	coResult InitWindow();
 	coResult InitRenderWindow();
@@ -34,4 +36,5 @@ private:
 	coRenderWorld* renderWorld;
 	coRenderWindow* renderWindow;
 	coTestScene* testScene;
+	coImGui* imGui;
 };

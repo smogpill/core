@@ -246,7 +246,7 @@ coResult coRenderWindow::InitPipeline(coRenderPipeline& _out, const coRenderMate
 	coPushBack(shaders, vertexShader);
 	coPushBack(shaders, fragmentShader);
 	c.shaders = shaders;
-	const coType* defaultVertexType = coRenderVertex_PosNormalTangentUv::GetStaticType();
+	const coType* defaultVertexType = _material.GetVertexType();
 	coDynamicArray<const coType*> channels;
 	coPushBack(channels, defaultVertexType);
 	c.vertexChannels = channels;

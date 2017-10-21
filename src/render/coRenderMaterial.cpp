@@ -7,6 +7,7 @@
 coRenderMaterial::coRenderMaterial()
 	: vertexShader(nullptr)
 	, fragmentShader(nullptr)
+	, vertexType(nullptr)
 {
 
 }

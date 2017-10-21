@@ -31,6 +31,7 @@ public:
 
 	virtual coResult FillCommandBuffer(const FillConfig& _config);
 	const coArray<coRenderDevice*>& GetDevices() const { return devices; }
+	coRenderDevice* GetMainDevice() const { return devices.count ? devices[0] : nullptr; }
 
 protected:
 	coRenderer();
