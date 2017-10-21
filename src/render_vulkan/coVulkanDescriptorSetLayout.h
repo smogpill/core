@@ -4,6 +4,8 @@
 
 #include "render/coRenderDeviceObject.h"
 
+class coRenderSampler;
+
 class coVulkanDescriptorSetLayout : public coRenderDeviceObject
 {
 	coDECLARE_SUPER(coRenderDeviceObject);
@@ -12,6 +14,8 @@ public:
 	{
 	public:
 		InitConfig();
+
+		coArray<coRenderSampler*> samplers;
 	};
 	coVulkanDescriptorSetLayout();
 	virtual ~coVulkanDescriptorSetLayout();

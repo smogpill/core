@@ -19,13 +19,16 @@ public:
 	};
 	coRenderMaterial();
 
+	void SetVertexType(const coType* _type) { vertexType = _type; }
 	const coShader* GetVertexShader() const { return vertexShader; }
 	const coShader* GetFragmentShader() const { return fragmentShader; }
+	const coType* GetVertexType() const { return vertexType; }
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
 private:
+	const coType* vertexType;
 	coShader* vertexShader;
 	coShader* fragmentShader;
 };

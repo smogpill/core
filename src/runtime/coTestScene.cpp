@@ -11,6 +11,7 @@
 #include "render/coShader.h"
 #include "render/coRenderMaterial.h"
 #include "render/coMesh.h"
+#include "render/coRenderVertexChannels.h"
 #include "io/file/coFileAccess.h"
 #include "io/file/coFile_f.h"
 #include "container/array/coDynamicArray_f.h"
@@ -243,6 +244,7 @@ coResult coTestScene::InitMaterial()
 	coRenderMaterial::InitConfig c;
 	c.vertexShader = vertexShader;
 	c.fragmentShader = fragmentShader;
+	m->SetVertexType(coRenderVertex_PosNormalTangentUv::GetStaticType());
 	coTRY(m->Init(c), "Failed to init material.");
 	coSwap(m, material);
 	return true;

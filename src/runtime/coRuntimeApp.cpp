@@ -11,6 +11,7 @@
 #include "render/coRenderFactory.h"
 #include "container/array/coDynamicArray_f.h"
 #include "pattern/scope/coDefer.h"
+#include "gui/immediate/coImGui.h"
 
 coRuntimeApp::coRuntimeApp()
 	: window(nullptr)
@@ -18,6 +19,7 @@ coRuntimeApp::coRuntimeApp()
 	, renderWindow(nullptr)
 	, testScene(nullptr)
 	, renderWorld(nullptr)
+	, imGui(nullptr)
 {
 
 }
@@ -25,6 +27,7 @@ coRuntimeApp::coRuntimeApp()
 coRuntimeApp::~coRuntimeApp()
 {
 	delete testScene;
+	delete imGui;
 	delete renderWorld;
 	delete renderWindow;
 	delete window;
@@ -39,6 +42,7 @@ coResult coRuntimeApp::OnInit(const coObject::InitConfig& _config)
 	coTRY(InitWindow(), "Failed to init the window.");
 	coTRY(InitRenderWindow(), "Failed to init the render window.");
 	coTRY(InitRenderWorld(), "Failed to init the render world.");
+	coTRY(InitImGui(), "Failed to init the imGui.");
 	coTRY(InitTestScene(), "Failed to init the test scene.");
 
 	return true;
@@ -109,6 +113,18 @@ coResult coRuntimeApp::InitRenderWorld()
 	c.debugName = "TestRenderWorld";
 	coTRY(p->Init(c), "Failed to init the render world.");
 	coSwap(renderWorld, p);
+	return true;
+}
+
+coResult coRuntimeApp::InitImGui()
+{
+	coImGui* p = new coImGui();
+	coDEFER() { delete p; };
+	coRenderDevice* device = renderer->GetMainDevice();
+	coTRY(device, nullptr);
+	p->SetRenderDevice(*device);
+	coTRY(p->Init(), "Failed to init the imgui.");
+	coSwap(imGui, p);
 	return true;
 }
 

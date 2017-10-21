@@ -110,18 +110,6 @@ coResult coVulkanRenderer::FillCommandBuffer(const FillConfig& _config)
 		vulkanCommandBuffer->PushBindDescriptorSet(*vulkanDescriptorSet, *vulkanPipelineLayout, 0);
 	}
 
-	//vulkanCommandBuffer->PushDrawEmptyTriangle();
-
-// 	coMat4 model;
-// 	{
-// 		coTransform t;
-// 		t.rotation = coRotation(_rotation);
-// 		coSetWithoutScale(model, t);
-// 	}
-
-// 	static coFloat x = 0.0f;
-// 	x += 0.01f;
-
 	if (_config.world)
 	{
 		const coArray<coRenderEntity*>& entities = _config.world->GetEntities();
@@ -136,7 +124,6 @@ coResult coVulkanRenderer::FillCommandBuffer(const FillConfig& _config)
 			const coRenderMesh* mesh = entity->GetRenderMesh();
 			if (mesh)
 			{
-
 				vulkanCommandBuffer->PushBindAndDraw(*mesh);
 			}
 		}
