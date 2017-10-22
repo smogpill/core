@@ -32,6 +32,7 @@ public:
 
 	virtual coResult Map(void*& _data);
 	virtual void Unmap();
+	virtual coResult FlushMapped() { return true; }
 
 	coUint32 GetSize8() const { return size8; }
 

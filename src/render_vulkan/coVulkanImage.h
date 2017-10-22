@@ -10,18 +10,11 @@ class coVulkanImage : public coRenderImage
 {
 	coDECLARE_SUPER(coRenderImage);
 public:
-	class InitConfig : public Super::InitConfig
-	{
-	public:
-		InitConfig();
-		VkDeviceMemory deviceMemory_vk;
-		VkDeviceSize deviceMemoryOffset_vk;
-		VkImage image_vk;
-		VkFormat format_vk;
-	};
 	coVulkanImage();
 	virtual ~coVulkanImage();
 
+	coResult SetVkImage(const VkImage& _image_vk);
+	coResult SetVkFormat(const VkFormat& _format_vk);
 	//coResult InitFromVkImage(const VkImage& _image_vk, coRenderDevice& _device, const VkFormat& _format_vk, const coInt32x3& _size);
 	const VkImage& GetVkImage() const { return image_vk; }
 	const VkFormat& GetVkFormat() const { return format_vk; }

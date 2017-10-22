@@ -7,6 +7,7 @@ typedef bool			coBool;
 typedef unsigned char	coByte;
 
 typedef char			coChar;
+typedef unsigned char	coUchar;
 typedef wchar_t			coWideChar;
 
 typedef int				coInt;

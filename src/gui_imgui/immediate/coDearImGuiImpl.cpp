@@ -6,6 +6,8 @@
 #include "render/coShader.h"
 #include "render/coRenderSampler.h"
 #include "render/coRenderMaterial.h"
+#include "render/coRenderImage.h"
+#include "render/coRenderBuffer.h"
 #include "io/file/coFileAccess.h"
 #include "io/file/coFile_f.h"
 #include "lang/result/coResult_f.h"
@@ -17,12 +19,16 @@ coDearImGuiImpl::coDearImGuiImpl()
 	: vertexShader(nullptr)
 	, fragmentShader(nullptr)
 	, sampler(nullptr)
+	, fontImage(nullptr)
+	, fontUploadBuffer(nullptr)
 {
 
 }
 
 coDearImGuiImpl::~coDearImGuiImpl()
 {
+	delete fontUploadBuffer;
+	delete fontImage;
 	delete material;
 	delete sampler;
 	delete vertexShader;
@@ -74,6 +80,56 @@ coResult coDearImGuiImpl::InitMaterial()
 		c.debugName = "ImGui ";
 		c.device = device;
 		coTRY(sampler->Init(c), "Failed to init the ImGui sampler.");
+	}
+
+	return true;
+}
+
+coResult coDearImGuiImpl::InitFont()
+{
+	ImGuiIO& io_di = ImGui::GetIO();
+	coUchar* pixels;
+	coInt width, height;
+	io_di.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
+	const coUint size = width * height * 4;
+
+	// Font image
+	{
+		coRenderImage* p = coCreateRenderImage();
+		coDEFER() { delete p; };
+		coRenderImage::InitConfig c;
+		c.size.x = width;
+		c.size.y = height;
+		c.size.z = 1;
+		c.type = coRenderImage::default_;
+		c.debugName = "";
+		c.device = device;
+		coTRY(p->Init(c), "Failed to init the font render image for the ImGui.");
+		coSwap(p, fontImage);
+	}
+	
+	// Font image view
+	{
+		
+	}
+
+	// Font data
+	{
+		coRenderBuffer* p = coCreateRenderBuffer();
+		coDEFER() { delete p; };
+		coRenderBuffer::InitConfig c;
+		c.size8 = size;
+		c.type = coRenderBuffer::staging;
+		c.device = device;
+		c.debugName = "ImGuiFontUploadBuffer";
+		coTRY(p->Init(c), "Failed to init the font upload buffer.");
+		coSwap(p, fontUploadBuffer);
+
+		coByte* data;
+		coTRY(fontUploadBuffer->Map((void*&)data), nullptr);
+		coMemCopy(data, pixels, size);
+		coCHECK(fontUploadBuffer->FlushMapped(), nullptr);
+		fontUploadBuffer->Unmap();
 	}
 
 	return true;

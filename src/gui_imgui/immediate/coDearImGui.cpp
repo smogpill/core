@@ -34,6 +34,7 @@ coResult coImGui::OnInit()
 	io.DisplayFramebufferScale = ImVec2(1, 1);
 
 	coTRY(p->InitMaterial(), nullptr);
+	coTRY(p->InitFont(), nullptr);
 
 	return true;
 }
