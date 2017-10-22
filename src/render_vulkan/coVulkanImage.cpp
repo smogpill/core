@@ -17,15 +17,6 @@ coVulkanImage::coVulkanImage()
 
 }
 
-coVulkanImage::InitConfig::InitConfig()
-	: deviceMemory_vk(VK_NULL_HANDLE)
-	, deviceMemoryOffset_vk(0)
-	, image_vk(VK_NULL_HANDLE)
-	, format_vk(VK_FORMAT_UNDEFINED)
-{
-
-}
-
 coVulkanImage::~coVulkanImage()
 {
 	delete defaultView;
@@ -41,6 +32,20 @@ coVulkanImage::~coVulkanImage()
 	}
 }
 
+coResult coVulkanImage::SetVkImage(const VkImage& _image_vk)
+{
+	coTRY(!IsInitialized(), nullptr);
+	image_vk = _image_vk;
+	return true;
+}
+
+coResult coVulkanImage::SetVkFormat(const VkFormat& _format_vk)
+{
+	coTRY(!IsInitialized(), nullptr);
+	format_vk = _format_vk;
+	return true;
+}
+
 coResult coVulkanImage::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
@@ -49,13 +54,12 @@ coResult coVulkanImage::OnInit(const coObject::InitConfig& _config)
 	coTRY(device_vk != VK_NULL_HANDLE, nullptr);
 	coTRY(config.arraySize > 0, nullptr);
 	size = config.size;
-	coASSERT(image_vk == VK_NULL_HANDLE);
-	image_vk = config.image_vk;
-	format_vk = config.format_vk;
 	coTRY(InitImageType(), "Failed to init image type.");
 
 	if (image_vk == VK_NULL_HANDLE)
 	{
+		coTODO("Optimize Vulkan image create info.");
+
 		format_vk = VK_FORMAT_R8G8B8A8_UNORM;
 		VkImageCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -66,9 +70,9 @@ coResult coVulkanImage::OnInit(const coObject::InitConfig& _config)
 		createInfo.mipLevels = 1;
 		createInfo.arrayLayers = config.arraySize;
 		createInfo.format = format_vk;
-		createInfo.tiling = VK_IMAGE_TILING_LINEAR;
-		createInfo.initialLayout = VK_IMAGE_LAYOUT_PREINITIALIZED;
-		createInfo.usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+		createInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+		createInfo.initialLayout = VK_IMAGE_LAYOUT_GENERAL;
+		createInfo.usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 		createInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 		createInfo.samples = VK_SAMPLE_COUNT_1_BIT;
 		createInfo.flags = 0;

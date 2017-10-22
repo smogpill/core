@@ -144,6 +144,19 @@ void coVulkanBuffer::Unmap()
 	Super::Unmap();
 }
 
+coResult coVulkanBuffer::FlushMapped()
+{
+	coTRY(Super::FlushMapped(), nullptr);
+	const VkDevice& device_vk = GetVkDevice();
+	coTRY(device_vk, nullptr);
+	VkMappedMemoryRange range[1]{};
+	range[0].sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+	range[0].memory = deviceAllocation->chunk->deviceMemory_vk;
+	range[0].size = deviceAllocation->size_vk;
+	coVULKAN_TRY(vkFlushMappedMemoryRanges(device_vk, 1, range), "Failed to flush the mapped data: "<<*this);
+	return true;
+}
+
 VkDeviceSize coVulkanBuffer::GetVkAllocatedSize() const
 {
 	return deviceAllocation ? deviceAllocation->size_vk : VkDeviceSize(0);

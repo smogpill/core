@@ -17,6 +17,7 @@ public:
 	VkDeviceSize GetVkAllocatedSize() const;
 	virtual coResult Map(void*& _data) override;
 	virtual void Unmap() override;
+	virtual coResult FlushMapped() override;
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;

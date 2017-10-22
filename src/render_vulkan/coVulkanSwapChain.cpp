@@ -394,8 +394,8 @@ coResult coVulkanSwapChain::InitImages()
 		coDEFER() { delete vulkanImage; };
 		coVulkanImage::InitConfig c;
 		c.device = device;
-		c.image_vk = image_vk;
-		c.format_vk = format_vk;
+		coTRY(vulkanImage->SetVkImage(image_vk), nullptr);
+		coTRY(vulkanImage->SetVkFormat(format_vk), nullptr);
 		c.size = imageSize;
 		coTRY(vulkanImage->Init(c), nullptr);
 		ImageInfo* imageInfo = new ImageInfo();

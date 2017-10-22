@@ -6,6 +6,8 @@
 
 class coShader;
 class coRenderSampler;
+class coRenderImage;
+class coRenderBuffer;
 
 class coImGuiVertex
 {
@@ -23,8 +25,11 @@ public:
 	virtual ~coDearImGuiImpl();
 
 	coResult InitMaterial();
+	coResult InitFont();
 
 	coShader* vertexShader;
 	coShader* fragmentShader;
 	coRenderSampler* sampler;
+	coRenderImage* fontImage;
+	coRenderBuffer* fontUploadBuffer;
 };
