@@ -7,6 +7,15 @@
 class coShader;
 class coRenderSampler;
 
+class coImGuiVertex
+{
+	coDECLARE_REFLECTED_NO_VIRTUAL();
+public:
+	coFloat x, y;
+	coFloat u, v;
+	coUint32 col;
+};
+
 class coDearImGuiImpl : public coImGuiImpl
 {
 	coDECLARE_SUPER(coImGuiImpl);
@@ -14,9 +23,8 @@ public:
 	coDearImGuiImpl();
 	virtual ~coDearImGuiImpl();
 
-	coResult InitShaders();
+	coResult InitMaterial();
 
-private:
 	coShader* vertexShader;
 	coShader* fragmentShader;
 	coRenderSampler* sampler;

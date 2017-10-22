@@ -15,6 +15,7 @@
 #include "pattern/scope/coDefer.h"
 #include "math/matrix/coMat4_f.h"
 #include "math/transform/coTransform.h"
+#include "gui/immediate/coImGui.h"
 
 // Hack
 struct ModelConstants
@@ -127,6 +128,14 @@ coResult coVulkanRenderer::FillCommandBuffer(const FillConfig& _config)
 				vulkanCommandBuffer->PushBindAndDraw(*mesh);
 			}
 		}
+	}
+
+	if (_config.imGui)
+	{
+		coTRY(_config.imGuiPipeline, nullptr);
+		vulkanCommandBuffer->PushBindPipeline(*_config.imGuiPipeline);
+		coImGui* imGui = _config.imGui;
+		coCHECK(imGui->Render(*vulkanCommandBuffer), nullptr);
 	}
 
 	return true;

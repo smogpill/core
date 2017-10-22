@@ -15,3 +15,8 @@ void coImGui::SetRenderDevice(coRenderDevice& _device)
 {
 	impl->device = &_device;
 }
+
+const coRenderMaterial* coImGui::GetMaterial() const
+{
+	return impl->material;
+}

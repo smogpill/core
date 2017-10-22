@@ -6,6 +6,11 @@
 coImGuiImpl::coImGuiImpl()
 	: parent(nullptr)
 	, device(nullptr)
+	, material(nullptr)
 {
 
+}
+
+coImGuiImpl::~coImGuiImpl()
+{
 }

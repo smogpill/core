@@ -17,6 +17,7 @@ class coRenderPass;
 class coShader;
 class coRenderMaterial;
 class coRenderWorld;
+class coImGui;
 
 class coRenderWindow : public coObject
 {
@@ -38,6 +39,7 @@ public:
 	coResult Render(const coRenderWorld& _world);
 	coRenderPass* GetPass() const;
 	coRenderDevice* GetDevice() const { return device; }
+	void SetImGui(coImGui* _imGui) { imGui = _imGui; }
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
@@ -55,9 +57,12 @@ private:
 	coSwapChain* swapChain;
 	coSurface* surface;
 	coRenderDevice* device;
+	coImGui* imGui;
 	coRenderSemaphore* renderFinishedSemaphore;
 	coRenderPipelineLayout* pipelineLayout;
+	coRenderPipelineLayout* imGuiPipelineLayout;
 
 	// Hack
 	coRenderPipeline* pipeline;
+	coRenderPipeline* imGuiPipeline;
 };

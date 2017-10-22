@@ -10,6 +10,7 @@ class coRenderFramebuffer;
 class coRenderCommandBuffer;
 class coRenderPipeline;
 class coRenderWorld;
+class coImGui;
 
 class coRenderer : public coObject
 {
@@ -24,7 +25,9 @@ public:
 		coRenderCommandBuffer* commandBuffer;
 		coRenderFramebuffer* framebuffer;
 		coRenderPipeline* pipeline;
+		coRenderPipeline* imGuiPipeline;
 		const coRenderWorld* world;
+		coImGui* imGui;
 	};
 
 	coRenderContext* GetContext() const { return context; }

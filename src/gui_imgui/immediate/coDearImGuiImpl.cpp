@@ -5,6 +5,7 @@
 #include "render/coRenderFactory.h"
 #include "render/coShader.h"
 #include "render/coRenderSampler.h"
+#include "render/coRenderMaterial.h"
 #include "io/file/coFileAccess.h"
 #include "io/file/coFile_f.h"
 #include "lang/result/coResult_f.h"
@@ -22,12 +23,13 @@ coDearImGuiImpl::coDearImGuiImpl()
 
 coDearImGuiImpl::~coDearImGuiImpl()
 {
+	delete material;
 	delete sampler;
 	delete vertexShader;
 	delete fragmentShader;
 }
 
-coResult coDearImGuiImpl::InitShaders()
+coResult coDearImGuiImpl::InitMaterial()
 {
 	coDynamicArray<coUint8> code;
 	{
@@ -52,6 +54,18 @@ coResult coDearImGuiImpl::InitShaders()
 		c.stage = coShader::fragment;
 		coTRY(shader->Init(c), "Failed to init the ImGui fragment shader.");
 		coSwap(fragmentShader, shader);
+	}
+
+	{
+		coRenderMaterial* m = new coRenderMaterial();
+		coDEFER() { delete m; };
+		coRenderMaterial::InitConfig c;
+		c.vertexShader = vertexShader;
+		c.fragmentShader = fragmentShader;
+		c.debugName = "DearImGui material";
+		m->SetVertexType(coImGuiVertex::GetStaticType());
+		coTRY(m->Init(c), "Failed to init the ImGui material.");
+		coSwap(material, m);
 	}
 
 	{

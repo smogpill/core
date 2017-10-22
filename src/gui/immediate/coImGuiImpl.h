@@ -6,15 +6,16 @@
 
 class coImGui;
 class coRenderDevice;
+class coRenderMaterial;
 
 class coImGuiImpl : public coObject
 {
 	coDECLARE_SUPER(coObject);
 public:
 	coImGuiImpl();
+	virtual ~coImGuiImpl();
 
 	coRenderDevice* device;
-
-protected:
 	coImGui* parent;
+	coRenderMaterial* material;
 };

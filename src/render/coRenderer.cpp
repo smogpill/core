@@ -31,7 +31,9 @@ coRenderer::FillConfig::FillConfig()
 	: framebuffer(nullptr)
 	, commandBuffer(nullptr)
 	, pipeline(nullptr)
+	, imGuiPipeline(nullptr)
 	, world(nullptr)
+	, imGui(nullptr)
 {
 
 }
