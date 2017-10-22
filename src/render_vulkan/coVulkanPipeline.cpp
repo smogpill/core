@@ -160,34 +160,83 @@ coResult coVulkanPipeline::InitVertexInput(VkPipelineVertexInputStateCreateInfo&
 {
 	coASSERT(_outBindings.count == 0);
 	coASSERT(_outAttributes.count == 0);
-	coReserve(_outBindings, _config.vertexChannels.count);
+	coReserve(_outBindings, _config.vertexInputs.count);
 	coUint32 nbAttributes = 0;
-	for (const coType* type : _config.vertexChannels)
+	for (const coRenderVertexInput input : _config.vertexInputs)
 	{
-		coTRY(type, nullptr);
-		nbAttributes += type->fields.count;
+		coTRY(input != coRenderVertexInput::NONE, nullptr);
+		nbAttributes += coGetNbAttributes(input);
 	}
 	coReserve(_outAttributes, nbAttributes);
 
-	coUint32 location = 0;
-	for (coUint32 i = 0; i < _config.vertexChannels.count; ++i)
+	for (coUint32 i = 0; i < _config.vertexInputs.count; ++i)
 	{
-		const coType* type = _config.vertexChannels[i];
+		const coRenderVertexInput input = _config.vertexInputs[i];
 		VkVertexInputBindingDescription& binding_vk = coPushBack(_outBindings, VkVertexInputBindingDescription{});
 		binding_vk.binding = i;
 		binding_vk.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-		binding_vk.stride = type->size8;
-		for (const coField* field : type->fields)
+		binding_vk.stride = coGetSize8(input);
+
+		VkVertexInputAttributeDescription attribute_vk{};
+		attribute_vk.binding = i;
+
+		switch (input)
 		{
-			coTRY(field, nullptr);
-			const coType* fieldType = field->type;
-			coTRY(fieldType, nullptr);
-			VkVertexInputAttributeDescription& attribute_vk = coPushBack(_outAttributes, VkVertexInputAttributeDescription{});
-			attribute_vk.binding = i;
-			attribute_vk.location = location;
-			attribute_vk.offset = field->offset8;
-			coTRY(_coGetAttributeFormat(attribute_vk.format, *fieldType), "Field type unsupported for conversion to Vulkan: "<<fieldType->name);
-			++location;
+		case coRenderVertexInput::POS3_NORMAL3_TANGENT3_UV2:
+		{
+			typedef coRenderVertex<coRenderVertexInput::POS3_NORMAL3_TANGENT3_UV2> Vertex;
+			// Pos
+			attribute_vk.location = 0;
+			attribute_vk.offset = 0;
+			attribute_vk.format = VK_FORMAT_R32G32B32_SFLOAT;
+			coPushBack(_outAttributes, attribute_vk);
+
+			// Normal
+			attribute_vk.location = 1;
+			attribute_vk.offset = 3 * 4;
+			attribute_vk.format = VK_FORMAT_R32G32B32_SFLOAT;
+			coPushBack(_outAttributes, attribute_vk);
+
+			// Tangent
+			attribute_vk.location = 2;
+			attribute_vk.offset = 6 * 4;
+			attribute_vk.format = VK_FORMAT_R32G32B32_SFLOAT;
+			coPushBack(_outAttributes, attribute_vk);
+
+			// UV
+			attribute_vk.location = 3;
+			attribute_vk.offset = 9 * 4;
+			attribute_vk.format = VK_FORMAT_R32G32_SFLOAT;
+			coPushBack(_outAttributes, attribute_vk);
+
+			break;
+		}
+		case coRenderVertexInput::POS2_UV2_COLOR1:
+		{
+			// Pos
+			attribute_vk.location = 0;
+			attribute_vk.offset = 0;
+			attribute_vk.format = VK_FORMAT_R32G32_SFLOAT;
+			coPushBack(_outAttributes, attribute_vk);
+
+			// UV
+			attribute_vk.location = 1;
+			attribute_vk.offset = 2 * 4;
+			attribute_vk.format = VK_FORMAT_R32G32_SFLOAT;
+			coPushBack(_outAttributes, attribute_vk);
+
+			// Color
+			attribute_vk.location = 2;
+			attribute_vk.offset = 4 * 4;
+			attribute_vk.format = VK_FORMAT_R8G8B8A8_UNORM;
+			coPushBack(_outAttributes, attribute_vk);
+			break;
+		}
+		default:
+		{
+			coWARN_NOT_AVAILABLE();
+			return false;
+		}
 		}
 	}
 

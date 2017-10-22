@@ -3,6 +3,7 @@
 #pragma once
 
 #include "render/coRenderDeviceObject.h"
+#include "render/coRenderVertexInput.h"
 #include "math/shape/coFloatx2Rect.h"
 #include "math/shape/coInt32x2Rect.h"
 
@@ -23,7 +24,7 @@ public:
 		coArray<const coShader*> shaders;
 		coArray<coFloatx2Rect> viewports;
 		coArray<coInt32x2Rect> scissors;
-		coArray<const coType*> vertexChannels;
+		coArray<coRenderVertexInput> vertexInputs;
 	};
 
 protected:
