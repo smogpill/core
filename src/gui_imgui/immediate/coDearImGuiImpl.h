@@ -9,7 +9,6 @@ class coRenderSampler;
 
 class coImGuiVertex
 {
-	coDECLARE_REFLECTED_NO_VIRTUAL();
 public:
 	coFloat x, y;
 	coFloat u, v;

@@ -63,7 +63,7 @@ coResult coDearImGuiImpl::InitMaterial()
 		c.vertexShader = vertexShader;
 		c.fragmentShader = fragmentShader;
 		c.debugName = "DearImGui material";
-		m->SetVertexType(coImGuiVertex::GetStaticType());
+		m->vertexInput = coRenderVertexInput::POS2_UV2_COLOR1;
 		coTRY(m->Init(c), "Failed to init the ImGui material.");
 		coSwap(material, m);
 	}

@@ -265,10 +265,9 @@ coResult coRenderWindow::InitPipeline(coRenderPipeline& _out, const coRenderMate
 	coPushBack(shaders, vertexShader);
 	coPushBack(shaders, fragmentShader);
 	c.shaders = shaders;
-	const coType* defaultVertexType = _material.GetVertexType();
-	coDynamicArray<const coType*> channels;
-	coPushBack(channels, defaultVertexType);
-	c.vertexChannels = channels;
+	coDynamicArray<coRenderVertexInput> channels;
+	coPushBack(channels, _material.vertexInput);
+	c.vertexInputs = channels;
 	const coInt32x2 swapChainSize = swapChain->GetSize();
 	coDynamicArray<coFloatx2Rect> viewports;
 	{

@@ -244,7 +244,7 @@ coResult coTestScene::InitMaterial()
 	coRenderMaterial::InitConfig c;
 	c.vertexShader = vertexShader;
 	c.fragmentShader = fragmentShader;
-	m->SetVertexType(coRenderVertex_PosNormalTangentUv::GetStaticType());
+	m->vertexInput = coRenderVertexInput::POS3_NORMAL3_TANGENT3_UV2;
 	coTRY(m->Init(c), "Failed to init material.");
 	coSwap(m, material);
 	return true;

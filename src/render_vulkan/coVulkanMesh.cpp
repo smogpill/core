@@ -5,6 +5,7 @@
 #include "render_vulkan/coVulkanBuffer.h"
 #include "render/coMesh.h"
 #include "render/coRenderVertexChannels.h"
+#include "render/coRenderVertexInput.h"
 #include "lang/result/coResult_f.h"
 #include "pattern/scope/coDefer.h"
 
@@ -30,7 +31,7 @@ coResult coVulkanMesh::OnInit(const coObject::InitConfig& _config)
 	const auto& tangents = mesh->GetTangents();
 	const auto& uvs = mesh->GetUvs();
 	const auto& indexBuffer = mesh->GetIndexBuffer();
-	const coUint32 vertexBufferSize = positions.count * sizeof(coRenderVertex_PosNormalTangentUv);
+	const coUint32 vertexBufferSize = positions.count * sizeof(coRenderVertexInput::POS3_NORMAL3_TANGENT3_UV2);
 	const coUint32 indexBufferSize = indexBuffer.count * sizeof(indexBuffer[0]);
 
 	coTRY(mesh->indexSize8 == 2 || mesh->indexSize8 == 4, "Only 16 or 32 bits indices supported.");
@@ -51,14 +52,26 @@ coResult coVulkanMesh::OnInit(const coObject::InitConfig& _config)
 	coTRY(b->Map(data), "Failed to map the vulkan buffer data.");
 	{
 		coDEFER() { b->Unmap(); };
-		coRenderVertex_PosNormalTangentUv* posData = static_cast<coRenderVertex_PosNormalTangentUv*>(data);
+		typedef coRenderVertex<coRenderVertexInput::POS3_NORMAL3_TANGENT3_UV2> Vertex;
+		Vertex* posData = static_cast<Vertex*>(data);
 		const coUint32 nbVertices = positions.count;
 		for (coUint i = 0; i < nbVertices; ++i)
 		{
-			posData->pos = positions[i];
-			posData->normal = normals[i];
-			posData->tangent = tangents[i];
-			posData->uv = uvs[i];
+			const coFloatx3& p = positions[i];
+			const coFloatx3& n = normals[i];
+			const coFloatx3& t = tangents[i];
+			const coFloatx2& uv = uvs[i];
+			posData->px = p.x;
+			posData->py = p.y;
+			posData->pz = p.z;
+			posData->nx = n.x;
+			posData->ny = n.y;
+			posData->nz = n.z;
+			posData->tx = t.x;
+			posData->ty = t.y;
+			posData->tz = t.z;
+			posData->u = uv.x;
+			posData->v = uv.y;
 			++posData;
 		}
 		coByte* index = static_cast<coByte*>(data) + indexBufferOffset;
