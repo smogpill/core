@@ -9,6 +9,7 @@ class coImGuiImpl;
 class coRenderCommandBuffer;
 class coShader;
 class coRenderDevice;
+class coRenderMaterial;
 
 class coImGui : public coObject
 {
@@ -25,6 +26,7 @@ public:
 	void EndWindow();
 	void AddText(const coChar*);
 	void AddSeparator();
+	const coRenderMaterial* GetMaterial() const;
 
 	coResult BeginFrame();
 	coResult EndFrame();

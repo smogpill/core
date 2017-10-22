@@ -21,6 +21,7 @@
 #include "render/coRenderVertexChannels.h"
 #include "pattern/scope/coDefer.h"
 #include "lang/result/coResult_f.h"
+#include "gui/immediate/coImGui.h"
 
 coRenderWindow::coRenderWindow()
 	: swapChain(nullptr)
@@ -29,7 +30,10 @@ coRenderWindow::coRenderWindow()
 	, device(nullptr)
 	, renderer(nullptr)
 	, pipelineLayout(nullptr)
+	, imGuiPipelineLayout(nullptr)
 	, pipeline(nullptr)
+	, imGuiPipeline(nullptr)
+	, imGui(nullptr)
 {
 
 }
@@ -41,7 +45,9 @@ coRenderWindow::~coRenderWindow()
 		coCHECK(device->WaitForIdle(), nullptr);
 	}
 	delete pipeline;
+	delete imGuiPipeline;
 	delete pipelineLayout;
+	delete imGuiPipelineLayout;
 	delete renderFinishedSemaphore;
 	delete swapChain;
 	delete surface;
@@ -155,6 +161,10 @@ coResult coRenderWindow::SelectDevice()
 
 coResult coRenderWindow::Render(const coRenderWorld& _world)
 {
+	if (imGui)
+	{
+		coCHECK(imGui->BeginFrame(), nullptr);
+	}
 	const coArray<coRenderEntity*>& entities = _world.GetEntities();
 	coTRY(entities.count, nullptr);
 	coRenderEntity* arbitraryEntity = entities[0];
@@ -164,6 +174,10 @@ coResult coRenderWindow::Render(const coRenderWorld& _world)
 	coRenderMaterial* material = renderMesh->GetMaterial();
 	coTRY(material, nullptr);
 	coTRY(InitPipeline(*pipeline, *material), "Failed to init the render pipeline.");
+	if (imGui)
+	{
+		coTRY(InitPipeline(*imGuiPipeline, *imGui->GetMaterial()), nullptr);
+	}
 	coTRY(swapChain, nullptr);
 	coTRY(swapChain->AcquireImage(), "Failed to acquire image for: " << *swapChain);
 	coRenderSemaphore* imageAvailableSemaphore = swapChain->GetImageAvailableSemaphore();
@@ -181,6 +195,11 @@ coResult coRenderWindow::Render(const coRenderWorld& _world)
 		c.pipeline = pipeline;
 		c.world = &_world;
 		coTRY(renderer->FillCommandBuffer(c), "Failed to fill the command buffer.");
+	}
+
+	if (imGui)
+	{
+		coCHECK(imGui->EndFrame(), nullptr);
 	}
 
 	// Submit

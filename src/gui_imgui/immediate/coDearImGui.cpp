@@ -26,12 +26,14 @@ coResult coImGui::OnInit()
 {
 	coTRY(Super::OnInit(), nullptr);
 
-	coImGuiImpl* p = static_cast<coImGuiImpl*>(impl);
+	coDearImGuiImpl* p = static_cast<coDearImGuiImpl*>(impl);
 	coTRY(p->device, nullptr);
 
 	ImGuiIO& io = ImGui::GetIO();
 	io.DisplaySize = ImVec2(800, 600);
 	io.DisplayFramebufferScale = ImVec2(1, 1);
+
+	coTRY(p->InitMaterial(), nullptr);
 
 	return true;
 }
@@ -69,7 +71,7 @@ coResult coImGui::EndFrame()
 	return true;
 }
 
-coResult Render(coRenderCommandBuffer& _commandBuffer)
+coResult coImGui::Render(coRenderCommandBuffer& _commandBuffer)
 {
 	ImGui::Render();
 	ImDrawData* data = ImGui::GetDrawData();

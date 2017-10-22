@@ -39,10 +39,10 @@ coResult coRuntimeApp::OnInit(const coObject::InitConfig& _config)
 	coTRY(Super::OnInit(_config), nullptr);
 
 	coTRY(InitRenderer(), "Failed to init the renderer.");
+	coTRY(InitImGui(), "Failed to init the imGui.");
 	coTRY(InitWindow(), "Failed to init the window.");
 	coTRY(InitRenderWindow(), "Failed to init the render window.");
 	coTRY(InitRenderWorld(), "Failed to init the render world.");
-	coTRY(InitImGui(), "Failed to init the imGui.");
 	coTRY(InitTestScene(), "Failed to init the test scene.");
 
 	return true;
@@ -153,6 +153,7 @@ coResult coRuntimeApp::InitRenderWindow()
 #ifdef coMSWINDOWS
 	c.hwnd = static_cast<HWND>(window->GetImpl());;
 #endif
+	p->SetImGui(imGui);
 	coTRY(p->Init(c), "Failed to init the render window.");
 	coSwap(renderWindow, p);
 	return true;
