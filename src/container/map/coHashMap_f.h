@@ -2,20 +2,21 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include "container/map/_coHashMap_f.h"
-#include "memory/allocator/coAllocator.h"
-#include "lang/coStdWrapper.h"
-#include "math/scalar/coUint32_f.h"
+#include <container/map/coHashMap.h>
+#include <container/map/internal/_coHashMap_f.h>
+#include <memory/allocator/coAllocator.h>
+#include <lang/coStdWrapper.h>
+#include <math/scalar/coUint32_f.h>
 
 template <class T>
-coHashMap::coHashMap()
+coHashMap<T>::coHashMap()
 	: coHashMap(*coAllocator::GetHeap())
 {
 
 }
 
 template <class T>
-coHashMap::coHashMap(coAllocator& _allocator)
+coHashMap<T>::coHashMap(coAllocator& _allocator)
 	: entries(nullptr)
 	, buckets(nullptr)
 	, bucketMask(0)
@@ -28,8 +29,8 @@ coHashMap::coHashMap(coAllocator& _allocator)
 template <class T>
 coHashMap<T>::~coHashMap()
 {
-	m_allocator->Free(m_entries);
-	m_allocator->Free(m_buckets);
+	allocator->Free(entries);
+	allocator->Free(buckets);
 }
 
 template <class T> coFORCE_INLINE coHashMapEntry<T>* coBegin(coHashMap<T>& _this) { return _this.entries; }
@@ -48,7 +49,7 @@ void coReserve(coHashMap<T>& _this, coUint32 _desiredCapacity)
 		Entry* newEntryBuffer = static_cast<Entry*>(_this.allocator->Allocate(newCapacity * sizeof(T)));
 		if (_this.entries)
 		{
-			coMemCopy(newEntryBuffer, newCapacity * sizeof(T), _this.entries, _this.count * sizeof(T));
+			coMemCopy(newEntryBuffer, _this.entries, _this.count * sizeof(T));
 			_this.allocator->Free(_this.entries);
 		}
 		_this.capacity = newCapacity;

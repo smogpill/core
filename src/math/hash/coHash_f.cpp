@@ -1,9 +1,9 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
-#include "math/pch.h"
-#include "math/hash/coHash_f.h"
-#include "math/scalar/coUint32_f.h"
-#include "math/scalar/coUint64_f.h"
+#include <math/pch.h>
+#include <math/hash/coHash_f.h>
+#include <math/scalar/coUint32_f.h>
+#include <math/scalar/coUint64_f.h>
 
 #ifdef coMSVC_COMPILER
 #define coBIG_CONSTANT(_n_) (_n_)

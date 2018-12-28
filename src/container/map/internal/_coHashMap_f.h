@@ -62,7 +62,7 @@ void _coRemoveEntry(coHashMap<T>& _this, coUint64 _key)
 {
 	typedef coHashMapEntry<T> Entry;
 
-	const _coHashMapFindResult result = findExt(_this, _key);
+	const _coHashMapFindResult result = _coFindExt(_this, _key);
 	if (result.entry == _coHashMap_INVALID_INDEX)
 		return;
 
@@ -76,7 +76,7 @@ void _coRemoveEntry(coHashMap<T>& _this, coUint64 _key)
 	if (result.entry != _this.count - 1)
 	{
 		Entry& entry = _this.entries[_this.count - 1];
-		_coHashMapFindResult last = findExt(_this, entry.key);
+		_coHashMapFindResult last = _coFindExt(_this, entry.key);
 		if (last.previousEntry == _coHashMap_INVALID_INDEX)
 			_this.buckets[last.bucket].next = result.entry;
 		else
@@ -86,12 +86,12 @@ void _coRemoveEntry(coHashMap<T>& _this, coUint64 _key)
 	--_this.count;
 }
 template <class T>
-void _coRehash(coHashMap<T>& _this, coUint32 _newBucketCount)
+void _coRehash(coHashMap<T>& /*_this*/, coUint32 /*_newBucketCount*/)
 {
 	coASSERT(false);
 }
 template <class T>
 coFORCE_INLINE coUint32 _coGetBucketCount(const coHashMap<T>& _this)
 {
-	return _this.m_bucketMask + 1;
+	return _this.bucketMask + 1;
 }
