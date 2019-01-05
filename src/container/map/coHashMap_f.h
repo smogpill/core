@@ -75,7 +75,7 @@ template <class T>
 const T& coGet(const coHashMap<T>& _this, coUint64 _key, const T& _defaultValue)
 {
 	typedef coHashMapEntry<T> Entry;
-	const coHashMapEntry<T>* entry = find(_this, _key);
+	const coHashMapEntry<T>* entry = coFind(_this, _key);
 	if (entry)
 	{
 		return entry->value;

@@ -85,11 +85,13 @@ void _coRemoveEntry(coHashMap<T>& _this, coUint64 _key)
 
 	--_this.count;
 }
+
 template <class T>
 void _coRehash(coHashMap<T>& /*_this*/, coUint32 /*_newBucketCount*/)
 {
 	coASSERT(false);
 }
+
 template <class T>
 coFORCE_INLINE coUint32 _coGetBucketCount(const coHashMap<T>& _this)
 {
