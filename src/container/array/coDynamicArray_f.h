@@ -103,17 +103,13 @@ template <class T>
 void coInsert(coDynamicArray<T>& _this, coUint32 _pos, const T& _val)
 {
 	coASSERT(_pos <= _this.count);
-	if (_pos == _this.count)
+	coReserve(_this, _this.count + 1);
+	for (coUint i = _this.count; i > _pos; --i)
 	{
-		coPushBack(_this, _val);
+		_this.data[i] = _this.data[i - 1];
 	}
-	else
-	{
-		coASSERT(_pos <= _this.count);
-		coReserve(_this, _this.count + 1);
-
-		coWARN_NOT_AVAILABLE();
-	}
+	_this.data[_pos] = _val;
+	++_this.count;
 }
 
 template <class T>

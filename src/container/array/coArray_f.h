@@ -82,6 +82,16 @@ void coDeleteElementsAndClear(coArray<T>& _this)
 }
 
 template <class T>
+void coRemoveByIndex(coArray<T>& _this, coUint _index)
+{
+	static_assert(std::is_trivially_copyable<T>::value, "Trivially copyable only");
+	coASSERT(_index < _this.count);
+	for (coUint i = _index + 1; i < _this.count; ++i)
+		_this.data[i - 1] = _this.data[i];
+	--_this.count;
+}
+
+template <class T>
 void coRemoveUnordered(coArray<T>& _this, const T& _e)
 {
 	for (T& e : _this)
