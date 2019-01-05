@@ -3,6 +3,7 @@
 #pragma once
 
 #include "lang/reflect/coTypeDecl.h"
+#include "math/vector/coInt32x3.h"
 
 class coFloatx4;
 
@@ -19,6 +20,12 @@ public:
 		const __m128 yyy = coBitCast<__m128>(_yyy);
 		const __m128 zzz = coBitCast<__m128>(_zzz);
 		*this = coBitCast<coFloatx3>(_mm_unpacklo_ps(_mm_unpacklo_ps(xxx, zzz), _mm_unpacklo_ps(yyy, yyy)));
+	}
+	coFORCE_INLINE coFloatx3(const coInt32x3& _xyz)
+		: x(coFloat(_xyz.x))
+		, y(coFloat(_xyz.y))
+		, z(coFloat(_xyz.z))
+	{
 	}
 
 	coFloat x;
