@@ -27,6 +27,8 @@ public:
 		, z(coFloat(_xyz.z))
 	{
 	}
+	coFORCE_INLINE coFloat& operator[](coUint _i) { return (&x)[_i]; }
+	coFORCE_INLINE coFloat operator[](coUint _i) const { return (&x)[_i]; }
 
 	coFloat x;
 	coFloat y;
