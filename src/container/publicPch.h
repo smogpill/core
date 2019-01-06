@@ -5,3 +5,6 @@
 #include "lang/publicPch.h"
 #include "memory/publicPch.h"
 #include <initializer_list>
+#ifdef coMSVC_COMPILER
+#include <intrin.h>
+#endif

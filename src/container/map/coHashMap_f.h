@@ -7,6 +7,7 @@
 #include <memory/allocator/coAllocator.h>
 #include <lang/coStdWrapper.h>
 #include <math/scalar/coUint32_f.h>
+#include <debug/log/coLog.h>
 
 template <class T>
 coHashMap<T>::coHashMap()
@@ -121,7 +122,7 @@ coHashMapEntry<T>* coFind(coHashMap<T>& _this, coUint64 _key)
 			return &entry;
 		entryIndex = entry.next;
 	}
-	return coEnd(_this);
+	return nullptr;
 }
 
 template <class T>
