@@ -8,7 +8,7 @@ template <class T, coUint32 CAPACITY>
 class coFixedArray : public coArray<T>
 {
 public:
-	coFixedArray();
+	coFixedArray() : coArray<T>(fixedBuffer, 0){}
 
 private:
 	T fixedBuffer[CAPACITY];
