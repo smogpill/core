@@ -142,12 +142,24 @@ coDynamicArray<T>::coDynamicArray(coDynamicArray<T>&& _other)
 }
 
 template <class T>
+coDynamicArray<T>& coDynamicArray<T>::operator=(const coArray<T>& _other)
+{
+	return operator=(reinterpret_cast<const coArray<const T>&>(_other));
+}
+
+template <class T>
 coDynamicArray<T>& coDynamicArray<T>::operator=(const coArray<const T>& _other)
 {
 	coReserve(*this, _other.count);
 	coMemCopy(data, _other.data, _other.count * sizeof(T));
 	count = _other.count;
 	return *this;
+}
+
+template <class T>
+coDynamicArray<T>& coDynamicArray<T>::operator=(const coDynamicArray<T>& _other)
+{
+	return operator=(reinterpret_cast<const coArray<const T>&>(_other));
 }
 
 // template <class T>
