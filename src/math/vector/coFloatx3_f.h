@@ -27,6 +27,10 @@ const coFloatx3 coFloatx3_ZERO = coMake_Floatx3(0.0f);
 const coFloatx3 coFloatx3_DEGREES_TO_RADIANS = coMake_Floatx3(0.01745329252f);
 const coFloatx3 coFloatx3_RADIANS_TO_DEGREES = coMake_Floatx3(57.2957795131f);
 
+coFORCE_INLINE coFloatx3 coFloatx3_XMask() { return coBitCast<coFloatx3>(_mm_set_epi32(0, 0, 0, 0xffffffff)); }
+coFORCE_INLINE coFloatx3 coFloatx3_YMask() { return coBitCast<coFloatx3>(_mm_set_epi32(0, 0, 0xffffffff, 0)); }
+coFORCE_INLINE coFloatx3 coFloatx3_ZMask() { return coBitCast<coFloatx3>(_mm_set_epi32(0, 0xffffffff, 0, 0)); }
+
 coFORCE_INLINE coBool32x3 operator== (const coFloatx3& _a, const coFloatx3& _b) { return coBitCast<coBool32x3>(coBitCast<coFloatx4>(_a) == coBitCast<coFloatx4>(_b)); }
 coFORCE_INLINE coBool32x3 operator!= (const coFloatx3& _a, const coFloatx3& _b) { return coBitCast<coBool32x3>(coBitCast<coFloatx4>(_a) != coBitCast<coFloatx4>(_b)); }
 coFORCE_INLINE coBool32x3 operator< (const coFloatx3& _a, const coFloatx3& _b) { return coBitCast<coBool32x3>(coBitCast<coFloatx4>(_a) < coBitCast<coFloatx4>(_b)); }
@@ -42,6 +46,8 @@ coFORCE_INLINE coFloatx3 operator/ (const coFloatx3& _a, const coFloatx3& _b) { 
 coFORCE_INLINE coFloatx3& operator/= (coFloatx3& _a, const coFloatx3& _b) { return _a = coBitCast<coFloatx3>(coBitCast<coFloatx4>(_a) / coBitCast<coFloatx4>(_b)); }
 coFORCE_INLINE coFloatx3 operator* (const coFloatx3& _a, const coFloatx3& _b) { return coBitCast<coFloatx3>(coBitCast<coFloatx4>(_a) * coBitCast<coFloatx4>(_b)); }
 coFORCE_INLINE coFloatx3& operator*= (coFloatx3& _a, const coFloatx3& _b) { return _a = coBitCast<coFloatx3>(coBitCast<coFloatx4>(_a) * coBitCast<coFloatx4>(_b)); }
+coFORCE_INLINE coFloatx3 operator& (const coFloatx3& _a, const coFloatx3& _b) { return coBitCast<coFloatx3>(coBitCast<coFloatx4>(_a) & coBitCast<coFloatx4>(_b)); }
+coFORCE_INLINE coFloatx3 operator| (const coFloatx3& _a, const coFloatx3& _b) { return coBitCast<coFloatx3>(coBitCast<coFloatx4>(_a) | coBitCast<coFloatx4>(_b)); }
 coFORCE_INLINE coBool32x3 coIsValid(const coFloatx3& _a) { return _a == _a; }
 template <coInt8 X, coInt8 Y, coInt8 Z>
 coFORCE_INLINE coFloatx3 coShuffle(const coFloatx3& _a, const coFloatx3& _b) { return coBitCast<coFloatx3>(coShuffle<X, Y, Z, 3>(coBitCast<coFloatx4>(_a), coBitCast<coFloatx4>(_b))); }

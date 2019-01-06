@@ -8,6 +8,10 @@ template <class T, coUint32 CAPACITY>
 class coFixedArray : public coArray<T>
 {
 public:
+	enum
+	{
+		capacity = CAPACITY,
+	};
 	coFixedArray() : coArray<T>(fixedBuffer, 0){}
 
 private:

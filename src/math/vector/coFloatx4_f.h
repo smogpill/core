@@ -44,6 +44,8 @@ coFORCE_INLINE coFloatx4 operator+ (const coFloatx4& _a, const coFloatx4& _b) { 
 coFORCE_INLINE coFloatx4 operator- (const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coFloatx4>(_mm_sub_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
 coFORCE_INLINE coFloatx4 operator/ (const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coFloatx4>(_mm_div_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
 coFORCE_INLINE coFloatx4 operator* (const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coFloatx4>(_mm_mul_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
+coFORCE_INLINE coFloatx4 operator& (const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coFloatx4>(_mm_and_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
+coFORCE_INLINE coFloatx4 operator| (const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coFloatx4>(_mm_or_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
 coFORCE_INLINE coFloatx4 operator- (const coFloatx4& _a) { return coBitCast<coFloatx4>(coBitCast<coFloatx4>(_mm_setzero_ps()) - coBitCast<coFloatx4>(_a)); }
 coFORCE_INLINE coFloatx4& operator+= (coFloatx4& _this, const coFloatx4& _b) { return _this = coBitCast<coFloatx4>(coBitCast<coFloatx4>(_this) + coBitCast<coFloatx4>(_b)); }
 coFORCE_INLINE coFloatx4& operator*= (coFloatx4& _this, const coFloatx4& _b) { return _this = coBitCast<coFloatx4>(coBitCast<coFloatx4>(_this) * coBitCast<coFloatx4>(_b)); }

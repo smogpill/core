@@ -18,9 +18,9 @@ coFORCE_INLINE coUint32 coMod4(coUint32 _a) { return _a & 3; }
 coFORCE_INLINE coUint32 coMod8(coUint32 _a) { return _a & 7; }
 coFORCE_INLINE coUint32 coMod16(coUint32 _a) { return _a & 15; }
 coFORCE_INLINE coUint32 coMod32(coUint32 _a) { return _a & 31; }
-coFORCE_INLINE coUint32 coPow2(coUint32 _a) { return _a << 1; }
-coFORCE_INLINE coUint32 coPow3(coUint32 _a) { return (_a << 1) * _a; }
-coFORCE_INLINE coUint32 coPow4(coUint32 _a) { return _a << 2; }
+coFORCE_INLINE coUint32 coPow2(coUint32 _a) { return _a * _a; }
+coFORCE_INLINE coUint32 coPow3(coUint32 _a) { return _a * _a * _a; }
+coFORCE_INLINE coUint32 coPow4(coUint32 _a) { const coUint32 a2 = _a * _a; return a2 * a2; }
 template <class F>
 coFORCE_INLINE coUint32 coSetFlag(coUint32 _mask, const F& _flags, coBool _onoff) { return _onoff ? (_mask | static_cast<coUint32>(_flags)) : (_mask & ~static_cast<coUint32>(_flags)); }
 template <class F>

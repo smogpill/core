@@ -13,9 +13,9 @@ coFORCE_INLINE coBool coAreSameSign(coInt32 _a, coInt32 _b) { return (_a ^ _b) >
 coFORCE_INLINE coBool coAreOppositeSign(coInt32 _a, coInt32 _b) { return (_a ^ _b) < 0; }
 coFORCE_INLINE coInt32 coMinWith0(coInt32 _a) { return (_a & (_a >> coInt32_lastBit)); }
 coFORCE_INLINE coInt32 coMaxWith0(coInt32 _a) { return (_a & ~(_a >> coInt32_lastBit)); }
-coFORCE_INLINE coInt32 coPow2(coInt32 _a) { return _a << 1; }
-coFORCE_INLINE coInt32 coPow3(coInt32 _a) { return (_a << 1) * _a; }
-coFORCE_INLINE coInt32 coPow4(coInt32 _a) { return _a << 2; }
+coFORCE_INLINE coInt32 coPow2(coInt32 _a) { return _a * _a; }
+coFORCE_INLINE coInt32 coPow3(coInt32 _a) { return _a * _a * _a; }
+coFORCE_INLINE coInt32 coPow4(coInt32 _a) { const coInt32 a2 = _a * _a; return a2 * a2; }
 coFORCE_INLINE coInt32 coPow(coInt32 _a, coUint32 _exponent)
 {
 	coInt32 n = 1;

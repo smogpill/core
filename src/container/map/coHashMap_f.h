@@ -17,13 +17,14 @@ coHashMap<T>::coHashMap()
 
 template <class T>
 coHashMap<T>::coHashMap(coAllocator& _allocator)
-	: entries(nullptr)
-	, buckets(nullptr)
-	, bucketMask(0)
-	, count(0)
-	, allocator(&_allocator)
+	: allocator(&_allocator)
 {
 	static_assert(std::is_trivially_copyable<T>::value, "Trivially copyable only");
+
+	coHACK("coHashMap bucket allocation.");
+	buckets = static_cast<decltype(buckets)>(allocator->Allocate(1024 * sizeof(*buckets)));
+	bucketMask = 1024 - 1;
+	coFill(buckets, 1024, _coHashMap_INVALID_INDEX);
 }
 
 template <class T>

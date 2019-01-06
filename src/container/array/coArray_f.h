@@ -2,8 +2,9 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include "memory/coMemory_f.h"
-#include "lang/coStdWrapper.h"
+#include <memory/coMemory_f.h>
+#include <lang/coStdWrapper.h>
+#include <container/array/coArray.h>
 
 #define coARRAY_SIZE(_array_) (sizeof(_array_) / sizeof(_array_[0]))
 

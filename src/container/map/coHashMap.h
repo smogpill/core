@@ -22,10 +22,10 @@ public:
 
 	typedef coHashMapEntry<T> Entry;
 
-	Entry* entries;
-	coUint32* buckets;
-	coUint32 bucketMask;
-	coUint32 count;
-	coUint32 capacity;
-	coAllocator* allocator;
+	Entry* entries = nullptr;
+	coUint32* buckets = nullptr;
+	coUint32 bucketMask = 0;
+	coUint32 count = 0;
+	coUint32 capacity = 0;
+	coAllocator* allocator = nullptr;
 };
