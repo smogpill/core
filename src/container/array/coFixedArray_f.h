@@ -9,5 +9,6 @@ template <class T, coUint32 C>
 void coReserve(coFixedArray<T, C>& _this, coUint32 _desiredCount)
 {
 	(void)_this;
+	(void)_desiredCount;
 	coASSERT(_desiredCount <= _this.capacity);
 }

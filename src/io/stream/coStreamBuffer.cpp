@@ -71,7 +71,7 @@ coUint coStreamBuffer::Write(const coByte* _data, coUint _size8)
 	const coUint desiredSize8 = _size8;
 	do
 	{
-		if (cursor != windowEnd); // likely
+		if (coLIKELY(cursor != windowEnd)); // likely
 		else
 		{
 			if (!(this->*refill)())
