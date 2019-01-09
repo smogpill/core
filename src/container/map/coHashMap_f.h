@@ -48,10 +48,10 @@ void coReserve(coHashMap<T>& _this, coUint32 _desiredCapacity)
 	{
 		const coUint32 roundedCapacity = coNextPowerOf2(_desiredCapacity);
 		const coUint32 newCapacity = coMax(16u, roundedCapacity);
-		Entry* newEntryBuffer = static_cast<Entry*>(_this.allocator->Allocate(newCapacity * sizeof(T)));
+		Entry* newEntryBuffer = static_cast<Entry*>(_this.allocator->Allocate(newCapacity * sizeof(Entry)));
 		if (_this.entries)
 		{
-			coMemCopy(newEntryBuffer, _this.entries, _this.count * sizeof(T));
+			coMemCopy(newEntryBuffer, _this.entries, _this.count * sizeof(Entry));
 			_this.allocator->Free(_this.entries);
 		}
 		_this.capacity = newCapacity;
@@ -69,7 +69,7 @@ void coClear(coHashMap<T>& _this)
 	coFill(_this.buckets, _coGetBucketCount(_this), _coHashMap_INVALID_INDEX);
 	_this.count = 0;
 #ifdef coDEBUG
-	coFillAsDeleted(_this.entries, _this.count * sizeof(T));
+	coFillAsDeleted(_this.entries, _this.count * sizeof(coHashMapEntry<T>));
 #endif
 }
 

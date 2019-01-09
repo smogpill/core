@@ -49,11 +49,12 @@ coHashMapEntry<T>* _coAddEntry(coHashMap<T>& _this, coUint64 _key, const T& _val
 	coReserve(_this, _this.count + 1);
 	typedef coHashMapEntry<T> Entry;
 	const coUint32 bucketIndex = _key & _this.bucketMask;
+	coUint32& bucket = _this.buckets[bucketIndex];
 	Entry& entry = _this.entries[_this.count];
 	entry.key = _key;
-	entry.next = _this.buckets[bucketIndex];
+	entry.next = bucket;
 	entry.value = _val;
-	_this.buckets[bucketIndex] = _this.count;
+	bucket = _this.count;
 	++_this.count;
 	return &entry;
 }
