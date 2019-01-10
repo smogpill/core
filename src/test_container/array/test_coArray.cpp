@@ -43,6 +43,46 @@ coTEST(coArray, sort)
 	}*/
 }
 
+coTEST(coArray, coRemoveByIndex)
+{
+	{
+		coDynamicArray<coInt> a{ 1 };
+		coRemoveByIndex(a, 0);
+		coEXPECT(a.count == 0);
+	}
+	{
+		coDynamicArray<coInt> a{ 1, 2, 3 };
+		coRemoveByIndex(a, 0);
+		coEXPECT(a.count == 2);
+		coEXPECT(a[0] == 2);
+		coEXPECT(a[1] == 3);
+	}
+
+	{
+		coDynamicArray<coInt> a{ 1, 2, 3 };
+		coRemoveByIndex(a, 1);
+		coEXPECT(a.count == 2);
+		coEXPECT(a[0] == 1);
+		coEXPECT(a[1] == 3);
+	}
+
+	{
+		coDynamicArray<coInt> a{ 1, 2, 3 };
+		coRemoveByIndex(a, 2);
+		coEXPECT(a.count == 2);
+		coEXPECT(a[0] == 1);
+		coEXPECT(a[1] == 2);
+	}
+
+	{
+		coDynamicArray<coInt> a{ 1, 2, 3 };
+		coRemoveByIndex(a, 0);
+		coRemoveByIndex(a, 0);
+		coRemoveByIndex(a, 0);
+		coEXPECT(a.count == 0);
+	}
+}
+
 // coTEST(coArray, assignment)
 // {
 // 	{

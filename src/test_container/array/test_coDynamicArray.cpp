@@ -99,3 +99,53 @@ coTEST(coDynamicArray, Resize)
 	}
 }
 
+coTEST(coDynamicArray, coInsert)
+{
+	{
+		coDynamicArray<coInt> a{};
+		coInsert(a, 0, 7);
+		coEXPECT(a.count == 1);
+		coEXPECT(a.capacity >= 1);
+		coEXPECT(a[0] == 7);
+	}
+	{
+		coDynamicArray<coInt> a{ 1, 2, 3 };
+		coInsert(a, 0, 7);
+		coEXPECT(a.count == 4);
+		coEXPECT(a.capacity >= 4);
+		coEXPECT(a[0] == 7);
+		coEXPECT(a[1] == 1);
+		coEXPECT(a[2] == 2);
+		coEXPECT(a[3] == 3);
+	}
+	{
+		coDynamicArray<coInt> a{ 1, 2, 3 };
+		coInsert(a, 1, 7);
+		coEXPECT(a.count == 4);
+		coEXPECT(a.capacity >= 4);
+		coEXPECT(a[0] == 1);
+		coEXPECT(a[1] == 7);
+		coEXPECT(a[2] == 2);
+		coEXPECT(a[3] == 3);
+	}
+	{
+		coDynamicArray<coInt> a{ 1, 2, 3 };
+		coInsert(a, 2, 7);
+		coEXPECT(a.count == 4);
+		coEXPECT(a.capacity >= 4);
+		coEXPECT(a[0] == 1);
+		coEXPECT(a[1] == 2);
+		coEXPECT(a[2] == 7);
+		coEXPECT(a[3] == 3);
+	}
+	{
+		coDynamicArray<coInt> a{ 1, 2, 3 };
+		coInsert(a, 3, 7);
+		coEXPECT(a.count == 4);
+		coEXPECT(a.capacity >= 4);
+		coEXPECT(a[0] == 1);
+		coEXPECT(a[1] == 2);
+		coEXPECT(a[2] == 3);
+		coEXPECT(a[3] == 7);
+	}
+}
