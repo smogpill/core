@@ -109,6 +109,22 @@ void coRemoveUnordered(coArray<T>& _this, const T& _e)
 }
 
 template <class T>
+void coRemoveOrdered(coArray<T>& _this, const T& _e)
+{
+	for (T& e : _this)
+	{
+		if (_e == e)
+		{
+			const T* pend = coEnd(_this);
+			for (T* p = &e + 1; p != pend; ++p)
+				p[-1] = *p;
+			--_this.count;
+			break;
+		}
+	}
+}
+
+template <class T>
 coUint32 coFind(const coArray<T>& _this, const T& _val)
 {
 	coUint32 i = 0;
