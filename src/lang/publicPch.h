@@ -11,8 +11,6 @@
 #include <limits>
 #include <new>
 
-#pragma warning(disable:4718) // warning C4718 : 'prOctree::CheckNoTransitRec' : recursive call has no side effects, deleting
-
 #include "lang/types/coBaseTypes.h"
 #include "lang/coCompiler.h"
 #include "memory/publicPch.h"
