@@ -56,10 +56,6 @@ void coReserve(coHashMap<T>& _this, coUint32 _desiredCapacity)
 		}
 		_this.capacity = newCapacity;
 		_this.entries = newEntryBuffer;
-		if (newCapacity > _coGetBucketCount(_this))
-		{
-			_coRehash(_this, newCapacity);
-		}
 	}
 }
 

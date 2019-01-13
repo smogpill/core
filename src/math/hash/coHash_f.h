@@ -2,6 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include <debug/log/coAssert.h>
+#include <math/vector/coFloatx3_f.h>
 
 coUint32 coHash32(coUint32 _val);
 coUint32 coHash32(coUint64 _val);
