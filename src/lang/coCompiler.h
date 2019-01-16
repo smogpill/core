@@ -37,6 +37,7 @@ public:
 #	pragma warning(disable:4324) // warning C4324: structure was padded due to alignment specifier.
 #	pragma warning(disable:4718) // warning C4718: recursive call has no side effects, deleting
 #	pragma warning(disable:4189) // warning C4189: local variable is initialized but not referenced
+#	pragma warning(disable:4100) // warning C4100: unreferenced formal parameter
 #endif
 
 inline void _coReturnVoid(int) {}  // to avoid some gcc warnings with the comma operator

@@ -23,3 +23,5 @@ coFORCE_INLINE coUint8 coReverse(coUint8 _a)
 	// return = (_n * 0x0202020202ULL & 0x010884422010ULL) % 1023; 64bits version
 	return static_cast<coUint8>(((_a * 0x80200802ULL) & 0x0884422110ULL) * 0x0101010101ULL >> 32);
 }
+
+coFORCE_INLINE coUint8 coMin(coUint8 _a, coUint8 _b) { return _a < _b ? _a : _b; }

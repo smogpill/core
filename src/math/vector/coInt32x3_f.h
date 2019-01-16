@@ -10,6 +10,7 @@ coFORCE_INLINE coInt32x3 coInt32x3_ZMask() { return coBitCast<coInt32x3>(_mm_set
 coFORCE_INLINE coInt32x3 coInt32x3_XYMask() { return coBitCast<coInt32x3>(_mm_set_epi32(0, 0, 0xffffffff, 0xffffffff)); }
 coFORCE_INLINE coInt32x3 coInt32x3_XZMask() { return coBitCast<coInt32x3>(_mm_set_epi32(0, 0xffffffff, 0, 0xffffffff)); }
 coFORCE_INLINE coInt32x3 coInt32x3_YZMask() { return coBitCast<coInt32x3>(_mm_set_epi32(0, 0xffffffff, 0xffffffff, 0)); }
+coFORCE_INLINE coInt32x3 coInt32x3_XYZMask() { return coBitCast<coInt32x3>(_mm_set_epi32(0, 0xffffffff, 0xffffffff, 0xffffffff)); }
 coFORCE_INLINE coInt32x3 operator& (const coInt32x3& _a, const coInt32x3& _b) { return coBitCast<coInt32x3>(_mm_and_si128(coBitCast<__m128i>(_a), coBitCast<__m128i>(_b))); }
 coFORCE_INLINE coInt32x3 operator| (const coInt32x3& _a, const coInt32x3& _b) { return coBitCast<coInt32x3>(_mm_or_si128(coBitCast<__m128i>(_a), coBitCast<__m128i>(_b))); }
 coFORCE_INLINE coInt32x3 operator^ (const coInt32x3& _a, const coInt32x3& _b) { return coBitCast<coInt32x3>(_mm_xor_si128(coBitCast<__m128i>(_a), coBitCast<__m128i>(_b))); }
