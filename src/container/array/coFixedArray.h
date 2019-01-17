@@ -7,13 +7,28 @@
 template <class T, coUint32 CAPACITY>
 class coFixedArray : public coArray<T>
 {
+	typedef coFixedArray<T, CAPACITY> Self;
 public:
 	enum
 	{
 		capacity = CAPACITY,
 	};
-	coFixedArray() : coArray<T>(fixedBuffer, 0){}
+	coFixedArray() : coArray<T>(fixedBuffer, 0) {}
+	coFixedArray(const coArray<T>& other) { *this = other; }
+	//coFixedArray(const Self& other) : coFixedArray(static_cast<const coArray<T>&>(other)) {}
+
+	Self& operator=(const Self& other) { return operator=(static_cast<const coArray<T>&>(other)); }
+	Self& operator=(const coArray<T>& other);
 
 private:
 	T fixedBuffer[CAPACITY];
 };
+
+template <class T, coUint32 C>
+coFixedArray<T,C>& coFixedArray<T,C>::operator=(const coArray<T>& other)
+{
+	coASSERT(C >= other.count);
+	coMemCopy(data, other.data, other.count);
+	count = other.count;
+	return *this;
+}
