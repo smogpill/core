@@ -13,14 +13,14 @@ template <class T, class A>
 coFORCE_INLINE constexpr const T& coBitCast(const A& _a)
 {
 	//static_assert(sizeof(A) == sizeof(T), "");
-	return reinterpret_cast<const T&>(_a);
+	return (const T&)(_a);
 }
 
 template <class T, class A>
 coFORCE_INLINE constexpr T& coBitCast(A& _a)
 {
 	//static_assert(sizeof(A) == sizeof(T), "");
-	return reinterpret_cast<T&>(_a);
+	return (T&)(_a);
 }
 
 #define _coSTRINGIFY(_x_) #_x_
