@@ -112,13 +112,13 @@ coTEST(coTransform_f, operatorMultiply)
 	}
 
 	// Scale
-	{
-		coTransform t;
-		t.scale = coFloatx3(0, 1, 3);
-		coTransform t2;
-		t2.scale = coFloatx3(0, 1, 9);
-		coEXPECT(coNearEqual(coTransform()*t, t, epsilon));
-		coEXPECT(coNearEqual(t*coTransform(), t, epsilon));
-		coEXPECT(coNearEqual(t*t, t2, epsilon));
-	}
+ 	{
+ 		coTransform t;
+ 		t.scale = coFloatx3(0, 1, 3);
+ 		coTransform t2;
+ 		t2.scale = coFloatx3(0, 1, 9);
+ 		coEXPECT(coNearEqual(coTransform()*t, t, epsilon));
+ 		coEXPECT(coNearEqual(t*coTransform(), t, epsilon));
+ 		coEXPECT(coNearEqual(t*t, t2, epsilon));
+ 	}
 }

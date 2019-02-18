@@ -12,7 +12,7 @@
 
 coFORCE_INLINE coQuat coNormalize(const coQuat& _this)
 {
-	return coBitCast<coQuat>(coNormalize(coBitCast<coVec4>(_this)));
+	return coQuat(coNormalize(static_cast<const coVec4&>(_this)));
 }
 coFORCE_INLINE coBool32x4 coIsNormalized(const coQuat& _this, const coVec4& _squareEpsilon = coVec4(1e-3f))
 {
