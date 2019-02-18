@@ -9,9 +9,6 @@
 const coUint co_bufferSize8 = 65536;
 
 coFileStreamBuffer::coFileStreamBuffer()
-	: mode(Mode::read)
-	, impl(nullptr)
-	, refilled(false)
 {
 	OnImplConstruct();
 }
@@ -20,12 +17,6 @@ coFileStreamBuffer::~coFileStreamBuffer()
 {
 	Flush();
 	OnImplDestruct();
-}
-
-coFileStreamBuffer::InitConfig::InitConfig()
-	: mode(Mode::read)
-{
-
 }
 
 coResult coFileStreamBuffer::OnInit(const coObject::InitConfig& _config)

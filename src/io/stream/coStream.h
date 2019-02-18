@@ -10,13 +10,7 @@ class coStream : public coObject
 {
 	coDECLARE_SUPER(coObject);
 public:
-	class InitConfig : public Super::InitConfig
-	{
-	public:
-		InitConfig();
-		coStreamBuffer* buffer;
-	};
-	coStream();
+	coStream(coStreamBuffer&);
 
 	virtual void Clear();
 	coResult GetResult() const;
@@ -24,7 +18,6 @@ public:
 	void Flush();
 
 protected:
-	virtual coResult OnInit(const coObject::InitConfig& _config) override;
-
 	coStreamBuffer* buffer;
 };
+ 

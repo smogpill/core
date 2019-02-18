@@ -22,9 +22,8 @@ public:
 	class InitConfig : public Super::InitConfig
 	{
 	public:
-		InitConfig();
 		coConstString path;
-		Mode mode;
+		Mode mode = Mode::read;
 	};
 
 	virtual void Reset() override;
@@ -43,8 +42,8 @@ private:
 	coResult ImplRead(coUint& _readSize8, coByte* _data, coUint _size8);
 	coResult ImplFlush();
 
-	Mode mode;
+	Mode mode = Mode::read;
 	coDynamicArray<coByte> buffer;
-	void* impl;
-	coBool refilled;
+	void* impl = nullptr;
+	coBool refilled = false;
 };

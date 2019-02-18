@@ -6,6 +6,7 @@
 #include "math/vector/coBool32x4_f.h"
 #include "math/vector/coFloatx3_f.h"
 #include "math/quaternion/coQuat_f.h"
+#include "io/stream/coBinaryStream.h"
 
 coBool32x4 coIsValid(const coTransform& _this);
 coFORCE_INLINE coVec3 coTransformPosition(const coTransform& _this, const coVec3& _pos)
@@ -68,4 +69,12 @@ coFORCE_INLINE coBool32x4 coNearEqual(const coTransform& _a, const coTransform& 
 	const coBool32x4 t = coBitCast<coBool32x4>(coBitCast<coInt32x4>(coNearEqual(_a.translation, _b.translation, _epsilon)) | coInt32x4_MASK_W);
 	const coBool32x4 s = coBitCast<coBool32x4>(coBitCast<coInt32x4>(coNearEqual(_a.scale, _b.scale, _epsilon)) | coInt32x4_MASK_W);
 	return r && t && s;
+}
+
+coFORCE_INLINE coBinaryStream& operator<<(coBinaryStream& stream, const coTransform& a)
+{
+	stream << a.rotation;
+	stream << a.translation;
+	stream << a.scale;
+	return stream;
 }
