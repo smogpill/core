@@ -5,41 +5,23 @@
 #include "lang/result/coResult_f.h"
 #include "io/stream/coStreamBuffer.h"
 
-coStream::coStream()
-	: buffer(nullptr)
+coStream::coStream(coStreamBuffer& _buffer)
+	: buffer(&_buffer)
 {
 
-}
-
-coStream::InitConfig::InitConfig()
-	: buffer(nullptr)
-{
-
-}
-
-coResult coStream::OnInit(const coObject::InitConfig& _config)
-{
-	coTRY(Super::OnInit(_config), nullptr);
-	const InitConfig& config = static_cast<const InitConfig&>(_config);
-
-	buffer = config.buffer;
-	coTRY(buffer, nullptr);
-	return true;
 }
 
 void coStream::Clear()
 {
-	if (buffer)
-		buffer->Reset();
+	buffer->Reset();
 }
 
 void coStream::Flush()
 {
-	if (buffer)
-		buffer->Flush();
+	buffer->Flush();
 }
 
 coResult coStream::GetResult() const
 {
-	return buffer && buffer->GetResult();
+	return buffer->GetResult();
 }

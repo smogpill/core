@@ -165,6 +165,7 @@ coFORCE_INLINE coVec3 coRotateVector(const coQuat& _this, const coVec3& _vec)
 	const coVec3 r = 2.0f * coDot(q, _vec) * q + (w*w - coDot(q, q)) * _vec + 2.0f * w * coCross(q, _vec);
 	return r;
 }
+
 coFORCE_INLINE coVec3 coInverseRotateVector(const coQuat& _this, const coVec3& _vec)
 {
 	return coRotateVector(coInverse(_this), _vec);

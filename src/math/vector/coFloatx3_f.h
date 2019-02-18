@@ -8,6 +8,7 @@
 #include "math/vector/coBool32x3_f.h"
 #include "math/vector/coFloatx4_f.h"
 #include "debug/log/coAssert.h"
+#include "io/stream/coBinaryStream.h"
 
 coFORCE_INLINE coFloatx3 coMake_Floatx3(coFloat _a) { return coBitCast<coFloatx3>(_mm_set1_ps(_a)); }
 coFORCE_INLINE coFloatx3 coMake_Floatx3(coFloat _x, coFloat _y, coFloat _z) { return coBitCast<coFloatx3>(_mm_set_ps(_z, _z, _y, _x)); }
@@ -74,3 +75,13 @@ coFORCE_INLINE coBool32x3 coNearEqual0(const coFloatx3& _a, const coFloatx3& _ep
 coFORCE_INLINE coBool32x3 coAreXYZEqual(const coFloatx3& _a) { const coFloatx3 x = coBroadcastX(_a); return x == coBroadcastY(_a) && x == coBroadcastZ(_a); }
 coFORCE_INLINE coFloatx3 coSin(const coFloatx3& _a) { return coBitCast<coFloatx3>(coSin(coBitCast<coFloatx4>(_a))); }
 coFORCE_INLINE coFloatx3 coCos(const coFloatx3& _a) { return coBitCast<coFloatx3>(coCos(coBitCast<coFloatx4>(_a))); }
+coFORCE_INLINE coBinaryStream& operator<<(coBinaryStream& stream, const coFloatx3& a)
+{
+	stream.Write(reinterpret_cast<const coByte*>(&a), 12);
+	return stream;
+}
+coFORCE_INLINE coBinaryStream& operator>>(coBinaryStream& stream, coFloatx3& a)
+{
+	stream.Read(reinterpret_cast<coByte*>(&a), 12);
+	return stream;
+}

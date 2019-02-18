@@ -14,39 +14,29 @@ public:
 	coResult GetResult() const;
 	virtual void Reset();
 	virtual void Flush();
-
 	virtual void SetPos(coInt64 _pos);
 	coInt64 GetPos() const;
-
 	void SetErrorMode();
-
 	coUint Write(coByte _v);
 	coUint Write(const coByte* _data, coUint _size8);
-
 	coUint Read(coByte& _v);
 	coUint Read(coByte* _data, coUint _size8);
-
-	/*coByte* begin() const { return cursor; }
-	const coByte* cbegin() const { return cursor; }
-	coByte* end() const { return windowEnd; }
-	const coByte* cend() const { return windowEnd; }*/
-
 	coBool Refill();
 
 protected:
 	typedef coBool (coStreamBuffer::*RefillFunc) ();
-
-	coBool RefillError();
-
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
 
-	coByte* windowBegin;
-	coByte* windowEnd;
-	coByte* cursor;
-	RefillFunc refill;
-	coResult result;
-	coInt64 windowPos;
-	coBool isConst;
+	coByte* windowBegin = nullptr;
+	coByte* windowEnd = nullptr;
+	coByte* cursor = nullptr;
+	RefillFunc refill = nullptr;
+	coResult result = true;
+	coInt64 windowPos = 0;
+	coBool isConst = false;
+
+private:
+	coBool RefillError();
 };
 
 inline coBool coStreamBuffer::Refill()
@@ -61,8 +51,7 @@ inline coInt64 coStreamBuffer::GetPos() const
 
 inline coUint coStreamBuffer::Write(coByte _v)
 {
-	if (cursor != windowEnd); // likely
-	else
+	if (coUNLIKELY(cursor == windowEnd))
 	{
 		if (!(this->*refill)())
 			return 0;
@@ -74,8 +63,7 @@ inline coUint coStreamBuffer::Write(coByte _v)
 
 inline coUint coStreamBuffer::Read(coByte& _v)
 {
-	if (cursor != windowEnd); // likely
-	else
+	if (coUNLIKELY(cursor == windowEnd))
 	{
 		if (!(this->*refill)())
 		{

@@ -6,12 +6,6 @@
 #include "lang/reflect/coNumericLimits.h"
 
 coStreamBuffer::coStreamBuffer()
-	: windowBegin(nullptr)
-	, windowEnd(nullptr)
-	, cursor(nullptr)
-	, result(true)
-	, refill(nullptr)
-	, isConst(false)
 {
 #ifdef coDEBUG
 	result.tested = true;

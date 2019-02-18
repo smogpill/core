@@ -93,22 +93,6 @@ void coRemoveByIndex(coArray<T>& _this, coUint _index)
 }
 
 template <class T>
-void coRemoveUnordered(coArray<T>& _this, const T& _e)
-{
-	for (T& e : _this)
-	{
-		if (_e == e)
-		{
-			T& back = coBack(_this);
-			if (&back != &e)
-				coSwap(e, back);
-			--_this.count;
-			break;
-		}
-	}
-}
-
-template <class T>
 void coRemoveOrdered(coArray<T>& _this, const T& _e)
 {
 	for (T& e : _this)
@@ -121,6 +105,23 @@ void coRemoveOrdered(coArray<T>& _this, const T& _e)
 			--_this.count;
 			break;
 		}
+	}
+}
+
+template <class T>
+void coRemoveUnorderedByIndex(coArray<T>& _this, coUint _index)
+{
+	_this[_index] = coBack(_this);
+	--_this.count;
+}
+
+template <class T>
+void coRemoveUnordered(coArray<T>& _this, const T& _e)
+{
+	const coUint index = coFind(_this, _e);
+	if (index != _this.count)
+	{
+		coRemoveUnorderedByIndex(_this, index);
 	}
 }
 

@@ -8,6 +8,7 @@
 #include "math/vector/coFloatx3.h"
 #include "math/vector/coBool32x4_f.h"
 #include "math/vector/coInt32x4_f.h"
+#include "io/stream/coBinaryStream.h"
 
 class coFloatx3;
 
@@ -149,4 +150,16 @@ coFORCE_INLINE coFloatx4 coCos(const coFloatx4& _a)
 coFORCE_INLINE coFloatx4 coCosApprox(const coFloatx4& _a)
 {
 	return coSinApprox(_a + coFloatx4_::halfPi);
+}
+
+coFORCE_INLINE coBinaryStream& operator<<(coBinaryStream& stream, const coFloatx4& a)
+{
+	stream.Write(reinterpret_cast<const coByte*>(&a), 16);
+	return stream;
+}
+
+coFORCE_INLINE coBinaryStream& operator>>(coBinaryStream& stream, coFloatx4& a)
+{
+	stream.Read(reinterpret_cast<coByte*>(&a), 16);
+	return stream;
 }
