@@ -8,9 +8,10 @@ class coOutputStream : public coStream
 {
 	coDECLARE_SUPER(coStream);
 public:
-protected:
-	void Write(coByte _v);
-	void Write(const coByte* _data, coUint _size8);
+	~coOutputStream();
+	void Write(coByte value);
+	void Write(const void* data, coUint size8);
 
+protected:
 	coDynamicArray<coByte*> blocks;
 };

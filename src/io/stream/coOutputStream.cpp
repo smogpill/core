@@ -5,34 +5,40 @@
 #include "lang/result/coResult_f.h"
 #include "lang/reflect/coNumericLimits.h"
 
-void coOutputStream::Write(coByte _v)
+coOutputStream::~coOutputStream()
+{
+	for (auto* p : blocks)
+		delete p;
+}
+
+void coOutputStream::Write(coByte value)
 {
 	if (coUNLIKELY(cursor == windowEnd))
 	{
 		if (!(*refill)())
 			return 0;
 	}
-	*cursor = _v;
+	*cursor = value;
 	++cursor;
 }
 
-void coOutputStream::Write(const coByte* _data, coUint _size8)
+void coOutputStream::Write(const void* data, coUint size8)
 {
-	const coUint desiredSize8 = _size8;
+	const coUint desiredSize8 = size8;
 	do
 	{
 		if (coLIKELY(cursor != windowEnd)); // likely
 		else
 		{
 			if (!(*refill)())
-				return desiredSize8 - _size8;
+				return desiredSize8 - size8;
 		}
 		coASSERT(windowEnd - cursor < coNumericLimits<coUint>::Max());
 		const coUint available8 = static_cast<coUint>(windowEnd - cursor);
-		const coUint writeSize8 = (available8 >= _size8) ? _size8 : available8;
-		coMemCopy(cursor, _data, writeSize8);
-		_size8 -= writeSize8;
-		_data += writeSize8;
+		const coUint writeSize8 = (available8 >= size8) ? size8 : available8;
+		coMemCopy(cursor, data, writeSize8);
+		size8 -= writeSize8;
+		data += writeSize8;
 		cursor += writeSize8;
-	} while (_size8);
+	} while (size8);
 }

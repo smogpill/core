@@ -161,6 +161,6 @@ coFORCE_INLINE coBinaryOutputStream& operator<<(coBinaryOutputStream& stream, co
 
 coFORCE_INLINE coBinaryInputStream& operator >> (coBinaryInputStream& stream, coFloatx4& a)
 {
-	stream.Read(reinterpret_cast<coByte*>(&a), 16);
+	Read(reinterpret_cast<coByte*>(&a), 16);
 	return stream;
 }
