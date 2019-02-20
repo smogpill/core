@@ -13,9 +13,10 @@ coResult coMemoryStreamBuffer::OnInit(const coObject::InitConfig& _config)
 {
 	Super::OnInit(_config);
 
-	windowBegin = buffer.data;
-	windowEnd = coEnd(buffer);
-	cursor = windowEnd;
+	windowBegin = nullptr;
+	windowEnd = nullptr;
+	cursor = nullptr;
+	refill = static_cast<RefillFunc>(&coMemoryStreamBuffer::Refill);
 	coWARN_NOT_AVAILABLE();
 	return true;
 }

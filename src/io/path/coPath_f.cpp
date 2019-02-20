@@ -19,6 +19,20 @@ void coNormalizePath(coDynamicString& _this)
 
 	coRemoveMultiples(_this, '/');
 
+	if (coStartsWith(_this, "./"))
+	{
+		if (_this.count == 2)
+		{
+			_this.count = 1;
+		}
+		else
+		{
+			coConstString r;
+			coGetSubStringFromPos(r, _this, 2);
+			_this = r;
+		}
+	}
+
 	// remove trailing '/'
 	coASSERT(_this.count);
 	if (_this.count > 2  && _this.data[_this.count - 1] == '/')

@@ -10,14 +10,14 @@ class coStream : public coObject
 {
 	coDECLARE_SUPER(coObject);
 public:
-	coStream(coStreamBuffer&);
-
-	virtual void Clear();
-	coResult GetResult() const;
-	coStreamBuffer* GetBuffer() const { return buffer; }
-	void Flush();
+	coResult GetResult() const { return result; }
+	void SetPos(coUint32 pos);
+	coUint32 GetPos() const { return pos; }
 
 protected:
-	coStreamBuffer* buffer;
+	void SetErrorMode();
+
+	coResult result = true;
+	coUint32 pos = 0;
 };
  

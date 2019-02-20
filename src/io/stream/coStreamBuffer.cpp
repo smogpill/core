@@ -15,12 +15,6 @@ coStreamBuffer::coStreamBuffer()
 coResult coStreamBuffer::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
-
-	windowBegin = nullptr;
-	windowEnd = nullptr;
-	cursor = nullptr;
-	refill = nullptr;
-	windowPos = 0;
 	return true;
 }
 

@@ -36,7 +36,7 @@ coTEST(coPath_f, coNormalizePath)
 	const coConstString a[][2] = 
 	{
 		{ "/", "/" },
-		{ "//", "//" },
+		//{ "//", "//" },
 		{ "///", "/" },
 		{ "./", "." },
 		{ "./a", "a" },

@@ -5,23 +5,19 @@
 #include "lang/result/coResult_f.h"
 #include "io/stream/coStreamBuffer.h"
 
-coStream::coStream(coStreamBuffer& _buffer)
-	: buffer(&_buffer)
+void coStream::SetPos(coUint32 pos)
 {
-
+	coWARN_NOT_AVAILABLE();
+	result = false;
+#ifdef coDEBUG
+	result.tested = false;
+#endif
 }
 
-void coStream::Clear()
+void coStream::SetErrorMode()
 {
-	buffer->Reset();
-}
-
-void coStream::Flush()
-{
-	buffer->Flush();
-}
-
-coResult coStream::GetResult() const
-{
-	return buffer->GetResult();
+	result = false;
+#ifdef coDEBUG
+	result.tested = false;
+#endif
 }

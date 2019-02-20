@@ -16,5 +16,5 @@ protected:
 private:
 	coBool Refill();
 
-	coDynamicArray<coByte> buffer;
+	coDynamicArray<coByte*> blocks;
 };
