@@ -78,3 +78,11 @@ coFORCE_INLINE coBinaryOutputStream& operator<<(coBinaryOutputStream& stream, co
 	stream << a.scale;
 	return stream;
 }
+
+coFORCE_INLINE coBinaryInputStream& operator>>(coBinaryInputStream& stream, coTransform& a)
+{
+	stream >> a.rotation;
+	stream >> a.translation;
+	stream >> a.scale;
+	return stream;
+}
