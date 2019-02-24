@@ -5,15 +5,6 @@
 #include "lang/result/coResult_f.h"
 #include "io/stream/coStreamBuffer.h"
 
-void coStream::SetPos(coUint32 pos)
-{
-	coWARN_NOT_AVAILABLE();
-	result = false;
-#ifdef coDEBUG
-	result.tested = false;
-#endif
-}
-
 void coStream::SetErrorMode()
 {
 	result = false;

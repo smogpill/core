@@ -8,37 +8,82 @@
 coOutputStream::~coOutputStream()
 {
 	for (auto* p : blocks)
-		delete p;
+		delete[] p;
 }
 
 void coOutputStream::Write(coByte value)
 {
-	if (coUNLIKELY(cursor == windowEnd))
+	if (coUNLIKELY(posInBlock == s_blockSize))
 	{
-		if (!(*refill)())
-			return 0;
+		++blockIndex;
+		if (blockIndex == blocks.count)
+		{
+			coPushBack(blocks, new coByte[s_blockSize]);
+		}
+		posInBlock = 0;
 	}
-	*cursor = value;
-	++cursor;
+	coByte* block = blocks[blockIndex];
+	block[posInBlock++] = value;
 }
 
-void coOutputStream::Write(const void* data, coUint size8)
+void coOutputStream::Write(const void* data, coUint size)
 {
-	const coUint desiredSize8 = size8;
 	do
 	{
-		if (coLIKELY(cursor != windowEnd)); // likely
+		const coUint available = s_blockSize - posInBlock;
+		if (coLIKELY(available >= size))
+		{
+			coByte* block = blocks[blockIndex];
+			coMemCopy(&block[posInBlock], data, size);
+			posInBlock += size;
+			return;
+		}
 		else
 		{
-			if (!(*refill)())
-				return desiredSize8 - size8;
+			if (available)
+			{
+				coByte* block = blocks[blockIndex];
+				coMemCopy(&block[posInBlock], data, available);
+				size -= available;
+			}
+			++blockIndex;
+			if (blockIndex == blocks.count)
+			{
+				coPushBack(blocks, new coByte[s_blockSize]);
+			}
+			posInBlock = 0;
+			reinterpret_cast<const coByte*&>(data) += available;
 		}
-		coASSERT(windowEnd - cursor < coNumericLimits<coUint>::Max());
-		const coUint available8 = static_cast<coUint>(windowEnd - cursor);
-		const coUint writeSize8 = (available8 >= size8) ? size8 : available8;
-		coMemCopy(cursor, data, writeSize8);
-		size8 -= writeSize8;
-		data += writeSize8;
-		cursor += writeSize8;
-	} while (size8);
+	} while (true);
+}
+
+void coOutputStream::SetPos(coUint32 pos)
+{
+	blockIndex = pos / s_blockSize;
+	posInBlock = pos % s_blockSize;
+	if (coUNLIKELY(blockIndex >= blocks.count))
+	{
+		const coUint nbBlocks = blocks.count;
+		coResize(blocks, blockIndex + 1);
+		for (coUint i = nbBlocks; i < blocks.count; ++i)
+		{
+			blocks[i] = new coByte[s_blockSize];
+		}
+	}
+}
+
+void coOutputStream::GetOutput(coDynamicArray<coByte>& output) const
+{
+	const coUint size = GetPos();
+	coResize(output, size);
+	if (size == 0)
+		return;
+	coUint pos = 0;
+	for (coUint i = 0; i < blocks.count - 1; ++i)
+	{
+		const coByte* block = blocks[i];
+		coMemCopy(&output.data[pos], block, s_blockSize);
+		pos += s_blockSize;
+	}
+	coMemCopy(&output.data[pos], coBack(blocks), posInBlock);
 }

@@ -7,6 +7,8 @@ class coBinaryInputStream final : public coInputStream
 {
 	coDECLARE_SUPER(coInputStream);
 public:
+	coBinaryInputStream(const coArray<coByte>& buffer);
+
 	coBinaryInputStream& operator>> (coFloat&);
 	coBinaryInputStream& operator>> (coUint32&);
 };

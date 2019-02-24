@@ -4,21 +4,23 @@
 #include <test/unit/coTest.h>
 #include <io/stream/coBinaryOutputStream.h>
 #include <io/stream/coBinaryInputStream.h>
-#include <io/stream/coMemoryStreamBuffer.h>
+#include <lang/result/coResult_f.h>
 
 coTEST(coBinaryStream, coIsDotOrDoubleDot)
 {
-	coMemoryStreamBuffer buffer;
-
+	coDynamicArray<coByte> buffer;
 	{
-		coBinaryOutputStream s(buffer);
+		coBinaryOutputStream s;
 		s << 2.0f;
+		coCHECK(s.GetResult(), nullptr);
+		s.GetOutput(buffer);
 	}
 	
 	{
 		coFloat f;
 		coBinaryInputStream s(buffer);
 		s >> f;
+		coCHECK(s.GetResult(), nullptr);
 		coEXPECT(f == 2.0f);
 	}
 }

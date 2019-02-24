@@ -2,3 +2,9 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "io/pch.h"
 #include "io/stream/coBinaryInputStream.h"
+
+coBinaryInputStream::coBinaryInputStream(const coArray<coByte>& buffer)
+	: Super(buffer)
+{
+
+}

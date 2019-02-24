@@ -8,10 +8,16 @@ class coInputStream : public coStream
 {
 	coDECLARE_SUPER(coStream);
 public:
+	coInputStream(const coArray<coByte>& buffer);
 	void Read(coByte& value);
 	void Read(void* data, coUint size);
+	void SetPos(coUint32 pos);
+	coUint32 GetPos() const { return pos; }
+	virtual void SetErrorMode() override;
 
+private:
 	const coArray<coByte> buffer;
+	coUint32 pos = 0;
 };
 
 inline void coInputStream::Read(coByte& value)
@@ -36,6 +42,19 @@ inline void coInputStream::Read(void* data, coUint size)
 	}
 	else
 	{
+		SetErrorMode();
+	}
+}
+
+inline void coInputStream::SetPos(coUint32 desiredPos)
+{
+	if (desiredPos < buffer.count)
+	{
+		pos = desiredPos;
+	}
+	else
+	{
+
 		SetErrorMode();
 	}
 }
