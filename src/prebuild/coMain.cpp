@@ -6,7 +6,7 @@
 #include "lang/result/coResult_f.h"
 #include "container/array/coDynamicArray_f.h"
 #include "container/array/coArray.h"
-#include "pattern/scope/coDefer.h"
+#include "pattern/scope/coScopeExit.h"
 
 coResult Main(coInt nbArgs, const coChar** argv)
 {

@@ -25,6 +25,9 @@ coFORCE_INLINE constexpr T& coBitCast(A& _a)
 
 #define _coSTRINGIFY(_x_) #_x_
 #define coSTRINGIFY(_x_) _coSTRINGIFY(_x_)
+#define _coCONCAT(_x_, _y_) _x_ ## _y_
+#define coCONCAT(_x_, _y_) _coCONCAT(_x_, _y_)
+
 
 #ifdef coMSVC_COMPILER
 #	define coPRAGMA_MESSAGE(_x_)	__pragma(message(__FILE__ "("  coSTRINGIFY(__LINE__) "): " _x_))
