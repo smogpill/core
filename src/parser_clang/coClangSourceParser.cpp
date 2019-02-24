@@ -2,7 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "parser_clang/pch.h"
 #include "parser_clang/coClangSourceParser.h"
-#include "pattern/scope/coDefer.h"
+#include "pattern/scope/coScopeExit.h"
 #include "lang/result/coResult_f.h"
 #include "lang/reflect/coType.h"
 #include "lang/reflect/coField.h"
@@ -136,7 +136,7 @@ coResult coClangSourceParser::InitPrecompiledHeader(const InitConfig& _config)
 		const CXErrorCode parseError = clang_parseTranslationUnit2(clangIndex, filePath.data, commonParseArgs.data, commonParseArgs.count, nullptr, 0, CXTranslationUnit_SkipFunctionBodies | CXTranslationUnit_Incomplete, &translationUnit);
 		coTRY(parseError == CXError_Success, "Clang failed to parse the file: " << filePath << " (libclang: "<< co_GetClangErrorString(parseError) << ")");
 		coTRY(translationUnit, "Can't create translation unit from source file: " << filePath);
-		coDEFER() { clang_disposeTranslationUnit(translationUnit); };
+		coSCOPE_EXIT(clang_disposeTranslationUnit(translationUnit));
 		coTRY(DisplayDiagnostics(translationUnit), "Failed to display clang diagnostics.");
 		coTRY(ValidateDiagnostic(translationUnit), "Validation failed.");
 		const CXSaveError saveError = static_cast<CXSaveError>(clang_saveTranslationUnit(translationUnit, precompiledHeaderPath.data, 0));
@@ -159,7 +159,7 @@ coResult coClangSourceParser::Parse(ParseResult& _result, const ParseConfig& _co
 	const CXErrorCode error = clang_parseTranslationUnit2(clangIndex, filePath.data, sourceParseArgs.data, sourceParseArgs.count, nullptr, 0, CXTranslationUnit_SkipFunctionBodies | CXTranslationUnit_Incomplete, &translationUnit);
 	coTRY(error == CXError_Success, "Clang failed to parse the file: " << filePath << " (libclang: " << co_GetClangErrorString(error) << ")");
 	coTRY(translationUnit, "Can't create translation unit from source file: " << filePath);
-	coDEFER() { clang_disposeTranslationUnit(translationUnit); };
+	coSCOPE_EXIT(clang_disposeTranslationUnit(translationUnit));
 	coTRY(DisplayDiagnostics(translationUnit), "Failed to display clang diagnostics.");
 	coTRY(ValidateDiagnostic(translationUnit), "Validation failed.");
 	CXCursor cursor = clang_getTranslationUnitCursor(translationUnit);
@@ -232,14 +232,14 @@ coResult coClangSourceParser::ParseTypeChild(const ScopeInfo& scope, const CXCur
 	case CXCursor_TypeAliasDecl:
 	{
 		CXString name_cx = clang_getCursorSpelling(_cursor);
-		coDEFER() { clang_disposeString(name_cx); };
+		coSCOPE_EXIT(clang_disposeString(name_cx));
 		const coConstString name = clang_getCString(name_cx);
 		if (name == "Super")
 		{
 			CXType type = clang_getCursorType(_cursor);
 			type = clang_getCanonicalType(type);
 			CXString spelling_cx = clang_getTypeSpelling(type);
-			coDEFER() { clang_disposeString(spelling_cx); };
+			coSCOPE_EXIT(clang_disposeString(spelling_cx));
 			scope.curType->superTypeName = clang_getCString(spelling_cx);
 		}
 		break;
@@ -283,15 +283,15 @@ coResult coClangSourceParser::ParseTypes(ParseResult& _result, const CXCursor& _
 coResult coClangSourceParser::ParseType(ParseResult& _result, const CXCursor& _cursor)
 {
 	coParsedType* parsedType = new coParsedType();
-	coDEFER() { delete parsedType; };
+	coSCOPE_EXIT(delete parsedType);
 	parsedType->type = new coType();
 	coTRY(ParseSymbol(*parsedType->type, _cursor), nullptr);
 	ScopeInfo scope;
 	scope.parser = this;
 	scope.curType = parsedType;
+	parsedType = nullptr;
 	clang_visitChildren(_cursor, &ParseTypeChildrenVisitor, &scope);
 	coPushBack(*_result.parsedTypes, parsedType);
-	parsedType = nullptr; // Release from defer
 	return true;
 }
 
@@ -304,7 +304,7 @@ coResult coClangSourceParser::ParseField(const ScopeInfo& scope, const CXCursor&
 	}
 	coParsedField* parsedField = new coParsedField();
 	parsedField->field = new coField();
-	coDEFER() { delete parsedField; };
+	coSCOPE_EXIT(delete parsedField);
 	coTRY(ParseSymbol(*parsedField->field, _cursor), nullptr);
 	switch (type.kind)
 	{
@@ -323,7 +323,7 @@ coResult coClangSourceParser::ParseField(const ScopeInfo& scope, const CXCursor&
 	}
 	const CXCursor typeCursor = clang_getTypeDeclaration(type);
 	const CXString typeSpelling = clang_getCursorSpelling(typeCursor);
-	coDEFER() { clang_disposeString(typeSpelling); };
+	coSCOPE_EXIT(clang_disposeString(typeSpelling));
 	parsedField->typeName = clang_getCString(typeSpelling);
 	coTRY(parsedField->typeName.count, "Failed to retrieve the type name of the field: "<< parsedField->field->name);
 	coPushBack(scope.curType->parsedFields, parsedField);
@@ -334,7 +334,7 @@ coResult coClangSourceParser::ParseField(const ScopeInfo& scope, const CXCursor&
 coResult coClangSourceParser::ParseSymbol(coSymbol& _symbol, const CXCursor& _cursor)
 {
 	const CXString name = clang_getCursorSpelling(_cursor);
-	coDEFER() { clang_disposeString(name); };
+	coSCOPE_EXIT(clang_disposeString(name));
 	_symbol.name = clang_getCString(name);
 
 	const CX_CXXAccessSpecifier access = clang_getCXXAccessSpecifier(_cursor);
@@ -380,7 +380,7 @@ CXCursor coClangSourceParser::FindAttribute(const CXCursor& _cursor, const coCon
 			if (_child.kind == CXCursor_StructDecl)
 			{
 				CXString cursorStr = clang_getCursorDisplayName(_child);
-				coDEFER() { clang_disposeString(cursorStr); };
+				coSCOPE_EXIT(clang_disposeString(cursorStr));
 				const coConstString name = clang_getCString(cursorStr);
 				Result* result = static_cast<Result*>(_clientData);
 				if (name == result->structName)
@@ -406,7 +406,7 @@ coBool coClangSourceParser::ValidateDiagnostic(const CXTranslationUnit& _transla
 	for (coUint i = 0; i < nbDiagnostics; ++i)
 	{
 		CXDiagnostic diag = clang_getDiagnostic(_translationUnit, i);
-		coDEFER() { clang_disposeDiagnostic(diag); };
+		coSCOPE_EXIT(clang_disposeDiagnostic(diag));
 
 		const CXDiagnosticSeverity severity = clang_getDiagnosticSeverity(diag);
 		if (severity >= CXDiagnostic_Warning)
@@ -421,7 +421,7 @@ coResult coClangSourceParser::DisplayDiagnostics(const CXTranslationUnit& _trans
 	for (coUint i = 0; i < nbDiagnostics; ++i)
 	{
 		CXDiagnostic diag = clang_getDiagnostic(_translationUnit, i);
-		coDEFER() { clang_disposeDiagnostic(diag); };
+		coSCOPE_EXIT(clang_disposeDiagnostic(diag));
 
 		const CXDiagnosticSeverity severity = clang_getDiagnosticSeverity(diag);
 		if (severity == CXDiagnostic_Ignored)
@@ -435,12 +435,12 @@ coResult coClangSourceParser::DisplayDiagnostics(const CXTranslationUnit& _trans
 
 		// Get file name
 		CXString fileName_cx = clang_getFileName(file);
-		coDEFER() { clang_disposeString(fileName_cx); };
+		coSCOPE_EXIT(clang_disposeString(fileName_cx));
 		const coConstString fileName = clang_getCString(fileName_cx);
 
 		// Get message
 		CXString message_cx = clang_getDiagnosticSpelling(diag);
-		coDEFER() { clang_disposeString(message_cx); };
+		coSCOPE_EXIT(clang_disposeString(message_cx));
 		const coConstString message = clang_getCString(message_cx);
 
 		// Log type

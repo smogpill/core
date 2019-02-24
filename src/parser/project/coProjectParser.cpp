@@ -4,7 +4,7 @@
 #include "parser/project/coProjectParser.h"
 #include "parser/project/coParsedProject.h"
 #include "lang/result/coResult_f.h"
-#include "pattern/scope/coDefer.h"
+#include "pattern/scope/coScopeExit.h"
 #include "io/dir/coDirectoryAccess.h"
 #include "io/dir/coDirectory_f.h"
 #include "io/path/coPath_f.h"
@@ -56,7 +56,7 @@ coResult coProjectParser::Parse(coParsedProject& _out, const ParseConfig& _confi
 	// Init the parser
 	coTRY(!sourceParser, nullptr);
 	sourceParser = coSourceParser::Create();
-	coDEFER() { delete sourceParser; sourceParser = nullptr; };
+	coSCOPE_EXIT(delete sourceParser; sourceParser = nullptr);
 	{
 		coSourceParser::InitConfig config;
 		config.buildDir = outProjectDir;

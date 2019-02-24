@@ -5,7 +5,7 @@
 #include "lang/reflect/coTypeBuilder.h"
 #include "lang/reflect/coType.h"
 #include "lang/result/coResult_f.h"
-#include "pattern/scope/coDefer.h"
+#include "pattern/scope/coScopeExit.h"
 
 coDEFINE_SINGLETON(coTypeFactory);
 
