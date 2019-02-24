@@ -12,15 +12,18 @@ coTEST(coBinaryStream, coIsDotOrDoubleDot)
 	{
 		coBinaryOutputStream s;
 		s << 2.0f;
+		s << 7.0f;
 		coCHECK(s.GetResult(), nullptr);
 		s.GetOutput(buffer);
 	}
 	
 	{
-		coFloat f;
+		coFloat f2, f7;
 		coBinaryInputStream s(buffer);
-		s >> f;
+		s >> f2;
+		s >> f7;
 		coCHECK(s.GetResult(), nullptr);
-		coEXPECT(f == 2.0f);
+		coEXPECT(f2 == 2.0f);
+		coEXPECT(f7 == 7.0f);
 	}
 }

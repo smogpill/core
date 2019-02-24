@@ -3,7 +3,6 @@
 #include "io/pch.h"
 #include "io/stream/coStream.h"
 #include "lang/result/coResult_f.h"
-#include "io/stream/coStreamBuffer.h"
 
 void coStream::SetErrorMode()
 {

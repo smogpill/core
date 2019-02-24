@@ -4,3 +4,5 @@
 
 #include "lang/publicPch.h"
 #include "platform/publicPch.h"
+#include <cstdio>
+#include <cinttypes>

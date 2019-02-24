@@ -8,9 +8,9 @@
 #include "lang/reflect/coType.h"
 #include "lang/reflect/coField.h"
 #include "io/path/coPath_f.h"
-#include "io/file/coFileStreamBuffer.h"
 #include "io/dir/coDirectory_f.h"
 #include "io/stream/coStringOutputStream.h"
+#include "io/file/coFileAccess.h"
 #include "parser/project/coParsedProject.h"
 #include "parser/source/coParsedType.h"
 #include "parser/source/coParsedField.h"
@@ -59,20 +59,7 @@ coResult coCppTypesGeneratorPlugin::GenerateTypes(const coParsedProject& _parsed
 		coASSERT(coIsPathNormalized(mainCxxAbsolutePath));
 	}
 
-	coFileStreamBuffer streamBuffer;
-	{
-		coFileStreamBuffer::InitConfig c;
-		c.path = mainCxxAbsolutePath;
-		c.mode = coFileStreamBuffer::write;
-		coTRY(streamBuffer.Init(c), "Failed to open for writing: " << streamBuffer.GetDebugName());
-	}
-
 	coStringOutputStream stream;
-	{
-		coStringOutputStream::InitConfig c;
-		c.buffer = &streamBuffer;
-		coTRY(stream.Init(c), nullptr);
-	}
 
 	coWriteHeader(stream);
 	stream << "\n";
@@ -85,9 +72,19 @@ coResult coCppTypesGeneratorPlugin::GenerateTypes(const coParsedProject& _parsed
 		coTRY(GenerateType(cxxPath, *parsedType), "Failed to generate type: " << parsedType->GetDebugName());
 		coWriteInclude(stream, cxxPath);
 	}
-
-	stream.Flush();
 	coTRY(stream.GetResult(), "Failed to write to stream: " << stream.GetDebugName());
+
+	{
+		coDynamicArray<coByte> output;
+		stream.GetOutput(output);
+
+		coFileAccess file;
+		coFileAccess::InitConfig c;
+		c.mode = coFileAccess::write;
+		c.path = mainCxxAbsolutePath;
+		coTRY(file.Init(c), "Failed to open for writing: " << file << ".");
+		coTRY(file.Write(output), "Failed to write in: " << file << ".");
+	}
 
 	projectGenerator->AddGeneratedEntryPath(mainCxxRelativePath);
 
@@ -116,21 +113,7 @@ coResult coCppTypesGeneratorPlugin::GenerateType(coDynamicString& _relativePath,
 		coASSERT(coIsPathNormalized(_relativePath));
 	}
 
-	coFileStreamBuffer streamBuffer;
-	{
-		coFileStreamBuffer::InitConfig c;
-		c.path = absolutePath;
-		c.mode = coFileStreamBuffer::write;
-		coTRY(streamBuffer.Init(c), "Failed to open for writing: " << streamBuffer.GetDebugName());
-	}
-
 	coStringOutputStream stream;
-	{
-		coStringOutputStream::InitConfig c;
-		c.buffer = &streamBuffer;
-		coTRY(stream.Init(c), nullptr);
-	}
-
 	coWriteHeader(stream);
 	coWriteInclude(stream, _parsedType.sourcePath);
 	coWriteInclude(stream, "lang/reflect/coType.h");
@@ -150,9 +133,18 @@ coResult coCppTypesGeneratorPlugin::GenerateType(coDynamicString& _relativePath,
 	coTRY(WriteInitTypeFunc(stream, _parsedType), nullptr);
 	coTRY(WriteLinkTypeFunc(stream, _parsedType), nullptr);
 	coTRY(WriteGetStaticTypeFunc(stream, _parsedType), nullptr);
+	coTRY(stream.GetResult(), "Failed to write to stream: "<<stream << ".");
 
-	stream.Flush();
-	coTRY(stream.GetResult(), "Failed to write to stream: "<<stream);
+	{
+		coDynamicArray<coByte> output;
+		stream.GetOutput(output);
+		coFileAccess file;
+		coFileAccess::InitConfig c;
+		c.mode = coFileAccess::write;
+		c.path = absolutePath;
+		coTRY(file.Init(c), "Failed to open for writing: " << file << ".");
+		coTRY(file.Write(output), "Failed to write in: " << file << ".");
+	}
 
 	return true;
 }

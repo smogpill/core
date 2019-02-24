@@ -73,8 +73,7 @@ coResult coClangSourceParser::OnInit(const coObject::InitConfig& _config)
 coResult coClangSourceParser::InitCommonParseArgs(const InitConfig& _config)
 {
 	coTRY(commonParseArgs.count == 0, nullptr);
-	const coChar* args[] = { "-x", "c++", "-std=c++14", "-fms-compatibility-version=19", "-Wno-pragma-once-outside-header", "-D", "coREFLECTION_PARSING" };
-	commonParseArgs = args;
+	commonParseArgs = coArray<const coChar*>({ "-x", "c++", "-std=c++14", "-fms-compatibility-version=19", "-Wno-pragma-once-outside-header", "-D", "coREFLECTION_PARSING" });
 	for (const coConstString& includeDir : _config.includeDirs)
 	{
 		coDynamicString* s = new coDynamicString();

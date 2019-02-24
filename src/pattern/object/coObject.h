@@ -32,7 +32,7 @@ public:
 	coResult Init();
 	coResult Start();
 	void Stop();
-	const coConstString& GetDebugName() const;
+	virtual const coConstString& GetDebugName() const;
 	void SetDebugName(const coConstString& _s);
 	coBool IsInitialized() const { return objectState == ObjectState::initialized; }
 	coBool IsStarted() const { return objectState == ObjectState::started; }

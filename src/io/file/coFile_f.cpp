@@ -4,7 +4,6 @@
 #include "io/file/coFile_f.h"
 #include "io/path/coPath_f.h"
 #include "io/path/coPathStatus.h"
-#include "io/file/coFileStreamBuffer.h"
 #include "io/file/coFileAccess.h"
 #include "lang/result/coResult_f.h"
 #include "lang/reflect/coNumericLimits.h"
@@ -33,17 +32,15 @@ coResult coReadFullFile(coDynamicArray<coByte>& _out, const coConstString& _path
 	coUint32 size8;
 	coNumericConvert(size8, largeSize8);
 
-	coFileStreamBuffer streamBuffer;
+	coFileAccess file;
 	{
-		coFileStreamBuffer::InitConfig c;
+		coFileAccess::InitConfig c;
+		c.mode = coFileAccess::read;
 		c.path = _path;
-		c.mode = coFileStreamBuffer::read;
-		coTRY(streamBuffer.Init(c), "Failed to open for writing: " << streamBuffer);
+		coTRY(file.Init(), "Failed to init for reading: " << file);
 	}
 
 	coResize(_out, size8);
-	const coUint sizeRead = streamBuffer.Read(_out.data, size8);
-	coTRY(streamBuffer.GetResult(), "Failed to read: " << _path);
-	coTRY(sizeRead == size8, _path << ": requested read of " << size8 << " bytes, but only " << sizeRead << " bytes were read.");
+	coTRY(file.Read(_out), "Failed to read " << file);
 	return true;
 }

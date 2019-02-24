@@ -7,8 +7,8 @@
 #include "lang/result/coResult_f.h"
 #include "io/path/coPath_f.h"
 #include "io/dir/coDirectory_f.h"
-#include "io/file/coFileStreamBuffer.h"
 #include "io/stream/coStringOutputStream.h"
+#include "io/file/coFileAccess.h"
 #include "memory/allocator/coLocalAllocator.h"
 
 coResult coMainEntryPointGeneratorPlugin::OnInit(const coObject::InitConfig& _config)
@@ -42,21 +42,7 @@ coResult coMainEntryPointGeneratorPlugin::GenerateCpp()
 		coASSERT(coIsPathNormalized(cxxPath));
 	}
 
-	coFileStreamBuffer streamBuffer;
-	{
-		coFileStreamBuffer::InitConfig c;
-		c.path = cxxPath;
-		c.mode = coFileStreamBuffer::write;
-		coTRY(streamBuffer.Init(c), "Failed to open for writing: " << streamBuffer);
-	}
-
 	coStringOutputStream stream;
-	{
-		coStringOutputStream::InitConfig c;
-		c.buffer = &streamBuffer;
-		coTRY(stream.Init(c), nullptr);
-	}
-
 	coWriteHeader(stream);
 	for (const coDynamicString* path : projectGenerator->GetGeneratedEntryPaths())
 	{
@@ -69,8 +55,19 @@ coResult coMainEntryPointGeneratorPlugin::GenerateCpp()
 		}
 	}
 
-	stream.Flush();
 	coTRY(stream.GetResult(), "Failed to write to stream: " << stream);
+
+	coFileAccess file;
+	{
+		coFileAccess::InitConfig c;
+		c.path = cxxPath;
+		c.mode = coFileAccess::write;
+		coTRY(file.Init(c), "Failed to open for writing: " << file);
+	}
+
+	coDynamicArray<coByte> output;
+	stream.GetOutput(output);
+	coTRY(file.Write(output), "Failed to write in: " << file);
 
 	return true;
 }

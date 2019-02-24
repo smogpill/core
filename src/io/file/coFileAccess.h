@@ -31,6 +31,10 @@ public:
 	Mode GetMode() const { return mode; }
 	const coConstString& GetName() const;
 	coResult GetTime(coUint64& _creationTime, coUint64& _lastAccessTime, coUint64& _lastWriteTime) const;
+	coResult Write(const coArray<coByte>& buffer);
+	coResult Read(coArray<coByte>& buffer);
+	coResult Flush();
+	virtual const coConstString& GetDebugName() const override { return path; }
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
