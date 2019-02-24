@@ -78,11 +78,11 @@ coFORCE_INLINE coFloatx3 coSin(const coFloatx3& _a) { return coBitCast<coFloatx3
 coFORCE_INLINE coFloatx3 coCos(const coFloatx3& _a) { return coBitCast<coFloatx3>(coCos(coBitCast<coFloatx4>(_a))); }
 coFORCE_INLINE coBinaryOutputStream& operator<<(coBinaryOutputStream& stream, const coFloatx3& a)
 {
-	stream.Write(reinterpret_cast<const coByte*>(&a), 12);
+	stream.Write(&a, 12);
 	return stream;
 }
 coFORCE_INLINE coBinaryInputStream& operator>>(coBinaryInputStream& stream, coFloatx3& a)
 {
-	stream.Read(reinterpret_cast<coByte*>(&a), 12);
+	stream.Read(&a, 12);
 	return stream;
 }

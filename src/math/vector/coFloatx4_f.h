@@ -155,12 +155,12 @@ coFORCE_INLINE coFloatx4 coCosApprox(const coFloatx4& _a)
 
 coFORCE_INLINE coBinaryOutputStream& operator<<(coBinaryOutputStream& stream, const coFloatx4& a)
 {
-	stream.Write(reinterpret_cast<const coByte*>(&a), 16);
+	stream.Write(&a, 16);
 	return stream;
 }
 
 coFORCE_INLINE coBinaryInputStream& operator >> (coBinaryInputStream& stream, coFloatx4& a)
 {
-	stream.Read(reinterpret_cast<coByte*>(&a), 16);
+	stream.Read(&a, 16);
 	return stream;
 }
