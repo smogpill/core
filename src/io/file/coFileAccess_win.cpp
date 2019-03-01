@@ -95,7 +95,7 @@ coResult coFileAccess::OnImplInit(const InitConfig& /*_config*/)
 		case coFileAccess::Mode::write:
 		{
 			if (coExists(path))
-				creationDisposition = OPEN_EXISTING;
+				creationDisposition = TRUNCATE_EXISTING;
 			else
 				creationDisposition = CREATE_NEW;
 		}
