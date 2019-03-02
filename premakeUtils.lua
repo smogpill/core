@@ -78,6 +78,7 @@ function coSetCppProjectDefaults(_name)
 	vectorextensions "SSE2"
 	floatingpoint "Fast"
 	editandcontinue "Off"
+	runtime "Release" -- Even on debug builds, Unreal is setup this way anyway.
 	flags { "Symbols", "NoMinimalRebuild", "FatalWarnings", "C++14", "MultiProcessorCompile" }
 	files { "**.cpp", "**.h"}
 
