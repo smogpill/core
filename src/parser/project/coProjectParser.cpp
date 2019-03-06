@@ -135,6 +135,7 @@ coResult coProjectParser::ParseSourceFile(coParsedProject& _out, const ParseConf
 	coTRY(sourceParser->Parse(result, config), nullptr);
 	for (coParsedType* parsedType : parsedTypes)
 	{
+		coASSERT(parsedType);
 		parsedType->sourcePath = _relativePath;
 	}
 	coPushBackArray(_out.parsedTypes, parsedTypes);

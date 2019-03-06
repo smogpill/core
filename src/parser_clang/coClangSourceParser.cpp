@@ -289,9 +289,9 @@ coResult coClangSourceParser::ParseType(ParseResult& _result, const CXCursor& _c
 	ScopeInfo scope;
 	scope.parser = this;
 	scope.curType = parsedType;
-	parsedType = nullptr;
 	clang_visitChildren(_cursor, &ParseTypeChildrenVisitor, &scope);
 	coPushBack(*_result.parsedTypes, parsedType);
+	parsedType = nullptr;
 	return true;
 }
 
