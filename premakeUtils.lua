@@ -1,33 +1,25 @@
 
 function coInitParams(_params)
-	baseAbsPath = os.getcwd()
-	print("baseAbsPath: "..baseAbsPath)
-	externalAbsPath = baseAbsPath .. "/external"
-	buildPath = "build/" .. _ACTION
-	genAbsPath = baseAbsPath .. "/build/gen"
-	buildAbsPath = baseAbsPath .. "/" .. buildPath
-	coreRelativePath = "."
+	co_baseAbsPath = os.getcwd()
+	print("co_baseAbsPath: "..co_baseAbsPath)
+	co_externalAbsPath = co_baseAbsPath .. "/external"
+	co_buildPath = "build/" .. _ACTION
+	local coreRelativePath = "."
 	if _params.coreRelativePath then
 		coreRelativePath = _params.coreRelativePath
 	end
-	coreAbsolutePath = path.getabsolute(coreRelativePath)
-	prebuildPath = coreAbsolutePath .. "/build/prebuild.exe"
-	versionMajor = 0
-	versionMinor = 0
-	versionBuild = 0
+	local coreAbsolutePath = path.getabsolute(coreRelativePath)
+	co_prebuildPath = coreAbsolutePath .. "/build/prebuild.exe"
+	co_versionMajor = 0
+	co_versionMinor = 0
+	co_versionBuild = 0
 end
 
-function coSetWorkspaceDefaults(_name, _srcDirs)
-	print("Generating workspace ".._name.."... (in "..buildPath..")")
+function coSetWorkspaceDefaults(_name)
+	print("Generating workspace ".._name.."... (in "..co_buildPath..")")
 	workspace(_name)
 	configurations {"debug", "release", "prebuildDebug", "prebuildRelease"}
-	location(buildPath)
-	objdir(buildPath .. "/obj")
-	libdirs { buildPath .. "/bin" }
-	targetdir(buildPath .. "/bin")
-	defines { "coVERSION_MAJOR="..versionMajor, "coVERSION_MINOR="..versionMinor, "coVERSION_BUILD="..versionBuild }
-	includedirs { "build/gen" }
-	includedirs(_srcDirs)
+	location(co_buildPath)
 end
 
 function coSetPCH(_dir, _projectName, _fileName)
@@ -44,16 +36,24 @@ function coSetPCH(_dir, _projectName, _fileName)
 end
 
 function coSetProjectDefaults(_name, _options)
+	local projectBasePath = "../.."
+	local buildAbsPath = projectBasePath .. "/" .. co_buildPath
 	local buildLocation = buildAbsPath.."/projects"
 	print("Generating project ".._name.."... (in "..buildLocation..")")
 	project(_name)
 
+	location(buildLocation)
 	architecture "x86_64"
 	warnings "Extra"
 	kind "StaticLib"
-	location(buildLocation)
-	defines { "coPROJECT_NAME=".._name }
+	objdir(buildAbsPath .. "/obj")
+	targetdir(buildAbsPath .. "/bin")
+	libdirs { buildAbsPath .. "/bin" }
+	defines { "coVERSION_MAJOR="..co_versionMajor, "coVERSION_MINOR="..co_versionMinor, "coVERSION_BUILD="..co_versionBuild }
+	includedirs { projectBasePath.."/build/gen" }
+	includedirs(co_srcDirs)
 	debugdir "$(OutDir)"
+	defines { "coPROJECT_NAME=".._name }
 
 	if not (_options and _options.prebuildDependency) then
 		--removeconfigurations {"prebuild*"}
@@ -100,7 +100,9 @@ function coSetCppProjectDefaults(_name)
 		flags { "OptimizeSpeed", "NoFramePointer"}
 	filter {"configurations:debug or release"}
 		if os.isfile("reflect.cpp") then
-			local command = prebuildPath .. ' "' .. path.getabsolute(co_projectDir, baseAbsPath) .. "/.." .. '" "' .. genAbsPath .. '" "' .. _name .. '" "'.. _name ..'/pch.h"'
+			local projectBasePath = "../.."
+			local genAbsPath = "../../gen"
+			local command = co_prebuildPath .. ' "' .. path.getabsolute(co_projectDir, path.getabsolute(projectBasePath)) .. "/.." .. '" "' .. genAbsPath .. '" "' .. _name .. '" "'.. _name ..'/pch.h"'
 			command = command .. ' -I="$(UniversalCRT_IncludePath)"'
 			for _, d in pairs(co_srcDirs) do
 				command = command .. ' -I="'..d..'"'
@@ -143,36 +145,41 @@ function coFindDir(_srcDirs, _dirName)
 	for _, d in pairs(_srcDirs) do
 		local foundDirs = os.matchdirs(d.."/".._dirName)
 		for _, e in pairs(foundDirs) do
-			return e
+			return d, e
 		end
 	end
 	return nil
 end
 
 function coIncludeProject(_srcDirs, _projectName)
-	local foundDir = coFindDir(_srcDirs, _projectName)
+	local srcDir, foundDir = coFindDir(_srcDirs, _projectName)
 	if foundDir == nil then
 		error("Failed to find the project: ".._projectName)
 	else
+		co_projectSrcDir = srcDir
 		co_projectDir = foundDir
 		include(foundDir)
 	end
 end
 
 function coGenerateProjectWorkspace(_params)
-	co_srcDirs = _params.srcDirs
-	for k, d in pairs(co_srcDirs) do
-		co_srcDirs[k] = path.getabsolute(d)
+	srcDirs = {path.getabsolute("src")}
+	co_workspaceDependencies = {}
+	for k, d in pairs(_params.dependencies) do
+		table.insert(srcDirs, path.getabsolute(d.."/src"))
+		co_workspaceDependencies[k] = path.getabsolute(d)
 	end
-	coSetWorkspaceDefaults(_params.name, _params.srcDirs)
+
+	co_srcDirs = srcDirs
+
+	coSetWorkspaceDefaults(_params.name)
 	startproject(_params.projects[0])
 	for _, p in pairs(_params.projects) do
-		coIncludeProject(_params.srcDirs, p)
-		--include(pPath)
+		coIncludeProject(srcDirs, p)
 	end
 	if co_dependencies then
 		for _, d in pairs(co_dependencies) do
-			coIncludeProject(_params.srcDirs, d)
+			coIncludeProject(srcDirs, d)
 		end
 	end
 end
