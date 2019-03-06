@@ -47,8 +47,8 @@ function coSetProjectDefaults(_name, _options)
 	warnings "Extra"
 	kind "StaticLib"
 	objdir(buildAbsPath .. "/obj")
-	targetdir(buildAbsPath .. "/bin")
-	libdirs { buildAbsPath .. "/bin" }
+	targetdir(buildAbsPath .. "/bin/$(Configuration)")
+	libdirs { "$(OutDir)" }
 	defines { "coVERSION_MAJOR="..co_versionMajor, "coVERSION_MINOR="..co_versionMinor, "coVERSION_BUILD="..co_versionBuild }
 	includedirs { projectBasePath.."/build/gen" }
 	includedirs(co_srcDirs)
@@ -62,8 +62,6 @@ function coSetProjectDefaults(_name, _options)
 
 	filter{"configurations:debug or release"}
 		defines {"coREFLECT_ENABLED"}
-	filter { "configurations:debug or prebuildDebug" }
-		targetsuffix "_d"
 	filter { "configurations:release or prebuildRelease" }
 		optimize "On"
 	filter {}	
