@@ -76,6 +76,7 @@ coFORCE_INLINE coBool32x3 coNearEqual0(const coFloatx3& _a, const coFloatx3& _ep
 coFORCE_INLINE coBool32x3 coAreXYZEqual(const coFloatx3& _a) { const coFloatx3 x = coBroadcastX(_a); return x == coBroadcastY(_a) && x == coBroadcastZ(_a); }
 coFORCE_INLINE coFloatx3 coSin(const coFloatx3& _a) { return coBitCast<coFloatx3>(coSin(coBitCast<coFloatx4>(_a))); }
 coFORCE_INLINE coFloatx3 coCos(const coFloatx3& _a) { return coBitCast<coFloatx3>(coCos(coBitCast<coFloatx4>(_a))); }
+coFORCE_INLINE coFloatx3 coMod(coFloatx3 _a, coFloatx3 _b) { return coFloatx3(coMod(_a.x, _b.x), coMod(_a.y, _b.y), coMod(_a.z, _b.z)); }
 coFORCE_INLINE coBinaryOutputStream& operator<<(coBinaryOutputStream& stream, const coFloatx3& a)
 {
 	stream.Write(&a, 12);
