@@ -21,9 +21,9 @@ void coComputeGivensCoeffsSym(coFloat& c, coFloat& s, coFloat a_pp, coFloat a_pq
 		s = 0.0f;
 		return;
 	}
-	coFloat tau = (a_qq - a_pp) / (2.0f * a_pq);
-	coFloat stt = coSquareRoot(1.0f + tau * tau);
-	coFloat tan = 1.0f / ((tau >= 0.0f) ? (tau + stt) : (tau - stt));
+	const coFloat tau = (a_qq - a_pp) / (2.0f * a_pq);
+	const coFloat stt = coSquareRoot(1.0f + tau * tau);
+	const coFloat tan = 1.0f / ((tau >= 0.0f) ? (tau + stt) : (tau - stt));
 	c = coInvSquareRoot(1.0f + tan * tan);
 	s = tan * c;
 }
@@ -49,7 +49,7 @@ void coSVD_RotateQ_xy(coFloat& x, coFloat& y, coFloat a, coFloat c, coFloat s)
 
 void coSVD_Rotate(coMat3& vtav, coMat3& v, coInt a, coInt b)
 {
-	if (vtav[a][b] == 0.0)
+	if (vtav[a][b] == 0.0f)
 		return;
 
 	coFloat c, s;
@@ -87,23 +87,26 @@ coFloatx4 coSVD_ComputeInvDet(coFloatx4 x, coFloatx4 tolerance)
 
 void coSVD_ComputePseudoInverse(coMat3& out, const coVec3& sigma, const coMat3& v)
 {
-	const coFloatx4 d0 = coSVD_ComputeInvDet(sigma[0], 1.e-20f);
-	const coFloatx4 d1 = coSVD_ComputeInvDet(sigma[1], 1.e-20f);
-	const coFloatx4 d2 = coSVD_ComputeInvDet(sigma[2], 1.e-20f);
-	out.c0 = coVec3(v[0][0] * d0 * v[0][0] + v[0][1] * d1 * v[0][1] + v[0][2] * d2 * v[0][2],
+	const coFloatx4 d0 = coSVD_ComputeInvDet(sigma[0], 1e-6f);
+	const coFloatx4 d1 = coSVD_ComputeInvDet(sigma[1], 1e-6f);
+	const coFloatx4 d2 = coSVD_ComputeInvDet(sigma[2], 1e-6f);
+	out.c0 = coVec3(
+		v[0][0] * d0 * v[0][0] + v[0][1] * d1 * v[0][1] + v[0][2] * d2 * v[0][2],
 		v[0][0] * d0 * v[1][0] + v[0][1] * d1 * v[1][1] + v[0][2] * d2 * v[1][2],
 		v[0][0] * d0 * v[2][0] + v[0][1] * d1 * v[2][1] + v[0][2] * d2 * v[2][2]);
-	out.c1 = coVec3(v[1][0] * d0 * v[0][0] + v[1][1] * d1 * v[0][1] + v[1][2] * d2 * v[0][2],
+	out.c1 = coVec3(
+		v[1][0] * d0 * v[0][0] + v[1][1] * d1 * v[0][1] + v[1][2] * d2 * v[0][2],
 		v[1][0] * d0 * v[1][0] + v[1][1] * d1 * v[1][1] + v[1][2] * d2 * v[1][2],
 		v[1][0] * d0 * v[2][0] + v[1][1] * d1 * v[2][1] + v[1][2] * d2 * v[2][2]);
-	out.c2 = coVec3(v[2][0] * d0 * v[0][0] + v[2][1] * d1 * v[0][1] + v[2][2] * d2 * v[0][2],
+	out.c2 = coVec3(
+		v[2][0] * d0 * v[0][0] + v[2][1] * d1 * v[0][1] + v[2][2] * d2 * v[0][2],
 		v[2][0] * d0 * v[1][0] + v[2][1] * d1 * v[1][1] + v[2][2] * d2 * v[1][2],
 		v[2][0] * d0 * v[2][0] + v[2][1] * d1 * v[2][1] + v[2][2] * d2 * v[2][2]);
 }
 
 void coSVD_Solve_ATA_ATb(coVec3& out, const coMat3& ATA, const coVec3& ATb)
 {
-	coMat3 V(1.0f);
+	coMat3 V;
 	coVec3 sigma(nullptr);
 	coSVD_SolveSym(sigma, V, ATA);
 	coMat3 invV(nullptr);
@@ -116,31 +119,6 @@ coFloatx4 coQEF_ComputeError(const coMat3& A, const coVec3& x, const coVec3& b)
 	const coVec3 vTmp = b - coSVD_VMulSym(A, x);
 	return coSquareLength(vTmp);
 }
-// 
-// void coQEF_AddPoint(coMat3& ATA, coVec3& ATb, coVec4& pointAccum, const coVec3& pointPos, const coVec3& pointNormal)
-// {
-// 	ATA[0][0] += pointNormal.x * pointNormal.x;
-// 	ATA[0][1] += pointNormal.x * pointNormal.y;
-// 	ATA[0][2] += pointNormal.x * pointNormal.z;
-// 	ATA[1][1] += pointNormal.y * pointNormal.y;
-// 	ATA[1][2] += pointNormal.y * pointNormal.z;
-// 	ATA[2][2] += pointNormal.z * pointNormal.z;
-// 
-// 	const coFloatx4 b = coDot(pointPos, pointNormal);
-// 	ATb += pointNormal * b;
-// 	pointAccum += coVec4(pointPos, 1.0f);
-// }
-// 
-// coFloat coQEFSolve(coVec3& posOut, const coMat3& ATA, const coVec3& ATb, const coVec4& pointAccum)
-// {
-// 	coASSERT(pointAccum.w != 0.0f);
-// 	const coVec3 massPoint = pointAccum / pointAccum.w;
-// 	const coVec3 centeredATb = ATb - coSVD_VMulSym(ATA, massPoint);
-// 	coSVD_Solve_ATA_ATb(posOut, ATA, centeredATb);
-// 	const coFloatx4 result = coQEF_ComputeError(ATA, posOut, centeredATb);
-// 	posOut += massPoint;
-// 	return result.x;
-// }
 
 void coQEF::AddPoint(const coVec3& pointPos, const coVec3& pointNormal)
 {
@@ -159,10 +137,10 @@ void coQEF::AddPoint(const coVec3& pointPos, const coVec3& pointNormal)
 coFloat coQEF::Solve(coVec3& posOut)
 {
 	coASSERT(pointAccum.w != 0.0f);
-	const coVec3 massPoint = pointAccum / pointAccum.w;
-	const coVec3 centeredATb = ATb - coSVD_VMulSym(ATA, massPoint);
-	coSVD_Solve_ATA_ATb(posOut, ATA, centeredATb);
-	const coFloatx4 result = coQEF_ComputeError(ATA, posOut, centeredATb);
+	massPoint = coVec3(pointAccum / pointAccum.w);
+	ATb -= coSVD_VMulSym(ATA, massPoint);
+	coSVD_Solve_ATA_ATb(posOut, ATA, ATb);
+	const coFloatx4 error = coQEF_ComputeError(ATA, posOut, ATb);
 	posOut += massPoint;
-	return result.x;
+	return error.x;
 }
