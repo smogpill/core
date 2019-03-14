@@ -4,7 +4,7 @@
 
 #include "math/vector/coVec4.h"
 
-class coMat4
+class alignas(16) coMat4
 {
 	coDECLARE_REFLECTED_NO_VIRTUAL();
 public:

@@ -5,7 +5,7 @@
 #include "math/quaternion/coQuat.h"
 #include "math/vector/coVec3.h"
 
-class coTransform
+class alignas(16) coTransform
 {
 public:
 	coFORCE_INLINE coTransform() : scale(1.0f) {}

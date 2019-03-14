@@ -9,6 +9,17 @@
 
 class coQuat;
 
+coFORCE_INLINE coVec3 operator* (const coMat3& this_, const coVec3& a)
+{
+	const coFloatx3 ax = coBroadcastX(a);
+	const coFloatx3 ay = coBroadcastY(a);
+	const coFloatx3 az = coBroadcastZ(a);
+	const coFloatx3 mx = this_.c0 * ax;
+	const coFloatx3 my = this_.c1 * ay;
+	const coFloatx3 mz = this_.c2 * az;
+	return coBitCast<coVec3>(mx + my + mz);
+}
+
 coFORCE_INLINE coVec3 coGetScale(const coMat3& _a)
 {
 	return coVec3(coLength(_a.c0), coLength(_a.c1), coLength(_a.c2));
