@@ -17,3 +17,4 @@ coFORCE_INLINE coFloatx2 operator* (const coFloatx2& _a, const coFloatx2& _b) { 
 coFORCE_INLINE coFloatx2& operator*= (coFloatx2& _this, const coFloatx2& _b) { return _this = coBitCast<coFloatx2>(_mm_mul_ps(coBitCast<__m128>(_this), coBitCast<__m128>(_b))); }
 coFORCE_INLINE coFloatx2 operator& (const coFloatx2& _a, const coFloatx2& _b) { return coBitCast<coFloatx2>(_mm_and_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
 coFORCE_INLINE coFloatx2 operator| (const coFloatx2& _a, const coFloatx2& _b) { return coBitCast<coFloatx2>(_mm_or_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
+coFORCE_INLINE coFloatx2 coPerpendicular(const coFloatx2& _this) { return coFloatx2(-_this.y, _this.x); }
