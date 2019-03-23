@@ -83,7 +83,7 @@ void coDeleteElementsAndClear(coArray<T>& _this)
 }
 
 template <class T>
-void coRemoveByIndex(coArray<T>& _this, coUint _index)
+void coRemoveOrderedByIndex(coArray<T>& _this, coUint _index)
 {
 	static_assert(std::is_trivially_copyable<T>::value, "Trivially copyable only");
 	coASSERT(_index < _this.count);
