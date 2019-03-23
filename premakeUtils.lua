@@ -91,6 +91,7 @@ function coSetCppProjectDefaults(_name)
 		includedirs { gmakeIncludeDir }
 
 	filter { "action:vs*" }
+		files { "*.natvis"}
 		defines { "_HAS_EXCEPTIONS=0" }
 		--flags { "StaticRuntime" }
 		--linkoptions { "/ENTRY:mainCRTStartup" } -- TODO: Not working with DLL, should avoid that case somehow.
