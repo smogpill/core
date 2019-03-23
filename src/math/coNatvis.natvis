@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <Type Name="coFloatx2">
+    <DisplayString>{{{x}, {y}}}</DisplayString>
+  </Type>
+  <Type Name="coFloatx3">
+    <DisplayString>{{{x}, {y}, {z}}}</DisplayString>
+  </Type>
+  <Type Name="coFloatx4">
+    <DisplayString>{{{x}, {y}, {z}, {w}}}</DisplayString>
+  </Type>
+  <Type Name="coBool32x3">
+    <DisplayString>{{{x}, {y}, {z}}}</DisplayString>
+  </Type>
+  <Type Name="coBool32x4">
+    <DisplayString>{{{x}, {y}, {z}, {w}}}</DisplayString>
+  </Type>
+  <Type Name="coInt32x2">
+    <DisplayString>{{{x}, {y}}}</DisplayString>
+  </Type>
+  <Type Name="coInt32x3">
+    <DisplayString>{{{x}, {y}, {z}}}</DisplayString>
+  </Type>
+  <Type Name="coInt32x4">
+    <DisplayString>{{{x}, {y}, {z}, {w}}}</DisplayString>
+  </Type>
+</AutoVisualizer>
