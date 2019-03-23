@@ -16,28 +16,15 @@ public:
 #elif defined(__GNUC__)
 #	define coGCC_COMPATIBLE_COMPILER
 #	define coGCC_COMPILER
-#	ifndef NDEBUG
-#		define coDEBUG
-#	endif
 #elif defined(_MSC_VER)
 #	define coMSVC_COMPILER
-#	ifdef _DEBUG
-#		define coDEBUG
-#	endif
-#else
-#	error "Unknown compiler"
-#endif
-
-#if defined(_WIN64) || defined(__x86_64__) || defined(__LP64__)
-#	define co64
-#endif
-
-#ifdef coMSVC_COMPILER
 #	pragma warning(disable:4577) // warning C4577: 'noexcept' used with no exception handling mode specified; termination on exception is not guaranteed. 
 #	pragma warning(disable:4324) // warning C4324: structure was padded due to alignment specifier.
 #	pragma warning(disable:4718) // warning C4718: recursive call has no side effects, deleting
 #	pragma warning(disable:4189) // warning C4189: local variable is initialized but not referenced
 #	pragma warning(disable:4100) // warning C4100: unreferenced formal parameter
+#else
+#	error "Unknown compiler"
 #endif
 
 inline void _coReturnVoid(int) {}  // to avoid some gcc warnings with the comma operator

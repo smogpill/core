@@ -60,6 +60,8 @@ function coSetProjectDefaults(_name, _options)
 		configurations { "debug", "release" }
 	end
 
+	filter{"configurations:debug or prebuildDebug"}
+		defines {"coDEBUG"}
 	filter{"configurations:debug or release"}
 		defines {"coREFLECT_ENABLED"}
 	filter { "configurations:release or prebuildRelease" }
