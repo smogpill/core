@@ -14,6 +14,7 @@ constexpr coFloat coFloat_halfPi = 1.57079633f;
 constexpr coFloat coFloat_inf = 0x7f800000;
 constexpr coFloat coFloat_qNaN = 0x7fc00000;
 constexpr coFloat coFloat_e = 2.71828183f;
+constexpr coFloat coFloat_NearEqualDefaultEpsilon = 1e-4f;
 constexpr coFloat coFloat_largeValue = 1e18f; // such as coFloat_largeValue² < coFloat_max
 constexpr coFloat coFloat_inv255 = static_cast<coFloat>(1. / 255.);
 
@@ -26,10 +27,10 @@ coFORCE_INLINE constexpr coUint32 coMaxIndex(coFloat _a, coFloat _b, coFloat _c)
 coFORCE_INLINE constexpr coFloat coClamp(coFloat _x, coFloat _min, coFloat _max) { return coMin(_max, coMax(_min, _x)); }
 coFORCE_INLINE constexpr coFloat coClamp01(coFloat _x) { return coClamp(_x, 0.f, 1.f); }
 coFORCE_INLINE coFloat coAbs(coFloat _x) { return std::abs(_x); }
-coFORCE_INLINE coBool coEqual(coFloat _x, coFloat _y, coFloat _eps = 0.0001f) { return coAbs(_x - _y) < _eps; }
-coFORCE_INLINE coBool coEqual0(coFloat _x, coFloat _eps = 0.0001f) { return coAbs(_x) < _eps; }
-coFORCE_INLINE coBool coNotEqual(coFloat _x, coFloat _y, coFloat _eps = 0.0001f) { return coAbs(_x - _y) > _eps; }
-coFORCE_INLINE coBool coNotEqual0(coFloat _x, coFloat _eps = 0.0001f) { return coAbs(_x) > _eps; }
+coFORCE_INLINE coBool coNearEqual(coFloat _x, coFloat _y, coFloat _eps = coFloat_NearEqualDefaultEpsilon) { return coAbs(_x - _y) < _eps; }
+coFORCE_INLINE coBool coNearEqual0(coFloat _x, coFloat _eps = coFloat_NearEqualDefaultEpsilon) { return coAbs(_x) < _eps; }
+coFORCE_INLINE coBool coNotNearEqual(coFloat _x, coFloat _y, coFloat _eps = coFloat_NearEqualDefaultEpsilon) { return coAbs(_x - _y) > _eps; }
+coFORCE_INLINE coBool coNotNearEqual0(coFloat _x, coFloat _eps = coFloat_NearEqualDefaultEpsilon) { return coAbs(_x) > _eps; }
 coFORCE_INLINE coFloat coSquareRoot(coFloat _x) { return std::sqrt(_x); }
 coFORCE_INLINE coFloat coCubicRoot(coFloat _x) { return std::cbrt(_x); }
 coFORCE_INLINE coFloat coInvSquareRoot(coFloat _x) { coASSERT(_x > 0.0f); return 1.0f / std::sqrt(_x); }
@@ -55,7 +56,7 @@ coFORCE_INLINE coFloat coSin(coFloat _x) { return std::sin(_x); }
 coFORCE_INLINE coFloat coTan(coFloat _x) { return std::tan(_x); }
 coFORCE_INLINE coFloat coTanh(coFloat _x) { return std::tanh(_x); }
 coFORCE_INLINE coBool coNearEqual(const coFloat& _a, const coFloat& _b, const coFloat& _epsilon = 0.0001f) { return coAbs(_b - _a) < _epsilon; }
-coFORCE_INLINE coBool coNearEqual0(const coFloat& _a, const coFloat& _epsilon = 0.0001f) { return coAbs(_a) < _epsilon; }
+coFORCE_INLINE coBool coNearEqual0(const coFloat& _a, const coFloat& _epsilon = 1e-4f) { return coAbs(_a) < _epsilon; }
 coFORCE_INLINE coFloat coDistance(const coFloat _a, const coFloat _b) { return std::fdim(_a, _b); }
 
 coFORCE_INLINE coFloat coFloor(coFloat _x)

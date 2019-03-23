@@ -53,7 +53,7 @@ coFORCE_INLINE coMat4 coTranspose(const coMat4& _a)
 	return out;
 }
 
-coFORCE_INLINE coBool32x4 coEqual(const coMat4& _m1, const coMat4& _m2, const coFloatx4& _epsilon = coMake_floatx4(0.0001f))
+coFORCE_INLINE coBool32x4 coNearEqual(const coMat4& _m1, const coMat4& _m2, const coFloatx4& _epsilon = coMake_floatx4(0.0001f))
 {
 	const coBool32x4 b0 = coNearEqual(_m1.c0, _m2.c0, _epsilon);
 	const coBool32x4 b1 = coNearEqual(_m1.c1, _m2.c1, _epsilon);

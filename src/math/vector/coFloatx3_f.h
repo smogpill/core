@@ -71,8 +71,8 @@ coFORCE_INLINE coFloatx3 coMin(const coFloatx3& _a, const coFloatx3& _b) { retur
 coFORCE_INLINE coFloatx3 coMax(const coFloatx3& _a, const coFloatx3& _b) { return coBitCast<coFloatx3>(coMax(coBitCast<coFloatx4>(_a), coBitCast<coFloatx4>(_b))); }
 coFORCE_INLINE coFloatx3 coClamp(const coFloatx3& _a, const coFloatx3& _min, const coFloatx3& _max) { return coMin(coMax(_a, _min), _max); }
 coFORCE_INLINE coFloatx3 coClamp01(const coFloatx3& _a) { return coBitCast<coFloatx3>(coClamp01(coBitCast<coFloatx4>(_a))); }
-coFORCE_INLINE coBool32x3 coNearEqual(const coFloatx3& _a, const coFloatx3& _b, const coFloatx3& _epsilon = coFloatx3(1e-3f)) { return coAbs(_b - _a) < _epsilon; }
-coFORCE_INLINE coBool32x3 coNearEqual0(const coFloatx3& _a, const coFloatx3& _epsilon = coFloatx3(1e-3f)) { return coAbs(_a) < _epsilon; }
+coFORCE_INLINE coBool32x3 coNearEqual(const coFloatx3& _a, const coFloatx3& _b, const coFloatx3& _epsilon = coFloatx3(coFloat_NearEqualDefaultEpsilon)) { return coAbs(_b - _a) < _epsilon; }
+coFORCE_INLINE coBool32x3 coNearEqual0(const coFloatx3& _a, const coFloatx3& _epsilon = coFloatx3(coFloat_NearEqualDefaultEpsilon)) { return coAbs(_a) < _epsilon; }
 coFORCE_INLINE coBool32x3 coAreXYZEqual(const coFloatx3& _a) { const coFloatx3 x = coBroadcastX(_a); return x == coBroadcastY(_a) && x == coBroadcastZ(_a); }
 coFORCE_INLINE coFloatx3 coSin(const coFloatx3& _a) { return coBitCast<coFloatx3>(coSin(coBitCast<coFloatx4>(_a))); }
 coFORCE_INLINE coFloatx3 coCos(const coFloatx3& _a) { return coBitCast<coFloatx3>(coCos(coBitCast<coFloatx4>(_a))); }
