@@ -120,18 +120,18 @@ coFloatx4 coQEF_ComputeError(const coMat3& A, const coVec3& x, const coVec3& b)
 	return coSquareLength(vTmp);
 }
 
-void coQEF::AddPoint(const coVec3& pointPos, const coVec3& pointNormal)
+void coQEF::Add(const coVec3& pos, const coVec3& normal)
 {
-	ATA[0][0] += pointNormal.x * pointNormal.x;
-	ATA[0][1] += pointNormal.x * pointNormal.y;
-	ATA[0][2] += pointNormal.x * pointNormal.z;
-	ATA[1][1] += pointNormal.y * pointNormal.y;
-	ATA[1][2] += pointNormal.y * pointNormal.z;
-	ATA[2][2] += pointNormal.z * pointNormal.z;
+	ATA[0][0] += normal.x * normal.x;
+	ATA[0][1] += normal.x * normal.y;
+	ATA[0][2] += normal.x * normal.z;
+	ATA[1][1] += normal.y * normal.y;
+	ATA[1][2] += normal.y * normal.z;
+	ATA[2][2] += normal.z * normal.z;
 
-	const coFloatx4 b = coDot(pointPos, pointNormal);
-	ATb += pointNormal * b;
-	pointAccum += coVec4(pointPos, 1.0f);
+	const coFloatx4 b = coDot(pos, normal);
+	ATb += normal * b;
+	pointAccum += coVec4(pos, 1.0f);
 }
 
 coFloat coQEF::Solve(coVec3& posOut)

@@ -8,7 +8,7 @@
 class coQEF
 {
 public:
-	void AddPoint(const coVec3& pointPos, const coVec3& pointNormal);
+	void Add(const coVec3& pos, const coVec3& normal);
 	coFloat Solve(coVec3& posOut);
 	const coVec3& GetMassPoint() const { return massPoint; }
 
