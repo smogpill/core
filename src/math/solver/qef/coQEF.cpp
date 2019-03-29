@@ -134,6 +134,18 @@ void coQEF::Add(const coVec3& pos, const coVec3& normal)
 	pointAccum += coVec4(pos, 1.0f);
 }
 
+void coQEF::Add(const coQEF& qef)
+{
+	ATA[0][0] += qef.ATA[0][0];
+	ATA[0][1] += qef.ATA[0][1];
+	ATA[0][2] += qef.ATA[0][2];
+	ATA[1][1] += qef.ATA[1][1];
+	ATA[1][2] += qef.ATA[1][2];
+	ATA[2][2] += qef.ATA[2][2];
+	ATb += qef.ATb;
+	pointAccum += qef.pointAccum;
+}
+
 coFloat coQEF::Solve(coVec3& posOut)
 {
 	coASSERT(pointAccum.w != 0.0f);
