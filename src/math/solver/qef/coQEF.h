@@ -16,6 +16,7 @@ public:
 private:
 	coMat3 ATA = coMat3(0.0f);
 	coVec3 ATb = coVec3(0.0f);
+	coFloat btb = 0.0f;
 	coVec4 pointAccum = coVec4(0.0f);
 	coVec3 massPoint = coVec3(0.0f);
 };

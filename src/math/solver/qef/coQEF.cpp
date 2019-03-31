@@ -340,6 +340,7 @@ void coQEF::Add(const coVec3& pos, const coVec3& normal)
 
 	const coFloatx4 b = coDot(pos, normal);
 	ATb += normal * b;
+	btb += (b * b).x;
 	pointAccum += coVec4(pos, 1.0f);
 }
 
@@ -352,6 +353,7 @@ void coQEF::Add(const coQEF& qef)
 	ATA[1][2] += qef.ATA[1][2];
 	ATA[2][2] += qef.ATA[2][2];
 	ATb += qef.ATb;
+	btb += qef.btb;
 	pointAccum += qef.pointAccum;
 }
 
