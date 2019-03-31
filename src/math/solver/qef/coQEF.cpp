@@ -150,9 +150,9 @@ coFloat coQEF::Solve(coVec3& posOut)
 {
 	coASSERT(pointAccum.w != 0.0f);
 	massPoint = coVec3(pointAccum / pointAccum.w);
-	ATb -= coSVD_VMulSym(ATA, massPoint);
-	coSVD_Solve_ATA_ATb(posOut, ATA, ATb);
-	const coFloatx4 error = coQEF_ComputeError(ATA, posOut, ATb);
+	const coVec3 ATb2 = ATb - coSVD_VMulSym(ATA, massPoint);
+	coSVD_Solve_ATA_ATb(posOut, ATA, ATb2);
+	const coFloatx4 error = coQEF_ComputeError(ATA, posOut, ATb2);
 	posOut += massPoint;
 	return error.x;
 }
