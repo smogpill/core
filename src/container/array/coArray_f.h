@@ -143,6 +143,12 @@ coBool coContains(const coArray<T>& _this, const T& _val)
 	return coFind(_this, _val) != _this.count;
 }
 
+template <class T>
+coBool coContainsPointer(const coArray<T>& _this, const void* _ptr)
+{
+	return (_ptr >= _this.data) && (_ptr < _this.data + _this.count);
+}
+
 template <class T, class CompareFunctor>
 void coSort(coArray<T>& _this, CompareFunctor _cmp)
 {
