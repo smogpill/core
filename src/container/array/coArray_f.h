@@ -126,6 +126,13 @@ void coRemoveUnordered(coArray<T>& _this, const T& _e)
 }
 
 template <class T>
+const T& coPopBack(coArray<T>& _this)
+{
+	coASSERT(_this.count > 0);
+	return _this.data[--_this.count];
+}
+
+template <class T>
 coUint32 coFind(const coArray<T>& _this, const T& _val)
 {
 	coUint32 i = 0;
