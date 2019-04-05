@@ -40,6 +40,11 @@ coFORCE_INLINE coUint32 coNextPowerOf2(coUint32 _a)
 	return _a;
 }
 
+coFORCE_INLINE constexpr coUint32 coNextMultipleOf(coUint32 a, coUint32 multiple)
+{
+	return a % multiple ? (a & ~multiple + multiple) : a;
+}
+
 coFORCE_INLINE coUint32 coPow(coUint32 _a, coUint32 _exponent)
 {
 	coUint32 n = 1;
