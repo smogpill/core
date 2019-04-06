@@ -6,6 +6,10 @@
 #include "math/vector/coVec4.h"
 #include "math/matrix/coMat3_f.h"
 
+// Implementations shared by:
+// - https://github.com/nickgildea/qef (public domain)
+// - https://github.com/Lin20/isosurface/tree/master/Isosurface/Isosurface/QEFSolver (MIT License)
+
 class SMat3
 {
 public:
