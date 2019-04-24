@@ -62,22 +62,22 @@ coFORCE_INLINE coTransform coScale(const coTransform& a, const coVec3& v)
 {
 	coTransform r(a);
 	r.scale *= v;
-	r.translation *= v;
 	return r;
 }
 
 coFORCE_INLINE coTransform coTranslate(const coTransform& a, const coVec3& v)
 {
 	coTransform r(a);
-	r.translation += v;
+	r.translation += coRotateVector(a.rotation, v * a.scale);
 	return r;
 }
+
 coFORCE_INLINE coTransform coRotate(const coTransform& a, const coQuat& v)
 {
 	coTransform r(nullptr);
 	r.rotation = v * a.rotation;
 	r.scale = a.scale;
-	r.translation = coRotateVector(v, a.translation);
+	r.translation = a.translation;
 	return r;
 }
 
@@ -87,6 +87,7 @@ coFORCE_INLINE coTransform coNormalize(const coTransform& _this)
 	r.rotation = coNormalize(r.rotation);
 	return r;
 }
+
 coFORCE_INLINE coBool32x4 coNearEqual(const coTransform& _a, const coTransform& _b, const coFloatx4& _epsilon = 1e-3f)
 {
 	const coBool32x4 r = coNearEqual(_a.rotation, _b.rotation, _epsilon);
