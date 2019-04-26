@@ -369,5 +369,8 @@ coFloat coQEF::Solve(coVec3& posOut)
 	coSVD_Solve_ATA_ATb(posOut, ATA, ATb2);
 	const coFloatx4 error = coQEF_ComputeError(ATA, posOut, ATb2);
 	posOut += massPoint;
-	return error.x;
+
+	const coVec3 atax = coSVD_VMulSym(ATA, posOut);
+	return (coDot(posOut, atax) - 2.0f * coDot(posOut, ATb) + btb).x;
+	//return error.x;
 }
