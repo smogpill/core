@@ -11,7 +11,12 @@ class alignas(16) coFloatx3
 {
 	coDECLARE_REFLECTED_NO_VIRTUAL();
 public:
-	coFloatx3();
+	coFORCE_INLINE coFloatx3()
+	{
+#ifdef coDEBUG
+		coBitCast<__m128>(*this) = _mm_set_ps1(std::numeric_limits<float>::quiet_NaN());
+#endif
+	}
 	coFORCE_INLINE coFloatx3(coFloat _xyz) { coBitCast<__m128>(*this) = _mm_set_ps1(_xyz); }
 	coFORCE_INLINE coFloatx3(coFloat _x, coFloat _y, coFloat _z) { coBitCast<__m128>(*this) = _mm_set_ps(_z, _z, _y, _x); }
 	coFORCE_INLINE coFloatx3(coFloatx3 _xxx, coFloatx3 _yyy, coFloatx3 _zzz)
@@ -36,3 +41,4 @@ public:
 protected:
 	coFloat pad;
 };
+

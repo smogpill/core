@@ -13,15 +13,15 @@ public:
 	{
 		capacity = CAPACITY,
 	};
-	coFixedArray() : coArray<T>(fixedBuffer, 0) {}
-	coFixedArray(const coArray<T>& other) { *this = other; }
+	coFORCE_INLINE coFixedArray() : coArray<T>(reinterpret_cast<T*>(fixedBuffer), 0) {}
+	coFORCE_INLINE coFixedArray(const coArray<T>& other) { *this = other; }
 	//coFixedArray(const Self& other) : coFixedArray(static_cast<const coArray<T>&>(other)) {}
 
 	Self& operator=(const Self& other) { return operator=(static_cast<const coArray<T>&>(other)); }
 	Self& operator=(const coArray<T>& other);
 
 private:
-	T fixedBuffer[CAPACITY];
+	alignas(alignof(T)) coByte fixedBuffer[CAPACITY*sizeof(T)];
 };
 
 template <class T, coUint32 C>

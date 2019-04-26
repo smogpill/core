@@ -8,7 +8,12 @@ class alignas(16) coFloatx2
 {
 	coDECLARE_REFLECTED_NO_VIRTUAL();
 public:
-	coFORCE_INLINE coFloatx2(){}
+	coFORCE_INLINE coFloatx2()
+	{
+#ifdef coDEBUG
+		coBitCast<__m128>(*this) = _mm_set_ps1(std::numeric_limits<float>::quiet_NaN());
+#endif
+	}
 	coFORCE_INLINE coFloatx2(coFloat _xy) : x(_xy), y(_xy) {}
 	coFORCE_INLINE coFloatx2(coFloat _x, coFloat _y) : x(_x), y(_y) {}
 
