@@ -6,8 +6,10 @@
 class coThread
 {
 public:
-	coThread();
 	virtual ~coThread();
+
+	coResult Start();
+	void Stop();
 
 	coResult _Run() { return OnRun(); }
 
@@ -15,7 +17,5 @@ protected:
 	virtual coResult OnRun() { return true; }
 
 private:
-
-
 	coUint64 plateformSpecificData = 0;
 };

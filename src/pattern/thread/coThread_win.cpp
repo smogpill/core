@@ -2,6 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "pattern/pch.h"
 #include "pattern/thread/coThread.h"
+#include "lang/result/coResult_f.h"
 
 DWORD WINAPI co_ExecuteThread(LPVOID userData)
 {
@@ -13,15 +14,18 @@ DWORD WINAPI co_ExecuteThread(LPVOID userData)
 	return 0;
 }
 
-coThread::coThread()
+coResult coThread::Start()
 {
-	HANDLE handle = ::CreateThread(nullptr, 0, &co_ExecuteThread, this, 0, nullptr);
+	const HANDLE handle = ::CreateThread(nullptr, 0, &co_ExecuteThread, this, 0, nullptr);
+	coTRY(handle, nullptr);
 	plateformSpecificData = reinterpret_cast<const coUint64&>(handle);
+	return true;
 }
 
-coThread::~coThread()
+
+void coThread::Stop()
 {
-	HANDLE handle = reinterpret_cast<const HANDLE&>(plateformSpecificData);
+	const HANDLE handle = reinterpret_cast<const HANDLE&>(plateformSpecificData);
 	::WaitForSingleObject(handle, INFINITE);
-	::CloseHandle(handle);
+	coCHECK(::CloseHandle(handle), nullptr);
 }
