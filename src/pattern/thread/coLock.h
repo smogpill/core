@@ -11,5 +11,5 @@ public:
 	void Lock();
 	coBool TryLock();
 	void Unlock();
-	std::aligned_storage<40, 8>::type impl;
+	std::aligned_storage<40, 8>::type pimpl;
 };

@@ -3,36 +3,41 @@
 #include "pattern/pch.h"
 #include "pattern/thread/coLock.h"
 
+#define coSETUP_IMPL(_implType_) _implType_& impl = reinterpret_cast<_implType_&>(pimpl)
+#define coCONSTRUCT_IMPL(_implType_)\
+	static_assert(sizeof(_implType_) <= sizeof(pimpl), "");\
+	static_assert(alignof(_implType_) == alignof(decltype(pimpl)), "");\
+	new (&pimpl) _implType_()
+#define coDESTRUCT_IMPL(_implType_) reinterpret_cast<_implType_&>(pimpl).~_implType_()
+
 coLock::coLock()
 {
-	static_assert(sizeof(CRITICAL_SECTION) <= sizeof(impl), "");
-	static_assert(alignof(CRITICAL_SECTION) == alignof(decltype(impl)), "");
-	CRITICAL_SECTION& criticalSection = reinterpret_cast<CRITICAL_SECTION&>(impl);
-	new (&criticalSection) CRITICAL_SECTION();
-	::InitializeCriticalSection(&criticalSection);
+	coCONSTRUCT_IMPL(CRITICAL_SECTION);
+	coSETUP_IMPL(CRITICAL_SECTION);
+	::InitializeCriticalSection(&impl);
 }
 
 coLock::~coLock()
 {
-	CRITICAL_SECTION& criticalSection = reinterpret_cast<CRITICAL_SECTION&>(impl);
-	::DeleteCriticalSection(&criticalSection);
-	criticalSection.~CRITICAL_SECTION();
+	coSETUP_IMPL(CRITICAL_SECTION);
+	::DeleteCriticalSection(&impl);
+	coDESTRUCT_IMPL(CRITICAL_SECTION);
 }
 
 void coLock::Lock()
 {
-	CRITICAL_SECTION& criticalSection = reinterpret_cast<CRITICAL_SECTION&>(impl);
-	::EnterCriticalSection(&criticalSection);
+	coSETUP_IMPL(CRITICAL_SECTION);
+	::EnterCriticalSection(&impl);
 }
 
 coBool coLock::TryLock()
 {
-	CRITICAL_SECTION& criticalSection = reinterpret_cast<CRITICAL_SECTION&>(impl);
-	return ::TryEnterCriticalSection(&criticalSection) != 0;
+	coSETUP_IMPL(CRITICAL_SECTION);
+	return ::TryEnterCriticalSection(&impl) != 0;
 }
 
 void coLock::Unlock()
 {
-	CRITICAL_SECTION& criticalSection = reinterpret_cast<CRITICAL_SECTION&>(impl);
-	::LeaveCriticalSection(&criticalSection);
+	coSETUP_IMPL(CRITICAL_SECTION);
+	::LeaveCriticalSection(&impl);
 }
