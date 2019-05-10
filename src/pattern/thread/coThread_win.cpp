@@ -7,7 +7,7 @@
 coThread::coThread()
 {
 	coCONSTRUCT_IMPL(HANDLE);
-	coACCESS_PIMPL(HANDLE);
+	coACCESS_IMPL(HANDLE);
 	impl = nullptr;
 }
 
@@ -23,7 +23,7 @@ DWORD WINAPI co_ExecuteThread(LPVOID userData)
 
 coResult coThread::Start()
 {
-	coACCESS_PIMPL(HANDLE);
+	coACCESS_IMPL(HANDLE);
 	impl = ::CreateThread(nullptr, 0, &co_ExecuteThread, this, 0, nullptr);
 	coTRY(impl, nullptr);
 	return true;
@@ -32,7 +32,7 @@ coResult coThread::Start()
 
 void coThread::Stop()
 {
-	coACCESS_PIMPL(HANDLE);
+	coACCESS_IMPL(HANDLE);
 	::WaitForSingleObject(impl, INFINITE);
 	coCHECK(::CloseHandle(impl), nullptr);
 }

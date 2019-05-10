@@ -10,7 +10,7 @@
 	std::aligned_storage<_size_, _alignment_>::type pimpl;\
 	private:
 
-#define coACCESS_PIMPL(_implType_) _implType_& impl = reinterpret_cast<_implType_&>(pimpl)
+#define coACCESS_IMPL(_implType_) _implType_& impl = reinterpret_cast<_implType_&>(pimpl)
 #define coCONSTRUCT_IMPL(_implType_)\
 	static_assert(sizeof(_implType_) <= sizeof(pimpl), "");\
 	static_assert(alignof(_implType_) == alignof(decltype(pimpl)), "");\
