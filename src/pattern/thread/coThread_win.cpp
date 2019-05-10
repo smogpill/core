@@ -4,6 +4,13 @@
 #include "pattern/thread/coThread.h"
 #include "lang/result/coResult_f.h"
 
+coThread::coThread()
+{
+	coCONSTRUCT_IMPL(HANDLE);
+	coACCESS_PIMPL(HANDLE);
+	impl = nullptr;
+}
+
 DWORD WINAPI co_ExecuteThread(LPVOID userData)
 {
 	coThread* thread = static_cast<coThread*>(userData);
@@ -16,16 +23,16 @@ DWORD WINAPI co_ExecuteThread(LPVOID userData)
 
 coResult coThread::Start()
 {
-	const HANDLE handle = ::CreateThread(nullptr, 0, &co_ExecuteThread, this, 0, nullptr);
-	coTRY(handle, nullptr);
-	plateformSpecificData = reinterpret_cast<const coUint64&>(handle);
+	coACCESS_PIMPL(HANDLE);
+	impl = ::CreateThread(nullptr, 0, &co_ExecuteThread, this, 0, nullptr);
+	coTRY(impl, nullptr);
 	return true;
 }
 
 
 void coThread::Stop()
 {
-	const HANDLE handle = reinterpret_cast<const HANDLE&>(plateformSpecificData);
-	::WaitForSingleObject(handle, INFINITE);
-	coCHECK(::CloseHandle(handle), nullptr);
+	coACCESS_PIMPL(HANDLE);
+	::WaitForSingleObject(impl, INFINITE);
+	coCHECK(::CloseHandle(impl), nullptr);
 }

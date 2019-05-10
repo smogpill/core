@@ -2,10 +2,12 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include "lang/result/coResult.h"
+#include "pattern/pimpl/coPimpl.h"
 
 class coThread
 {
 public:
+	coThread();
 	virtual ~coThread();
 
 	coResult Start();
@@ -17,5 +19,5 @@ protected:
 	virtual coResult OnRun() { return true; }
 
 private:
-	coUint64 plateformSpecificData = 0;
+	coDECLARE_PIMPL(8, 8);
 };

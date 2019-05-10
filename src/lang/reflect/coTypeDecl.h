@@ -21,19 +21,6 @@ class coType;
 #	define _coPOP_DISABLE_OVERRIDE_WARNING()
 #endif
 
-#define coDECLARE_PIMPL() \
-	public: \
-		class _Impl; \
-		_Impl* GetImpl() const { return impl; } \
-		void _OnImplConstruct(); \
-		void _OnImplDestruct(); \
-	private: \
-		_Impl* impl
-
-#define coDEFINE_PIMPL(_class_) \
-	void _class_::_OnImplConstruct() { impl = new _Impl(); } \
-	void _class_::_OnImplDestruct() { delete impl; impl = nullptr; }
-
 #define coDECLARE_SUPER(_super_) \
 	private: \
 	using Super = _super_

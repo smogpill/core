@@ -1,6 +1,7 @@
 // Copyright(c) 2019 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
+#include "pattern/pimpl/coPimpl.h"
 
 class coLock
 {
@@ -11,5 +12,7 @@ public:
 	void Lock();
 	coBool TryLock();
 	void Unlock();
-	std::aligned_storage<40, 8>::type pimpl;
+
+private:
+	coDECLARE_PIMPL(40, 8);
 };
