@@ -6,33 +6,33 @@
 
 coWaitCondition::coWaitCondition()
 {
-	const HANDLE handle = ::CreateEvent(nullptr, true, false, nullptr);
-	coCHECK(handle, nullptr);
-	platformSpecific = reinterpret_cast<const coUint64&>(handle);
+	HANDLE& impl = GetImpl<HANDLE>();
+	impl = ::CreateEvent(nullptr, true, false, nullptr);
+	coCHECK(impl, nullptr);
 }
 
 coWaitCondition::~coWaitCondition()
 {
-	const HANDLE& handle = reinterpret_cast<const HANDLE&>(platformSpecific);
-	coCHECK(::CloseHandle(handle), nullptr);
+	const HANDLE& impl = GetImpl<HANDLE>();
+	coCHECK(::CloseHandle(impl), nullptr);
 }
 
 void coWaitCondition::WakeOne()
 {
-	const HANDLE& handle = reinterpret_cast<const HANDLE&>(platformSpecific);
-	coCHECK(::SetEvent(handle), nullptr);
+	const HANDLE& impl = GetImpl<HANDLE>();
+	coCHECK(::SetEvent(impl), nullptr);
 }
 
 void coWaitCondition::Wait()
 {
-	const HANDLE& handle = reinterpret_cast<const HANDLE&>(platformSpecific);
-	coCHECK(::WaitForSingleObject(handle, INFINITE) == WAIT_OBJECT_0, nullptr);
+	const HANDLE& impl = GetImpl<HANDLE>();
+	coCHECK(::WaitForSingleObject(impl, INFINITE) == WAIT_OBJECT_0, nullptr);
 }
 
 coBool coWaitCondition::Wait(coUint milliseconds)
 {
-	const HANDLE& handle = reinterpret_cast<const HANDLE&>(platformSpecific);
-	const DWORD result = ::WaitForSingleObject(handle, milliseconds);
+	const HANDLE& impl = GetImpl<HANDLE>();
+	const DWORD result = ::WaitForSingleObject(impl, milliseconds);
 	switch (result)
 	{
 	case WAIT_OBJECT_0:
