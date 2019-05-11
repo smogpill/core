@@ -5,6 +5,7 @@
 #include "pattern/thread/coTaskWorkerThread.h"
 #include "pattern/thread/coTaskContext.h"
 #include "pattern/thread/coTask.h"
+#include "math/scalar/coAtomicInt32_f.h"
 
 coTaskScheduler::coTaskScheduler(coUint nbWorkers)
 {
@@ -23,19 +24,36 @@ coTaskScheduler::~coTaskScheduler()
 
 void coTaskScheduler::Add(coTask& task)
 {
-	lock.Lock();
-	coPushBack(tasks, &task);
-	lock.Unlock();
-	waitCondition.WakeOne();
+	if (task.IsReady())
+	{
+		lock.Lock();
+		coPushBack(readyTasks, &task);
+		lock.Unlock();
+		waitCondition.WakeOne();
+	}
+	else
+	{
+		coPushBack(waitingTasks, &task);
+	}
 }
 
 void coTaskScheduler::_ExecuteOneTask()
 {
 	waitCondition.Wait();
 	lock.Lock();
-	coTask* task = coPopBack(tasks);
+	coTask* task = coPopBack(readyTasks);
 	lock.Unlock();
 	task->Execute(context);
+	if (task->next)
+	{
+		if (--task->nbActiveDependencies == 0)
+		{
+			lock.Lock();
+			coRemoveUnordered(waitingTasks, task->next);
+			coPushBack(readyTasks, task->next);
+			lock.Unlock();
+		}
+	}
 }
 
 void coTaskScheduler::OnStop()

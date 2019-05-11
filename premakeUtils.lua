@@ -80,7 +80,7 @@ function coSetCppProjectDefaults(_name)
 	editandcontinue "Off"
 	runtime "Release" -- Even on debug builds, Unreal is setup this way anyway.
 	flags { "Symbols", "NoMinimalRebuild", "FatalWarnings", "C++14", "MultiProcessorCompile" }
-	files { "**.cpp", "**.h"}
+	files { "**.cpp", "**.h", "**.inl"}
 
 	if os.isfile("pch.h") then
 		coSetPCH(co_projectDir, _name, "pch")

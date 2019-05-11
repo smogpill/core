@@ -25,7 +25,8 @@ protected:
 
 private:
 	coDynamicArray<coTaskWorkerThread*> workers;
-	coDynamicArray<coTask*> tasks;
+	coDynamicArray<coTask*> readyTasks;
+	coDynamicArray<coTask*> waitingTasks;
 	coWaitCondition waitCondition;
 	coTaskContext context;
 	coLock lock;

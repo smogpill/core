@@ -22,26 +22,22 @@ coFORCE_INLINE coInt32 coSwapAdd(coAtomicInt32& this_, coInt32 value)
 	return _InterlockedExchangeAdd(reinterpret_cast<volatile long*>(&this_.value), value);
 }
 
-coFORCE_INLINE coAtomicInt32& operator+=(coAtomicInt32& this_, coInt32 value)
+coFORCE_INLINE coInt32 operator+=(coAtomicInt32& this_, coInt32 value)
 {
-	_InterlockedExchangeAdd(reinterpret_cast<volatile long*>(&this_.value), value);
-	return this_;
+	return _InterlockedExchangeAdd(reinterpret_cast<volatile long*>(&this_.value), value);
 }
 
-coFORCE_INLINE coAtomicInt32& operator-=(coAtomicInt32& this_, coInt32 value)
+coFORCE_INLINE coInt32 operator-=(coAtomicInt32& this_, coInt32 value)
 {
-	_InterlockedExchangeAdd(reinterpret_cast<volatile long*>(&this_.value), -value);
-	return this_;
+	return _InterlockedExchangeAdd(reinterpret_cast<volatile long*>(&this_.value), -value);
 }
 
-coFORCE_INLINE coAtomicInt32& operator++(coAtomicInt32& this_)
+coFORCE_INLINE coInt32 operator++(coAtomicInt32& this_)
 {
-	_InterlockedIncrement(reinterpret_cast<volatile long*>(&this_.value));
-	return this_;
+	return _InterlockedIncrement(reinterpret_cast<volatile long*>(&this_.value));
 }
 
-coFORCE_INLINE coAtomicInt32& operator--(coAtomicInt32& this_)
+coFORCE_INLINE coInt32 operator--(coAtomicInt32& this_)
 {
-	_InterlockedDecrement(reinterpret_cast<volatile long*>(&this_.value));
-	return this_;
+	return _InterlockedDecrement(reinterpret_cast<volatile long*>(&this_.value));
 }
