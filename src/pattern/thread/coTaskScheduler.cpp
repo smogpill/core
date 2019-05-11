@@ -4,6 +4,7 @@
 #include "pattern/thread/coTaskScheduler.h"
 #include "pattern/thread/coTaskWorkerThread.h"
 #include "pattern/thread/coTaskContext.h"
+#include "pattern/thread/coTask.h"
 
 coTaskScheduler::coTaskScheduler(coUint nbWorkers)
 {
@@ -22,13 +23,19 @@ coTaskScheduler::~coTaskScheduler()
 
 void coTaskScheduler::Add(coTask& task)
 {
+	lock.Lock();
 	coPushBack(tasks, &task);
+	lock.Unlock();
+	waitCondition.WakeOne();
 }
 
 void coTaskScheduler::_ExecuteOneTask()
 {
 	waitCondition.Wait();
-
+	lock.Lock();
+	coTask* task = coPopBack(tasks);
+	lock.Unlock();
+	task->Execute(context);
 }
 
 void coTaskScheduler::OnStop()
@@ -43,7 +50,6 @@ void coTaskScheduler::OnStop()
 coResult coTaskScheduler::OnStart()
 {
 	Super::OnStart();
-	coTaskContext context;
 	context.scheduler = this;
 
 	for (coTaskWorkerThread* w : workers)

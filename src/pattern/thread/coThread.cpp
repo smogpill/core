@@ -7,3 +7,9 @@ coThread::~coThread()
 {
 	Stop();
 }
+
+void coThread::SetAffinityMask(coUint32 mask)
+{
+	coASSERT(!IsStarted());
+	affinityMask = mask;
+}

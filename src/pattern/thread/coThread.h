@@ -3,21 +3,26 @@
 #pragma once
 #include "lang/result/coResult.h"
 #include "pattern/pimpl/coPimpl.h"
+#include "pattern/object/coObject.h"
 
-class coThread
+class coThread : public coObject
 {
+	coDECLARE_SUPER(coObject);
 public:
 	coThread();
 	virtual ~coThread();
 
-	coResult Start();
-	void Stop();
+	void SetAffinityMask(coUint32 mask);
+	coUint64 GetID() const;
+	static coUint64 GetCurrentID();
 
 	coResult _Run() { return OnRun(); }
-
 protected:
+	virtual coResult OnStart() override;
+	virtual void OnStop() override;
 	virtual coResult OnRun() { return true; }
 
 private:
+	coUint32 affinityMask = 0;
 	coDECLARE_PIMPL(8, 8);
 };

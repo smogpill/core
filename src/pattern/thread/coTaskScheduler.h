@@ -3,6 +3,8 @@
 #pragma once
 #include "pattern/object/coObject.h"
 #include "pattern/thread/coWaitCondition.h"
+#include "pattern/thread/coTaskContext.h"
+#include "pattern/thread/coLock.h"
 #include "container/array/coDynamicArray.h"
 class coTaskWorkerThread;
 class coTask;
@@ -25,4 +27,6 @@ private:
 	coDynamicArray<coTaskWorkerThread*> workers;
 	coDynamicArray<coTask*> tasks;
 	coWaitCondition waitCondition;
+	coTaskContext context;
+	coLock lock;
 };

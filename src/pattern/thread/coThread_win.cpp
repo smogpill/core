@@ -19,18 +19,36 @@ DWORD WINAPI co_ExecuteThread(LPVOID userData)
 	return 0;
 }
 
-coResult coThread::Start()
+coResult coThread::OnStart()
 {
+	coTRY(Super::OnStart(), nullptr);
 	HANDLE& impl = GetImpl<HANDLE>();
-	impl = ::CreateThread(nullptr, 0, &co_ExecuteThread, this, 0, nullptr);
+	impl = ::CreateThread(nullptr, 0, &co_ExecuteThread, this, CREATE_SUSPENDED, nullptr);
 	coTRY(impl, nullptr);
+
+	if (affinityMask)
+		coTRY(::SetThreadAffinityMask(impl, affinityMask), nullptr);
+
+	const DWORD ret = ::ResumeThread(impl);
+	coTRY(::ResumeThread(impl) != -1, nullptr);
 	return true;
 }
 
-
-void coThread::Stop()
+void coThread::OnStop()
 {
 	HANDLE& impl = GetImpl<HANDLE>();
 	::WaitForSingleObject(impl, INFINITE);
 	coCHECK(::CloseHandle(impl), nullptr);
+	Super::OnStop();
+}
+
+coUint64 coThread::GetID() const
+{
+	const HANDLE& impl = GetImpl<HANDLE>();
+	return reinterpret_cast<coUint64>(impl);
+}
+
+coUint64 coThread::GetCurrentID()
+{
+	return static_cast<coUint64>(::GetCurrentThreadId());
 }
