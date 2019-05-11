@@ -14,7 +14,6 @@ public:
 
 	void SetAffinityMask(coUint32 mask);
 	coUint64 GetID() const;
-	static coUint64 GetCurrentID();
 
 	coResult _Run() { return OnRun(); }
 protected:

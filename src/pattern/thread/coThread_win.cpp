@@ -47,8 +47,3 @@ coUint64 coThread::GetID() const
 	const HANDLE& impl = GetImpl<HANDLE>();
 	return reinterpret_cast<coUint64>(impl);
 }
-
-coUint64 coThread::GetCurrentID()
-{
-	return static_cast<coUint64>(::GetCurrentThreadId());
-}
