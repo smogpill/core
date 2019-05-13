@@ -7,32 +7,38 @@
 coWaitCondition::coWaitCondition()
 {
 	HANDLE& impl = GetImpl<HANDLE>();
-	impl = ::CreateEvent(nullptr, true, false, nullptr);
+	impl = CreateEvent(nullptr, true, false, nullptr);
 	coCHECK(impl, nullptr);
+}
+
+void coWaitCondition::Reset()
+{
+	const HANDLE& impl = GetImpl<HANDLE>();
+	coCHECK(ResetEvent(impl), nullptr);
 }
 
 coWaitCondition::~coWaitCondition()
 {
 	const HANDLE& impl = GetImpl<HANDLE>();
-	coCHECK(::CloseHandle(impl), nullptr);
+	coCHECK(CloseHandle(impl), nullptr);
 }
 
-void coWaitCondition::WakeOne()
+void coWaitCondition::WakeAll()
 {
 	const HANDLE& impl = GetImpl<HANDLE>();
-	coCHECK(::SetEvent(impl), nullptr);
+	coCHECK(SetEvent(impl), nullptr);
 }
 
 void coWaitCondition::Wait()
 {
 	const HANDLE& impl = GetImpl<HANDLE>();
-	coCHECK(::WaitForSingleObject(impl, INFINITE) == WAIT_OBJECT_0, nullptr);
+	coCHECK(WaitForSingleObject(impl, INFINITE) == WAIT_OBJECT_0, nullptr);
 }
 
 coBool coWaitCondition::Wait(coUint milliseconds)
 {
 	const HANDLE& impl = GetImpl<HANDLE>();
-	const DWORD result = ::WaitForSingleObject(impl, milliseconds);
+	const DWORD result = WaitForSingleObject(impl, milliseconds);
 	switch (result)
 	{
 	case WAIT_OBJECT_0:

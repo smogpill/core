@@ -9,7 +9,7 @@ coResult coTaskWorkerThread::OnRun()
 {
 	coTRY(Super::OnRun(), nullptr);
 
-	while (true)
+	while (!IsStopRequested())
 	{
 		scheduler->_ExecuteOneTask();
 	}

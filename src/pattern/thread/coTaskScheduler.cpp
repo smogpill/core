@@ -6,6 +6,7 @@
 #include "pattern/thread/coTaskContext.h"
 #include "pattern/thread/coTask.h"
 #include "math/scalar/coAtomicInt32_f.h"
+#include "lang/result/coResult_f.h"
 
 coTaskScheduler::coTaskScheduler(coUint nbWorkers)
 {
@@ -28,8 +29,8 @@ void coTaskScheduler::Add(coTask& task)
 	{
 		lock.Lock();
 		coPushBack(readyTasks, &task);
+		waitCondition.WakeAll();
 		lock.Unlock();
-		waitCondition.WakeOne();
 	}
 	else
 	{
@@ -39,18 +40,26 @@ void coTaskScheduler::Add(coTask& task)
 
 void coTaskScheduler::_ExecuteOneTask()
 {
-	waitCondition.Wait();
+	waitCondition.Reset();
+
 	lock.Lock();
-	coTask* task = coPopBack(readyTasks);
+	coTask* task = readyTasks.count ? coPopBack(readyTasks) : nullptr;
 	lock.Unlock();
-	task->Execute(context);
-	if (task->next)
+	if (!task)
 	{
-		if (--task->nbActiveDependencies == 0)
+		waitCondition.Wait();
+		return;
+	}
+
+	task->Execute(context);
+	coTask* nextTask = task->next;
+	if (nextTask)
+	{
+		if (--nextTask->nbActiveDependencies == 0)
 		{
 			lock.Lock();
-			coRemoveUnordered(waitingTasks, task->next);
-			coPushBack(readyTasks, task->next);
+			coRemoveUnordered(waitingTasks, nextTask);
+			coPushBack(readyTasks, nextTask);
 			lock.Unlock();
 		}
 	}
@@ -60,6 +69,11 @@ void coTaskScheduler::OnStop()
 {
 	for (coTaskWorkerThread* w : workers)
 	{
+		w->RequestStop();
+	}
+	waitCondition.WakeAll();
+	for (coTaskWorkerThread* w : workers)
+	{
 		w->Stop();
 	}
 	Super::OnStop();
@@ -67,12 +81,12 @@ void coTaskScheduler::OnStop()
 
 coResult coTaskScheduler::OnStart()
 {
-	Super::OnStart();
+	coTRY(Super::OnStart(), nullptr);
 	context.scheduler = this;
 
 	for (coTaskWorkerThread* w : workers)
 	{
-		w->Start();
+		coTRY(w->Start(), nullptr);
 	}
 
 	return true;

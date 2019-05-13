@@ -8,7 +8,8 @@ class coWaitCondition
 public:
 	coWaitCondition();
 	~coWaitCondition();
-	void WakeOne();
+	void Reset();
+	void WakeAll();
 	void Wait();
 	coBool Wait(coUint milliseconds);
 

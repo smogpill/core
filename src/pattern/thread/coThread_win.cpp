@@ -22,6 +22,7 @@ DWORD WINAPI co_ExecuteThread(LPVOID userData)
 coResult coThread::OnStart()
 {
 	coTRY(Super::OnStart(), nullptr);
+	stopRequested = false;
 	HANDLE& impl = GetImpl<HANDLE>();
 	impl = ::CreateThread(nullptr, 0, &co_ExecuteThread, this, CREATE_SUSPENDED, nullptr);
 	coTRY(impl, nullptr);
@@ -36,6 +37,7 @@ coResult coThread::OnStart()
 
 void coThread::OnStop()
 {
+	stopRequested = true;
 	HANDLE& impl = GetImpl<HANDLE>();
 	::WaitForSingleObject(impl, INFINITE);
 	coCHECK(::CloseHandle(impl), nullptr);

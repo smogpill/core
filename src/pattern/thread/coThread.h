@@ -15,6 +15,8 @@ public:
 	void SetAffinityMask(coUint32 mask);
 	coUint64 GetID() const;
 
+	void RequestStop() { stopRequested = true; }
+	coBool IsStopRequested() const { return stopRequested; }
 	coResult _Run() { return OnRun(); }
 protected:
 	virtual coResult OnStart() override;
@@ -23,5 +25,6 @@ protected:
 
 private:
 	coUint32 affinityMask = 0;
+	volatile coBool stopRequested = false;
 	coDECLARE_PIMPL(8, 8);
 };
