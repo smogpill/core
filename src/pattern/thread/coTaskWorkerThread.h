@@ -10,10 +10,11 @@ class coTaskWorkerThread : public coThread
 {
 	coDECLARE_SUPER(coThread);
 public:
-	coTaskWorkerThread(coTaskScheduler& scheduler_) : scheduler(&scheduler_) {}
+	coTaskWorkerThread(coTaskScheduler& scheduler, coUint index);
 
 protected:
 	virtual coResult OnRun() override;
 
 	coTaskScheduler* scheduler = nullptr;
+	coUint index = 0;
 };

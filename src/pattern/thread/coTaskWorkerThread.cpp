@@ -5,13 +5,22 @@
 #include "pattern/thread/coTaskScheduler.h"
 #include "lang/result/coResult_f.h"
 
+coTaskWorkerThread::coTaskWorkerThread(coTaskScheduler& scheduler_, coUint index_)
+	: scheduler(&scheduler_)
+	, index(index_)
+{
+}
+
 coResult coTaskWorkerThread::OnRun()
 {
 	coTRY(Super::OnRun(), nullptr);
 
+	coTaskContext context;
+	context.scheduler = scheduler;
+	context.workerIndex = index;
 	while (!IsStopRequested())
 	{
-		scheduler->_ExecuteOneTask();
+		scheduler->_ExecuteOneTask(context);
 	}
 	return true;
 }

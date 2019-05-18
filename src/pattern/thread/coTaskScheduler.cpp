@@ -12,7 +12,7 @@ coTaskScheduler::coTaskScheduler(coUint nbWorkers)
 {
 	for (coUint i = 0; i < nbWorkers; ++i)
 	{
-		coPushBack(workers, new coTaskWorkerThread(*this));
+		coPushBack(workers, new coTaskWorkerThread(*this, i));
 	}
 }
 
@@ -38,7 +38,7 @@ void coTaskScheduler::Add(coTask& task)
 	}
 }
 
-void coTaskScheduler::_ExecuteOneTask()
+void coTaskScheduler::_ExecuteOneTask(const coTaskContext& context)
 {
 	waitCondition.Reset();
 
@@ -82,7 +82,6 @@ void coTaskScheduler::OnStop()
 coResult coTaskScheduler::OnStart()
 {
 	coTRY(Super::OnStart(), nullptr);
-	context.scheduler = this;
 
 	for (coTaskWorkerThread* w : workers)
 	{

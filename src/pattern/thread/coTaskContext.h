@@ -7,4 +7,5 @@ class coTaskContext
 {
 public:
 	coTaskScheduler* scheduler = nullptr;
+	coUint workerIndex = 0;
 };

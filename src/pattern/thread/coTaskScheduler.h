@@ -17,7 +17,7 @@ public:
 	~coTaskScheduler();
 
 	void Add(coTask& task);
-	void _ExecuteOneTask();
+	void _ExecuteOneTask(const coTaskContext& context);
 
 protected:
 	virtual coResult OnStart() override;
@@ -28,6 +28,5 @@ private:
 	coDynamicArray<coTask*> readyTasks;
 	coDynamicArray<coTask*> waitingTasks;
 	coWaitCondition waitCondition;
-	coTaskContext context;
 	coLock lock;
 };
