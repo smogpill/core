@@ -34,6 +34,7 @@ public:
 	}
 	coFORCE_INLINE coFloat& operator[](coUint _i) { return (&x)[_i]; }
 	coFORCE_INLINE coFloat operator[](coUint _i) const { return (&x)[_i]; }
+	//coFORCE_INLINE operator coFloat () const { return x; }
 
 	coFloat x;
 	coFloat y;

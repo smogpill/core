@@ -37,7 +37,7 @@ const coFloatx4 coFloatx4_ONE = coMake_floatx4(1.0f);
 const coFloatx4 coFloatx4_ZERO = coMake_floatx4(0.0f);
 	
 coFORCE_INLINE coBool32x4 operator== (const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coBool32x4>(_mm_cmpeq_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
-coFORCE_INLINE coBool32x4 operator!= (const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coBool32x4>(_mm_cmpneq_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
+// coFORCE_INLINE coBool32x4 operator!= (const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coBool32x4>(_mm_cmpneq_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); } // Removed because cast to coBool is not intuitive.
 coFORCE_INLINE coBool32x4 operator< (const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coBool32x4>(_mm_cmplt_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
 coFORCE_INLINE coBool32x4 operator<= (const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coBool32x4>(_mm_cmple_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
 coFORCE_INLINE coBool32x4 operator> (const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coBool32x4>(_mm_cmpgt_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }

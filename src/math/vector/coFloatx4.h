@@ -28,6 +28,7 @@ public:
 	coFORCE_INLINE coFloatx4(const coFloatx3& _xyz, const coFloatx3& _www) : x(_xyz.x), y(_xyz.y), z(_xyz.z), w(_www.x) {}
 
 	coFORCE_INLINE operator const coFloatx3& () const { return reinterpret_cast<const coFloatx3&>(*this); }
+	//coFORCE_INLINE operator coFloat () const { return x; }
 
 	coFloat x;
 	coFloat y;

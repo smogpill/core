@@ -34,7 +34,7 @@ coFORCE_INLINE coFloatx3 coFloatx3_YMask() { return coBitCast<coFloatx3>(_mm_set
 coFORCE_INLINE coFloatx3 coFloatx3_ZMask() { return coBitCast<coFloatx3>(_mm_set_epi32(0, 0xffffffff, 0, 0)); }
 
 coFORCE_INLINE coBool32x3 operator== (const coFloatx3& _a, const coFloatx3& _b) { return coBitCast<coBool32x3>(_mm_cmpeq_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
-coFORCE_INLINE coBool32x3 operator!= (const coFloatx3& _a, const coFloatx3& _b) { return coBitCast<coBool32x3>(_mm_cmpneq_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
+//coFORCE_INLINE coBool32x3 operator!= (const coFloatx3& _a, const coFloatx3& _b) { return coBitCast<coBool32x3>(_mm_cmpneq_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); } Removed because cast to coBool is not intuitive.
 coFORCE_INLINE coBool32x3 operator< (const coFloatx3& _a, const coFloatx3& _b) { return coBitCast<coBool32x3>(_mm_cmplt_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
 coFORCE_INLINE coBool32x3 operator<= (const coFloatx3& _a, const coFloatx3& _b) { return coBitCast<coBool32x3>(_mm_cmple_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
 coFORCE_INLINE coBool32x3 operator> (const coFloatx3& _a, const coFloatx3& _b) { return coBitCast<coBool32x3>(_mm_cmpgt_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b))); }
