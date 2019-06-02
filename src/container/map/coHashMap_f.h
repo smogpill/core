@@ -4,36 +4,8 @@
 
 #include <container/map/coHashMap.h>
 #include <container/map/internal/_coHashMap_f.h>
-#include <memory/allocator/coAllocator.h>
 #include <lang/coStdWrapper.h>
 #include <math/scalar/coUint32_f.h>
-#include <debug/log/coLog.h>
-
-template <class T>
-coHashMap<T>::coHashMap()
-	: coHashMap(*coAllocator::GetHeap())
-{
-
-}
-
-template <class T>
-coHashMap<T>::coHashMap(coAllocator& _allocator)
-	: allocator(&_allocator)
-{
-	static_assert(std::is_trivially_copyable<T>::value, "Trivially copyable only");
-
-	coHACK("coHashMap bucket allocation.");
-	buckets = static_cast<decltype(buckets)>(allocator->Allocate(1024 * sizeof(*buckets)));
-	bucketMask = 1024 - 1;
-	coFill(buckets, 1024, _coHashMap_INVALID_INDEX);
-}
-
-template <class T>
-coHashMap<T>::~coHashMap()
-{
-	allocator->Free(entries);
-	allocator->Free(buckets);
-}
 
 template <class T> coFORCE_INLINE coHashMapEntry<T>* coBegin(coHashMap<T>& _this) { return _this.entries; }
 template <class T> coFORCE_INLINE const coHashMapEntry<T>* coBegin(const coHashMap<T>& _this) { return _this.entries; }
@@ -62,7 +34,7 @@ void coReserve(coHashMap<T>& _this, coUint32 _desiredCapacity)
 template <class T>
 void coClear(coHashMap<T>& _this)
 {
-	coFill(_this.buckets, _coGetBucketCount(_this), _coHashMap_INVALID_INDEX);
+	coFill(_this.buckets, _coGetBucketCount(_this), coHashMap<T>::invalidIndex);
 	_this.count = 0;
 #ifdef coDEBUG
 	coFillAsDeleted(_this.entries, _this.count * sizeof(coHashMapEntry<T>));
@@ -111,7 +83,7 @@ coHashMapEntry<T>* coFind(coHashMap<T>& _this, coUint64 _key)
 	typedef coHashMapEntry<T> Entry;
 	const coUint32 bucketIndex = _key & _this.bucketMask;
 	coUint32 entryIndex = _this.buckets[bucketIndex];
-	while (entryIndex != _coHashMap_INVALID_INDEX)
+	while (entryIndex != coHashMap<T>::invalidIndex)
 	{
 		Entry& entry = _this.entries[entryIndex];
 		if (entry.key == _key)

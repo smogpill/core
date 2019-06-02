@@ -4,8 +4,6 @@
 
 #include "container/map/coHashMap.h"
 
-static const coUint32 _coHashMap_INVALID_INDEX = static_cast<coUint32>(-1);
-
 class _coHashMapFindResult
 {
 public:
@@ -22,16 +20,16 @@ _coHashMapFindResult _coFindExt(const coHashMap<T>& _this, coUint64 _key)
 	_coHashMapFindResult result;
 	if (_this.count == 0)
 	{
-		result.bucket = _coHashMap_INVALID_INDEX;
-		result.entry = _coHashMap_INVALID_INDEX;
-		result.previousEntry = _coHashMap_INVALID_INDEX;
+		result.bucket = coHashMap<T>::invalidIndex;
+		result.entry = coHashMap<T>::invalidIndex;
+		result.previousEntry = coHashMap<T>::invalidIndex;
 		return result;
 	}
 
 	result.bucket = _key & _this.bucketMask;
 	result.entry = _this.buckets[result.bucket];
-	result.previousEntry = _coHashMap_INVALID_INDEX;
-	while (result.entry != _coHashMap_INVALID_INDEX)
+	result.previousEntry = coHashMap<T>::invalidIndex;
+	while (result.entry != coHashMap<T>::invalidIndex)
 	{
 		const Entry* entry = _this.entries[result.entry];
 		if (entry->key == _key)
@@ -64,12 +62,12 @@ void _coRemoveEntry(coHashMap<T>& _this, coUint64 _key)
 	typedef coHashMapEntry<T> Entry;
 
 	const _coHashMapFindResult result = _coFindExt(_this, _key);
-	if (result.entry == _coHashMap_INVALID_INDEX)
+	if (result.entry == coHashMap<T>::invalidIndex)
 		return;
 
 	Entry& entry = _this.entries[result.entry];
 
-	if (result.previousEntry == _coHashMap_INVALID_INDEX)
+	if (result.previousEntry == coHashMap<T>::invalidIndex)
 		_this.buckets[result.bucket] = entry.next;
 	else
 		_this.entries[result.previousEntry].next = entry.next;
@@ -78,7 +76,7 @@ void _coRemoveEntry(coHashMap<T>& _this, coUint64 _key)
 	{
 		Entry& entry = _this.entries[_this.count - 1];
 		_coHashMapFindResult last = _coFindExt(_this, entry.key);
-		if (last.previousEntry == _coHashMap_INVALID_INDEX)
+		if (last.previousEntry == coHashMap<T>::invalidIndex)
 			_this.buckets[last.bucket].next = result.entry;
 		else
 			_this.entries[last.previousEntry].next = result.entry;

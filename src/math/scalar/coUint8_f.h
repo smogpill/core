@@ -25,3 +25,4 @@ coFORCE_INLINE coUint8 coReverse(coUint8 _a)
 }
 
 coFORCE_INLINE coUint8 coMin(coUint8 _a, coUint8 _b) { return _a < _b ? _a : _b; }
+coFORCE_INLINE coUint8 coMax(coUint8 _a, coUint8 _b) { return _a > _b ? _a : _b; }
