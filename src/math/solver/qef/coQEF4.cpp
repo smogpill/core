@@ -17,9 +17,8 @@ coVec4 coSVD_VMulSym(const coMat4& a, const coVec4& v)
 // 	return coVec3(coDot(a[0], v)
 // 		, (a[0][1] * v.x) + (a[1][1] * v.y) + (a[1][2] * v.z)
 // 		, (a[0][2] * v.x) + (a[1][2] * v.y) + (a[2][2] * v.z));
-	return coVec4();
+	return a * v;
 }
-
 
 void coRot01_post(coMat4& this_, coFloat c, coFloat s)
 {
@@ -94,9 +93,9 @@ void coSVD_SolveSym(coVec4& sigma, coMat4& v, const coMat4& a)
 {
 	// assuming that A is symmetric: can optimize all operations for 
 	// the upper right triagonal
-// 	coSymMat4 vtav(a);
-// 
-// 	const coFloat delta = coQEF4::tolerance * coFNorm(vtav);
+ 	coSymMat4 vtav(a);
+ 
+ 	const coFloat delta = coQEF4::tolerance * coFNorm(vtav);
 // 	// assuming V is identity: you can also pass a matrix the rotations
 // 	// should be applied to
 // 	// U is not computed
@@ -106,7 +105,7 @@ void coSVD_SolveSym(coVec4& sigma, coMat4& v, const coMat4& a)
 // 		coSVD_Rotate02(vtav, v);
 // 		coSVD_Rotate12(vtav, v);
 // 	}
-// 	sigma = coVec4(vtav.m00, vtav.m11, vtav.m22, vtav.m33);
+ 	sigma = coVec4(vtav.m00, vtav.m11, vtav.m22, vtav.m33);
 }
 
 void coSVD_ComputePseudoInverse(coMat4& out, const coVec4& sigma, const coMat4& v)
