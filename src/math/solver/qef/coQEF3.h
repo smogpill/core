@@ -5,10 +5,10 @@
 #include <math/vector/coVec3.h>
 #include <math/vector/coVec4.h>
 
-class coQEF
+class coQEF3
 {
 public:
-	void Add(const coQEF& qef);
+	void Add(const coQEF3& qef);
 	void Add(const coVec3& pos, const coVec3& normal);
 	coFloat Solve(coVec3& posOut);
 	const coVec3& GetMassPoint() const { return massPoint; }

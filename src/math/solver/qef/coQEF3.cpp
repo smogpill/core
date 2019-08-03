@@ -1,7 +1,7 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "math/pch.h"
-#include "math/solver/qef/coQEF.h"
+#include "math/solver/qef/coQEF3.h"
 #include "math/vector/coVec3_f.h"
 #include "math/vector/coVec4.h"
 #include "math/matrix/coMat3_f.h"
@@ -199,7 +199,7 @@ coFloatx4 coQEF_ComputeError(const coMat3& A, const coVec3& x, const coVec3& b)
 	return coSquareLength(vTmp);
 }
 
-void coQEF::Add(const coVec3& pos, const coVec3& normal)
+void coQEF3::Add(const coVec3& pos, const coVec3& normal)
 {
 	ATA[0][0] += normal.x * normal.x;
 	ATA[0][1] += normal.x * normal.y;
@@ -214,7 +214,7 @@ void coQEF::Add(const coVec3& pos, const coVec3& normal)
 	pointAccum += coVec4(pos, 1.0f);
 }
 
-void coQEF::Add(const coQEF& qef)
+void coQEF3::Add(const coQEF3& qef)
 {
 	ATA[0][0] += qef.ATA[0][0];
 	ATA[0][1] += qef.ATA[0][1];
@@ -227,7 +227,7 @@ void coQEF::Add(const coQEF& qef)
 	pointAccum += qef.pointAccum;
 }
 
-coFloat coQEF::Solve(coVec3& posOut)
+coFloat coQEF3::Solve(coVec3& posOut)
 {
 	coASSERT(pointAccum.w != 0.0f);
 	massPoint = coVec3(pointAccum / pointAccum.w);

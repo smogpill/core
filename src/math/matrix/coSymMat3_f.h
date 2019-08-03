@@ -18,42 +18,6 @@ coFORCE_INLINE coFloat coOff(const coSymMat3& this_)
 	return coSquareRoot(2.0f * ((this_.m01 * this_.m01) + (this_.m02 * this_.m02) + (this_.m12 * this_.m12)));
 }
 
-coFORCE_INLINE coSymMat3 coMul_ata(const coMat3& a)
-{
-	return coSymMat3(
-		a[0][0] * a[0][0] + a[1][0] * a[1][0] + a[2][0] * a[2][0],
-		a[0][0] * a[0][1] + a[1][0] * a[1][1] + a[2][0] * a[2][1],
-		a[0][0] * a[0][2] + a[1][0] * a[1][2] + a[2][0] * a[2][2],
-		a[0][1] * a[0][1] + a[1][1] * a[1][1] + a[2][1] * a[2][1],
-		a[0][1] * a[0][2] + a[1][1] * a[1][2] + a[2][1] * a[2][2],
-		a[0][2] * a[0][2] + a[1][2] * a[1][2] + a[2][2] * a[2][2]);
-}
-
-coFORCE_INLINE coVec3 coVmul(const coSymMat3& this_, const coVec3& v)
-{
-	coVec3 o;
-	o.x = (this_.m00 * v.x) + (this_.m01 * v.y) + (this_.m02 * v.z);
-	o.y = (this_.m01 * v.x) + (this_.m11 * v.y) + (this_.m12 * v.z);
-	o.z = (this_.m02 * v.x) + (this_.m12 * v.y) + (this_.m22 * v.z);
-	return o;
-}
-
-coFORCE_INLINE void coCalcSymmetricGivensCoefficients(coFloat a_pp, coFloat a_pq, coFloat a_qq, coFloat& c, coFloat& s)
-{
-	if (a_pq == 0)
-	{
-		c = 1.0f;
-		s = 0.0f;
-		return;
-	}
-
-	const coFloat tau = (a_qq - a_pp) / (2.0f * a_pq);
-	const coFloat stt = coSquareRoot(1.0f + tau * tau);
-	const coFloat tan = 1.0f / ((tau >= 0.0f) ? (tau + stt) : (tau - stt));
-	c = 1.0f / coSquareRoot(1.0f + tan * tan);
-	s = tan * c;
-}
-
 coFORCE_INLINE void coRot01(coSymMat3& this_, coFloat& c, coFloat& s)
 {
 	coCalcSymmetricGivensCoefficients(this_.m00, this_.m01, this_.m11, c, s);

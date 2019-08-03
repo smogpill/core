@@ -151,3 +151,19 @@ coFORCE_INLINE coFloat coRemainder(coFloat _x, coFloat _y)
 	coASSERT(_y != 0.f);
 	return std::remainder(_x, _y);
 }
+
+coFORCE_INLINE void coCalcSymmetricGivensCoefficients(coFloat a_pp, coFloat a_pq, coFloat a_qq, coFloat& c, coFloat& s)
+{
+	if (a_pq == 0)
+	{
+		c = 1.0f;
+		s = 0.0f;
+		return;
+	}
+
+	const coFloat tau = (a_qq - a_pp) / (2.0f * a_pq);
+	const coFloat stt = coSquareRoot(1.0f + tau * tau);
+	const coFloat tan = 1.0f / ((tau >= 0.0f) ? (tau + stt) : (tau - stt));
+	c = 1.0f / coSquareRoot(1.0f + tan * tan);
+	s = tan * c;
+}
