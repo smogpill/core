@@ -20,6 +20,19 @@ coFORCE_INLINE coVec3 operator* (const coMat3& this_, const coVec3& a)
 	return coBitCast<coVec3>(mx + my + mz);
 }
 
+coFORCE_INLINE coMat3 operator* (const coMat3& _a, const coMat3& _b)
+{
+	return coMat3(_a * _b.c0, _a * _b.c1, _a * _b.c2);
+}
+
+coFORCE_INLINE coMat3& operator+=(coMat3& this_, const coMat3& a)
+{
+	this_.c0 += a.c0;
+	this_.c1 += a.c1;
+	this_.c2 += a.c2;
+	return this_;
+}
+
 coFORCE_INLINE coVec3 coGetScale(const coMat3& _a)
 {
 	return coVec3(coLength(_a.c0), coLength(_a.c1), coLength(_a.c2));
@@ -32,6 +45,19 @@ coFORCE_INLINE coMat3 coRemoveScale(const coMat3& _a)
 	m.c1 = coNormalize(_a.c1);
 	m.c2 = coNormalize(_a.c2);
 	return m;
+}
+
+coFORCE_INLINE coMat3 coTranspose(const coMat3& _a)
+{
+	const coFloatx3 tmp0 = coShuffle<0, 1, 0>(_a.c0, _a.c1);
+	const coFloatx3 tmp1 = coShuffle<0, 1, 0>(_a.c2, _a.c2);
+	const coFloatx3 tmp2 = coShuffle<2, 3, 2>(_a.c0, _a.c1);
+	const coFloatx3 tmp3 = coShuffle<2, 3, 2>(_a.c2, _a.c2);
+	coMat3 out;
+	out.c0 = coShuffle<0, 2, 0>(tmp0, tmp1);
+	out.c1 = coShuffle<1, 3, 1>(tmp0, tmp1);
+	out.c2 = coShuffle<0, 2, 0>(tmp2, tmp3);
+	return out;
 }
 
 coFORCE_INLINE void coSetRotation(coMat3& _this, const coQuat& _q)

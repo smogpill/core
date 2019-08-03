@@ -29,6 +29,15 @@ coFORCE_INLINE coMat4 operator* (const coMat4& _a, const coMat4& _b)
 	return coMat4(_a * _b.c0, _a * _b.c1, _a * _b.c2, _a * _b.c3);
 }
 
+coFORCE_INLINE coMat4& operator+=(coMat4& this_, const coMat4& a)
+{
+	this_.c0 += a.c0;
+	this_.c1 += a.c1;
+	this_.c2 += a.c2;
+	this_.c3 += a.c3;
+	return this_;
+}
+
 coMat4 coMakeLookAt(const coVec3& _eyePos, const coVec3& _lookAtPos, const coVec3& _upVec);
 coMat4 coMakeOrthographic(coFloat _left, coFloat _right, coFloat _bottom, coFloat _top, coFloat _zNear, coFloat _zFar);
 void coSetPerspective(coMat4& _this, coFloat _fovyRadians, coFloat _aspect, coFloat _zNear, coFloat _zFar);
@@ -42,8 +51,8 @@ coFORCE_INLINE void coSetUpperMat3(coMat4& _m4, const coMat3& _m3)
 coFORCE_INLINE coMat4 coTranspose(const coMat4& _a)
 {
 	const coFloatx4 tmp0 = coShuffle<0, 1, 0, 1>(_a.c0, _a.c1);
-	const coFloatx4 tmp2 = coShuffle<2, 3, 2, 3>(_a.c0, _a.c1);
 	const coFloatx4 tmp1 = coShuffle<0, 1, 0, 1>(_a.c2, _a.c3);
+	const coFloatx4 tmp2 = coShuffle<2, 3, 2, 3>(_a.c0, _a.c1);
 	const coFloatx4 tmp3 = coShuffle<2, 3, 2, 3>(_a.c2, _a.c3);
 	coMat4 out;
 	out.c0 = coShuffle<0, 2, 0, 2>(tmp0, tmp1);

@@ -3,7 +3,6 @@
 #pragma once
 #include <math/matrix/coMat3.h>
 #include <math/vector/coVec3.h>
-#include <math/vector/coVec4.h>
 
 class coQEF3
 {
@@ -13,10 +12,13 @@ public:
 	coFloat Solve(coVec3& posOut);
 	const coVec3& GetMassPoint() const { return massPoint; }
 
+	static const coFloat tolerance;
+
 private:
 	coMat3 ATA = coMat3(0.0f);
 	coVec3 ATb = coVec3(0.0f);
 	coFloat btb = 0.0f;
-	coVec4 pointAccum = coVec4(0.0f);
+	coVec3 pointAccum = coVec3(0.0f);
+	coUint nbPoints = 0;
 	coVec3 massPoint = coVec3(0.0f);
 };
