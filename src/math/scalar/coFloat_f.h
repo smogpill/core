@@ -154,7 +154,7 @@ coFORCE_INLINE coFloat coRemainder(coFloat _x, coFloat _y)
 
 coFORCE_INLINE void coCalcSymmetricGivensCoefficients(coFloat a_pp, coFloat a_pq, coFloat a_qq, coFloat& c, coFloat& s)
 {
-	if (a_pq == 0)
+	if (a_pq == 0.0f)
 	{
 		c = 1.0f;
 		s = 0.0f;

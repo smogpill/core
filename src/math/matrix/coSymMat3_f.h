@@ -4,7 +4,7 @@
 #include "coSymMat3.h"
 #include "../scalar/coFloat_f.h"
 
-coFORCE_INLINE coFloat coFNorm(const coSymMat3& this_)
+coFORCE_INLINE coFloat coFrobeniusNorm(const coSymMat3& this_)
 {
 	return coSquareRoot(
 		(this_.m00 * this_.m00) 
@@ -24,8 +24,10 @@ coFORCE_INLINE void coRot01(coSymMat3& this_, coFloat& c, coFloat& s)
 	const coFloat cc = c * c;
 	const coFloat ss = s * s;
 	const coFloat mix = 2.0f * c * s * this_.m01;
-	this_ = coSymMat3(cc * this_.m00 - mix + ss * this_.m11, 0.0f, c * this_.m02 - s * this_.m12,
-		ss * this_.m00 + mix + cc * this_.m11, s * this_.m02 + c * this_.m12, this_.m22);
+	this_ = coSymMat3(
+		cc * this_.m00 - mix + ss * this_.m11, 0.0f, c * this_.m02 - s * this_.m12,
+		ss * this_.m00 + mix + cc * this_.m11, s * this_.m02 + c * this_.m12, 
+		this_.m22);
 }
 
 coFORCE_INLINE void coRot02(coSymMat3& this_, coFloat& c, coFloat& s)

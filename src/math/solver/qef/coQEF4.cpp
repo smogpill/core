@@ -17,7 +17,8 @@ coVec4 coSVD_VMulSym(const coMat4& a, const coVec4& v)
 // 	return coVec3(coDot(a[0], v)
 // 		, (a[0][1] * v.x) + (a[1][1] * v.y) + (a[1][2] * v.z)
 // 		, (a[0][2] * v.x) + (a[1][2] * v.y) + (a[2][2] * v.z));
-	return a * v;
+	//return a * v;
+	return coVec4();
 }
 
 void coRot01_post(coMat4& this_, coFloat c, coFloat s)
@@ -40,6 +41,10 @@ void coRot02_post(coMat4& this_, coFloat c, coFloat s)
 // 		coFloatx3(c * m20 - s * m22, this_[2][1], s * m20 + c * m22));
 }
 
+void coRot03_post(coMat4& this_, coFloat c, coFloat s)
+{
+}
+
 void coRot12_post(coMat4& this_, coFloat c, coFloat s)
 {
 // 	const coFloat m01 = this_[0][1], m02 = this_[0][2], m11 = this_[1][1], m12 = this_[1][2],
@@ -50,61 +55,106 @@ void coRot12_post(coMat4& this_, coFloat c, coFloat s)
 // 		coFloatx3(this_[2][0], c * m21 - s * m22, s * m21 + c * m22));
 }
 
+void coRot13_post(coMat4& this_, coFloat c, coFloat s)
+{
+}
+
+void coRot23_post(coMat4& this_, coFloat c, coFloat s)
+{
+}
+
 void coSVD_Rotate01(coSymMat4& vtav, coMat4& v)
 {
-// 	if (vtav.m01 == 0.0f)
-// 		return;
-// 
-// 	coFloat c = 0.0f;
-// 	coFloat s = 0.0f;
-// 	coRot01(vtav, c, s);
-// 	c = 0.0f;
-// 	s = 0.0f;
-// 	coRot01_post(v, c, s);
+ 	if (vtav.m01 == 0.0f)
+ 		return;
+ 
+ 	coFloat c = 0.0f;
+ 	coFloat s = 0.0f;
+ 	coRot01(vtav, c, s);
+ 	c = 0.0f;
+ 	s = 0.0f;
+ 	coRot01_post(v, c, s);
 }
 
 void coSVD_Rotate02(coSymMat4& vtav, coMat4& v)
 {
-// 	if (vtav.m02 == 0.0f)
-// 		return;
-// 
-// 	coFloat c = 0.0f;
-// 	coFloat s = 0.0f;
-// 	coRot02(vtav, c, s);
-// 	c = 0.0f;
-// 	s = 0.0f;
-// 	coRot02_post(v, c, s);
+	if (vtav.m02 == 0.0f)
+		return;
+
+	coFloat c = 0.0f;
+	coFloat s = 0.0f;
+	coRot02(vtav, c, s);
+	c = 0.0f;
+	s = 0.0f;
+	coRot02_post(v, c, s);
+}
+
+void coSVD_Rotate03(coSymMat4& vtav, coMat4& v)
+{
+	if (vtav.m03 == 0.0f)
+		return;
+
+	coFloat c = 0.0f;
+	coFloat s = 0.0f;
+	coRot03(vtav, c, s);
+	c = 0.0f;
+	s = 0.0f;
+	coRot03_post(v, c, s);
 }
 
 void coSVD_Rotate12(coSymMat4& vtav, coMat4& v)
 {
-// 	if (vtav.m12 == 0)
-// 		return;
-// 
-// 	coFloat c = 0.0f;
-// 	coFloat s = 0.0f;
-// 	coRot12(vtav, c, s);
-// 	c = 0.0f;
-// 	s = 0.0f;
-// 	coRot12_post(v, c, s);
+	if (vtav.m12 == 0)
+		return;
+
+	coFloat c = 0.0f;
+	coFloat s = 0.0f;
+	coRot12(vtav, c, s);
+	c = 0.0f;
+	s = 0.0f;
+	coRot12_post(v, c, s);
+}
+
+void coSVD_Rotate13(coSymMat4& vtav, coMat4& v)
+{
+	if (vtav.m13 == 0)
+		return;
+
+	coFloat c = 0.0f;
+	coFloat s = 0.0f;
+	coRot13(vtav, c, s);
+	c = 0.0f;
+	s = 0.0f;
+	coRot13_post(v, c, s);
+}
+
+void coSVD_Rotate23(coSymMat4& vtav, coMat4& v)
+{
+	if (vtav.m23 == 0)
+		return;
+
+	coFloat c = 0.0f;
+	coFloat s = 0.0f;
+	coRot23(vtav, c, s);
+	c = 0.0f;
+	s = 0.0f;
+	coRot23_post(v, c, s);
 }
 
 void coSVD_SolveSym(coVec4& sigma, coMat4& v, const coMat4& a)
 {
-	// assuming that A is symmetric: can optimize all operations for 
-	// the upper right triagonal
  	coSymMat4 vtav(a);
  
- 	const coFloat delta = coQEF4::tolerance * coFNorm(vtav);
-// 	// assuming V is identity: you can also pass a matrix the rotations
-// 	// should be applied to
-// 	// U is not computed
-// 	for (coInt i = 0; i < 5 && coOff(vtav) > delta; ++i)
-// 	{
-// 		coSVD_Rotate01(vtav, v);
-// 		coSVD_Rotate02(vtav, v);
-// 		coSVD_Rotate12(vtav, v);
-// 	}
+ 	const coFloat delta = coQEF4::tolerance * coFrobeniusNorm(vtav);
+ 	for (coInt i = 0; i < 10 && coOff(vtav) > delta; ++i)
+ 	{
+ 		coSVD_Rotate01(vtav, v);
+		coSVD_Rotate02(vtav, v);
+		coSVD_Rotate03(vtav, v);
+		coSVD_Rotate12(vtav, v);
+		coSVD_Rotate13(vtav, v);
+		coSVD_Rotate23(vtav, v);
+ 	}
  	sigma = coVec4(vtav.m00, vtav.m11, vtav.m22, vtav.m33);
 }
 

@@ -95,7 +95,7 @@ void coSVD_SolveSym(coVec3& sigma, coMat3& v, const coMat3& a)
 	// the upper right triagonal
 	coSymMat3 vtav(a);
 
-	const coFloat delta = coQEF3::tolerance * coFNorm(vtav);
+	const coFloat delta = coQEF3::tolerance * coFrobeniusNorm(vtav);
 	// assuming V is identity: you can also pass a matrix the rotations
 	// should be applied to
 	// U is not computed
