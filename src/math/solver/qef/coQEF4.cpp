@@ -21,6 +21,42 @@ coVec4 coSVD_VMulSym(const coMat4& a, const coVec4& v)
 	return coVec4();
 }
 
+void coSVD_Rotate_XY(coFloat& x, coFloat& y, coFloat c, coFloat s)
+{
+	const coFloat u = x;
+	const coFloat v = y;
+	x = c * u - s * v;
+	y = s * u + c * v;
+}
+
+void coSVD_RotateQ_XY(coFloat& x, coFloat& y, coFloat& a, coFloat c, coFloat s)
+{
+	const coFloat cc = c * c;
+	const coFloat ss = s * s;
+	const coFloat mx = 2.0f * c * s * a;
+	const coFloat u = x;
+	const coFloat v = y;
+	x = cc * u - mx + ss * v;
+	y = ss * u + mx + cc * v;
+}
+
+void coSVD_Rotate(coMat4& vtav, coMat4& v, coInt a, coInt  b)
+{
+	coASSERT(false);
+	if (vtav[a][b] == 0.0f)
+		return;
+
+	coFloat c, s;
+	coCalcSymmetricGivensCoefficients(vtav[a][a], vtav[a][b], vtav[b][b], c, s);
+	coSVD_RotateQ_XY(vtav[a][a], vtav[b][b], vtav[a][b], c, s);
+	coSVD_Rotate_XY(vtav[0][3 - b], vtav[1 - a][2], c, s);
+	vtav[a][b] = 0.0f;
+
+	coSVD_Rotate_XY(v[0][a], v[0][b], c, s);
+	coSVD_Rotate_XY(v[1][a], v[1][b], c, s);
+	coSVD_Rotate_XY(v[2][a], v[2][b], c, s);
+}
+
 void coRot01_post(coMat4& this_, coFloat c, coFloat s)
 {
 // 	const coFloat m00 = this_[0][0], m01 = this_[0][1], m10 = this_[1][0], m11 = this_[1][1], m20 = this_[2][0],
@@ -65,8 +101,8 @@ void coRot23_post(coMat4& this_, coFloat c, coFloat s)
 
 void coSVD_Rotate01(coSymMat4& vtav, coMat4& v)
 {
- 	if (vtav.m01 == 0.0f)
- 		return;
+	if (vtav.m01 == 0.0f)
+		return;
  
  	coFloat c = 0.0f;
  	coFloat s = 0.0f;
@@ -184,24 +220,34 @@ coFloatx4 coQEF_ComputeError(const coMat4& A, const coVec4& x, const coVec4& b)
 	return coSquareLength(vTmp);
 }
 
-void coQEF4::Add(const coVec4& pos, const coVec4& normal)
+coFloat coQEF4::Solve(coVec4& posOut)
 {
-	ATA[0][0] += normal.x * normal.x;
-	ATA[0][1] += normal.x * normal.y;
-	ATA[0][2] += normal.x * normal.z;
-	ATA[0][3] += normal.x * normal.w;
-	ATA[1][1] += normal.y * normal.y;
-	ATA[1][2] += normal.y * normal.z;
-	ATA[1][3] += normal.y * normal.w;
-	ATA[2][2] += normal.z * normal.z;
-	ATA[2][3] += normal.z * normal.w;
-	ATA[3][3] += normal.w * normal.w;
+	coASSERT(nb);
+	massPoint = pointAccum / coFloat(nb);
+	const coVec4 ATb2 = ATb - coSVD_VMulSym(ATA, massPoint);
+	coSVD_Solve_ATA_ATb(posOut, ATA, ATb2);
+	const coFloatx4 error = coQEF_ComputeError(ATA, posOut, ATb2);
+	posOut += massPoint;
 
-	const coFloatx4 b = coDot(pos, normal);
-	ATb += normal * b;
+	const coVec4 atax = coSVD_VMulSym(ATA, posOut);
+	return (coDot(posOut, atax) - 2.0f * coDot(posOut, ATb) + btb).x;
+	//return error.x;
+}
+
+void coQEF4::Add(const coVec4& A, const coVec4& b)
+{
+	const coVec4 Ax = coBroadcastX(A);
+	const coVec4 Ay = coBroadcastY(A);
+	const coVec4 Az = coBroadcastZ(A);
+	const coVec4 Aw = coBroadcastW(A);
+	ATA.c0 += Ax * A;
+	ATA.c1 += Ay * A;
+	ATA.c2 += Az * A;
+	ATA.c3 += Aw * A;
+	ATb += A * b;
 	btb += (b * b).x;
-	pointAccum += pos;
-	++nbPoints;
+	//pointAccum += pos;
+	++nb;
 }
 
 void coQEF4::Add(const coQEF4& qef)
@@ -210,5 +256,5 @@ void coQEF4::Add(const coQEF4& qef)
 	ATb += qef.ATb;
 	btb += qef.btb;
 	pointAccum += qef.pointAccum;
-	nbPoints += qef.nbPoints;
+	nb += qef.nb;
 }

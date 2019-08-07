@@ -9,12 +9,12 @@ class alignas(16) coMat3
 	coDECLARE_REFLECTED_NO_VIRTUAL();
 public:
 	coFORCE_INLINE coMat3(coNullPtr) : c0(nullptr), c1(nullptr), c2(nullptr) {}
-	coFORCE_INLINE coMat3(coFloat d = 1.0f)
+	coFORCE_INLINE explicit coMat3(coFloat d = 1.0f)
 		: c0(coBitCast<coVec3>(_mm_set_ps(0.0f, 0.0f, 0.0f, d)))
 		, c1(coBitCast<coVec3>(_mm_set_ps(0.0f, 0.0f, d, 0.0f)))
 		, c2(coBitCast<coVec3>(_mm_set_ps(0.0f, d, 0.0f, 0.0f)))
 	{}
-	coFORCE_INLINE coMat3(coFloatx3 diag) 
+	coFORCE_INLINE explicit coMat3(coFloatx3 diag) 
 		: c0(coBitCast<coVec3>(_mm_and_si128(coBitCast<__m128i>(diag), _mm_set_epi32(0, 0, 0, 0xffffffff))))
 		, c1(coBitCast<coVec3>(_mm_and_si128(coBitCast<__m128i>(diag), _mm_set_epi32(0, 0, 0xffffffff, 0))))
 		, c2(coBitCast<coVec3>(_mm_and_si128(coBitCast<__m128i>(diag), _mm_set_epi32(0, 0xffffffff, 0, 0))))

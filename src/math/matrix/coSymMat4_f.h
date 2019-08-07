@@ -28,6 +28,7 @@ coFORCE_INLINE void coRot01(coSymMat4& this_, coFloat& c, coFloat& s)
 	const coFloat mix = 2.0f * c * s * this_.m01;
 // 	this_ = coSymMat3(cc * this_.m00 - mix + ss * this_.m11, 0.0f, c * this_.m02 - s * this_.m12,
 // 		ss * this_.m00 + mix + cc * this_.m11, s * this_.m02 + c * this_.m12, this_.m22);
+	coASSERT(false);
 }
 
 coFORCE_INLINE void coRot02(coSymMat4& this_, coFloat& c, coFloat& s)
@@ -38,6 +39,7 @@ coFORCE_INLINE void coRot02(coSymMat4& this_, coFloat& c, coFloat& s)
 	const coFloat mix = 2.0f * c * s * this_.m02;
 // 	this_ = coSymMat3(cc * this_.m00 - mix + ss * this_.m22, c * this_.m01 - s * this_.m12, 0.0f,
 // 		this_.m11, s * this_.m01 + c * this_.m12, ss * this_.m00 + mix + cc * this_.m22);
+	coASSERT(false);
 }
 
 coFORCE_INLINE void coRot03(coSymMat4& this_, coFloat& c, coFloat& s)
@@ -46,16 +48,18 @@ coFORCE_INLINE void coRot03(coSymMat4& this_, coFloat& c, coFloat& s)
 	const coFloat cc = c * c;
 	const coFloat ss = s * s;
 	const coFloat mix = 2.0f * c * s * this_.m03;
+	coASSERT(false);
 }
 
 coFORCE_INLINE void coRot12(coSymMat4& this_, coFloat& c, coFloat& s)
 {
-// 	coCalcSymmetricGivensCoefficients(this_.m11, this_.m12, this_.m22, c, s);
-// 	const coFloat cc = c * c;
-// 	const coFloat ss = s * s;
-// 	const coFloat mix = 2.0f * c * s * this_.m12;
+	coCalcSymmetricGivensCoefficients(this_.m11, this_.m12, this_.m22, c, s);
+	const coFloat cc = c * c;
+	const coFloat ss = s * s;
+	const coFloat mix = 2.0f * c * s * this_.m12;
 // 	this_ = coSymMat3(this_.m00, c * this_.m01 - s * this_.m02, s * this_.m01 + c * this_.m02,
 // 		cc * this_.m11 - mix + ss * this_.m22, 0.0f, ss * this_.m11 + mix + cc * this_.m22);
+	coASSERT(false);
 }
 
 coFORCE_INLINE void coRot13(coSymMat4& this_, coFloat& c, coFloat& s)
@@ -64,6 +68,7 @@ coFORCE_INLINE void coRot13(coSymMat4& this_, coFloat& c, coFloat& s)
 	const coFloat cc = c * c;
 	const coFloat ss = s * s;
 	const coFloat mix = 2.0f * c * s * this_.m13;
+	coASSERT(false);
 }
 
 coFORCE_INLINE void coRot23(coSymMat4& this_, coFloat& c, coFloat& s)
@@ -72,4 +77,5 @@ coFORCE_INLINE void coRot23(coSymMat4& this_, coFloat& c, coFloat& s)
 	const coFloat cc = c * c;
 	const coFloat ss = s * s;
 	const coFloat mix = 2.0f * c * s * this_.m23;
+	coASSERT(false);
 }

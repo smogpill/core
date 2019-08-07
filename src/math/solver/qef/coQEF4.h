@@ -8,7 +8,7 @@ class coQEF4
 {
 public:
 	void Add(const coQEF4& qef);
-	void Add(const coVec4& pos, const coVec4& normal);
+	void Add(const coVec4& A, const coVec4& b);
 	coFloat Solve(coVec4& posOut);
 	const coVec4& GetMassPoint() const { return massPoint; }
 
@@ -19,6 +19,6 @@ private:
 	coVec4 ATb = coVec4(0.0f);
 	coVec4 massPoint = coVec4(0.0f);
 	coVec4 pointAccum = coVec4(0.0f);
-	coUint nbPoints = 0;
+	coUint nb = 0;
 	coFloat btb = 0.0f;
 };
