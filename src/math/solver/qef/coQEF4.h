@@ -8,9 +8,10 @@ class coQEF4
 {
 public:
 	void Add(const coQEF4& qef);
-	void Add(const coVec4& A, const coVec4& b);
-	coFloat Solve(coVec4& posOut);
-	const coVec4& GetMassPoint() const { return massPoint; }
+	void Add(const coVec4& pos, const coVec4& normal);
+	coVec4 Solve();
+	coFloatx4 ComputeError(const coVec4& x) const;
+	const coVec4& GetLastMassPoint() const { return massPoint; }
 
 	static const coFloat tolerance;
 

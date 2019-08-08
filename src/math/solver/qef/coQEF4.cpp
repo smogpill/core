@@ -12,15 +12,6 @@
 
 const coFloat coQEF4::tolerance = 1e-6f;
 
-coVec4 coSVD_VMulSym(const coMat4& a, const coVec4& v)
-{
-// 	return coVec3(coDot(a[0], v)
-// 		, (a[0][1] * v.x) + (a[1][1] * v.y) + (a[1][2] * v.z)
-// 		, (a[0][2] * v.x) + (a[1][2] * v.y) + (a[2][2] * v.z));
-	//return a * v;
-	return coVec4();
-}
-
 void coSVD_Rotate_XY(coFloat& x, coFloat& y, coFloat c, coFloat s)
 {
 	const coFloat u = x;
@@ -214,39 +205,38 @@ void coSVD_Solve_ATA_ATb(coVec4& out, const coMat4& ATA, const coVec4& ATb)
 	out = invV * ATb;
 }
 
-coFloatx4 coQEF_ComputeError(const coMat4& A, const coVec4& x, const coVec4& b)
-{
-	const coVec4 vTmp = b - coSVD_VMulSym(A, x);
-	return coSquareLength(vTmp);
-}
-
-coFloat coQEF4::Solve(coVec4& posOut)
+coVec4 coQEF4::Solve()
 {
 	coASSERT(nb);
 	massPoint = pointAccum / coFloat(nb);
-	const coVec4 ATb2 = ATb - coSVD_VMulSym(ATA, massPoint);
-	coSVD_Solve_ATA_ATb(posOut, ATA, ATb2);
-	const coFloatx4 error = coQEF_ComputeError(ATA, posOut, ATb2);
-	posOut += massPoint;
-
-	const coVec4 atax = coSVD_VMulSym(ATA, posOut);
-	return (coDot(posOut, atax) - 2.0f * coDot(posOut, ATb) + btb).x;
-	//return error.x;
+	const coVec4 ATb2 = ATb - ATA * massPoint;
+	coVec4 x;
+	coSVD_Solve_ATA_ATb(x, ATA, ATb2);
+	return x + massPoint;
 }
 
-void coQEF4::Add(const coVec4& A, const coVec4& b)
+coFloatx4 coQEF4::ComputeError(const coVec4& x) const
 {
-	const coVec4 Ax = coBroadcastX(A);
-	const coVec4 Ay = coBroadcastY(A);
-	const coVec4 Az = coBroadcastZ(A);
-	const coVec4 Aw = coBroadcastW(A);
-	ATA.c0 += Ax * A;
-	ATA.c1 += Ay * A;
-	ATA.c2 += Az * A;
-	ATA.c3 += Aw * A;
-	ATb += A * b;
-	btb += (b * b).x;
-	//pointAccum += pos;
+	// E(x) = (Ax-b)T(Ax-b)
+	//      = x.ATAx - 2x.ATb + btb
+	const coVec4 atax = ATA * x;
+	return coDot(x, atax) - 2.0f * coDot(x, ATb) + btb;
+}
+
+void coQEF4::Add(const coVec4& p, const coVec4& n)
+{
+	const coVec4 nx = coBroadcastX(n);
+	const coVec4 ny = coBroadcastY(n);
+	const coVec4 nz = coBroadcastZ(n);
+	const coVec4 nw = coBroadcastW(n);
+	ATA.c0 += nx * n;
+	ATA.c1 += ny * n;
+	ATA.c2 += nz * n;
+	ATA.c3 += nw * n;
+	const coFloatx4 d = coDot(p, n);
+	ATb += n * d;
+	btb += (p * p).x;
+	pointAccum += p;
 	++nb;
 }
 
