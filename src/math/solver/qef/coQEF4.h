@@ -11,6 +11,8 @@ public:
 	void Add(const coVec4& pos, const coVec4& normal);
 	coVec4 Solve();
 	coFloatx4 ComputeError(const coVec4& x) const;
+	const coMat4& GetATA() const { return ATA; }
+	const coVec4& GetATb() const { return ATb; }
 	const coVec4& GetLastMassPoint() const { return massPoint; }
 
 	static const coFloat tolerance;

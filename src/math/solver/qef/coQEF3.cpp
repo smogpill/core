@@ -117,7 +117,7 @@ void coSVD_ComputePseudoInverse(coMat3& out, const coVec3& sigma, const coMat3& 
 	out = v * coMat3(invSigma) * coTranspose(v);
 }
 
-void coSVD_Solve_ATA_ATb(coVec3& out, const coMat3& ATA, const coVec3& ATb)
+void coSVD_SolveSymmetric(coVec3& out, const coMat3& ATA, const coVec3& ATb)
 {
 	coMat3 V;
 	coVec3 sigma(nullptr);
@@ -138,7 +138,7 @@ coFloat coQEF3::Solve(coVec3& posOut)
 	coASSERT(nbPoints);
 	massPoint = pointAccum / coFloat(nbPoints);
 	const coVec3 ATb2 = ATb - coSVD_VMulSym(ATA, massPoint);
-	coSVD_Solve_ATA_ATb(posOut, ATA, ATb2);
+	coSVD_SolveSymmetric(posOut, ATA, ATb2);
 	const coFloatx4 error = coQEF_ComputeError(ATA, posOut, ATb2);
 	posOut += massPoint;
 

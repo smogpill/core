@@ -9,6 +9,8 @@
 // Implementations shared by:
 // - https://github.com/nickgildea/qef (public domain)
 // - https://github.com/Lin20/isosurface/tree/master/Isosurface/Isosurface/QEFSolver (MIT License)
+// Docs:
+// - https://web.stanford.edu/class/cme335/lecture7.pdf
 
 const coFloat coQEF4::tolerance = 1e-6f;
 
@@ -195,14 +197,14 @@ void coSVD_ComputePseudoInverse(coMat4& out, const coVec4& sigma, const coMat4& 
 	out = v * coMat4(invSigma) * coTranspose(v);
 }
 
-void coSVD_Solve_ATA_ATb(coVec4& out, const coMat4& ATA, const coVec4& ATb)
+void coSVD_SolveSymmetric(coVec4& out, const coMat4& A, const coVec4& b)
 {
 	coMat4 V;
 	coVec4 sigma(nullptr);
-	coSVD_SolveSym(sigma, V, ATA);
+	coSVD_SolveSym(sigma, V, A);
 	coMat4 invV(nullptr);
 	coSVD_ComputePseudoInverse(invV, sigma, V);
-	out = invV * ATb;
+	out = invV * b;
 }
 
 coVec4 coQEF4::Solve()
@@ -211,7 +213,7 @@ coVec4 coQEF4::Solve()
 	massPoint = pointAccum / coFloat(nb);
 	const coVec4 ATb2 = ATb - ATA * massPoint;
 	coVec4 x;
-	coSVD_Solve_ATA_ATb(x, ATA, ATb2);
+	coSVD_SolveSymmetric(x, ATA, ATb2);
 	return x + massPoint;
 }
 
