@@ -17,5 +17,6 @@ coFORCE_INLINE coVec4 coDot(const coVec4& _a, const coVec4& _b)
 }
 coFORCE_INLINE coVec4 coNormalize(const coVec4& _a) { return _a * coInvSquareRoot(coDot(_a, _a)); }
 coFORCE_INLINE coFloatx4 coSquareLength(const coVec4& _a) { return coDot(_a, _a); }
+coFORCE_INLINE coFloatx4 coLength(const coVec4& a) { return coSquareRoot(coDot(a, a)); }
 coFORCE_INLINE coBool32x4 coIsNormalized(const coVec4& _a, const coVec4& _squareEpsilon = coVec4(1e-3f)) { return coNearEqual(coSquareLength(_a), coVec4(1.0f), _squareEpsilon); }
 

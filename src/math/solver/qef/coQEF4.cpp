@@ -201,17 +201,9 @@ void coSVD_SolveSym2(coVec4& sigma, coMat4& V, const coMat4& A)
 		{
 			for (coUint j = 0; j < i; ++j)
 			{
-				coFloat alpha = 0.0f;
-				coFloat beta = 0.0f;
-				coFloat gamma = 0.0f;
-
-				for (coUint k = 0; k < 4; ++k)
-				{
-					alpha += U[i][k] * U[i][k];
-					beta += U[j][k] * U[j][k];
-					gamma += U[i][k] * U[j][k];
-				}
-
+				const coFloat alpha = coSquareLength(U[i]).x;
+				const coFloat beta = coSquareLength(U[j]).x;
+				const coFloat gamma = coDot(U[i], U[j]).x;
 				converge = coMax(converge, coAbs(gamma) / coSquareRoot(alpha*beta));
 
 				if (coAbs(gamma) < 1e-12f)
@@ -223,28 +215,20 @@ void coSVD_SolveSym2(coVec4& sigma, coMat4& V, const coMat4& A)
 				const coFloat c = 1.0f / coSquareRoot(1.0f + (t*t));
 				const coFloat s = c * t;
 
-				for (coUint k = 0; k < 4; ++k)
-				{
-					const coFloat uik = U[i][k];
-					U[i][k] = c*uik - s*U[j][k];
-					U[j][k] = s*uik + c*U[j][k];
+				const coVec4 ui = U[i];
+				U[i] = c*ui - s*U[j];
+				U[j] = s*ui + c*U[j];
 
-					const coFloat vik = v2[i][k];
-					v2[i][k] = c*vik - s*v2[j][k];
-					v2[j][k] = s*vik + c*v2[j][k];
-				}
+				const coVec4 vi = v2[i];
+				v2[i] = c*vi - s*v2[j];
+				v2[j] = s*vi + c*v2[j];
 			}
 		}
 	}
 
 	for (coUint i = 0; i < 4; ++i)
 	{
-		coFloat t = 0.0f;
-		for (coUint j = 0; j < 4; ++j)
-		{
-			t += coPow2(U[i][j]);
-		}
-		sigma[i] = coSquareRoot(t);
+		sigma[i] = coLength(U[i]).x;
 	}
 
 	V = v2;
