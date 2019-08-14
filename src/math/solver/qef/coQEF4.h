@@ -15,13 +15,10 @@ public:
 	const coVec4& GetATb() const { return ATb; }
 	const coVec4& GetLastMassPoint() const { return massPoint; }
 
-	static const coFloat tolerance;
-
 private:
 	coMat4 ATA = coMat4(0.0f);
 	coVec4 ATb = coVec4(0.0f);
 	coVec4 massPoint = coVec4(0.0f);
-	coVec4 pointAccum = coVec4(0.0f);
 	coUint nb = 0;
 	coFloat btb = 0.0f;
 };
