@@ -12,7 +12,6 @@ void coComputeSVD(coVec4& sigma, coMat4& VOut, const coMat4& A)
 
 	coFloat converge = 777.0f;
 	for (coUint it = 0; it < 40; ++it)
-		//while (converge > 0.0001f)
 	{
 		converge = 0.0f;
 		for (coUint i = 1; i < 4; ++i)
@@ -41,6 +40,11 @@ void coComputeSVD(coVec4& sigma, coMat4& VOut, const coMat4& A)
 				V[i] = c*vi - s*V[j];
 				V[j] = s*vi + c*V[j];
 			}
+		}
+
+		if (converge < 1e-8f)
+		{
+			break;
 		}
 	}
 
