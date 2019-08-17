@@ -21,6 +21,11 @@ void coComputeSVD(coVec4& sigma, coMat4& VOut, const coMat4& A)
 				const coFloat alpha = coSquareLength(U[i]).x;
 				const coFloat beta = coSquareLength(U[j]).x;
 				const coFloat gamma = coDot(U[i], U[j]).x;
+				const coFloat ab = alpha * beta;
+				if (coAbs(ab) < 1e-12f)
+				{
+					continue;
+				}
 				converge = coMax(converge, coAbs(gamma) / coSquareRoot(alpha*beta));
 
 				if (coAbs(gamma) < 1e-12f)
