@@ -18,6 +18,8 @@ constexpr coFloat coFloat_NearEqualDefaultEpsilon = 1e-4f;
 constexpr coFloat coFloat_largeValue = 1e18f; // such as coFloat_largeValue² < coFloat_max
 constexpr coFloat coFloat_inv255 = static_cast<coFloat>(1. / 255.);
 
+void coSetDenormals(coBool b);
+void coSetFloatingPointExceptions(coBool b);
 coFORCE_INLINE constexpr coFloat coMin(coFloat _a, coFloat _b) { return _a < _b ? _a : _b; }
 coFORCE_INLINE constexpr coFloat coMin(coFloat _a, coFloat _b, coFloat _c) { return coMin(_a, coMin(_b, _c)); }
 coFORCE_INLINE constexpr coUint32 coMinIndex(coFloat _a, coFloat _b, coFloat _c) { return _a < _b ? (_a < _c ? 0 : 2) : (_b < _c ? 1 : 2); }

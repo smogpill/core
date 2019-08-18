@@ -103,14 +103,14 @@ coFORCE_INLINE coQuat operator*(const coQuat& _a, const coQuat& _b)
 	// Implementation found at: https://github.com/bulletphysics/bullet3/blob/master/src/Bullet3Common/b3Quaternion.h
 	const coFloatx4 a = coBitCast<coFloatx4>(_a);
 	const coFloatx4 b = coBitCast<coFloatx4>(_b);
-	coFloatx4 a1 = coSwizzle<0, 1, 2, 0>(a);
-	coFloatx4 b1 = coSwizzle<3, 3, 3, 0>(b);
+	coFloatx4 a1 = coShuffle<0, 1, 2, 0>(a);
+	coFloatx4 b1 = coShuffle<3, 3, 3, 0>(b);
 	a1 = a1 * b1;
-	coFloatx4 a2 = coSwizzle<1, 2, 0, 1>(a);
-	coFloatx4 b2 = coSwizzle<2, 0, 1, 1>(a);
+	coFloatx4 a2 = coShuffle<1, 2, 0, 1>(a);
+	coFloatx4 b2 = coShuffle<2, 0, 1, 1>(a);
 	a2 = a2 * b2;
-	b1 = coSwizzle<2, 0, 1, 2>(a);
-	b2 = coSwizzle<1, 2, 0, 2>(b);
+	b1 = coShuffle<2, 0, 1, 2>(a);
+	b2 = coShuffle<1, 2, 0, 2>(b);
 	b1 = b1 * b2;
 	coFloatx4 a0 = coBroadcastW(a);
 	a0 = a0 * b;
@@ -120,9 +120,9 @@ coFORCE_INLINE coQuat operator*(const coQuat& _a, const coQuat& _b)
 	a0 = a0 + a1;
 	return coBitCast<coQuat>(a0);
 // 	coFloatx4 res = coBroadcastW(a) * b;
-// 	res += coBroadcastX(a) * coSwizzle<0, 1, 2, 3>(b);
-// 	res += coBroadcastY(a) * coSwizzle<1, 0, 3, 2>(b);
-// 	res += coBroadcastZ(a) * coSwizzle<2, 3, 0, 1>(b);
+// 	res += coBroadcastX(a) * coShuffle<0, 1, 2, 3>(b);
+// 	res += coBroadcastY(a) * coShuffle<1, 0, 3, 2>(b);
+// 	res += coBroadcastZ(a) * coShuffle<2, 3, 0, 1>(b);
 // 	return coBitCast<coQuat>(res);
 
 // 	VectorRegister Result = VectorMultiply(VectorReplicate(Quat1, 3), Quat2);
@@ -161,7 +161,7 @@ coFORCE_INLINE coVec3 coRotateVector(const coQuat& _this, const coVec3& _vec)
 	// v' = v + q.w * t + cross(q.xyz, t)
 
 	const coVec3 q = coBitCast<coVec3>(_this);
-	const coVec3 w = coBroadcastW(q);
+	const coFloatx3 w = coFloatx3(coBroadcastW(_this));
 	const coVec3 r = 2.0f * coDot(q, _vec) * q + (w*w - coDot(q, q)) * _vec + 2.0f * w * coCross(q, _vec);
 	return r;
 }
