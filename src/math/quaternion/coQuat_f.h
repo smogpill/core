@@ -119,33 +119,6 @@ coFORCE_INLINE coQuat operator*(const coQuat& _a, const coQuat& _b)
 	a1 = coBitCast<coFloatx4>(coBitCast<coInt32x4>(a1) ^ coInt32x4_SIGN_MASK_W);
 	a0 = a0 + a1;
 	return coBitCast<coQuat>(a0);
-// 	coFloatx4 res = coBroadcastW(a) * b;
-// 	res += coBroadcastX(a) * coShuffle<0, 1, 2, 3>(b);
-// 	res += coBroadcastY(a) * coShuffle<1, 0, 3, 2>(b);
-// 	res += coBroadcastZ(a) * coShuffle<2, 3, 0, 1>(b);
-// 	return coBitCast<coQuat>(res);
-
-// 	VectorRegister Result = VectorMultiply(VectorReplicate(Quat1, 3), Quat2);
-// 	Result = VectorMultiplyAdd(VectorMultiply(VectorReplicate(Quat1, 0), VectorSwizzle(Quat2, 3, 2, 1, 0)), GlobalVectorConstants::QMULTI_SIGN_MASK0, Result);
-// 	Result = VectorMultiplyAdd(VectorMultiply(VectorReplicate(Quat1, 1), VectorSwizzle(Quat2, 2, 3, 0, 1)), GlobalVectorConstants::QMULTI_SIGN_MASK1, Result);
-// 	Result = VectorMultiplyAdd(VectorMultiply(VectorReplicate(Quat1, 2), VectorSwizzle(Quat2, 1, 0, 3, 2)), GlobalVectorConstants::QMULTI_SIGN_MASK2, Result);
-//	return Result;
-
-// 	A1 = b3_pshufd_ps(vQ1, B3_SHUFFLE(0, 1, 2, 0)); // X Y  z x     //      vtrn
-// 	B1 = b3_pshufd_ps(vQ2, B3_SHUFFLE(3, 3, 3, 0)); // W W  W X     // vdup vext
-// 	A1 = A1 * B1;
-// 	A2 = b3_pshufd_ps(vQ1, B3_SHUFFLE(1, 2, 0, 1)); // Y Z  X Y     // vext 
-// 	B2 = b3_pshufd_ps(vQ2, B3_SHUFFLE(2, 0, 1, 1)); // z x  Y Y     // vtrn vdup
-// 	A2 = A2 * B2;
-// 	B1 = b3_pshufd_ps(vQ1, B3_SHUFFLE(2, 0, 1, 2)); // z x Y Z      // vtrn vext
-// 	B2 = b3_pshufd_ps(vQ2, B3_SHUFFLE(1, 2, 0, 2)); // Y Z x z      // vext vtrn
-// 	B1 = B1 * B2;	//	A3 *= B3
-// 	A0 = b3_splat_ps(vQ1, 3);	//	A0
-// 	A0 = A0 * vQ2;	//	A0 * B0
-// 	A1 = A1 + A2;	//	AB12
-// 	A0 = A0 - B1;	//	AB03 = AB0 - AB3 
-// 	A1 = _mm_xor_ps(A1, b3vPPPM);	//	change sign of the last element
-// 	A0 = A0 + A1;	//	AB03 + AB12	
 }
 // coFORCE_INLINE coQuat operator*(const coQuat& _q, const coFloatx4& _xyzw)
 // {
