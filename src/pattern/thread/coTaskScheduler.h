@@ -5,12 +5,14 @@
 #include "pattern/thread/coWaitCondition.h"
 #include "pattern/thread/coTaskContext.h"
 #include "pattern/thread/coLock.h"
+#include "pattern/singleton/coSingleton.h"
 #include "container/array/coDynamicArray.h"
 class coTaskWorkerThread;
 class coTask;
 
 class coTaskScheduler : public coObject
 {
+	coDECLARE_SINGLETON(coTaskScheduler);
 	coDECLARE_SUPER(coObject);
 public:
 	coTaskScheduler(coUint nbWorkers);

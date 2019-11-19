@@ -8,6 +8,8 @@
 #include "math/scalar/coAtomicInt32_f.h"
 #include "lang/result/coResult_f.h"
 
+coDEFINE_SINGLETON(coTaskScheduler);
+
 coTaskScheduler::coTaskScheduler(coUint nbWorkers)
 {
 	for (coUint i = 0; i < nbWorkers; ++i)
