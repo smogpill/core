@@ -7,6 +7,7 @@
 
 coResult coTextPackReader::Read(const coChar* text_)
 {
+	curPos = 0;
 	text = text_;
 	ReadWhitespace();
 	coTRY(ReadBlock(), nullptr);
@@ -21,8 +22,8 @@ coResult coTextPackReader::ReadBlock()
 	do
 	{
 		ReadWhitespace();
-		const coChar next = text[curPos + 1];
-		switch (next)
+		const coChar current = text[curPos];
+		switch (current)
 		{
 		case '}':
 		{
