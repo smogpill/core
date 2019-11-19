@@ -10,17 +10,22 @@ class coPackFormat;
 class coTextPackReader
 {
 public:
-	coResult Read(const coConstString& text);
+	coResult Read(const coChar* text);
 
 private:
 	coResult ReadBlock();
 	coResult ReadStatement();
 	coResult ReadExpression();
+	coResult IgnoreFirstAndReadStringValue();
+	coResult IgnoreFirstAndReadTrueValue();
+	coResult IgnoreFirstAndReadFalseValue();
+	coResult ReadNumberValue();
+	coResult ReadNegativeNumberValue();
 	coResult ReadIdentifier();
 	void ReadWhitespace();
 
 	coPackFormat* format = nullptr;
 	coPack* pack = nullptr;
-	coConstString text;
+	const coChar* text = nullptr;
 	coUint32 curPos = 0;
 };
