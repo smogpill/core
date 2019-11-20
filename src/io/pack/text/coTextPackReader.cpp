@@ -56,8 +56,7 @@ coResult coTextPackReader::ReadStatement()
 
 coResult coTextPackReader::ReadExpression()
 {
-	const coUint32 nextPos = curPos + 1;
-	const coChar c = text[nextPos];
+	const coChar c = text[curPos];
 	switch (c)
 	{
 	case '{':
@@ -106,21 +105,23 @@ coResult coTextPackReader::IgnoreFirstAndReadTrueValue()
 {
 	coASSERT(text[curPos] == 't');
 	++curPos;
-	coTRY(text[curPos++] == 'r', nullptr);
-	coTRY(text[curPos++] == 'u', nullptr);
-	coTRY(text[curPos++] == 'e', nullptr);
-	return true;
+	coBool ok;
+	ok = text[curPos++] == 'r';
+	ok &= text[curPos++] == 'u';
+	ok &= text[curPos++] == 'e';
+	return ok;
 }
 
 coResult coTextPackReader::IgnoreFirstAndReadFalseValue()
 {
 	coASSERT(text[curPos] == 'f');
 	++curPos;
-	coTRY(text[curPos++] == 'a', nullptr);
-	coTRY(text[curPos++] == 'l', nullptr);
-	coTRY(text[curPos++] == 's', nullptr);
-	coTRY(text[curPos++] == 'e', nullptr);
-	return true;
+	coBool ok;
+	ok = text[curPos++] == 'a';
+	ok &= text[curPos++] == 'l';
+	ok &= text[curPos++] == 's';
+	ok &= text[curPos++] == 'e';
+	return ok;
 }
 
 void coTextPackReader::ReadWhitespace()
@@ -147,6 +148,9 @@ coResult coTextPackReader::ReadIdentifier()
 		++curPos;
 		while (coIsIdentifierBodyCompatible(text[curPos]))
 			++curPos;
-	}	
-	return true;
+
+		const coConstString identifier(&text[startPos], curPos - startPos);
+		return true;
+	}
+	return false;
 }

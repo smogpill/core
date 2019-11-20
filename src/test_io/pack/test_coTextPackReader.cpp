@@ -7,7 +7,7 @@
 coTEST(coTextPackReader, Empty)
 {
 	coTextPackReader reader;
-	//coEXPECT(reader.Read(""));
+	//coEXPECT(!reader.Read(""));
 }
 
 coTEST(coTextPackReader, EmptyBlock)
@@ -19,4 +19,26 @@ coTEST(coTextPackReader, EmptyBlock)
 	coEXPECT(reader.Read("\n{\n}\n"));
 	coEXPECT(reader.Read("\n\n{\n\n}\n\n"));
 	coEXPECT(reader.Read("\n \n{\n \n}\n \n"));
+}
+
+coTEST(coTestPackReader, coBool)
+{
+	coTextPackReader reader;
+	coEXPECT(reader.Read("{a: true;}"));
+	coEXPECT(reader.Read("{b: false;}"));
+}
+
+coTEST(coTestPackReader, Identifier)
+{
+	coTextPackReader reader;
+	coEXPECT(reader.Read("{a: true;}"));
+	//coEXPECT(!reader.Read("{0: false;}"));
+	coEXPECT(reader.Read("{ab4c: true;}"));
+	coEXPECT(reader.Read("{_ab2c: true;}"));
+	coEXPECT(reader.Read("{_: true;}"));
+	coEXPECT(reader.Read("{__: true;}"));
+	coEXPECT(reader.Read("{_954: true;}"));
+	coEXPECT(reader.Read("{_AbC: true;}"));
+	coEXPECT(reader.Read("{_A: true;}"));
+	coEXPECT(reader.Read("{_a_: true;}"));
 }
