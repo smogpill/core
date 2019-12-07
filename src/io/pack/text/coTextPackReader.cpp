@@ -3,11 +3,13 @@
 #include "io/pch.h"
 #include "coTextPackReader.h"
 #include "../coPack_f.h"
+#include "../coPackFormat.h"
 #include "lang/result/coResult_f.h"
 #include "container/string/coChar_f.h"
 
-coTextPackReader::coTextPackReader(coPack& pack_)
+coTextPackReader::coTextPackReader(coPack& pack_, const coPackFormat& format_)
 	: pack(pack_)
+	, format(format_)
 {
 
 }
@@ -53,8 +55,7 @@ coResult coTextPackReader::ReadBlock()
 
 coResult coTextPackReader::ReadStatement()
 {
-	coConstString identifier;
-	coTRY(ReadIdentifier(identifier), nullptr);
+	coTRY(ReadIdentifier(), nullptr);
 	coTRY(text[curPos++] == ':', nullptr);
 	PassWhitespace();
 	coTRY(ReadExpression(), nullptr);
@@ -69,6 +70,7 @@ coResult coTextPackReader::ReadExpression()
 	{
 	case '{':
 	{
+		ReadBlock();
 		break;
 	}
 	case '-':
@@ -114,7 +116,7 @@ coResult coTextPackReader::IgnoreFirstAndReadStringValue()
 		{
 		case '"':
 		{
-			coPushBack(pack, coConstString(&text[curPos], curPos - startPos));
+			coPushValue(pack, curField, coConstString(&text[curPos], curPos - startPos));
 			++curPos;
 			return true;
 		}
@@ -136,7 +138,7 @@ coResult coTextPackReader::IgnoreFirstAndReadTrueValue()
 	ok = text[curPos++] == 'r';
 	ok &= text[curPos++] == 'u';
 	ok &= text[curPos++] == 'e';
-	coPushBack(pack, true);
+	coPushValue(pack, curField, true);
 	return ok;
 }
 
@@ -149,7 +151,7 @@ coResult coTextPackReader::IgnoreFirstAndReadFalseValue()
 	ok &= text[curPos++] == 'l';
 	ok &= text[curPos++] == 's';
 	ok &= text[curPos++] == 'e';
-	coPushBack(pack, false);
+	coPushValue(pack, curField, false);
 	return ok;
 }
 
@@ -171,7 +173,7 @@ coResult coTextPackReader::IgnoreFirstAndReadNegativeNumberValue()
 	return true;
 }
 
-coResult coTextPackReader::ReadIdentifier(coConstString& identifier)
+coResult coTextPackReader::ReadIdentifier()
 {
 	coUint32 startPos = curPos;
 	if (coIsIdentifierHeadCompatible(text[curPos]))
@@ -180,9 +182,11 @@ coResult coTextPackReader::ReadIdentifier(coConstString& identifier)
 		while (coIsIdentifierBodyCompatible(text[curPos]))
 			++curPos;
 
+		coConstString identifier;
 		identifier.data = &text[startPos];
 		identifier.count = curPos - startPos;
-		return true;
+		curField = format.GetIndex(identifier);
+		return curField != coPackFormat::s_invalidFieldIndex;
 	}
 	return false;
 }

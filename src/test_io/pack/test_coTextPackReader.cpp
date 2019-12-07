@@ -3,19 +3,22 @@
 #include "test_io/pch.h"
 #include "test/unit/coTest.h"
 #include "io/pack/coPack.h"
+#include "io/pack/coPackFormat.h"
 #include "io/pack/text/coTextPackReader.h"
 
 coTEST(coTextPackReader, Empty)
 {
 	coPack pack;
-	coTextPackReader reader(pack);
+	coPackFormat format;
+	coTextPackReader reader(pack, format);
 	//coEXPECT(!reader.Read(""));
 }
 
 coTEST(coTextPackReader, EmptyBlock)
 {
 	coPack pack;
-	coTextPackReader reader(pack);
+	coPackFormat format;
+	coTextPackReader reader(pack, format);
 	coEXPECT(reader.Read("{}"));
 	coEXPECT(reader.Read(" { } "));
 	coEXPECT(reader.Read("    {     }    "));
@@ -29,7 +32,8 @@ coTEST(coTextPackReader, EmptyBlock)
 coTEST(coTestPackReader, coBool)
 {
 	coPack pack;
-	coTextPackReader reader(pack);
+	coPackFormat format;
+	coTextPackReader reader(pack, format);
 	coEXPECT(reader.Read("{a = true;}"));
 	coEXPECT(reader.Read("{b = false;}"));
 }
@@ -37,7 +41,8 @@ coTEST(coTestPackReader, coBool)
 coTEST(coTestPackReader, Identifier)
 {
 	coPack pack;
-	coTextPackReader reader(pack);
+	coPackFormat format;
+	coTextPackReader reader(pack, format);
 	coEXPECT(reader.Read("{a = true;}"));
 	//coEXPECT(!reader.Read("{0: false;}"));
 	coEXPECT(reader.Read("{ab4c = true;}"));

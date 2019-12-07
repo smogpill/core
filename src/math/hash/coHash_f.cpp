@@ -11,32 +11,32 @@
 #define coBIG_CONSTANT(_n_) (_n_##LLU)
 #endif
 
-coFORCE_INLINE static coUint32 coFmix32(coUint32 _h)
+coFORCE_INLINE static coUint32 coFmix32(coUint32 h)
 {
-	_h ^= _h >> 16;
-	_h *= 0x85ebca6b;
-	_h ^= _h >> 13;
-	_h *= 0xc2b2ae35;
-	_h ^= _h >> 16;
+	h ^= h >> 16;
+	h *= 0x85ebca6b;
+	h ^= h >> 13;
+	h *= 0xc2b2ae35;
+	h ^= h >> 16;
 
-	return _h;
+	return h;
 }
 
-coFORCE_INLINE static coUint64 coFmix64(coUint64 _k)
+coFORCE_INLINE static coUint64 coFmix64(coUint64 k)
 {
-	_k ^= _k >> 33;
-	_k *= coBIG_CONSTANT(0xff51afd7ed558ccd);
-	_k ^= _k >> 33;
-	_k *= coBIG_CONSTANT(0xc4ceb9fe1a85ec53);
-	_k ^= _k >> 33;
+	k ^= k >> 33;
+	k *= coBIG_CONSTANT(0xff51afd7ed558ccd);
+	k ^= k >> 33;
+	k *= coBIG_CONSTANT(0xc4ceb9fe1a85ec53);
+	k ^= k >> 33;
 
-	return _k;
+	return k;
 }
 
-static void coMurmurHash3_x86_32(coUint32* _out, const void* _data, coInt _len)
+static void coMurmurHash3_x86_32(coUint32* out, const void* data_, coInt len)
 {
-	const coByte* data = static_cast<const coByte*>(_data);
-	const coInt nblocks = _len / 4;
+	const coByte* data = static_cast<const coByte*>(data_);
+	const coInt nblocks = len / 4;
 
 	coUint32 h1 = 0;
 
@@ -64,7 +64,7 @@ static void coMurmurHash3_x86_32(coUint32* _out, const void* _data, coInt _len)
 
 	coUint32 k1 = 0;
 
-	switch (_len & 3)
+	switch (len & 3)
 	{
 	case 3: k1 ^= tail[2] << 16;
 	case 2: k1 ^= tail[1] << 8;
@@ -73,17 +73,17 @@ static void coMurmurHash3_x86_32(coUint32* _out, const void* _data, coInt _len)
 	};
 
 	// Finalization
-	h1 ^= _len;
+	h1 ^= len;
 
 	h1 = coFmix32(h1);
 
-	*_out = h1;
+	*out = h1;
 }
 
-static void coMurmurHash3_x64_128(void* _out, const void* _data, const coInt _len)
+static void coMurmurHash3_x64_128(void* out, const void* data_, const coInt len)
 {
-	const coByte* data = static_cast<const coByte*>(_data);
-	const coInt nblocks = _len / 16;
+	const coByte* data = static_cast<const coByte*>(data_);
+	const coInt nblocks = len / 16;
 
 	coUint64 h1 = 0;
 	coUint64 h2 = 0;
@@ -114,7 +114,7 @@ static void coMurmurHash3_x64_128(void* _out, const void* _data, const coInt _le
 	coUint64 k1 = 0;
 	coUint64 k2 = 0;
 
-	switch (_len & 15)
+	switch (len & 15)
 	{
 	case 15: k2 ^= ((coUint64)tail[14]) << 48;
 	case 14: k2 ^= ((coUint64)tail[13]) << 40;
@@ -137,7 +137,7 @@ static void coMurmurHash3_x64_128(void* _out, const void* _data, const coInt _le
 	};
 
 	// Finalization
-	h1 ^= _len; h2 ^= _len;
+	h1 ^= len; h2 ^= len;
 
 	h1 += h2;
 	h2 += h1;
@@ -148,27 +148,33 @@ static void coMurmurHash3_x64_128(void* _out, const void* _data, const coInt _le
 	h1 += h2;
 	h2 += h1;
 
-	reinterpret_cast<coUint64*>(_out)[0] = h1;
-	reinterpret_cast<coUint64*>(_out)[1] = h2;
+	reinterpret_cast<coUint64*>(out)[0] = h1;
+	reinterpret_cast<coUint64*>(out)[1] = h2;
 }
 
-coUint32 coHash32(coUint32 _val)
+coUint16 coHash16(const void* data, coUint len)
 {
-	return coFmix32(_val);
+	const coUint32 h = coHash32(data, len);
+	return coUint16((h >> 16) ^ h);
 }
 
-coUint32 coHash32(coUint64 _val)
+coUint32 coHash32(coUint32 x)
 {
-	return reinterpret_cast<coUint32*>(coFmix64(_val))[0];
+	return coFmix32(x);
 }
 
-coUint32 coHash32(const void* _data, coUint _len)
+coUint32 coHash32(coUint64 x)
 {
-	if (_len)
+	return reinterpret_cast<coUint32*>(coFmix64(x))[0];
+}
+
+coUint32 coHash32(const void* data, coUint len)
+{
+	if (len)
 	{
-		coASSERT(_data);
+		coASSERT(data);
 		coUint32 h;
-		coMurmurHash3_x86_32(&h, _data, _len);
+		coMurmurHash3_x86_32(&h, data, len);
 		return h;
 	}
 	else
@@ -177,13 +183,13 @@ coUint32 coHash32(const void* _data, coUint _len)
 	}
 }
 
-coUint64 coHash64(const void* _data, coUint _len)
+coUint64 coHash64(const void* data, coUint len)
 {
-	if (_len)
+	if (len)
 	{
-		coASSERT(_data);
+		coASSERT(data);
 		coUint64 h[2];
-		coMurmurHash3_x64_128(h, _data, _len);
+		coMurmurHash3_x64_128(h, data, len);
 		return h[0];
 	}
 	else
@@ -192,12 +198,12 @@ coUint64 coHash64(const void* _data, coUint _len)
 	}
 }
 
-coUint64 coHash64(coUint32 _val)
+coUint64 coHash64(coUint32 x)
 {
-	return coFmix64(_val);
+	return coFmix64(x);
 }
 
-coUint64 coHash64(coUint64 _val)
+coUint64 coHash64(coUint64 x)
 {
-	return coFmix64(_val);
+	return coFmix64(x);
 }

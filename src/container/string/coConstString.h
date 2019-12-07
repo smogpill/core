@@ -10,9 +10,15 @@ class coConstString : public coArray<const coChar>
 {
 public:
 	coConstString() = default;
-	coConstString(const coString& _s);
-	coConstString(const coChar* _s);
-	coConstString(const coChar* _s, coUint32 _size);
+	coConstString(const coString& s);
+	coConstString(const coChar* s);
+	coConstString(const coChar* s, coUint32 size);
+	template <coUint N>
+	coConstString(const coChar(&s)[N])
+		: coConstString(s)
+	{
+
+	}
 
 	static const coConstString& GetEmpty();
 };

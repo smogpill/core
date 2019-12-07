@@ -20,6 +20,7 @@ coFORCE_INLINE constexpr coUint32 coMod16(coUint32 _a) { return _a & 15; }
 coFORCE_INLINE constexpr coUint32 coMod32(coUint32 _a) { return _a & 31; }
 coFORCE_INLINE constexpr coUint32 coPow2(coUint32 _a) { return _a * _a; }
 coFORCE_INLINE constexpr coUint32 coPow3(coUint32 _a) { return _a * _a * _a; }
+constexpr coUint32 coLog2Immediate(coUint32 x) { return (x == 1) ? 0 : 1 + coLog2Immediate(x / 2); }
 coFORCE_INLINE coUint32 coPow4(coUint32 _a) { const coUint32 a2 = _a * _a; return a2 * a2; }
 template <class F>
 coFORCE_INLINE coUint32 coSetFlag(coUint32 _mask, const F& _flags, coBool _onoff) { return _onoff ? (_mask | static_cast<coUint32>(_flags)) : (_mask & ~static_cast<coUint32>(_flags)); }

@@ -3,29 +3,33 @@
 #pragma once
 #include "debug/log/coAssert.h"
 
+class coConstString;
+
 class coPackFormat
 {
 public:
-	void AddName(const coChar* name);
-	coUint16 GetIndex(coUint32 hash) const;
-	const coChar* GetName(coUint16 index);
+	static const coUint8 s_invalidFieldIndex = coUint8(-1);
+	void AddField(const coConstString& name, coUint8 index);
+	coUint8 GetIndex(const coConstString& name) const;
+	const coChar* GetName(coUint8 index);
 
 private:
-	coUint16 nbNames = 0;
+	coUint16 nbFields = 0;
 	coUint32* nameHashes = nullptr;
+	coUint8* indices = nullptr;
 	coUint16* nameOffsets = nullptr;
 	coChar* names = nullptr;
 };
 
-coUint16 coPackFormat::GetIndex(coUint32 hash) const
+inline coUint8 coPackFormat::GetIndex(const coConstString& name) const
 {
 	coASSERT(false);
 	return 0;
 }
 
-const coChar* coPackFormat::GetName(coUint16 index)
+inline const coChar* coPackFormat::GetName(coUint8 index)
 {
-	coASSERT(index < nbNames);
+	coASSERT(index < nbFields);
 	const coUint16 offset = nameOffsets[index];
 	return &names[offset];
 }
