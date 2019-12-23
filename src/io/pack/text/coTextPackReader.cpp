@@ -56,7 +56,8 @@ coResult coTextPackReader::ReadBlock()
 coResult coTextPackReader::ReadStatement()
 {
 	coTRY(ReadIdentifier(), nullptr);
-	coTRY(text[curPos++] == ':', nullptr);
+	PassWhitespace();
+	coTRY(text[curPos++] == '=', nullptr);
 	PassWhitespace();
 	coTRY(ReadExpression(), nullptr);
 	coTRY(text[curPos++] == ';', nullptr);

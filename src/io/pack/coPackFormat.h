@@ -14,22 +14,12 @@ public:
 	const coChar* GetName(coUint8 index);
 
 private:
+	void Reserve(coUint16 nb);
+
 	coUint16 nbFields = 0;
+	coUint16 capacity = 0;
 	coUint32* nameHashes = nullptr;
 	coUint8* indices = nullptr;
 	coUint16* nameOffsets = nullptr;
 	coChar* names = nullptr;
 };
-
-inline coUint8 coPackFormat::GetIndex(const coConstString& name) const
-{
-	coASSERT(false);
-	return 0;
-}
-
-inline const coChar* coPackFormat::GetName(coUint8 index)
-{
-	coASSERT(index < nbFields);
-	const coUint16 offset = nameOffsets[index];
-	return &names[offset];
-}

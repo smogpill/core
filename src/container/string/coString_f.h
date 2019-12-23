@@ -6,4 +6,5 @@
 
 class coString;
 
-void coRemoveMultiples(coString& _this, const coChar _c);
+void coRemoveMultiples(coString& this_, const coChar c);
+void coRemoveWhitespace(coString& this_);

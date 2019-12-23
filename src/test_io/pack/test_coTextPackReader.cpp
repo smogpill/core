@@ -33,6 +33,8 @@ coTEST(coTestPackReader, coBool)
 {
 	coPack pack;
 	coPackFormat format;
+	format.AddField("a", 0);
+	format.AddField("b", 1);
 	coTextPackReader reader(pack, format);
 	coEXPECT(reader.Read("{a = true;}"));
 	coEXPECT(reader.Read("{b = false;}"));
@@ -42,6 +44,15 @@ coTEST(coTestPackReader, Identifier)
 {
 	coPack pack;
 	coPackFormat format;
+	format.AddField("a", 0);
+	format.AddField("ab4c", 1);
+	format.AddField("_ab2c", 2);
+	format.AddField("_", 3);
+	format.AddField("__", 4);
+	format.AddField("_954", 5);
+	format.AddField("_AbC", 6);
+	format.AddField("_A", 7);
+	format.AddField("_a_", 8);
 	coTextPackReader reader(pack, format);
 	coEXPECT(reader.Read("{a = true;}"));
 	//coEXPECT(!reader.Read("{0: false;}"));

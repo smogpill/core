@@ -15,7 +15,7 @@ inline void _coPush(coPack& this_, const void* data, coUint32 size)
 template <class T>
 inline void _coPush(coPack& this_, const T& data)
 {
-	coPushBackArray(this_.data, coArray<coByte>(reinterpret_cast<coByte*>(data), sizeof(T)));
+	coPushBackArray(this_.data, coArray<const coByte>(reinterpret_cast<const coByte*>(&data), sizeof(T)));
 }
 
 inline void coPushBlock(coPack& this_, coUint16 key)
