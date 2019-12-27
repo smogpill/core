@@ -67,6 +67,15 @@ void coTaskScheduler::_ExecuteOneTask(const coTaskContext& context)
 	}
 }
 
+coBool coTaskScheduler::IsIdle() const
+{
+	coBool b;
+	lock.Lock();
+	b = readyTasks.count == 0 && waitingTasks.count == 0;
+	lock.Unlock();
+	return b;
+}
+
 void coTaskScheduler::OnStop()
 {
 	for (coTaskWorkerThread* w : workers)

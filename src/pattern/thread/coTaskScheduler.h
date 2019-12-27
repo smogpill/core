@@ -20,6 +20,7 @@ public:
 
 	void Add(coTask& task);
 	void _ExecuteOneTask(const coTaskContext& context);
+	coBool IsIdle() const;
 
 protected:
 	virtual coResult OnStart() override;
@@ -30,5 +31,5 @@ private:
 	coDynamicArray<coTask*> readyTasks;
 	coDynamicArray<coTask*> waitingTasks;
 	coWaitCondition waitCondition;
-	coLock lock;
+	mutable coLock lock;
 };

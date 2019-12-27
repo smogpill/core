@@ -3,4 +3,5 @@
 #pragma once
 #include "coThread.h"
 
-coUint64 GetGetCurrentThreadID();
+coUint64 coGetGetCurrentThreadID();
+void coSleep(coUint milliseconds);
