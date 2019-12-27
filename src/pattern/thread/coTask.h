@@ -12,6 +12,9 @@ public:
 	void SetNext(coTask* task);
 	coBool IsReady() const { return nbActiveDependencies == 0; }
 
+protected:
+	friend class coTaskScheduler;
+
 	coTask* next = nullptr;
 	coAtomicInt32 nbActiveDependencies = 0;
 };
