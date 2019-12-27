@@ -20,3 +20,36 @@ coFORCE_INLINE coInt32x3 operator- (const coInt32x3& _a, const coInt32x3& _b) { 
 coFORCE_INLINE coInt32x3 coAbs(const coInt32x3& _this) { return coBitCast<coInt32x3>(_mm_abs_epi32(coBitCast<__m128i>(_this))); }
 coFORCE_INLINE coInt32x3 coMin(const coInt32x3& _a, const coInt32x3& _b) { return coBitCast<coInt32x3>(_mm_min_epi32(coBitCast<__m128i>(_a), coBitCast<__m128i>(_b))); }
 coFORCE_INLINE coInt32x3 coMax(const coInt32x3& _a, const coInt32x3& _b) { return coBitCast<coInt32x3>(_mm_max_epi32(coBitCast<__m128i>(_a), coBitCast<__m128i>(_b))); }
+coFORCE_INLINE coUint32 coConvertToMorton(const coInt32x3& a)
+{
+	// https://fgiesen.wordpress.com/2009/12/13/decoding-morton-codes/
+
+	auto Part1By2 = [](coUint32 x)
+	{
+		x &= 0x000003ff;
+		x = (x ^ (x << 16)) & 0xff0000ff;
+		x = (x ^ (x << 8)) & 0x0300f00f;
+		x = (x ^ (x << 4)) & 0x030c30c3;
+		x = (x ^ (x << 2)) & 0x09249249;
+		return x;
+	};
+
+	return (Part1By2(a.z) << 2) + (Part1By2(a.y) << 1) + Part1By2(a.x);
+}
+
+coFORCE_INLINE coInt32x3 coConvertFromMorton(coUint32 a)
+{
+	// https://fgiesen.wordpress.com/2009/12/13/decoding-morton-codes/
+
+	auto Compact1By2 = [](coUint32 x)
+	{
+		x &= 0x09249249;                  // x = ---- 9--8 --7- -6-- 5--4 --3- -2-- 1--0
+		x = (x ^ (x >> 2)) & 0x030c30c3; // x = ---- --98 ---- 76-- --54 ---- 32-- --10
+		x = (x ^ (x >> 4)) & 0x0300f00f; // x = ---- --98 ---- ---- 7654 ---- ---- 3210
+		x = (x ^ (x >> 8)) & 0xff0000ff; // x = ---- --98 ---- ---- ---- ---- 7654 3210
+		x = (x ^ (x >> 16)) & 0x000003ff; // x = ---- ---- ---- ---- ---- --98 7654 3210
+		return x;
+	};
+
+	return coInt32x3(Compact1By2(a), Compact1By2(a >> 1), Compact1By2(a >> 2));
+}
