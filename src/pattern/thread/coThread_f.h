@@ -5,3 +5,4 @@
 
 coUint64 coGetGetCurrentThreadID();
 void coSleep(coUint milliseconds);
+coUint coGetMaxConcurrentThreads();

@@ -40,6 +40,7 @@ coResult coReadFullFile(coDynamicArray<coByte>& _out, const coConstString& _path
 		coTRY(file.Init(), "Failed to init for reading: " << file);
 	}
 
+	coClear(_out);
 	coResize(_out, size8);
 	coTRY(file.Read(_out), "Failed to read " << file);
 	return true;

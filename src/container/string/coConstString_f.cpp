@@ -2,6 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "container/pch.h"
 #include "container/string/coConstString_f.h"
+#include "container/string/coChar_f.h"
 #include "container/array/coDynamicArray_f.h"
 #include "container/array/coConstArray_f.h"
 #include "debug/log/coAssert.h"
@@ -147,6 +148,21 @@ coBool coStartsWith(const coConstString& _this, const coConstString& _prefix)
 	return true;
 }
 
+coBool coEndsWith(const coConstString& this_, const coConstString& suffix)
+{
+	if (this_.count < suffix.count)
+		return false;
+
+	const coChar* data = this_.data;
+	const coChar* suffixData = suffix.data;
+	for (coUint i = 0, j = this_.count - suffix.count; i < suffix.count; ++i, ++j)
+	{
+		if (data[j] != suffixData[i])
+			return false;
+	}
+	return true;
+}
+
 coUint32 coHash32(const coConstString& _this)
 {
 	return coHash32(_this.data, _this.count);
@@ -155,4 +171,19 @@ coUint32 coHash32(const coConstString& _this)
 coUint64 coHash64(const coConstString& _this)
 {
 	return coHash64(_this.data, _this.count);
+}
+
+coUint32 coParseUint32(const coConstString& _this)
+{
+	coUint32 v = 0;
+	coASSERT(_this.count <= 10);
+	for (coUint i = 0; i < _this.count; ++i)
+	{
+		const coChar c = _this.data[i];
+		if (coIsDigit(c))
+		{
+			v = v * 10 + c - '0';
+		}
+	}
+	return v;
 }

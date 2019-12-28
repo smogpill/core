@@ -13,6 +13,7 @@ coFORCE_INLINE coUint32 coMin(coUint32 _a, coUint32 _b, coUint32 _c) { return co
 coFORCE_INLINE coUint32 coMax(coUint32 _a, coUint32 _b) { return _a > _b ? _a : _b; }
 coFORCE_INLINE coUint32 coMax(coUint32 _a, coUint32 _b, coUint32 _c) { return coMax(_a, coMax(_b, _c)); }
 coFORCE_INLINE coUint32 coMod(coUint32 _a, coUint32 _b) { return _a % _b; }
+coFORCE_INLINE coUint32 coClamp(coUint32 _a, coUint32 _min, coUint32 _max) { return coMin(_max, coMax(_min, _a)); }
 coFORCE_INLINE constexpr coUint32 coMod2(coUint32 _a) { return _a & 1; }
 coFORCE_INLINE constexpr coUint32 coMod4(coUint32 _a) { return _a & 3; }
 coFORCE_INLINE constexpr coUint32 coMod8(coUint32 _a) { return _a & 7; }

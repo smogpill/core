@@ -5,13 +5,16 @@
 #include "pattern/thread/coTaskWorkerThread.h"
 #include "pattern/thread/coTaskContext.h"
 #include "pattern/thread/coTask.h"
+#include "pattern/thread/coThread_f.h"
 #include "math/scalar/coAtomicInt32_f.h"
 #include "lang/result/coResult_f.h"
+#include <math/scalar/coUint32_f.h>
 
 coDEFINE_SINGLETON(coTaskScheduler);
 
 coTaskScheduler::coTaskScheduler(coUint nbWorkers)
 {
+	nbWorkers = coMin(nbWorkers, coGetMaxConcurrentThreads());
 	for (coUint i = 0; i < nbWorkers; ++i)
 	{
 		coPushBack(workers, new coTaskWorkerThread(*this, i));
@@ -64,6 +67,14 @@ void coTaskScheduler::_ExecuteOneTask(const coTaskContext& context)
 			coPushBack(readyTasks, nextTask);
 			lock.Unlock();
 		}
+	}
+}
+
+void coTaskScheduler::WaitIdle()
+{
+	while (!IsIdle())
+	{
+		coSleep(1);
 	}
 }
 

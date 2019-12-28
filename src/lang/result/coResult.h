@@ -10,15 +10,12 @@ class coResult
 public:
 	coFORCE_INLINE coResult(coBool _success = true)
 		: success(_success)
-#ifdef coDEBUG
-		, tested(false)
-#endif
 	{
 	}
 
 	coFORCE_INLINE ~coResult()
 	{
-		// This result was not tested, jump back in the call stack to find a way to test the error before it being destroyed
+		// This result was not tested, jump back in the call stack to find a way to test the error before it being destroyed.
 		coASSERT(tested);
 	}
 
@@ -30,25 +27,43 @@ public:
 		return success;
 	}
 
-	coFORCE_INLINE void operator= (coBool _b)
+	coFORCE_INLINE void operator= (coBool b)
 	{
 #ifdef coDEBUG
 		tested = false;
 #endif
-		success = _b;
+		success = b;
 	}
 
-	coFORCE_INLINE void operator&= (coBool _b)
+	coFORCE_INLINE void operator= (const coResult& b)
+	{
+#ifdef coDEBUG
+		tested = false;
+		b.tested = true;
+#endif
+		success = b;
+	}
+
+	coFORCE_INLINE void operator&= (coBool b)
 	{
 #ifdef coDEBUG
 		tested = false;
 #endif
-		success &= _b;
+		success &= b;
 	}
 
-	coBool success;
+	coFORCE_INLINE void operator&= (const coResult& b)
+	{
 #ifdef coDEBUG
-	mutable coBool tested;
+		tested = false;
+		b.tested = true;
+#endif
+		success &= b;
+	}
+
+	coBool success = true;
+#ifdef coDEBUG
+	mutable coBool tested = false;
 #endif
 };
 

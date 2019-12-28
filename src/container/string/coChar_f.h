@@ -1,6 +1,7 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
+#include <debug/log/coAssert.h>
 
 enum _coCharCategory : coUint16
 {
@@ -36,6 +37,7 @@ coFORCE_INLINE coBool coIsUpperCase(coChar _c) { return (_coCharCategoryTable[_c
 coFORCE_INLINE coBool coIsLetter(coChar _c) { return (_coCharCategoryTable[_c] & (_coCharCategory_upper | _coCharCategory_lower)) != 0; }
 coFORCE_INLINE coBool coIsAlphaNumeric(coChar _c) { return (_coCharCategoryTable[_c] & (_coCharCategory_digit | _coCharCategory_letter)) != 0; }
 coFORCE_INLINE coBool coIsHexDigit(coChar _c) { return (_coCharCategoryTable[_c] & (_coCharCategory_digit | _coCharCategory_xletter)) != 0; }
+coFORCE_INLINE coUint8 coGetDigit(coChar _c) { coASSERT(coIsDigit(_c)); return _c - '0'; }
 
 coFORCE_INLINE coChar coToLowerCase(coChar _c)
 {

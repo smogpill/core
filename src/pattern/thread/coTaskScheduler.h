@@ -15,11 +15,12 @@ class coTaskScheduler : public coObject
 	coDECLARE_SINGLETON(coTaskScheduler);
 	coDECLARE_SUPER(coObject);
 public:
-	coTaskScheduler(coUint nbWorkers);
+	coTaskScheduler(coUint nbWorkers = coUint(-1));
 	~coTaskScheduler();
 
 	void Add(coTask& task);
 	void _ExecuteOneTask(const coTaskContext& context);
+	void WaitIdle();
 	coBool IsIdle() const;
 
 protected:
