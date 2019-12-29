@@ -45,3 +45,19 @@ coResult coReadFullFile(coDynamicArray<coByte>& _out, const coConstString& _path
 	coTRY(file.Read(_out), "Failed to read " << file);
 	return true;
 }
+
+coResult coMoveFile(const coConstString& from, const coConstString& to)
+{
+	coDynamicString from2(from);
+	coNullTerminate(from2);
+	coDynamicString to2(to);
+	coNullTerminate(to2);
+	return std::rename(from2.data, to2.data) == 0;
+}
+
+coResult coDeleteFile(const coConstString& path)
+{
+	coDynamicString path2(path);
+	coNullTerminate(path2);
+	return std::remove(path2.data) == 0;
+}

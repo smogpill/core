@@ -9,3 +9,5 @@ class coConstString;
 coResult coGetFileSize(coUint64& _size8, const coConstString& _path);
 coResult coGetFileTimes(coUint64& _creationTime, coUint64& _lastAccessTime, coUint64& _lastWriteTime, const coConstString& _path);
 coResult coReadFullFile(coDynamicArray<coByte>& _out, const coConstString& _path);
+coResult coMoveFile(const coConstString& from, const coConstString& to);
+coResult coDeleteFile(const coConstString& path);
