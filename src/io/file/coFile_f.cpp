@@ -37,7 +37,7 @@ coResult coReadFullFile(coDynamicArray<coByte>& _out, const coConstString& _path
 		coFileAccess::InitConfig c;
 		c.mode = coFileAccess::read;
 		c.path = _path;
-		coTRY(file.Init(), "Failed to init for reading: " << file);
+		coTRY(file.Init(c), "Failed to init for reading: " << file);
 	}
 
 	coClear(_out);

@@ -33,7 +33,10 @@ inline coBinaryInputStream& coBinaryInputStream::operator>>(coDynamicArray<T>& v
 	coUint32 count;
 	*this >> count;
 	coClear(v);
-	coResize(v, count);
-	Read(v.data, count * sizeof(T));
+	if (count)
+	{
+		coResize(v, count);
+		Read(v.data, count * sizeof(T));
+	}
 	return *this;
 }
