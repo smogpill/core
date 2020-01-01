@@ -20,8 +20,6 @@ public:
 
 	void Add(coTask& task);
 	void _ExecuteOneTask(const coTaskContext& context);
-	void WaitIdle();
-	coBool IsIdle() const;
 
 protected:
 	virtual coResult OnStart() override;
