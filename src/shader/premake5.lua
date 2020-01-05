@@ -1,1 +1,0 @@
-coSetShaderProjectDefaults("shader")

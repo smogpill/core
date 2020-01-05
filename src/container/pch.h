@@ -4,8 +4,6 @@
 
 #include "container/publicPCH.h"
 #include <string.h>
-#include <stdio.h>
-#include <inttypes.h>
 #ifdef coMSVC_COMPILER
 #	pragma warning(push)
 #	pragma warning(disable:4530)
