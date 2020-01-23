@@ -8,3 +8,4 @@ class coConstString;
 
 coResult coCreateDir(const coConstString& _path);
 coResult coCreateDirsIfMissing(const coConstString& _rawPath);
+coResult coDeleteDir(const coConstString& path);

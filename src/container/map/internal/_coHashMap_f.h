@@ -12,24 +12,25 @@ public:
 	coUint32 entry;
 };
 
-template <class T>
-_coHashMapFindResult _coFindExt(const coHashMap<T>& _this, coUint64 _key)
+template <class T, coUint NB_BUCKETS>
+_coHashMapFindResult _coFindExt(const coHashMap<T, NB_BUCKETS>& _this, coUint64 _key)
 {
 	typedef coHashMapEntry<T> Entry;
+	typedef coHashMap<T, NB_BUCKETS> Self;
 
 	_coHashMapFindResult result;
 	if (_this.count == 0)
 	{
-		result.bucket = coHashMap<T>::invalidIndex;
-		result.entry = coHashMap<T>::invalidIndex;
-		result.previousEntry = coHashMap<T>::invalidIndex;
+		result.bucket = Self::invalidIndex;
+		result.entry = Self::invalidIndex;
+		result.previousEntry = Self::invalidIndex;
 		return result;
 	}
 
-	result.bucket = _key & _this.bucketMask;
+	result.bucket = _key & Self::bucketMask;
 	result.entry = _this.buckets[result.bucket];
-	result.previousEntry = coHashMap<T>::invalidIndex;
-	while (result.entry != coHashMap<T>::invalidIndex)
+	result.previousEntry = Self::invalidIndex;
+	while (result.entry != Self::invalidIndex)
 	{
 		const Entry* entry = _this.entries[result.entry];
 		if (entry->key == _key)
@@ -41,12 +42,13 @@ _coHashMapFindResult _coFindExt(const coHashMap<T>& _this, coUint64 _key)
 	return result;
 }
 
-template <class T>
-coHashMapEntry<T>* _coAddEntry(coHashMap<T>& _this, coUint64 _key, const T& _val)
+template <class T, coUint NB_BUCKETS>
+coHashMapEntry<T>* _coAddEntry(coHashMap<T, NB_BUCKETS>& _this, coUint64 _key, const T& _val)
 {
+	typedef coHashMap<T, NB_BUCKETS> Self;
 	coReserve(_this, _this.count + 1);
 	typedef coHashMapEntry<T> Entry;
-	const coUint32 bucketIndex = _key & _this.bucketMask;
+	const coUint32 bucketIndex = _key & Self::bucketMask;
 	coUint32& bucket = _this.buckets[bucketIndex];
 	Entry& entry = _this.entries[_this.count];
 	entry.key = _key;
@@ -56,18 +58,19 @@ coHashMapEntry<T>* _coAddEntry(coHashMap<T>& _this, coUint64 _key, const T& _val
 	++_this.count;
 	return &entry;
 }
-template <class T>
-void _coRemoveEntry(coHashMap<T>& _this, coUint64 _key)
+template <class T, coUint NB_BUCKETS>
+void _coRemoveEntry(coHashMap<T, NB_BUCKETS>& _this, coUint64 _key)
 {
 	typedef coHashMapEntry<T> Entry;
+	typedef coHashMap<T, NB_BUCKETS> Self;
 
 	const _coHashMapFindResult result = _coFindExt(_this, _key);
-	if (result.entry == coHashMap<T>::invalidIndex)
+	if (result.entry == Self::invalidIndex)
 		return;
 
 	Entry& entry = _this.entries[result.entry];
 
-	if (result.previousEntry == coHashMap<T>::invalidIndex)
+	if (result.previousEntry == Self::invalidIndex)
 		_this.buckets[result.bucket] = entry.next;
 	else
 		_this.entries[result.previousEntry].next = entry.next;
@@ -76,17 +79,11 @@ void _coRemoveEntry(coHashMap<T>& _this, coUint64 _key)
 	{
 		Entry& entry = _this.entries[_this.count - 1];
 		_coHashMapFindResult last = _coFindExt(_this, entry.key);
-		if (last.previousEntry == coHashMap<T>::invalidIndex)
+		if (last.previousEntry == Self::invalidIndex)
 			_this.buckets[last.bucket].next = result.entry;
 		else
 			_this.entries[last.previousEntry].next = result.entry;
 	}
 
 	--_this.count;
-}
-
-template <class T>
-coFORCE_INLINE coUint32 _coGetBucketCount(const coHashMap<T>& _this)
-{
-	return _this.bucketMask + 1;
 }

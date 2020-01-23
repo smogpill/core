@@ -14,13 +14,14 @@ struct coHashMapEntry
 	T value;
 };
 
-template <class T>
+template <class T, coUint NB_BUCKETS>
 class coHashMap
 {
 public:
 	enum : coUint32
 	{
-		invalidIndex = static_cast<coUint32>(-1)
+		invalidIndex = static_cast<coUint32>(-1),
+		bucketMask = NB_BUCKETS - 1
 	};
 	coHashMap();
 	coHashMap(coAllocator& _allocator);
@@ -30,33 +31,31 @@ public:
 
 	Entry* entries = nullptr;
 	coUint32* buckets = nullptr;
-	coUint32 bucketMask = 0;
 	coUint32 count = 0;
 	coUint32 capacity = 0;
 	coAllocator* allocator = nullptr;
 };
 
-template <class T>
-coHashMap<T>::coHashMap()
+template <class T, coUint NB_BUCKETS>
+coHashMap<T, NB_BUCKETS>::coHashMap()
 	: coHashMap(*coAllocator::GetHeap())
 {
 
 }
 
-template <class T>
-coHashMap<T>::coHashMap(coAllocator& _allocator)
+template <class T, coUint NB_BUCKETS>
+coHashMap<T, NB_BUCKETS>::coHashMap(coAllocator& _allocator)
 	: allocator(&_allocator)
 {
 	static_assert(std::is_trivially_copyable<T>::value, "Trivially copyable only");
 
 	//coHACK("coHashMap bucket allocation.");
-	buckets = static_cast<decltype(buckets)>(allocator->Allocate(1024 * sizeof(*buckets)));
-	bucketMask = 1024 - 1;
-	coFill(buckets, 1024, invalidIndex);
+	buckets = static_cast<decltype(buckets)>(allocator->Allocate(NB_BUCKETS * sizeof(*buckets)));
+	coFill(buckets, NB_BUCKETS, invalidIndex);
 }
 
-template <class T>
-coHashMap<T>::~coHashMap()
+template <class T, coUint NB_BUCKETS>
+coHashMap<T, NB_BUCKETS>::~coHashMap()
 {
 	allocator->Free(entries);
 	allocator->Free(buckets);
