@@ -52,12 +52,6 @@ coResult coMoveFile(const coConstString& from, const coConstString& to)
 	coNullTerminate(from2);
 	coDynamicString to2(to);
 	coNullTerminate(to2);
-	return std::rename(from2.data, to2.data) == 0;
-}
-
-coResult coDeleteFile(const coConstString& path)
-{
-	coDynamicString path2(path);
-	coNullTerminate(path2);
-	return std::remove(path2.data) == 0;
+	coTRY(std::rename(from2.data, to2.data) == 0, "Failed to move "<<from<<" to "<<to);
+	return true;
 }

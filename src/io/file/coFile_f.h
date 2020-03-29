@@ -11,3 +11,4 @@ coResult coGetFileTimes(coUint64& _creationTime, coUint64& _lastAccessTime, coUi
 coResult coReadFullFile(coDynamicArray<coByte>& _out, const coConstString& _path);
 coResult coMoveFile(const coConstString& from, const coConstString& to);
 coResult coDeleteFile(const coConstString& path);
+coBool coIsWritable(const coConstString& path);

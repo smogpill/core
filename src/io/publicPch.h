@@ -5,5 +5,6 @@
 #include "lang/publicPch.h"
 #include "platform/publicPch.h"
 #include "math/publicPch.h"
+#include "pattern/publicPch.h"
 #include <cstdio>
 #include <cinttypes>

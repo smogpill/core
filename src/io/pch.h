@@ -6,3 +6,4 @@
 #include <inttypes.h>
 #include "io/publicPCH.h"
 #include "platform/coOsHeaders.h"
+#include <shlobj.h>

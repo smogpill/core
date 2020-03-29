@@ -8,6 +8,8 @@
 #include "lang/result/coResult.h"
 #include "lang/result/coResult_f.h"
 
+coDynamicString _co_defaultDirs[coDefaultDir::END];
+
 coResult coCreateDirsIfMissing(const coConstString& _rawPath)
 {
 	coASSERT(coIsPathNormalized(_rawPath));
@@ -42,18 +44,20 @@ coResult coDeleteDir(const coConstString& path)
 	coDynamicString s;
 	for (const auto& entry : dir)
 	{
-		s = path;
-		s << entry.name;
+		coJoinPaths(s, path, entry.name);
 		if (coIsDirectory(s))
 		{
-			coDeleteDir(s);
+			coTRY(coDeleteDir(s), nullptr);
 		}
 		else
 		{
-			coDeleteFile(path);
+			coTRY(coDeleteFile(s), nullptr);
 		}
 	}
-	s = path;
-	coNullTerminate(s);
-	return std::remove(s.data) == 0;
+	return coDeleteFile(path);
+}
+
+const coConstString& coGetDefaultDir(coDefaultDir dir)
+{
+	return _co_defaultDirs[coUint(dir)];
 }

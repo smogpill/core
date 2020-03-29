@@ -6,6 +6,20 @@
 
 class coConstString;
 
+enum class coDefaultDir
+{
+	CURRENT,
+	LOCAL_APP_DATA,
+	ROAMING_APP_DATA,
+	SAVEGAME,
+	TEMP,
+
+	END
+};
+extern coDynamicString _co_defaultDirs[];
+
+coResult coInitDefaultDirs();
 coResult coCreateDir(const coConstString& _path);
 coResult coCreateDirsIfMissing(const coConstString& _rawPath);
 coResult coDeleteDir(const coConstString& path);
+const coConstString& coGetDefaultDir(coDefaultDir dir);
