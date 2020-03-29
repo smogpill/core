@@ -17,6 +17,9 @@ coResult coCreateDir(const coConstString& _path)
 	coDynamicString16 path;
 	coSetFromUTF8(path, _path);
 	coNullTerminate(path);
+// 	SECURITY_ATTRIBUTES securityAttributes{};
+// 	securityAttributes.bInheritHandle = false;
+// 	securityAttributes.
 	if (::CreateDirectoryW(path.data, nullptr) == 0)
 	{
 		coDynamicString s;

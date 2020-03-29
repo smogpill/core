@@ -1,7 +1,8 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "io/pch.h"
-#include "io/file/coFile_f.h"
+#include "coFile_f.h"
+#include "../path/coPath_f.h"
 #include "container/string/coDynamicString16_f.h"
 #include "platform/coOs.h"
 
@@ -20,7 +21,9 @@ coResult coDeleteFile(const coConstString& path)
 	coDynamicString16 p;
 	coSetFromUTF8(p, path);
 	coNullTerminate(p);
-	if (!DeleteFileW(p.data))
+
+	const BOOL res = coIsDirectory(path) ? RemoveDirectoryW(p.data) : DeleteFileW(p.data);
+	if (!res)
 	{
 		const DWORD errval = ::GetLastError();
 		coDynamicString error;
