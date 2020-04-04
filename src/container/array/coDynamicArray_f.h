@@ -70,11 +70,21 @@ void coReserve(coDynamicArray<T>& _this, coUint32 _desiredCount)
 	}
 }
 
+template <class T>
+T& coPushBack(coDynamicArray<T>& _this)
+{
+	const coUint32 newCount = _this.count + 1;
+	coReserve(_this, newCount);
+	T& e = _this.data[_this.count];
+	_this.count = newCount;
+	return e;
+}
+
 template <class T, class U>
 T& coPushBack(coDynamicArray<T>& _this, const U& _val)
 {
 	coASSERT(!coContainsPointer(_this, &_val));
-	coUint32 newCount = _this.count + 1;
+	const coUint32 newCount = _this.count + 1;
 	coReserve(_this, newCount);
 	T& e = _this.data[_this.count];
 	e = _val;
