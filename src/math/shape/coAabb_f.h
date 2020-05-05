@@ -4,6 +4,7 @@
 #include <math/shape/coAabb.h>
 
 coBool coIntersect(const coAabb& this_, const coVec3& point);
+coFORCE_INLINE coVec3 coGetSize(const coAabb& this_) { return this_.max - this_.min; }
 
 coFORCE_INLINE coBool coIntersect(const coAabb& this_, const coVec3& point)
 {
