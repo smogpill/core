@@ -72,7 +72,7 @@ coDynamicString& operator<<(coDynamicString& _this, coUint64 _a)
 coDynamicString& operator<<(coDynamicString& _this, coFloat _a)
 {
 	coChar s[128];
-	::sprintf_s(s, coARRAY_SIZE(s), "%f", _a);
+	::sprintf_s(s, coARRAY_SIZE(s), coFLOAT_AS_STRING_FORMAT, _a);
 	return _this << coConstString(s);
 }
 

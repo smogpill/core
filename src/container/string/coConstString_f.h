@@ -5,6 +5,12 @@
 #include "container/string/coConstString.h"
 #include "container/array/coDynamicArray.h"
 
+// &f uses 6 digits, which is not the 9 required to distinguish two float values. Check FLT_DECIMAL_DIG for more info.
+// We use g instead of f because %.9f has an incorrect behavior of considering 8 digits after the comma, instead of total.
+// %9f also has an undesired behavior. 
+#define coFLOAT_AS_STRING_FORMAT "%.9g"
+#define coFLOAT64_AS_STRING_FORMAT "%.17g"
+
 coBool operator==(const coConstString& _a, const coConstString& _b);
 coBool operator!=(const coConstString& _a, const coConstString& _b);
 void coSplit(coDynamicArray<coConstString>& _out, const coConstString& _input, const coConstString& _delimiters);

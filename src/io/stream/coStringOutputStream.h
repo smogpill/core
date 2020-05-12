@@ -114,7 +114,7 @@ inline coStringOutputStream& coStringOutputStream::operator<< (coBool _v)
 inline coStringOutputStream& coStringOutputStream::operator<< (coFloat _v)
 {
 	coChar s[32];
-	const coInt len = ::sprintf_s(s, coARRAY_SIZE(s), "%f", _v);
+	const coInt len = ::sprintf_s(s, coARRAY_SIZE(s), coFLOAT_AS_STRING_FORMAT, _v);
 	Write(s, len);
 	return *this;
 }
@@ -122,7 +122,7 @@ inline coStringOutputStream& coStringOutputStream::operator<< (coFloat _v)
 inline coStringOutputStream& coStringOutputStream::operator<< (coFloat64 _v)
 {
 	coChar s[64];
-	const coInt len = ::sprintf_s(s, coARRAY_SIZE(s), "%f", _v);
+	const coInt len = ::sprintf_s(s, coARRAY_SIZE(s), coFLOAT64_AS_STRING_FORMAT, _v);
 	Write(s, len);
 	return *this;
 }

@@ -6,14 +6,26 @@
 #include <container/map/internal/_coHashMap_f.h>
 #include <lang/coStdWrapper.h>
 #include <math/scalar/coUint32_f.h>
+#include <math/hash/coHash_f.h>
 
-template <class T, coUint NB_BUCKETS> coFORCE_INLINE coHashMapEntry<T>* coBegin(coHashMap<T, NB_BUCKETS>& _this) { return _this.entries; }
-template <class T, coUint NB_BUCKETS> coFORCE_INLINE const coHashMapEntry<T>* coBegin(const coHashMap<T, NB_BUCKETS>& _this) { return _this.entries; }
-template <class T, coUint NB_BUCKETS> coFORCE_INLINE coHashMapEntry<T>* coEnd(coHashMap<T, NB_BUCKETS>& _this) { return _this.entries + _this.count; }
-template <class T, coUint NB_BUCKETS> coFORCE_INLINE const coHashMapEntry<T>* coEnd(const coHashMap<T, NB_BUCKETS>& _this) { return _this.entries + _this.count; }
+template <class T, coUint NB_BUCKETS, class Hash> coFORCE_INLINE coHashMapEntry<T>* coBegin(coHashMap<T, NB_BUCKETS, Hash>& _this) { return _this.entries; }
+template <class T, coUint NB_BUCKETS, class Hash> coFORCE_INLINE const coHashMapEntry<T>* coBegin(const coHashMap<T, NB_BUCKETS, Hash>& _this) { return _this.entries; }
+template <class T, coUint NB_BUCKETS, class Hash> coFORCE_INLINE coHashMapEntry<T>* coEnd(coHashMap<T, NB_BUCKETS, Hash>& _this) { return _this.entries + _this.count; }
+template <class T, coUint NB_BUCKETS, class Hash> coFORCE_INLINE const coHashMapEntry<T>* coEnd(const coHashMap<T, NB_BUCKETS, Hash>& _this) { return _this.entries + _this.count; }
 
-template <class T, coUint NB_BUCKETS>
-void coReserve(coHashMap<T, NB_BUCKETS>& _this, coUint32 _desiredCapacity)
+template <class T>
+coUint32 coHashMapHash<T>::operator()(const T& v) const
+{
+	return coHash32(v);
+}
+
+inline coUint32 coHashMapHash<coUint64>::operator()(const coUint64& v) const
+{
+	return static_cast<coUint32>(coFastHash32(coUint32(v)) ^ coFastHash32(coUint32(v >> 32)));
+}
+
+template <class T, coUint NB_BUCKETS, class Hash>
+void coReserve(coHashMap<T, NB_BUCKETS, Hash>& _this, coUint32 _desiredCapacity)
 {
 	typedef coHashMapEntry<T> Entry;
 	if (_desiredCapacity > _this.capacity)
@@ -31,18 +43,18 @@ void coReserve(coHashMap<T, NB_BUCKETS>& _this, coUint32 _desiredCapacity)
 	}
 }
 
-template <class T, coUint NB_BUCKETS>
-void coClear(coHashMap<T, NB_BUCKETS>& _this)
+template <class T, coUint NB_BUCKETS, class Hash>
+void coClear(coHashMap<T, NB_BUCKETS, Hash>& _this)
 {
-	coFill(_this.buckets, NB_BUCKETS, coHashMap<T, NB_BUCKETS>::invalidIndex);
+	coFill(_this.buckets, NB_BUCKETS, coHashMap<T, NB_BUCKETS, Hash>::invalidIndex);
 	_this.count = 0;
 #ifdef coDEBUG
 	coFillAsDeleted(_this.entries, _this.count * sizeof(coHashMapEntry<T>));
 #endif
 }
 
-template <class T, coUint NB_BUCKETS>
-const T& coGet(const coHashMap<T, NB_BUCKETS>& _this, coUint64 _key, const T& _defaultValue)
+template <class T, coUint NB_BUCKETS, class Hash>
+const T& coGet(const coHashMap<T, NB_BUCKETS, Hash>& _this, coUint64 _key, const T& _defaultValue)
 {
 	typedef coHashMapEntry<T> Entry;
 	const coHashMapEntry<T>* entry = coFind(_this, _key);
@@ -56,14 +68,14 @@ const T& coGet(const coHashMap<T, NB_BUCKETS>& _this, coUint64 _key, const T& _d
 	}
 }
 
-template <class T, coUint NB_BUCKETS>
-coBool coContains(const coHashMap<T, NB_BUCKETS>& _this, coUint64 _key)
+template <class T, coUint NB_BUCKETS, class Hash>
+coBool coContains(const coHashMap<T, NB_BUCKETS, Hash>& _this, coUint64 _key)
 {
 	return coFind(_this, _key) != nullptr;
 }
 
-template <class T, coUint NB_BUCKETS>
-void coSet(coHashMap<T, NB_BUCKETS>& _this, coUint64 _key, const T& _val)
+template <class T, coUint NB_BUCKETS, class Hash>
+void coSet(coHashMap<T, NB_BUCKETS, Hash>& _this, coUint64 _key, const T& _val)
 {
 	typedef coHashMapEntry<T> Entry;
 	Entry* entry = coFind(_this, _key);
@@ -77,11 +89,11 @@ void coSet(coHashMap<T, NB_BUCKETS>& _this, coUint64 _key, const T& _val)
 	}
 }
 
-template <class T, coUint NB_BUCKETS>
-coHashMapEntry<T>* coFind(coHashMap<T, NB_BUCKETS>& _this, coUint64 _key)
+template <class T, coUint NB_BUCKETS, class Hash>
+coHashMapEntry<T>* coFind(coHashMap<T, NB_BUCKETS, Hash>& _this, coUint64 _key)
 {
 	typedef coHashMapEntry<T> Entry;
-	const coUint32 bucketIndex = _key & coHashMap<T, NB_BUCKETS>::bucketMask;
+	const coUint32 bucketIndex = Hash()(_key) & coHashMap<T, NB_BUCKETS, Hash>::bucketMask;
 	coUint32 entryIndex = _this.buckets[bucketIndex];
 	while (entryIndex != coHashMap<T, NB_BUCKETS>::invalidIndex)
 	{
@@ -93,14 +105,14 @@ coHashMapEntry<T>* coFind(coHashMap<T, NB_BUCKETS>& _this, coUint64 _key)
 	return nullptr;
 }
 
-template <class T, coUint NB_BUCKETS>
-const coHashMapEntry<T>* coFind(const coHashMap<T, NB_BUCKETS>& _this, coUint64 _key)
+template <class T, coUint NB_BUCKETS, class Hash>
+const coHashMapEntry<T>* coFind(const coHashMap<T, NB_BUCKETS, Hash>& _this, coUint64 _key)
 {
-	return const_cast<const coHashMapEntry<T>*>(coFind(const_cast<coHashMap<T, NB_BUCKETS>&>(_this), _key));
+	return const_cast<const coHashMapEntry<T>*>(coFind(const_cast<coHashMap<T, NB_BUCKETS, Hash>&>(_this), _key));
 }
 
-template <class T, coUint NB_BUCKETS>
-void coRemove(coHashMap<T, NB_BUCKETS>& _this, coHashMapEntry<T>* _entry)
+template <class T, coUint NB_BUCKETS, class Hash>
+void coRemove(coHashMap<T, NB_BUCKETS, Hash>& _this, coHashMapEntry<T>* _entry)
 {
 	_coRemoveEntry(_this, _entry->key);
 }

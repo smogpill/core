@@ -12,11 +12,11 @@ public:
 	coUint32 entry;
 };
 
-template <class T, coUint NB_BUCKETS>
-_coHashMapFindResult _coFindExt(const coHashMap<T, NB_BUCKETS>& _this, coUint64 _key)
+template <class T, coUint NB_BUCKETS, class Hash>
+_coHashMapFindResult _coFindExt(const coHashMap<T, NB_BUCKETS, Hash>& _this, coUint64 _key)
 {
 	typedef coHashMapEntry<T> Entry;
-	typedef coHashMap<T, NB_BUCKETS> Self;
+	typedef coHashMap<T, NB_BUCKETS, Hash> Self;
 
 	_coHashMapFindResult result;
 	if (_this.count == 0)
@@ -27,7 +27,7 @@ _coHashMapFindResult _coFindExt(const coHashMap<T, NB_BUCKETS>& _this, coUint64 
 		return result;
 	}
 
-	result.bucket = _key & Self::bucketMask;
+	result.bucket = Hash()(_key) & Self::bucketMask;
 	result.entry = _this.buckets[result.bucket];
 	result.previousEntry = Self::invalidIndex;
 	while (result.entry != Self::invalidIndex)
@@ -42,13 +42,13 @@ _coHashMapFindResult _coFindExt(const coHashMap<T, NB_BUCKETS>& _this, coUint64 
 	return result;
 }
 
-template <class T, coUint NB_BUCKETS>
-coHashMapEntry<T>* _coAddEntry(coHashMap<T, NB_BUCKETS>& _this, coUint64 _key, const T& _val)
+template <class T, coUint NB_BUCKETS, class Hash>
+coHashMapEntry<T>* _coAddEntry(coHashMap<T, NB_BUCKETS, Hash>& _this, coUint64 _key, const T& _val)
 {
-	typedef coHashMap<T, NB_BUCKETS> Self;
+	typedef coHashMap<T, NB_BUCKETS, Hash> Self;
 	coReserve(_this, _this.count + 1);
 	typedef coHashMapEntry<T> Entry;
-	const coUint32 bucketIndex = _key & Self::bucketMask;
+	const coUint32 bucketIndex = Hash()(_key) & Self::bucketMask;
 	coUint32& bucket = _this.buckets[bucketIndex];
 	Entry& entry = _this.entries[_this.count];
 	entry.key = _key;
@@ -58,11 +58,11 @@ coHashMapEntry<T>* _coAddEntry(coHashMap<T, NB_BUCKETS>& _this, coUint64 _key, c
 	++_this.count;
 	return &entry;
 }
-template <class T, coUint NB_BUCKETS>
-void _coRemoveEntry(coHashMap<T, NB_BUCKETS>& _this, coUint64 _key)
+template <class T, coUint NB_BUCKETS, class Hash>
+void _coRemoveEntry(coHashMap<T, NB_BUCKETS, Hash>& _this, coUint64 _key)
 {
 	typedef coHashMapEntry<T> Entry;
-	typedef coHashMap<T, NB_BUCKETS> Self;
+	typedef coHashMap<T, NB_BUCKETS, Hash> Self;
 
 	const _coHashMapFindResult result = _coFindExt(_this, _key);
 	if (result.entry == Self::invalidIndex)

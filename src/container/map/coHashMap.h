@@ -14,7 +14,19 @@ struct coHashMapEntry
 	T value;
 };
 
-template <class T, coUint NB_BUCKETS>
+template <class T>
+struct coHashMapHash
+{
+	coUint32 operator()(const T& v) const;
+};
+
+template <>
+struct coHashMapHash<coUint64>
+{
+	coUint32 operator()(const coUint64& v) const;
+};
+
+template <class T, coUint NB_BUCKETS, class Hash = coHashMapHash<coUint64>>
 class coHashMap
 {
 public:
@@ -36,15 +48,15 @@ public:
 	coAllocator* allocator = nullptr;
 };
 
-template <class T, coUint NB_BUCKETS>
-coHashMap<T, NB_BUCKETS>::coHashMap()
+template <class T, coUint NB_BUCKETS, class Hash>
+coHashMap<T, NB_BUCKETS, Hash>::coHashMap()
 	: coHashMap(*coAllocator::GetHeap())
 {
 
 }
 
-template <class T, coUint NB_BUCKETS>
-coHashMap<T, NB_BUCKETS>::coHashMap(coAllocator& _allocator)
+template <class T, coUint NB_BUCKETS, class Hash>
+coHashMap<T, NB_BUCKETS, Hash>::coHashMap(coAllocator& _allocator)
 	: allocator(&_allocator)
 {
 	static_assert(std::is_trivially_copyable<T>::value, "Trivially copyable only");
@@ -54,8 +66,8 @@ coHashMap<T, NB_BUCKETS>::coHashMap(coAllocator& _allocator)
 	coFill(buckets, NB_BUCKETS, invalidIndex);
 }
 
-template <class T, coUint NB_BUCKETS>
-coHashMap<T, NB_BUCKETS>::~coHashMap()
+template <class T, coUint NB_BUCKETS, class Hash>
+coHashMap<T, NB_BUCKETS, Hash>::~coHashMap()
 {
 	allocator->Free(entries);
 	allocator->Free(buckets);
