@@ -8,35 +8,57 @@ class coBinaryInputStream final : public coInputStream
 	coDECLARE_SUPER(coInputStream);
 public:
 	coBinaryInputStream(const coArray<coByte>& buffer);
-
-	coBinaryInputStream& operator>> (coFloat&);
-	coBinaryInputStream& operator>> (coUint32&);
-	template <class T>
-	coBinaryInputStream& operator>>(coDynamicArray<T>&);
 };
 
-inline coBinaryInputStream& coBinaryInputStream::operator >> (coUint32& v)
+inline coBinaryInputStream& operator >> (coBinaryInputStream& stream, coBool& v)
 {
-	Read(reinterpret_cast<coByte*>(&v), sizeof(v));
-	return *this;
+	stream.Read(reinterpret_cast<coByte&>(v));
+	return stream;
 }
 
-inline coBinaryInputStream& coBinaryInputStream::operator >> (coFloat& v)
+inline coBinaryInputStream& operator >> (coBinaryInputStream& stream, coUint8& v)
 {
-	Read(reinterpret_cast<coByte*>(&v), sizeof(v));
-	return *this;
+	stream.Read(v);
+	return stream;
+}
+
+inline coBinaryInputStream& operator >> (coBinaryInputStream& stream, coUint16& v)
+{
+	stream.Read(reinterpret_cast<coByte*>(&v), sizeof(v));
+	return stream;
+}
+
+inline coBinaryInputStream& operator >> (coBinaryInputStream& stream, coUint32& v)
+{
+	stream.Read(reinterpret_cast<coByte*>(&v), sizeof(v));
+	return stream;
+}
+
+inline coBinaryInputStream& operator >> (coBinaryInputStream& stream, coUint64& v)
+{
+	stream.Read(reinterpret_cast<coByte*>(&v), sizeof(v));
+	return stream;
+}
+
+inline coBinaryInputStream& operator >> (coBinaryInputStream& stream, coFloat& v)
+{
+	stream.Read(reinterpret_cast<coByte*>(&v), sizeof(v));
+	return stream;
 }
 
 template <class T>
-inline coBinaryInputStream& coBinaryInputStream::operator>>(coDynamicArray<T>& v)
+inline coBinaryInputStream& operator>>(coBinaryInputStream& stream, coDynamicArray<T>& v)
 {
 	coUint32 count;
-	*this >> count;
+	stream >> count;
 	coClear(v);
 	if (count)
 	{
 		coResize(v, count);
-		Read(v.data, count * sizeof(T));
+		for (T& e : v)
+		{
+			stream >> e;
+		}
 	}
-	return *this;
+	return stream;
 }

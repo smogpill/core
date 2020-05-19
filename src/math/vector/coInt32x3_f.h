@@ -3,6 +3,8 @@
 #pragma once
 
 #include <math/vector/coInt32x3.h>
+#include "io/stream/coBinaryOutputStream.h"
+#include "io/stream/coBinaryInputStream.h"
 
 coFORCE_INLINE coInt32x3 coInt32x3_XMask() { return coBitCast<coInt32x3>(_mm_set_epi32(0, 0, 0, 0xffffffff)); }
 coFORCE_INLINE coInt32x3 coInt32x3_YMask() { return coBitCast<coInt32x3>(_mm_set_epi32(0, 0, 0xffffffff, 0)); }
@@ -52,4 +54,14 @@ coFORCE_INLINE coInt32x3 coConvertFromMorton(coUint32 a)
 	};
 
 	return coInt32x3(Compact1By2(a), Compact1By2(a >> 1), Compact1By2(a >> 2));
+}
+coFORCE_INLINE coBinaryOutputStream& operator<<(coBinaryOutputStream& stream, const coInt32x3& a)
+{
+	stream.Write(&a, 12);
+	return stream;
+}
+coFORCE_INLINE coBinaryInputStream& operator >> (coBinaryInputStream& stream, coInt32x3& a)
+{
+	stream.Read(&a, 12);
+	return stream;
 }
