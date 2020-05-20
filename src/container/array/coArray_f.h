@@ -162,7 +162,7 @@ coBool coContainsPointer(const coArray<T>& _this, const void* _ptr)
 template <class T, class CompareFunctor>
 void coSort(coArray<T>& _this, CompareFunctor _cmp)
 {
-	if (_this.count == 0)
+	if (_this.count < 2)
 		return;
 
 	// QuickSort algorithm with:
