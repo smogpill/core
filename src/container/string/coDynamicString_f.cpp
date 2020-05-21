@@ -13,6 +13,12 @@ coDynamicString& operator<<(coDynamicString& _this, const coConstString& _a)
 	return _this;
 }
 
+coDynamicString& operator<<(coDynamicString& _this, coChar _a)
+{
+	coPushBack(_this, _a);
+	return _this;
+}
+
 coDynamicString& operator<<(coDynamicString& _this, coInt8 _a)
 {
 	coChar s[4];

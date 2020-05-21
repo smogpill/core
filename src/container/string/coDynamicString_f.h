@@ -8,6 +8,7 @@
 class coConstString16;
 
 coDynamicString& operator<<(coDynamicString& _this, const coConstString& _a);
+coDynamicString& operator<<(coDynamicString& _this, coChar _a);
 coDynamicString& operator<<(coDynamicString& _this, coInt8 _a);
 coDynamicString& operator<<(coDynamicString& _this, coInt16 _a);
 coDynamicString& operator<<(coDynamicString& _this, coInt32 _a);
