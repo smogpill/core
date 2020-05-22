@@ -21,24 +21,24 @@ coFORCE_INLINE coBool32x4 coIsNormalized(const coQuat& _this, const coVec4& _squ
 
 coFORCE_INLINE coQuat coRotation(const coFloatx3& _eulerAngles)
 {
+	// Uses conventions from Unreal.
+
 	const coFloatx3 halfAngles = _eulerAngles * 0.5f;
 	const coFloatx3 s = coSin(halfAngles);
 	const coFloatx3 c = coCos(halfAngles);
-	const coFloat sp = s.x;
-	const coFloat cp = c.x;
-	const coFloat sy = s.y;
-	const coFloat cy = c.y;
-	const coFloat sr = s.z;
-	const coFloat cr = c.z;
+
+	const coFloat sp = s.y;
+	const coFloat cp = c.y;
+	const coFloat sy = s.z;
+	const coFloat cy = c.z;
+	const coFloat sr = s.x;
+	const coFloat cr = c.x;
+
 	coQuat r(nullptr);
-// 	r.x = +cr*sp*sy - sr*cp*cy;
-// 	r.y = -cr*sp*cy - sr*cp*sy;
-// 	r.z = +cr*cp*sy - sr*sp*cy;
-// 	r.w = +cr*cp*cy + sr*sp*sy;
-	r.x = cr * sp * cy + sr * cp * sy;
-	r.y = cr * cp * sy - sr * sp * cy;
-	r.z = sr * cp * cy - cr * sp * sy;
-	r.w = cr * cp * cy + sr * sp * sy;
+	r.x = +cr*sp*sy - sr*cp*cy;
+	r.y = -cr*sp*cy - sr*cp*sy;
+	r.z = +cr*cp*sy - sr*sp*cy;
+	r.w = +cr*cp*cy + sr*sp*sy;
 
 	r  = coNormalize(r); // HACK
 	return r;
