@@ -14,5 +14,5 @@ coUint32 coHash32(const void* data, coUint len);
 coUint64 coHash64(const void* data, coUint len);
 coUint64 coHash64(coUint32 val);
 coUint64 coHash64(coUint64 val);
-coFORCE_INLINE coUint32 coFastHash32(coUint32 val) { coASSERT(val < 0x7fffffff); return val * 48271; }
-coFORCE_INLINE coUint64 coFastHash64(coUint64 val) { coASSERT(val < 0x7fffffff); return val * 48271; }
+coFORCE_INLINE coUint32 coFastHash32(coUint32 val) { /*coASSERT(val < 0x7fffffff);*/ return val * 48271; }
+coFORCE_INLINE coUint64 coFastHash64(coUint64 val) { /*coASSERT(val < 0x7fffffff);*/ return val * 48271; }
