@@ -113,12 +113,15 @@ void coJoin(coDynamicString& _this, const coConstString& _a, const coConstString
 	coMemCopy(&_this.data[stripped0.count + 1], stripped1.data, stripped1.count);
 }
 
-void coSetFromWide(coDynamicString& _this, const coConstString16& _other)
+void coSetFromWide(coDynamicString& this_, const coConstString16& other)
 {
-	std::wstring_convert<std::codecvt<coWideChar, coChar, std::mbstate_t>, coWideChar> conv16;
-	std::string s = conv16.to_bytes(_other.data, _other.data + _other.count);
-	coASSERT(s.length() < coNumericLimits<decltype(_this.count)>::Max());
-	_this = coConstString(s.data(), static_cast<coUint32>(s.length()));
+#ifdef coMSWINDOWS
+	const coUint nbChars = WideCharToMultiByte(CP_UTF8, 0, other.data, other.count, nullptr, 0, nullptr, nullptr);
+	coResize(this_, nbChars);
+	WideCharToMultiByte(CP_UTF8, 0, other.data, other.count, this_.data, nbChars, nullptr, nullptr);
+#else
+#error "Not available yet"
+#endif
 }
 
 void coSwap(coDynamicString& _this, coDynamicString& _other)

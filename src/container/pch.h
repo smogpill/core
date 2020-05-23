@@ -3,12 +3,7 @@
 #pragma once
 
 #include "container/publicPCH.h"
+#include "platform/publicPch.h"
+#include "math/publicPch.h"
 #include <string.h>
-#ifdef coMSVC_COMPILER
-#	pragma warning(push)
-#	pragma warning(disable:4530)
-#endif
-#include <codecvt>
-#ifdef coMSVC_COMPILER
-#	pragma warning(pop)
-#endif
+#include "platform/coOsHeaders.h"

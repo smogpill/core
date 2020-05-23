@@ -14,12 +14,15 @@ coDynamicString16& operator<<(coDynamicString16& _this, const coConstString16& _
 	return _this;
 }
 
-void coSetFromUTF8(coDynamicString16& _this, const coConstString& _other)
+void coSetFromUTF8(coDynamicString16& this_, const coConstString& other)
 {
-	std::wstring_convert<std::codecvt<coWideChar, coChar, std::mbstate_t>, coWideChar> conv16;
-	std::wstring ws = conv16.from_bytes(_other.data, _other.data + _other.count);
-	coASSERT(ws.length() < coNumericLimits<decltype(_this.count)>::Max());
-	_this = coConstString16(ws.data(), static_cast<coUint32>(ws.length()));
+#ifdef coMSWINDOWS
+	const coUint nbChars = MultiByteToWideChar(CP_UTF8, 0, other.data, other.count, nullptr, 0);
+	coResize(this_, nbChars);
+	MultiByteToWideChar(CP_UTF8, 0, other.data, other.count, this_.data, nbChars);
+#else
+#error "Not available yet"
+#endif
 }
 
 void coNullTerminate(coDynamicString16& _this)

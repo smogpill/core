@@ -5,4 +5,5 @@
 #include "lang/publicPch.h"
 #include "debug/publicPch.h"
 #include <math.h>
+#include <cmath>
 #include <intrin.h>

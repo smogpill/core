@@ -78,8 +78,10 @@ function coSetCppProjectDefaults(_name)
 	vectorextensions "SSE2"
 	floatingpoint "Fast"
 	editandcontinue "Off"
+	symbols "On"
+	cppdialect "C++17"
 	runtime "Release" -- Even on debug builds, Unreal is setup this way anyway.
-	flags { "Symbols", "NoMinimalRebuild", "FatalWarnings", "C++14", "MultiProcessorCompile" }
+	flags { "NoMinimalRebuild", "FatalWarnings", "MultiProcessorCompile" }
 	files { "**.cpp", "**.h", "**.inl"}
 
 	if os.isfile("pch.h") then
@@ -98,7 +100,8 @@ function coSetCppProjectDefaults(_name)
 		linkoptions {"/ignore:4221"} -- warns when .cpp are empty depending on the order of obj linking.
 		
 	filter { "configurations:release or prebuildRelease" }
-		flags { "OptimizeSpeed", "NoFramePointer"}
+		optimize "Speed"
+		omitframepointer "On"
 	filter {"configurations:debug or release"}
 		if os.isfile("reflect.cpp") then
 			local projectBasePath = "../.."

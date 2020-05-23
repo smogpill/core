@@ -37,23 +37,23 @@ coTEST(coPlane, coSetFromNormalAndPoint)
 	coEXPECT(p.normalAndDistance == coFloatx4(0, 0, 1, -9));
 }
 
-coTEST(coPlane, coDistanceToPoint)
+coTEST(coPlane, coDistance)
 {
 	coPlane p;
 	coFloatx3 d;
 
 	coSetFromNormalAndSignedDistance(p, coFloatx3(1, 0, 0), coFloatx3(3));
-	d = coDistanceToPoint(p, coFloatx3(1, 2, 3));
+	d = coDistance(p, coFloatx3(1, 2, 3));
 	coEXPECT(coAreXYZEqual(d));
 	coEXPECT(d == coFloatx3(-2));
 
 	coSetFromNormalAndSignedDistance(p, coFloatx3(0, 1, 0), coFloatx3(3));
-	d = coDistanceToPoint(p, coFloatx3(1, 2, 3));
+	d = coDistance(p, coFloatx3(1, 2, 3));
 	coEXPECT(coAreXYZEqual(d));
 	coEXPECT(d == coFloatx3(-1));
 
 	coSetFromNormalAndSignedDistance(p, coFloatx3(0, 0, 1), coFloatx3(3));
-	d = coDistanceToPoint(p, coFloatx3(1, 2, 3));
+	d = coDistance(p, coFloatx3(1, 2, 3));
 	coEXPECT(coAreXYZEqual(d));
 	coEXPECT(d == coFloatx3(0));
 }
@@ -63,16 +63,16 @@ coTEST(coPlane, coRayPlaneIntersection)
 	coPlane p;
 	coSetFromNormalAndPoint(p, coFloatx3(1, 0, 0), coFloatx3(2, 0, 0));
 	coFloatx3 t;
-	coEXPECT(coRayPlaneIntersection(p, coFloatx3(3, 2, 1), coFloatx3(-1, 0, 0), t));
+	coEXPECT(coRayPlaneIntersection(p, coRay(coFloatx3(3, 2, 1), coFloatx3(-1, 0, 0)), t));
 	coEXPECT(coAreXYZEqual(t));
 	coEXPECT(t == coFloatx3(1));
-	coEXPECT(coRayPlaneIntersection(p, coFloatx3(2, 0, 0), coFloatx3(1, 0, 0), t));
+	coEXPECT(coRayPlaneIntersection(p, coRay(coFloatx3(2, 0, 0), coFloatx3(1, 0, 0)), t));
 	coEXPECT(coAreXYZEqual(t));
 	coEXPECT(coNearEqual0(t));
-	coEXPECT(!coRayPlaneIntersection(p, coFloatx3(2, 0, 0), coFloatx3(0, 1, 0), t));
+	coEXPECT(!coRayPlaneIntersection(p, coRay(coFloatx3(2, 0, 0), coFloatx3(0, 1, 0)), t));
 	coEXPECT(coAreXYZEqual(t));
 	coEXPECT(coNearEqual0(t));
-	coEXPECT(!coRayPlaneIntersection(p, coFloatx3(2, 1, 0), coFloatx3(0, 1, 0), t));
+	coEXPECT(!coRayPlaneIntersection(p, coRay(coFloatx3(2, 1, 0), coFloatx3(0, 1, 0)), t));
 	coEXPECT(coAreXYZEqual(t));
 	coEXPECT(coNearEqual0(t));
 }
