@@ -58,26 +58,26 @@ coFORCE_INLINE coTransform operator * (const coTransform& _a, const coTransform&
 	return r;
 }
 
-coFORCE_INLINE coTransform coScale(const coTransform& a, const coVec3& v)
+coFORCE_INLINE coTransform coScale(const coTransform& t, const coVec3& v)
 {
-	coTransform r(a);
+	coTransform r(t);
 	r.scale *= v;
 	return r;
 }
 
-coFORCE_INLINE coTransform coTranslate(const coTransform& a, const coVec3& v)
+coFORCE_INLINE coTransform coTranslate(const coTransform& t, const coVec3& v)
 {
-	coTransform r(a);
-	r.translation += coRotateVector(a.rotation, v * a.scale);
+	coTransform r(t);
+	r.translation += coRotateVector(t.rotation, v * t.scale);
 	return r;
 }
 
-coFORCE_INLINE coTransform coRotate(const coTransform& a, const coQuat& v)
+coFORCE_INLINE coTransform coRotate(const coTransform& t, const coQuat& v)
 {
 	coTransform r(nullptr);
-	r.rotation = v * a.rotation;
-	r.scale = a.scale;
-	r.translation = a.translation;
+	r.rotation = t.rotation * v;
+	r.scale = t.scale;
+	r.translation = t.translation;
 	return r;
 }
 
