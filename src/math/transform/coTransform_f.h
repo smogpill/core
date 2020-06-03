@@ -49,6 +49,14 @@ coFORCE_INLINE coTransform coInverse(const coTransform& _this)
 	inv.translation = -coRotateVector(inv.rotation, _this.translation * inv.scale);
 	return inv;
 }
+coFORCE_INLINE coTransform coRemoveScale(const coTransform& this_)
+{
+	coTransform t(nullptr);
+	t.rotation = this_.rotation;
+	t.translation = this_.translation;
+	t.scale = coVec3(1.0f);
+	return t;
+}
 coFORCE_INLINE coTransform operator * (const coTransform& _a, const coTransform& _b)
 {
 	coTransform r(nullptr);
