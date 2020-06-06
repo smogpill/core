@@ -4,4 +4,4 @@
 
 #include "math/shape/coSegment.h"
 
-coBool coIntersectXY(const coSegment& _a, const coSegment& _b, coVec3& _hit);
+coBool coOverlapXY(const coSegment& _a, const coSegment& _b, coVec3& _hit);
