@@ -19,6 +19,8 @@ coFORCE_INLINE coInt32x3 operator^ (const coInt32x3& _a, const coInt32x3& _b) { 
 coFORCE_INLINE coInt32x3 operator* (const coInt32x3& _a, const coInt32x3& _b) { return coBitCast<coInt32x3>(_mm_mullo_epi32(coBitCast<__m128i>(_a), coBitCast<__m128i>(_b))); }
 coFORCE_INLINE coInt32x3 operator+ (const coInt32x3& _a, const coInt32x3& _b) { return coBitCast<coInt32x3>(_mm_add_epi32(coBitCast<__m128i>(_a), coBitCast<__m128i>(_b))); }
 coFORCE_INLINE coInt32x3 operator- (const coInt32x3& _a, const coInt32x3& _b) { return coBitCast<coInt32x3>(_mm_sub_epi32(coBitCast<__m128i>(_a), coBitCast<__m128i>(_b))); }
+coFORCE_INLINE coInt32x3 operator<< (const coInt32x3& a, const coInt shift) { return coBitCast<coInt32x3>(_mm_slli_epi32(coBitCast<__m128i>(a), shift)); }
+coFORCE_INLINE coInt32x3 operator>> (const coInt32x3& a, const coInt shift) { return coBitCast<coInt32x3>(_mm_srli_epi32(coBitCast<__m128i>(a), shift)); }
 coFORCE_INLINE coInt32x3 coAbs(const coInt32x3& _this) { return coBitCast<coInt32x3>(_mm_abs_epi32(coBitCast<__m128i>(_this))); }
 coFORCE_INLINE coInt32x3 coMin(const coInt32x3& _a, const coInt32x3& _b) { return coBitCast<coInt32x3>(_mm_min_epi32(coBitCast<__m128i>(_a), coBitCast<__m128i>(_b))); }
 coFORCE_INLINE coInt32x3 coMax(const coInt32x3& _a, const coInt32x3& _b) { return coBitCast<coInt32x3>(_mm_max_epi32(coBitCast<__m128i>(_a), coBitCast<__m128i>(_b))); }

@@ -39,8 +39,10 @@ coFORCE_INLINE constexpr T& coBitCast(A& _a)
 
 #ifdef coCLANG_COMPILER
 #	define coMETA(...) [[__VA_ARGS__]] //__attribute__((annotate(#__VA_ARGS__)))
+#	define coNO_INIT [[gsl::suppress("type.6")]]
 #else
 #	define coMETA(...)
+#	define coNO_INIT [[gsl::suppress(type.6)]]
 #endif
 
 #ifdef coMSVC_COMPILER

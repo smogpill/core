@@ -38,8 +38,6 @@ void coNormalizePath(coDynamicString& _this)
 	if (_this.count > 2  && _this.data[_this.count - 1] == '/')
 		--_this.count;
 
-	coWARN_NOT_FULLY_FUNCTIONAL();
-
 // 	coUint in = 0;
 // 	coUint out = 0;
 // 

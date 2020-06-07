@@ -17,8 +17,8 @@ public:
 	coFORCE_INLINE coBool32x4(const coBool32x3& _xyz, coUint32 _w) : x(_xyz.x), y(_xyz.y), z(_xyz.z), w(_w) {}
 	coFORCE_INLINE coBool32x4(const coBool32x3& _xyz, coBool _w) : x(_xyz.x), y(_xyz.y), z(_xyz.z), w(_w?0xffffffff : 0) {}
 
-	coUint32 x;
-	coUint32 y;
-	coUint32 z;
-	coUint32 w;
+	coNO_INIT coUint32 x;
+	coNO_INIT coUint32 y;
+	coNO_INIT coUint32 z;
+	coNO_INIT coUint32 w;
 };
