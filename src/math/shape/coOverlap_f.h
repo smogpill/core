@@ -4,10 +4,10 @@
 #include <math/shape/coAabb_f.h>
 #include <math/shape/coSphere.h>
 #include <math/vector/coFloatx3_f.h>
-#include <math/vector/coBool32x3.h>
+#include <math/vector/coBool32x3_f.h>
 
 coFORCE_INLINE coBool32x3 coOverlapSolid(const coAabb& aabb, const coVec3& point) { return point >= aabb.min && point <= aabb.max; }
-coFORCE_INLINE coBool32x3 coOverlapSolidSolid(const coAabb& a, const coAabb& b) { return coIsEmpty(coIntersect(a, b)); }
+coFORCE_INLINE coBool32x3 coOverlapSolidSolid(const coAabb& a, const coAabb& b) { return coNot(coIsEmpty(coIntersect(a, b))); }
 coFORCE_INLINE coBool coOverlapSolidHollow(const coAabb& aabb, const coSphere& s)
 {
 	// https://stackoverflow.com/questions/28343716/sphere-intersection-test-of-aabb
