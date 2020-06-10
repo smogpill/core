@@ -38,7 +38,8 @@ coFORCE_INLINE coMat4& operator+=(coMat4& this_, const coMat4& a)
 	return this_;
 }
 
-coMat4 coMakeLookAt(const coVec3& _eyePos, const coVec3& _lookAtPos, const coVec3& _upVec);
+coMat4 coMakeLookAt(const coVec3& eyePos, const coVec3& targetPos, const coVec3& up);
+coMat4 coMakeLookAt(const coVec3& eyePos, const coVec3& targetPos, coFloat roll);
 coMat4 coMakeOrthographic(coFloat _left, coFloat _right, coFloat _bottom, coFloat _top, coFloat _zNear, coFloat _zFar);
 void coSetPerspective(coMat4& _this, coFloat _fovyRadians, coFloat _aspect, coFloat _zNear, coFloat _zFar);
 coFORCE_INLINE void coSetUpperMat3(coMat4& _m4, const coMat3& _m3)

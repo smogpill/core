@@ -1,7 +1,16 @@
-// Copyright(c) 2016 Jounayd Id Salah
+// Copyright(c) 2016-2020 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "math/pch.h"
 #include "math/matrix/coMat4_f.h"
+
+coMat4 coMakeLookAt(const coVec3& eyePos, const coVec3& targetPos, coFloat roll)
+{
+	const coVec3 cw = coNormalize(targetPos - eyePos);
+	const coVec3 cp = coVec3(coSin(roll), coCos(roll), 0.0f);
+	const coVec3 cu = coNormalize(coCross(cw, cp));
+	const coVec3 cv = coNormalize(coCross(cu, cw));
+	return coMat4(coFloatx4(cu, 0.0f), coFloatx4(cv, 0.0f), coFloatx4(cw, 0.0f), coFloatx4(eyePos, 1.0f));
+}
 
 void coSetPerspective(coMat4& _this, coFloat _fovyRadians, coFloat _aspect, coFloat _zNear, coFloat _zFar)
 {
