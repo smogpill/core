@@ -60,14 +60,18 @@ coFORCE_INLINE coMat3 coTranspose(const coMat3& _a)
 	return out;
 }
 
-coFORCE_INLINE void coMakeLookAt(coMat3& _this, const coVec3& eyePos, const coVec3& targetPos, coFloat roll)
+coFORCE_INLINE void coMakeLookAt(coMat3& this_, const coVec3& from, const coVec3& to, const coVec3& up)
 {
-	// https://www.shadertoy.com/view/Xtt3Wn by Inigo Quilez
-	const coVec3 cw = coNormalize(targetPos - eyePos);
-	const coVec3 cp = coVec3(coSin(roll), coCos(roll), 0.0f);
-	const coVec3 cu = coNormalize(coCross(cw, cp));
-	const coVec3 cv = coNormalize(coCross(cu, cw));
-	_this = coMat3(cu, cv, -cw);
+	const coVec3 z = coSafeNormalize(to - from);
+	const coVec3 x = coSafeNormalize(coCross(up, z));
+	const coVec3 y = coCross(z, x);
+	this_ = coMat3(x, y, z);
+}
+
+coFORCE_INLINE void coMakeLookAt(coMat3& this_, const coVec3& from, const coVec3& to, coFloat roll)
+{
+	const coVec3 up = coVec3(coSin(roll), 0.0f, coCos(roll));
+	coMakeLookAt(this_, from, to, up);
 }
 
 coFORCE_INLINE void coSetRotation(coMat3& _this, const coQuat& _q)
