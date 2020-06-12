@@ -24,6 +24,7 @@ public:
 	coStringOutputStream& operator<<(const coChar*);
 	coStringOutputStream& operator<<(const void*);
 	coStringOutputStream& operator<<(coNullPtr);
+	coStringOutputStream& Indent(coUint nb);
 };
 
 inline coStringOutputStream& coStringOutputStream::operator<< (coChar _v)
@@ -150,5 +151,12 @@ inline coStringOutputStream& coStringOutputStream::operator<< (coNullPtr)
 {
 	const coChar s[] = "<null>";
 	Write(s, coARRAY_SIZE(s) - 1);
+	return *this;
+}
+
+inline coStringOutputStream& coStringOutputStream::Indent(coUint nb)
+{
+	for (coUint i = 0; i < nb; ++i)
+		Write('\t');
 	return *this;
 }
