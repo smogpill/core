@@ -37,3 +37,13 @@ coFORCE_INLINE coVec3 coAnyOrthogonal(const coVec3& _a)
 	default: coASSERT(false); return coVec3();
 	}
 }
+
+coFORCE_INLINE coVec3 coLambertNoTangent(const coVec3& nor, coFloat u, coFloat v)
+{
+	// https://www.shadertoy.com/view/MsdGzl
+	// method 3 by fizzer: http://www.amietia.com/lambertnotangent.html
+	const coFloat a = 6.2831853f * v;
+	u = 2.0f * u - 1.0f;
+	const coFloat f = coSquareRoot(1.0f - u * u);
+	return coNormalize(nor + coVec3(f * coCos(a), f * coSin(a), u));
+}
