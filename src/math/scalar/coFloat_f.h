@@ -69,6 +69,11 @@ coFORCE_INLINE coFloat coFloor(coFloat _x)
 	return std::floor(_x);
 }
 
+coFORCE_INLINE coFloat coFract(coFloat x)
+{
+	return x - coFloor(x);
+}
+
 coFORCE_INLINE coFloat coWrap(coFloat _x, coFloat _min, coFloat _max)
 {
 	coASSERT(_min < _max);
