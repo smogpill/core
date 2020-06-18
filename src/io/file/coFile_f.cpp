@@ -55,3 +55,42 @@ coResult coMoveFile(const coConstString& from, const coConstString& to)
 	coTRY(std::rename(from2.data, to2.data) == 0, "Failed to move "<<from<<" to "<<to);
 	return true;
 }
+
+coResult coDumpTGA(const coConstString& path, coUint16 width, coUint16 height, const coArray<coByte>& buffer)
+{
+	coDynamicArray<coByte> reorderedBuffer;
+	coPushBackArray(reorderedBuffer, buffer);
+
+	// RGB => BGR
+	for (coUint i = 0; i < reorderedBuffer.count; i += 3)
+		coSwap(reorderedBuffer[i + 0], reorderedBuffer[i + 2]);
+
+	struct TGAHeader
+	{
+		coByte IDLength = 0; // No info
+		coByte colorMapType = 0; // None
+		coByte imageType = 2; // Uncompressed true-color image
+		coByte colorMapSpec[5] = { 0 };
+		coUint16 originX = 0;
+		coUint16 originY = 0;
+		coUint16 width = 0;
+		coUint16 height = 0;
+		coUint8 bitsPerPixel = 24;
+		coUint8 imageDescriptor = 0;
+	};
+
+	TGAHeader header;
+	header.width = width;
+	header.height = height;
+
+	{
+		coFileAccess file;
+		coFileAccess::InitConfig c;
+		c.mode = coFileAccess::write;
+		c.path = path;
+		coTRY(file.Init(c), nullptr);
+		coTRY(file.Write(coArray<coByte>(reinterpret_cast<coByte*>(&header), sizeof(header))), nullptr);
+		coTRY(file.Write(reorderedBuffer), nullptr);
+	}
+	return true;
+}

@@ -12,3 +12,4 @@ coResult coReadFullFile(coDynamicArray<coByte>& _out, const coConstString& _path
 coResult coMoveFile(const coConstString& from, const coConstString& to);
 coResult coDeleteFile(const coConstString& path);
 coBool coIsWritable(const coConstString& path);
+coResult coDumpTGA(const coConstString& path, coUint16 width, coUint16 height, const coArray<coByte>& buffer);
