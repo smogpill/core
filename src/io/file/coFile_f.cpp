@@ -56,7 +56,7 @@ coResult coMoveFile(const coConstString& from, const coConstString& to)
 	return true;
 }
 
-coResult coDumpTGA(const coConstString& path, coUint16 width, coUint16 height, const coArray<coByte>& buffer)
+coResult coDumpTGA(const coConstString& path, coUint width, coUint height, const coArray<coByte>& buffer)
 {
 	coDynamicArray<coByte> reorderedBuffer;
 	coPushBackArray(reorderedBuffer, buffer);
@@ -80,8 +80,10 @@ coResult coDumpTGA(const coConstString& path, coUint16 width, coUint16 height, c
 	};
 
 	TGAHeader header;
-	header.width = width;
-	header.height = height;
+	coASSERT(width < coNumericLimits<decltype(header.width)>::Max());
+	coASSERT(height < coNumericLimits<decltype(header.height)>::Max());
+	header.width = coUint16(width);
+	header.height = coUint16(height);
 
 	{
 		coFileAccess file;
