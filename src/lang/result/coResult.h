@@ -5,7 +5,7 @@
 #include "debug/log/coAssert.h"
 #include "debug/log/coLog.h"
 
-class coResult
+class [[nodiscard]] coResult
 {
 public:
 	coFORCE_INLINE coResult(coBool _success = true)

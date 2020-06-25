@@ -71,7 +71,7 @@ coResult coTextPackReader::ReadExpression()
 	{
 	case '{':
 	{
-		ReadBlock();
+		coTRY(ReadBlock(), nullptr);
 		break;
 	}
 	case '-':
