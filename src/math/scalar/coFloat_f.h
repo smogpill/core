@@ -121,7 +121,7 @@ coFORCE_INLINE coFloat coAsin(coFloat _x)
 coFORCE_INLINE coFloat coAtan(coFloat _x, coFloat _y)
 {
 	coASSERT(coAbs(_x) > 0.00001f || coAbs(_y) > 0.00001f);
-	return std::atan2f(_x, _y);
+	return std::atan2f(_y, _x);
 }
 
 coFORCE_INLINE coFloat coRandFloat(coUint32& _seed)

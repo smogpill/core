@@ -89,6 +89,7 @@ coFORCE_INLINE coQuat coExp(const coQuat& _a)
 }
 coFORCE_INLINE coQuat coLog(const coQuat& _a)
 {
+	coASSERT(false); // Check if the coAtan has the correct order of parameters.
 	const float r = coSquareRoot(_a.x*_a.x + _a.y*_a.y + _a.z*_a.z);
 	const float t = (r > 0.00001f) ? coAtan(r, _a.w) / r : 0.0f;
 	return coQuat(t*_a.x, t*_a.y, t*_a.z, 0.5f * coLog(_a.x*_a.x + _a.y*_a.y + _a.z*_a.z + _a.w*_a.w));
