@@ -165,6 +165,10 @@ void coSort(coArray<T>& _this, CompareFunctor _cmp)
 	if (_this.count < 2)
 		return;
 
+	// Simple checks to ensure that the compare functor returns valid results
+	coASSERT(!_cmp(_this.data[0], _this.data[0]));
+	coASSERT(!_cmp(_this.data[1], _this.data[1]));
+
 	// QuickSort algorithm with:
 	// - Hoare Partitioning (faster);
 	// - Recursion removed;
