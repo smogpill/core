@@ -9,7 +9,7 @@ class coArray
 {
 public:
 	typedef T ValueType;
-	coArray() : data(nullptr), count(0) {}
+	coArray() = default;
 	coArray(T* _data, coUint32 _count) : data(_data), count(_count) {}
 	template <coUint N>
 	coArray(const T (&_a)[N]);
@@ -18,6 +18,6 @@ public:
 	//coArray(std::initializer_list<T> _l);
 	operator const coArray<const T>& () const { return reinterpret_cast<const coArray<const T>&>(*this); }
 
-	T* data;
-	coUint32 count;
+	T* data = nullptr;
+	coUint32 count = 0;
 };
