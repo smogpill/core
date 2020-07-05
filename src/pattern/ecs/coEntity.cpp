@@ -4,3 +4,14 @@
 #include "coEntity.h"
 #include "coComponent.h"
 #include "lang/result/coResult_f.h"
+
+coEntity::~coEntity()
+{
+	for (coComponent* comp : components)
+		delete comp;
+}
+
+void coEntity::AddAndGiveOwnership(coComponent& comp)
+{
+	coPushBack(components, &comp);
+}

@@ -8,6 +8,8 @@ class coComponent;
 class coEntity
 {
 public:
+	~coEntity();
+	void AddAndGiveOwnership(coComponent& comp);
 	const coArray<coComponent*>& GetComponents() const { return components; }
 
 private:
