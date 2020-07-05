@@ -103,6 +103,7 @@ function coSetCppProjectDefaults(_name)
 		optimize "Speed"
 		omitframepointer "On"
 	filter {"configurations:debug or release"}
+		--[[
 		if os.isfile("reflect.cpp") then
 			local projectBasePath = "../.."
 			local genAbsPath = "../../gen"
@@ -113,6 +114,7 @@ function coSetCppProjectDefaults(_name)
 			end
 			prebuildcommands{command}
 		end
+		--]]
 	filter {}
 end
 

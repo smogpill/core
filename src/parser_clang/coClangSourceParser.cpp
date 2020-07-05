@@ -103,7 +103,6 @@ coResult coClangSourceParser::InitSourceParseArgs(const InitConfig& /*_config*/)
 
 coResult coClangSourceParser::InitPrecompiledHeader(const InitConfig& _config)
 {
-	coLocalAllocator localAllocator(2048);
 
 	// Check out dir
 	/*{
@@ -113,7 +112,7 @@ coResult coClangSourceParser::InitPrecompiledHeader(const InitConfig& _config)
 	}*/
 
 	// Build file path
-	coDynamicString filePath(localAllocator);
+	coDynamicString filePath;
 	{
 		filePath = _config.precompiledHeaderSourcePath;
 		coTRY(coIsFile(filePath), "Not a file: " << filePath);
@@ -149,9 +148,8 @@ coResult coClangSourceParser::InitPrecompiledHeader(const InitConfig& _config)
 coResult coClangSourceParser::Parse(ParseResult& _result, const ParseConfig& _config)
 {
 	coTRY(Super::Parse(_result, _config), nullptr);
-	coLocalAllocator localAllocator(2048);
 
-	coDynamicString filePath(localAllocator);
+	coDynamicString filePath;
 	filePath = _config.filePath;
 	coNullTerminate(filePath);
 	CXTranslationUnit translationUnit = nullptr;

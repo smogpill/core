@@ -35,8 +35,7 @@ void coDefaultLogHandler::Log(coLogType _type, const coConstString& _file, coUin
 	const coBool error = _type >= coLogType::warning;
 
 	const coConstString& msg = _message.count ? _message : "<no message>";
-	coLocalAllocator localAlloc(4048);
-	coDynamicString outputMsg(localAlloc);
+	coDynamicString outputMsg;
 	if (error)
 	{
 		outputMsg << _file << "(" << _line << "): " << tag << ": " << msg << "\n";

@@ -9,20 +9,6 @@
 #include "lang/coCppExtensions.h"
 
 template <class T>
-coDynamicArray<T>::coDynamicArray()
-	: coDynamicArray(*coAllocator::GetHeap())
-{
-}
-
-template <class T>
-coDynamicArray<T>::coDynamicArray(coAllocator& _allocator)
-	: capacity(0)
-	, allocator(&_allocator)
-{
-	static_assert(std::is_trivially_copyable<T>::value, "Trivially copyable only");
-}
-
-template <class T>
 template <coUint N>
 coDynamicArray<T>::coDynamicArray(const T(&_a)[N])
 	: coDynamicArray()
@@ -39,13 +25,6 @@ coDynamicArray<T>::coDynamicArray(std::initializer_list<T> _l)
 	coMemCopy(data, _l.begin(), static_cast<coUint>(_l.size() * sizeof(T)));
 }
 
-template<class T>
-coDynamicArray<T>::~coDynamicArray()
-{
-	coASSERT(allocator);
-	allocator->FreeAligned(data);
-}
-
 coUint32 _coComputeBestArrayCapacity(coUint32 _capacity);
 
 template <class T>
@@ -54,16 +33,15 @@ void coReserve(coDynamicArray<T>& _this, coUint32 _desiredCount)
 	if (_desiredCount > _this.capacity)
 	{
 		const coUint32 bestCapacity = _coComputeBestArrayCapacity(_desiredCount);
-		coASSERT(_this.allocator);
 		// Aligned to min 16 bytes:
 		// - For simplicity. For example for working using SIMD on a float array.
 		// - Seems faster on Intel architectures https://software.intel.com/en-us/articles/data-alignment-when-migrating-to-64-bit-intel-architecture).
 		const coUint alignment = alignof(T) > 16 ? alignof(T) : 16;
-		T* newBuffer = static_cast<T*>(_this.allocator->AllocateAligned(bestCapacity * sizeof(T), alignment));
+		T* newBuffer = static_cast<T*>(coAllocator::GetHeap()->AllocateAligned(bestCapacity * sizeof(T), alignment));
 		if (_this.data)
 		{
 			coMemCopy(newBuffer, _this.data, _this.count * sizeof(T));
-			_this.allocator->FreeAligned(_this.data);
+			coAllocator::GetHeap()->FreeAligned(_this.data);
 		}
 		_this.data = newBuffer;
 		_this.capacity = bestCapacity;
@@ -147,7 +125,6 @@ coDynamicArray<T>::coDynamicArray(const coDynamicArray<T>& _this)
 template <class T>
 coDynamicArray<T>::coDynamicArray(coDynamicArray<T>&& _other)
 	: Super(_other)
-	, allocator(_other.allocator)
 	, capacity(_other.capacity)
 {
 	_other.capacity = 0;

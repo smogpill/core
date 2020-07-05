@@ -33,10 +33,8 @@ coResult coMainEntryPointGeneratorPlugin::Generate(const coParsedProject& _parse
 
 coResult coMainEntryPointGeneratorPlugin::GenerateCpp()
 {
-	coLocalAllocator localAllocator(4048);
-
 	// Paths
-	coDynamicString cxxPath(localAllocator);
+	coDynamicString cxxPath;
 	{
 		coJoinPaths(cxxPath, projectGenDir, "allGen.cxx");
 		coASSERT(coIsPathNormalized(cxxPath));

@@ -12,7 +12,6 @@ class coDynamicString : public coDynamicArray<coChar>
 	typedef coDynamicArray<coChar> Super;
 public:
 	coDynamicString() = default;
-	explicit coDynamicString(coAllocator& _allocator);
 	coDynamicString(coDynamicString&& _);
 	explicit coDynamicString(const coConstString& _s);
 	explicit coDynamicString(const coDynamicString& _);

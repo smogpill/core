@@ -1,25 +1,25 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
-
 #include "container/array/coArray.h"
-
-class coAllocator;
+#include "memory/allocator/coAllocator.h"
 
 template <class T>
 class coDynamicArray : public coArray<T>
 {
+	static_assert(std::is_trivially_copyable<T>::value, "Trivially copyable only");
 	typedef coArray<T> Super;
 public:
-	coDynamicArray();
-	explicit coDynamicArray(coAllocator& _allocator);
+	coDynamicArray() = default;
 	template <coUint N>
 	explicit coDynamicArray(const T(&_a)[N]);
-	~coDynamicArray();
+	~coDynamicArray()
+	{
+		coAllocator::GetHeap()->FreeAligned(data);
+	}
 	explicit coDynamicArray(std::initializer_list<T> _l);
 
-	coUint32 capacity;
-	coAllocator* allocator;
+	coUint32 capacity = 0;
 
 	explicit coDynamicArray(const coArray<T>&);
 	explicit coDynamicArray(const coDynamicArray<T>&);

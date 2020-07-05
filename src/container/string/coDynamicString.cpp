@@ -17,12 +17,6 @@ coDynamicString::coDynamicString(const coDynamicString& _)
 
 }
 
-coDynamicString::coDynamicString(coAllocator& _allocator)
-	: coDynamicArray<coChar>(_allocator)
-{
-
-}
-
 coDynamicString::coDynamicString(coDynamicString&& _)
 	: Super(_)
 {

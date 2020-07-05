@@ -47,11 +47,9 @@ coResult coCppTypesGeneratorPlugin::Generate(const coParsedProject& _parsedProje
 
 coResult coCppTypesGeneratorPlugin::GenerateTypes(const coParsedProject& _parsedProject)
 {
-	coLocalAllocator localAllocator(4048);
-
 	// Paths
-	coDynamicString mainCxxAbsolutePath(localAllocator);
-	coDynamicString mainCxxRelativePath(localAllocator);
+	coDynamicString mainCxxAbsolutePath;
+	coDynamicString mainCxxRelativePath;
 	{
 		coJoinPaths(mainCxxRelativePath, projectGenerator->GetProjectRelativePath(), "allTypes.cxx");
 		coASSERT(coIsPathNormalized(mainCxxRelativePath));
@@ -64,7 +62,7 @@ coResult coCppTypesGeneratorPlugin::GenerateTypes(const coParsedProject& _parsed
 	coWriteHeader(stream);
 	stream << "\n";
 
-	coDynamicString cxxPath(localAllocator);
+	coDynamicString cxxPath;
 
 	for (const coParsedType* parsedType : _parsedProject.parsedTypes)
 	{
@@ -97,13 +95,12 @@ coResult coCppTypesGeneratorPlugin::GenerateType(coDynamicString& _relativePath,
 	coASSERT(type);
 	coTRY(type->name != "", "Empty type name");
 
-	coLocalAllocator localAllocator(4048);
-	coDynamicString absolutePath(localAllocator);
+	coDynamicString absolutePath;
 
 	// Paths
 	{
 		const coConstString& projectPath = projectGenerator->GetProjectRelativePath();
-		coDynamicString tmpPath(localAllocator);
+		coDynamicString tmpPath;
 		coJoinPaths(tmpPath, projectPath, co_typesPath);
 		coJoinPaths(_relativePath, tmpPath, type->name);
 		_relativePath << ".cxx";
@@ -281,14 +278,12 @@ coResult coCppTypesGeneratorPlugin::WriteParsedType(coStringOutputStream& _strea
 
 coResult coCppTypesGeneratorPlugin::WriteParsedField(coStringOutputStream& _stream, const coParsedType& _parsedType, const coParsedField& _parsedField, const coConstString& _indentation)
 {
-	coLocalAllocator localAllocator(2048);
-
 	const coField* field = _parsedField.field;
 	coASSERT(field);
 	_stream << _indentation << "// " << field->name << "\n";
 	_stream << _indentation << "{\n";
 
-	coDynamicString blockIndent(localAllocator);
+	coDynamicString blockIndent;
 	blockIndent << _indentation << "\t";
 	_stream << blockIndent << "coField* field = new coField();\n";
 	coTRY(WriteSymbol(_stream, *field, blockIndent, "field->"), nullptr);

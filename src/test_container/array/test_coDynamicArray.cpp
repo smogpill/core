@@ -9,7 +9,6 @@
 coTEST(coDynamicArray, defaultValues)
 {
 	coDynamicArray<coInt> a;
-	coEXPECT(a.allocator);
 	coEXPECT(a.count == 0);
 }
 
