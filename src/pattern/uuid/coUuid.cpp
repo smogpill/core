@@ -1,9 +1,4 @@
-// Copyright(c) 2016-2020 Jounayd Id Salah
+// Copyright(c) 2020 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
-#pragma once
-
-class coEntityHandle
-{
-public:
-	coUint64 val = 0;
-};
+#include "pattern/pch.h"
+#include "coUuid.h"
