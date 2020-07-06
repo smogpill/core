@@ -8,7 +8,7 @@
 #include "lang/result/coResult.h"
 #include "lang/result/coResult_f.h"
 
-coDynamicString _co_defaultDirs[coDefaultDir::END];
+extern _coDefaultDirs* _co_defaultDirs = nullptr;
 
 coResult coCreateDirsIfMissing(const coConstString& _rawPath)
 {
@@ -59,5 +59,6 @@ coResult coDeleteDir(const coConstString& path)
 
 const coConstString& coGetDefaultDir(coDefaultDir dir)
 {
-	return _co_defaultDirs[coUint(dir)];
+	coASSERT(_co_defaultDirs);
+	return _co_defaultDirs->dirs[coUint(dir)];
 }

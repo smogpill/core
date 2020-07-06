@@ -4,6 +4,8 @@
 #include "coEntity.h"
 #include "coComponent.h"
 #include "lang/result/coResult_f.h"
+#include <io/stream/coBinaryInputStream.h>
+#include <io/stream/coBinaryOutputStream.h>
 
 coEntity::~coEntity()
 {
@@ -14,4 +16,14 @@ coEntity::~coEntity()
 void coEntity::AddAndGiveOwnership(coComponent& comp)
 {
 	coPushBack(components, &comp);
+}
+
+coBinaryOutputStream& operator<<(coBinaryOutputStream& stream, const coEntity& entity)
+{
+	return stream;
+}
+
+coBinaryInputStream& operator>>(coBinaryInputStream& stream, coEntity& entity)
+{
+	return stream;
 }

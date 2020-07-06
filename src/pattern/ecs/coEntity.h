@@ -4,6 +4,8 @@
 #include <container/array/coDynamicArray.h>
 
 class coComponent;
+class coBinaryOutputStream;
+class coBinaryInputStream;
 
 class coEntity
 {
@@ -15,3 +17,6 @@ public:
 private:
 	coDynamicArray<coComponent*> components;
 };
+
+coBinaryOutputStream& operator<<(coBinaryOutputStream& stream, const coEntity& entity);
+coBinaryInputStream& operator>>(coBinaryInputStream& stream, coEntity& entity);

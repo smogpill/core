@@ -48,7 +48,7 @@ coResult _coInitKnownDir(coDefaultDir defaultDir)
 	coWideChar* path = nullptr;
 	coSCOPE_EXIT(CoTaskMemFree(path));
 	coTRY(SHGetKnownFolderPath(id, KF_FLAG_CREATE, nullptr, &path) == S_OK, "SHGetKnownFolderPath() failed.");
-	coDynamicString& dir = _co_defaultDirs[coUint(defaultDir)];
+	coDynamicString& dir = _co_defaultDirs->dirs[coUint(defaultDir)];
 	coSetFromWide(dir, coConstString16(path));
 	coNormalizePath(dir);
 	return true;
@@ -67,7 +67,7 @@ coResult _coInitCurrentDir()
 	coUnique<coWideChar[]> path(new coWideChar[size]);
 	coTRY(GetCurrentDirectory(size, path.get()), nullptr);
 
-	coDynamicString& dir = _co_defaultDirs[coUint(coDefaultDir::CURRENT)];
+	coDynamicString& dir = _co_defaultDirs->dirs[coUint(coDefaultDir::CURRENT)];
 	coSetFromWide(dir, coConstString16(path.get(), size));
 	coNormalizePath(dir);
 	return true;
@@ -84,7 +84,7 @@ coResult _coInitTempDir()
 		coERROR("Failed to get the temp directory path size: " << s);
 		return false;
 	}
-	coDynamicString& dir = _co_defaultDirs[coUint(coDefaultDir::TEMP)];
+	coDynamicString& dir = _co_defaultDirs->dirs[coUint(coDefaultDir::TEMP)];
 	coSetFromWide(dir, coConstString16(path, size));
 	coNormalizePath(dir);
 	return true;
@@ -92,6 +92,9 @@ coResult _coInitTempDir()
 
 coResult coInitDefaultDirs()
 {
+	if (_co_defaultDirs)
+		return true;
+	_co_defaultDirs = new _coDefaultDirs();
 	coTRY(_coInitCurrentDir(), "Failed to init the current directory.");
 	coTRY(_coInitTempDir(), "Failed to init the temp directory.");
 	coTRY(_coInitKnownDir(coDefaultDir::LOCAL_APP_DATA), "Failed to init the local app data directory.");

@@ -16,7 +16,11 @@ enum class coDefaultDir
 
 	END
 };
-extern coDynamicString _co_defaultDirs[];
+struct _coDefaultDirs
+{
+	coDynamicString dirs[coDefaultDir::END];
+};
+extern _coDefaultDirs* _co_defaultDirs;
 
 coResult coInitDefaultDirs();
 coResult coCreateDir(const coConstString& _path);

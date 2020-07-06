@@ -3,3 +3,9 @@
 #include "pattern/pch.h"
 #include "coComponent.h"
 #include "lang/result/coResult_f.h"
+#include "lang/reflect/coTypeDecl_f.h"
+
+coDEFINE_TYPE(coComponent)
+{
+	return true;
+}
