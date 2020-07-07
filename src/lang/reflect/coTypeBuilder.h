@@ -8,6 +8,7 @@ class coType;
 class coFORCE_SYMBOL_INCLUSION_ATTRIBUTE coTypeBuilder
 {
 public:
+	coTypeBuilder();
 	virtual ~coTypeBuilder();
 
 	void Clear();

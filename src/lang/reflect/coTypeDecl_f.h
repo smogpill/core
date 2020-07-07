@@ -25,7 +25,6 @@ public:\
 	coResult OnInitMembers();\
 };\
 _##_class_##_typeBuilder co_##_class_##_typeBuilder;\
-coTypeAutoRegistrator co_##_class_##_typeAutoRegistrator(co_##_class_##_typeBuilder);\
 const coType* _class_::GetStaticType()\
 {\
 	return co_##_class_##_typeBuilder.GetType();\

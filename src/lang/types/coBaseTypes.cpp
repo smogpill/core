@@ -36,8 +36,7 @@ private:
 
 #define coDEFINE_BASE_TYPE(_type_) \
 	coBaseType_typeBuilder<_type_> co_typeBuilder_##_type_(#_type_); \
-	const coType* _coGetStaticType_##_type_() { return co_typeBuilder_##_type_.GetType(); } \
-	coTypeAutoRegistrator co_typeAutoRegistrator_##_type_(co_typeBuilder_##_type_)
+	const coType* _coGetStaticType_##_type_() { return co_typeBuilder_##_type_.GetType(); } 
 
 coDEFINE_BASE_TYPE(coBool);
 coDEFINE_BASE_TYPE(coByte);

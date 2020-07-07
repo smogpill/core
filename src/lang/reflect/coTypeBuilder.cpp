@@ -25,6 +25,12 @@
 // 
 // coFORCE_SYMBOL_INCLUSION(a);
 
+coTypeBuilder::coTypeBuilder()
+	: type(new coType())
+{
+	type->builder = this;
+}
+
 coTypeBuilder::~coTypeBuilder()
 {
 	delete type;
@@ -33,13 +39,11 @@ coTypeBuilder::~coTypeBuilder()
 void coTypeBuilder::Clear()
 {
 	delete type;
-	type = nullptr;
+	type = new coType();
 }
 
 coResult coTypeBuilder::InitType()
 {
-	coASSERT(!type);
-	type = new coType();
 	coTRY(OnInitType(), "Failed to init the type: " << type->name);
 	return true;
 }
