@@ -15,7 +15,6 @@ class coTypeFactory : public coObject
 	coDECLARE_SINGLETON(coTypeFactory);
 	coDECLARE_SUPER(coObject);
 public:
-	coTypeFactory();
 	virtual ~coTypeFactory();
 	void Add(coTypeBuilder& _builder);
 	const coType* Get(coUint32 hash) const;

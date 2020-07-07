@@ -9,11 +9,6 @@
 
 coDEFINE_SINGLETON(coTypeFactory);
 
-coTypeFactory::coTypeFactory()
-{
-
-}
-
 coTypeFactory::~coTypeFactory()
 {
 	coClear(types);
