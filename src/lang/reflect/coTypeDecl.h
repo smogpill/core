@@ -25,11 +25,7 @@ class coType;
 	private: \
 	using Super = _super_
 
-#ifdef coREFLECT_ENABLED
-#	define _coDECLARE_GET_STATIC_TYPE() static const coType* GetStaticType()
-#else
-#	define _coDECLARE_GET_STATIC_TYPE() static const coType* GetStaticType() { return nullptr; }
-#endif
+#define _coDECLARE_GET_STATIC_TYPE() static const coType* GetStaticType()
 
 #define _coDECLARE_REFLECTED_SHARED() \
 	coDEFINE_ATTRIBUTE(Reflected); \

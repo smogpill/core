@@ -5,5 +5,7 @@
 class coEntityHandle
 {
 public:
+	coBool operator==(const coEntityHandle other) const { return val == other.val; }
+	coBool operator!=(const coEntityHandle other) const { return val != other.val; }
 	coUint64 val = 0;
 };
