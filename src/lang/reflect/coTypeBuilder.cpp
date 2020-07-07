@@ -25,12 +25,6 @@
 // 
 // coFORCE_SYMBOL_INCLUSION(a);
 
-coTypeBuilder::coTypeBuilder()
-	: type(nullptr)
-{
-
-}
-
 coTypeBuilder::~coTypeBuilder()
 {
 	delete type;

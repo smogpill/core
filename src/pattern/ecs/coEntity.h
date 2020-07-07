@@ -14,9 +14,9 @@ public:
 	void AddAndGiveOwnership(coComponent& comp);
 	const coArray<coComponent*>& GetComponents() const { return components; }
 
+	void Write(coBinaryOutputStream& stream) const;
+	void Read(coBinaryInputStream& stream);
+
 private:
 	coDynamicArray<coComponent*> components;
 };
-
-coBinaryOutputStream& operator<<(coBinaryOutputStream& stream, const coEntity& entity);
-coBinaryInputStream& operator>>(coBinaryInputStream& stream, coEntity& entity);

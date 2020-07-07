@@ -168,3 +168,13 @@ coFORCE_INLINE coBinaryInputStream& operator >> (coBinaryInputStream& stream, co
 	stream.Read(&a, 16);
 	return stream;
 }
+
+coFORCE_INLINE void coFloatx4::Write(coBinaryOutputStream& stream) const
+{
+	stream.Write(this, 16);
+}
+
+coFORCE_INLINE void coFloatx4::Read(coBinaryInputStream& stream)
+{
+	stream.Read(this, 16);
+}

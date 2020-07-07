@@ -93,3 +93,11 @@ coFORCE_INLINE coBinaryInputStream& operator>>(coBinaryInputStream& stream, coFl
 	stream.Read(&a, 12);
 	return stream;
 }
+coFORCE_INLINE void coFloatx3::Write(coBinaryOutputStream& stream) const
+{
+	stream.Write(this, 12);
+}
+coFORCE_INLINE void coFloatx3::Read(coBinaryInputStream& stream)
+{
+	stream.Read(this, 12);
+}

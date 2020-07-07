@@ -10,55 +10,45 @@ public:
 	coBinaryInputStream(const coArray<coByte>& buffer);
 };
 
-inline coBinaryInputStream& operator >> (coBinaryInputStream& stream, coBool& v)
+coFORCE_INLINE coBinaryInputStream& operator >> (coBinaryInputStream& stream, coBool& v)
 {
 	stream.Read(reinterpret_cast<coByte&>(v));
 	return stream;
 }
 
-inline coBinaryInputStream& operator >> (coBinaryInputStream& stream, coUint8& v)
+coFORCE_INLINE coBinaryInputStream& operator >> (coBinaryInputStream& stream, coUint8& v)
 {
 	stream.Read(v);
 	return stream;
 }
 
-inline coBinaryInputStream& operator >> (coBinaryInputStream& stream, coUint16& v)
+coFORCE_INLINE coBinaryInputStream& operator >> (coBinaryInputStream& stream, coUint16& v)
 {
 	stream.Read(reinterpret_cast<coByte*>(&v), sizeof(v));
 	return stream;
 }
 
-inline coBinaryInputStream& operator >> (coBinaryInputStream& stream, coUint32& v)
+coFORCE_INLINE coBinaryInputStream& operator >> (coBinaryInputStream& stream, coUint32& v)
 {
 	stream.Read(reinterpret_cast<coByte*>(&v), sizeof(v));
 	return stream;
 }
 
-inline coBinaryInputStream& operator >> (coBinaryInputStream& stream, coUint64& v)
+coFORCE_INLINE coBinaryInputStream& operator >> (coBinaryInputStream& stream, coUint64& v)
 {
 	stream.Read(reinterpret_cast<coByte*>(&v), sizeof(v));
 	return stream;
 }
 
-inline coBinaryInputStream& operator >> (coBinaryInputStream& stream, coFloat& v)
+coFORCE_INLINE coBinaryInputStream& operator >> (coBinaryInputStream& stream, coFloat& v)
 {
 	stream.Read(reinterpret_cast<coByte*>(&v), sizeof(v));
 	return stream;
 }
 
 template <class T>
-inline coBinaryInputStream& operator>>(coBinaryInputStream& stream, coDynamicArray<T>& v)
+coFORCE_INLINE coBinaryInputStream& operator>>(coBinaryInputStream& stream, T& a)
 {
-	coUint32 count;
-	stream >> count;
-	coClear(v);
-	if (count)
-	{
-		coResize(v, count);
-		for (T& e : v)
-		{
-			stream >> e;
-		}
-	}
+	a.Read(stream);
 	return stream;
 }

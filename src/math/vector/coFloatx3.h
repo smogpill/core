@@ -1,11 +1,11 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
-
 #include "lang/reflect/coTypeDecl.h"
 #include "math/vector/coInt32x3.h"
-
 class coFloatx4;
+class coBinaryOutputStream;
+class coBinaryInputStream;
 
 class alignas(16) coFloatx3
 {
@@ -35,6 +35,8 @@ public:
 	coFORCE_INLINE coFloat& operator[](coUint _i) { return (&x)[_i]; }
 	coFORCE_INLINE coFloat operator[](coUint _i) const { return (&x)[_i]; }
 	//coFORCE_INLINE operator coFloat () const { return x; }
+	void Write(coBinaryOutputStream& stream) const;
+	void Read(coBinaryInputStream& stream);
 
 	coFloat x;
 	coFloat y;

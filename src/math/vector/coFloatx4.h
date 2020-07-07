@@ -4,6 +4,8 @@
 
 #include "lang/reflect/coTypeDecl.h"
 #include "math/vector/coFloatx3.h"
+class coBinaryOutputStream;
+class coBinaryInputStream;
 
 class alignas(16) coFloatx4
 {
@@ -31,6 +33,8 @@ public:
 	//coFORCE_INLINE operator coFloat () const { return x; }
 	coFORCE_INLINE coFloat& operator[](coUint _i) { return (&x)[_i]; }
 	coFORCE_INLINE coFloat operator[](coUint _i) const { return (&x)[_i]; }
+	void Write(coBinaryOutputStream& stream) const;
+	void Read(coBinaryInputStream& stream);
 
 	coFloat x;
 	coFloat y;

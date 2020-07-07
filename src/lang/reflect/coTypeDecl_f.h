@@ -4,13 +4,9 @@
 #include "coType.h"
 #include "coTypeBuilder.h"
 #include "coTypeAutoRegistrator.h"
+#include "../result/coResult_f.h"
 
 #define coDEFINE_TYPE(_class_)\
-static const coType _##_class_##_type;\
-const coType* _class_::GetStaticType()\
-{\
-	return &_##_class_##_type;\
-}\
 class _##_class_##_typeBuilder : public coTypeBuilder \
 {\
 public:\
@@ -30,4 +26,8 @@ public:\
 };\
 _##_class_##_typeBuilder co_##_class_##_typeBuilder;\
 coTypeAutoRegistrator co_##_class_##_typeAutoRegistrator(co_##_class_##_typeBuilder);\
+const coType* _class_::GetStaticType()\
+{\
+	return co_##_class_##_typeBuilder.GetType();\
+}\
 coResult _##_class_##_typeBuilder::OnInitMembers()

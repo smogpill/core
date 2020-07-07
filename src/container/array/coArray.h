@@ -1,8 +1,8 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
-
 #include "debug/log/coAssert.h"
+class coBinaryOutputStream;
 
 template <class T>
 class coArray
@@ -17,6 +17,7 @@ public:
 	coFORCE_INLINE const T& operator[] (coUint32 _i) const { coASSERT(_i < count); return data[_i]; }
 	//coArray(std::initializer_list<T> _l);
 	operator const coArray<const T>& () const { return reinterpret_cast<const coArray<const T>&>(*this); }
+	void Write(coBinaryOutputStream& stream) const;
 
 	T* data = nullptr;
 	coUint32 count = 0;

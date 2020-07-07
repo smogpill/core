@@ -4,6 +4,8 @@
 #include "coEntity.h"
 #include "coComponent.h"
 #include "lang/result/coResult_f.h"
+#include <lang/reflect/coType.h>
+#include <lang/reflect/coTypeRegistry.h>
 #include <io/stream/coBinaryInputStream.h>
 #include <io/stream/coBinaryOutputStream.h>
 
@@ -18,12 +20,30 @@ void coEntity::AddAndGiveOwnership(coComponent& comp)
 	coPushBack(components, &comp);
 }
 
-coBinaryOutputStream& operator<<(coBinaryOutputStream& stream, const coEntity& entity)
+void coEntity::Write(coBinaryOutputStream& stream) const
 {
-	return stream;
+	stream << components.count;
+	for (coComponent* comp : components)
+	{
+		const coType* type = comp->GetType();
+		stream << type->nameHash;
+		stream << *comp;
+	}
 }
 
-coBinaryInputStream& operator>>(coBinaryInputStream& stream, coEntity& entity)
+void coEntity::Read(coBinaryInputStream& stream)
 {
-	return stream;
+	coUint32 nbComponents;
+	stream >> nbComponents;
+	coReserve(components, nbComponents);
+	for (coUint i = 0; i < nbComponents; ++i)
+	{
+		coUint32 nameHash;
+		stream >> nameHash;
+		const coType* type = coTypeRegistry::instance->Get(nameHash);
+		coASSERT(type);
+		coComponent* comp = static_cast<coComponent*>(type->createFunc());
+		stream >> *comp;
+		AddAndGiveOwnership(*comp);
+	}
 }

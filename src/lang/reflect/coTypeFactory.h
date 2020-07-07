@@ -19,7 +19,7 @@ public:
 	void Add(coTypeBuilder& _builder);
 
 protected:
-	virtual coResult OnInit(const coObject::InitConfig& _config) override;
+	virtual coResult OnInit() override;
 
 private:
 	coResult InitTypes();

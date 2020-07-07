@@ -324,3 +324,13 @@ coBool operator!= (const coArray<T>& _a, const coArray<T>& _b)
 {
 	return !(_a == _b);
 }
+
+template <class T>
+coFORCE_INLINE void coArray<T>::Write(coBinaryOutputStream& stream) const
+{
+	stream << count;
+	for (const T& v : *this)
+	{
+		stream << v;
+	}
+}

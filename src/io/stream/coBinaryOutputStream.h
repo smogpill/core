@@ -9,44 +9,39 @@ class coBinaryOutputStream final : public coOutputStream
 public:
 };
 
-inline coBinaryOutputStream& operator<<(coBinaryOutputStream& stream, coBool v)
+coFORCE_INLINE coBinaryOutputStream& operator<<(coBinaryOutputStream& stream, coBool v)
 {
 	stream.Write(v);
 	return stream;
 }
 
-inline coBinaryOutputStream& operator<<(coBinaryOutputStream& stream, coFloat v)
+coFORCE_INLINE coBinaryOutputStream& operator<<(coBinaryOutputStream& stream, coFloat v)
 {
 	stream.Write(reinterpret_cast<const coByte*>(&v), sizeof(v));
 	return stream;
 }
 
-inline coBinaryOutputStream& operator<<(coBinaryOutputStream& stream, coUint8 v)
+coFORCE_INLINE coBinaryOutputStream& operator<<(coBinaryOutputStream& stream, coUint8 v)
 {
 	stream.Write(v);
 	return stream;
 }
 
-inline coBinaryOutputStream& operator<<(coBinaryOutputStream& stream, coUint32 v)
+coFORCE_INLINE coBinaryOutputStream& operator<<(coBinaryOutputStream& stream, coUint32 v)
 {
 	stream.Write(reinterpret_cast<const coByte*>(&v), sizeof(v));
 	return stream;
 }
 
-inline coBinaryOutputStream& operator<<(coBinaryOutputStream& stream, coUint64 v)
+coFORCE_INLINE coBinaryOutputStream& operator<<(coBinaryOutputStream& stream, coUint64 v)
 {
 	stream.Write(reinterpret_cast<const coByte*>(&v), sizeof(v));
 	return stream;
 }
 
 template <class T>
-inline coBinaryOutputStream& operator<<(coBinaryOutputStream& stream, const coArray<T>& a)
+coFORCE_INLINE coBinaryOutputStream& operator<<(coBinaryOutputStream& stream, const T& a)
 {
-	stream << a.count;
-	for (const T& v : a)
-	{
-		stream << v;
-	}
-	//Write(a.data, a.count * sizeof(T));
+	a.Write(stream);
 	return stream;
 }

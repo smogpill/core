@@ -19,9 +19,9 @@ coTypeFactory::~coTypeFactory()
 	}
 }
 
-coResult coTypeFactory::OnInit(const coObject::InitConfig& _config)
+coResult coTypeFactory::OnInit()
 {
-	coTRY(Super::OnInit(_config), nullptr);
+	coTRY(Super::OnInit(), nullptr);
 	coTRY(InitTypes(), "Failed to init types.");
 	return true;
 }

@@ -119,7 +119,7 @@ coResult coFileAccess::OnImplInit(const InitConfig& /*_config*/)
 	{
 		coDynamicString str;
 		coDumpLastOsError(str);
-		coERROR("Failed to open the file: " << str);
+		coERROR("Failed to open the file: " << path << ": " << str);
 		return false;
 	}
 
