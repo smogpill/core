@@ -49,3 +49,13 @@ void coTypeFactory::Add(coTypeBuilder& _builder)
 {
 	coPushBack(typeBuilders, &_builder);
 }
+
+const coType* coTypeFactory::Get(coUint32 hash) const
+{
+	for (const coType* e : types)
+	{
+		if (e->nameHash == hash)
+			return e;
+	}
+	return nullptr;
+}

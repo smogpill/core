@@ -17,6 +17,7 @@ class coTypeFactory : public coObject
 public:
 	virtual ~coTypeFactory();
 	void Add(coTypeBuilder& _builder);
+	const coType* Get(coUint32 hash) const;
 
 protected:
 	virtual coResult OnInit() override;
