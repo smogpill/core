@@ -3,11 +3,18 @@
 #include "pattern/pch.h"
 #include "coEntity.h"
 #include "coComponent.h"
+#include "../uuid/coUuid_f.h"
 #include "lang/result/coResult_f.h"
 #include <lang/reflect/coType.h>
 #include <lang/reflect/coTypeFactory.h>
 #include <io/stream/coBinaryInputStream.h>
 #include <io/stream/coBinaryOutputStream.h>
+
+coEntity::coEntity()
+{
+	static coUint64 uuidGenerator = 0;
+	uuid.low = ++uuidGenerator;
+}
 
 coEntity::~coEntity()
 {
@@ -22,6 +29,7 @@ void coEntity::AddAndGiveOwnership(coComponent& comp)
 
 void coEntity::Write(coBinaryOutputStream& stream) const
 {
+	stream << uuid;
 	stream << components.count;
 	for (coComponent* comp : components)
 	{
@@ -33,6 +41,7 @@ void coEntity::Write(coBinaryOutputStream& stream) const
 
 void coEntity::Read(coBinaryInputStream& stream)
 {
+	stream >> uuid;
 	coUint32 nbComponents;
 	stream >> nbComponents;
 	coReserve(components, nbComponents);

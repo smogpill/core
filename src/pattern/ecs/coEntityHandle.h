@@ -11,6 +11,8 @@ public:
 	coBool operator!=(const coEntityHandle other) const { return val != other.val; }
 	void Write(coBinaryOutputStream& stream) const;
 	void Read(coBinaryInputStream& stream);
+	void DeepWrite(coBinaryOutputStream& stream) const;
+	void DeepRead(coBinaryInputStream& stream);
 	static const coEntityHandle empty;
 
 	coUint64 val = 0;

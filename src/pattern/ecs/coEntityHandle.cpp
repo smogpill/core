@@ -20,3 +20,16 @@ void coEntityHandle::Read(coBinaryInputStream& stream)
 	coASSERT(coEntitySystem::instance);
 	*this = coEntitySystem::instance->Get(uuid);
 }
+
+void coEntityHandle::DeepWrite(coBinaryOutputStream& stream) const
+{
+	const coEntity* entity = coEntitySystem::instance->Get(*this);
+	stream << *entity;
+}
+
+void coEntityHandle::DeepRead(coBinaryInputStream& stream)
+{
+	coEntity* entity = new coEntity();
+	stream >> *entity;
+	*this = coEntitySystem::instance->Give(*entity);
+}
