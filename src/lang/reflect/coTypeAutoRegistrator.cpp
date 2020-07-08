@@ -6,9 +6,10 @@
 
 coTypeAutoRegistrator::coTypeAutoRegistrator(coTypeBuilder& _typeBuilder)
 {
+	/*
 	if (!coTypeFactory::instance)
 	{
 		coTypeFactory::instance = new coTypeFactory();
 	}
-	coTypeFactory::instance->Add(_typeBuilder);
+	coTypeFactory::instance->Add(_typeBuilder);*/
 }
