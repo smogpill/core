@@ -23,6 +23,7 @@ public:
 	const coUuid& GetUuid() const { return uuid; }
 	void Write(coBinaryOutputStream& stream) const;
 	void Read(coBinaryInputStream& stream);
+	void Init();
 	void _OnSetHandle(const coEntityHandle& h) { handle = h; }
 
 private:

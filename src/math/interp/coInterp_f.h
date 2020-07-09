@@ -19,3 +19,13 @@ T coSmoothInterp(T& velocityInOut, const T& from, const T& to, const T& smoothTi
 	velocityInOut = (velocityInOut - (Temp * Omega4)) * Exp;
 	return to + (Change + Temp) * Exp;
 }
+
+template <typename T>
+T coCubicHermite(T A, T B, T C, T D, coFloat t)
+{
+	const T a = -A / 2.0f + (3.0f * B) / 2.0f - (3.0f * C) / 2.0f + D / 2.0f;
+	const T b = A - (5.0f * B) / 2.0f + 2.0f * C - D / 2.0f;
+	const T c = -A / 2.0f + C / 2.0f;
+	const T d = B;
+	return a * t * t * t + b * t * t + c * t + d;
+}

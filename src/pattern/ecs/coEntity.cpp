@@ -56,3 +56,9 @@ void coEntity::Read(coBinaryInputStream& stream)
 		AddAndGiveOwnership(*comp);
 	}
 }
+
+void coEntity::Init()
+{
+	for (coComponent* p : components)
+		p->OnInit();
+}

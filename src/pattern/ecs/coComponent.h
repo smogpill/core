@@ -11,4 +11,5 @@ class coComponent
 public:
 	virtual void Write(coBinaryOutputStream& stream) const {}
 	virtual void Read(coBinaryInputStream& stream) {}
+	virtual void OnInit() {}
 };
