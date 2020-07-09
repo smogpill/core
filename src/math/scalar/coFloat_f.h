@@ -58,8 +58,6 @@ coFORCE_INLINE coFloat coCos(coFloat _x) { return std::cosf(_x); }
 coFORCE_INLINE coFloat coSin(coFloat _x) { return std::sinf(_x); }
 coFORCE_INLINE coFloat coTan(coFloat _x) { return std::tanf(_x); }
 coFORCE_INLINE coFloat coTanh(coFloat _x) { return std::tanhf(_x); }
-coFORCE_INLINE coBool coNearEqual(const coFloat& _a, const coFloat& _b, const coFloat& _epsilon = 0.0001f) { return coAbs(_b - _a) < _epsilon; }
-coFORCE_INLINE coBool coNearEqual0(const coFloat& _a, const coFloat& _epsilon = 1e-4f) { return coAbs(_a) < _epsilon; }
 coFORCE_INLINE coFloat coDistance(const coFloat _a, const coFloat _b) { return std::fdimf(_a, _b); }
 
 coFORCE_INLINE coFloat coFloor(coFloat _x)
