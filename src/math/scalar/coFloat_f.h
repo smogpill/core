@@ -50,7 +50,6 @@ coFORCE_INLINE coFloat coCeil(coFloat _x) { return std::ceilf(_x); }
 coFORCE_INLINE coFloat coRound(coFloat x) { return std::roundf(x); }
 coFORCE_INLINE constexpr coBool coIsInRange01(coFloat _x) { return (_x >= 0.f) && (_x <= 1.f); }
 coFORCE_INLINE constexpr coBool coIsInRange(coFloat _x, coFloat _min, coFloat _max) { return (_x <= _max) && (_x >= _min); }
-coFORCE_INLINE constexpr coFloat coLerp(coFloat _x, coFloat _y, coFloat _t) { return _x + _t * (_y - _x); }
 coFORCE_INLINE constexpr coFloat coSign(coFloat _x) { return (_x >= 0.f) ? 1.f : -1.f; }
 coFORCE_INLINE constexpr coFloat coConvertToRad(coFloat _degrees) { return _degrees * 0.01745329252f; }
 coFORCE_INLINE constexpr coFloat coConvertToDeg(coFloat _radians) { return _radians * 57.2957795131f; }

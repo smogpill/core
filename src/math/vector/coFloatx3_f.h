@@ -63,7 +63,6 @@ coFORCE_INLINE coFloatx3 coInv(const coFloatx3& _a) { return coBitCast<coFloatx3
 coFORCE_INLINE coFloatx3 coInvFast(const coFloatx3& _a) { return coBitCast<coFloatx3>(coInvFast(coBitCast<coFloatx4>(_a))); }
 coFORCE_INLINE coFloatx3 coInvSquareRoot(const coFloatx3& _a) { return coBitCast<coFloatx3>(coInvSquareRoot(coBitCast<coFloatx4>(_a))); }
 coFORCE_INLINE coFloatx3 coInvSqrtFast(const coFloatx3& _a) { return coBitCast<coFloatx3>(coInvSqrtFast(coBitCast<coFloatx4>(_a))); }
-coFORCE_INLINE coFloatx3 coLerp(const coFloatx3& _from, const coFloatx3& _to, const coFloatx3& _ratio) { return _from + (_to - _from) * _ratio; }
 coFORCE_INLINE coFloatx3 coPow2(const coFloatx3& _a) { return  _a * _a; }
 coFORCE_INLINE coFloatx3 coPow4(const coFloatx3& _a) { return coPow2(_a * _a); }
 coFORCE_INLINE coFloatx3 coDenullify(const coFloatx3& _a) { return _a + coMake_Floatx3(+1.0e-037f); }
