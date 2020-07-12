@@ -42,3 +42,35 @@ void coDumpOsError(coUint _osError, coDynamicString& _str)
 
 	::LocalFree(str);
 }
+
+coUint64 coGetTimeStamp()
+{
+	LARGE_INTEGER largeInteger;
+	const BOOL ret = QueryPerformanceCounter(&largeInteger);
+	if (ret)
+	{
+		return largeInteger.QuadPart;
+	}
+	else
+	{
+		const DWORD err = ::GetLastError();
+		coERROR("::QueryPerformanceCounter() failed: error id " << (coUint)err);
+		return 0;
+	}
+}
+
+coFloat64 coGetSeconds(coUint64 timeStamp)
+{
+	LARGE_INTEGER largeInteger;
+	const BOOL ret = QueryPerformanceFrequency(&largeInteger);
+	if (ret)
+	{
+		return timeStamp / coFloat64(largeInteger.QuadPart);
+	}
+	else
+	{
+		const DWORD err = ::GetLastError();
+		coERROR("::QueryPerformanceFrequency() failed: error id " << (coUint)err);
+		return 0.0f;
+	}
+}

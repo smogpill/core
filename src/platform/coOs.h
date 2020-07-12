@@ -8,3 +8,5 @@ coBool coLastOsErrorExists();
 void coClearLastOsError();
 void coDumpLastOsError(coDynamicString& _str);
 void coDumpOsError(coUint _osError, coDynamicString& _str);
+coUint64 coGetTimeStamp();
+coFloat64 coGetSeconds(coUint64 timeStamp);
