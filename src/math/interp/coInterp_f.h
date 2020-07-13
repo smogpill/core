@@ -4,8 +4,6 @@
 
 template <typename T>
 coFORCE_INLINE constexpr T coLerp(const T& from, const T& to, const T& ratio) { return from + (to - from) * ratio; }
-template <typename T>
-coFORCE_INLINE constexpr T coLerp(const T& from, const T& to, const coFloat ratio) { return from + (to - from) * T(ratio); }
 
 template <typename T>
 T coSmoothInterp(T& velocityInOut, const T& from, const T& to, const T& smoothTime, const coFloat dt)

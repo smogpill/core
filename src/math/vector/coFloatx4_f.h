@@ -116,6 +116,7 @@ coFORCE_INLINE coFloatx4 coFloor(const coFloatx4& _a)
 	const coFloatx4 sub = coSelect(coBitCast<coFloatx4>(_mm_setzero_ps()), coFloatx4(1.0f), posMask);
 	return trunc - sub;
 }
+coFORCE_INLINE coFloatx4 coSign(const coFloatx4& x) { return coSelect(1.0f, -1.0f, coBitCast<coInt32x4>(x >= 0.f)); }
 coFORCE_INLINE coFloatx4 coPow2(const coFloatx4& _a) { return  _a * _a; }
 coFORCE_INLINE coFloatx4 coPow4(const coFloatx4& _a) { return coPow2(_a * _a); }
 coFORCE_INLINE coFloatx4 coDenullify(const coFloatx4& _a) { return _a + coMake_floatx4(+1.0e-037f); }

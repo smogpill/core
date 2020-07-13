@@ -40,3 +40,46 @@ inline coFloatx4 coSquareDistance(const coAabb& a, const coAabb& b)
 	const coVec3 inner = coMax(0.0f, (outer.max - outer.min) - (a.max - a.min) - (b.max - b.min));
 	return coSquareLength(inner);
 }
+
+inline coFloatx4 coSquareDistancePointTriangle(const coVec3& p, const coVec3& a, const coVec3& b, const coVec3& c)
+{
+	// https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
+	const coVec3 ba = b - a; const coVec3 pa = p - a;
+	const coVec3 cb = c - b; const coVec3 pb = p - b;
+	const coVec3 ac = a - c; const coVec3 pc = p - c;
+	const coVec3 nor = coCross(ba, ac);
+
+	const coFloatx4 f = coSign(coDot(coCross(ba, nor), pa))
+		+ coSign(coDot(coCross(cb, nor), pb))
+		+ coSign(coDot(coCross(ac, nor), pc));
+	const coFloatx4 v = f < 2.0f ?
+		coMin(coMin(
+			coSquareLength(ba * coClamp01(coDot(ba, pa) / coSquareLength(ba)) - pa),
+			coSquareLength(cb * coClamp01(coDot(cb, pb) / coSquareLength(cb)) - pb)),
+			coSquareLength(ac * coClamp01(coDot(ac, pc) / coSquareLength(ac)) - pc))
+		: coDot(nor, pa) * coDot(nor, pa) / coSquareLength(nor);
+	return v;
+}
+
+inline coFloatx4 coSquareDistancePointQuad(const coVec3& p, const coVec3& a, const coVec3& b, const coVec3& c, const coVec3& d)
+{
+	// https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
+	const coVec3 ba = b - a; const coVec3 pa = p - a;
+	const coVec3 cb = c - b; const coVec3 pb = p - b;
+	const coVec3 dc = d - c; const coVec3 pc = p - c;
+	const coVec3 ad = a - d; const coVec3 pd = p - d;
+	const coVec3 nor = coCross(ba, ad);
+
+	const coFloatx4 f = coSign(coDot(coCross(ba, nor), pa))
+		+ coSign(coDot(coCross(cb, nor), pb))
+		+ coSign(coDot(coCross(dc, nor), pc))
+		+ coSign(coDot(coCross(ad, nor), pd));
+	const coFloatx4 v = f < 3.0f ?
+		coMin(coMin(coMin(
+			coSquareLength(ba * coClamp01(coDot(ba, pa) / coSquareLength(ba)) - pa),
+			coSquareLength(cb * coClamp01(coDot(cb, pb) / coSquareLength(cb)) - pb)),
+			coSquareLength(dc * coClamp01(coDot(dc, pc) / coSquareLength(dc)) - pc)),
+			coSquareLength(ad * coClamp01(coDot(ad, pd) / coSquareLength(ad)) - pd))
+		: coDot(nor, pa) * coDot(nor, pa) / coSquareLength(nor);
+	return v;
+}
