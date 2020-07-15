@@ -17,3 +17,5 @@ coFORCE_INLINE coAabb operator* (const coAabb& a, const coFloatx3& b) { return c
 coFORCE_INLINE coAabb& operator*= (coAabb& this_, const coFloatx3& b) { this_.min *= b; this_.max *= b; return this_; }
 coFORCE_INLINE coAabb& operator+= (coAabb& this_, const coFloatx3& b) { this_.min += b; this_.max += b; return this_; }
 coFORCE_INLINE coAabb& operator-= (coAabb& this_, const coFloatx3& b) { this_.min -= b; this_.max -= b; return this_; }
+coFORCE_INLINE coAabb operator- (const coAabb& a, const coFloatx3& b) { return coAabb(a.min - b, a.max - b); }
+coFORCE_INLINE coAabb operator+ (const coAabb& a, const coFloatx3& b) { return coAabb(a.min + b, a.max + b); }
