@@ -6,18 +6,18 @@
 
 class coAllocator;
 
-template <class T>
+template <class K, class T>
 struct coHashMapEntry
 {
-	coUint64 key;
+	K key;
 	coUint32 next;
 	T value;
 };
 
-template <class T>
+template <class K>
 struct coHashMapHash
 {
-	coUint32 operator()(const T& v) const;
+	coUint32 operator()(const K& v) const;
 };
 
 template <>
@@ -26,9 +26,11 @@ struct coHashMapHash<coUint64>
 	coUint32 operator()(const coUint64& v) const;
 };
 
-template <class T, coUint NB_BUCKETS, class Hash = coHashMapHash<coUint64>>
+template <class K, class T, coUint NB_BUCKETS, class Hash = coHashMapHash<coUint64>>
 class coHashMap
 {
+	static_assert(std::is_trivially_copyable<K>::value, "Trivially copyable only");
+	static_assert(std::is_trivially_copyable<T>::value, "Trivially copyable only");
 public:
 	enum : coUint32
 	{
@@ -39,7 +41,7 @@ public:
 	coHashMap(coAllocator& _allocator);
 	~coHashMap();
 
-	typedef coHashMapEntry<T> Entry;
+	typedef coHashMapEntry<K, T> Entry;
 
 	Entry* entries = nullptr;
 	coUint32* buckets = nullptr;
@@ -48,26 +50,24 @@ public:
 	coAllocator* allocator = nullptr;
 };
 
-template <class T, coUint NB_BUCKETS, class Hash>
-coHashMap<T, NB_BUCKETS, Hash>::coHashMap()
+template <class K, class T, coUint NB_BUCKETS, class Hash>
+coHashMap<K, T, NB_BUCKETS, Hash>::coHashMap()
 	: coHashMap(*coAllocator::GetHeap())
 {
 
 }
 
-template <class T, coUint NB_BUCKETS, class Hash>
-coHashMap<T, NB_BUCKETS, Hash>::coHashMap(coAllocator& _allocator)
+template <class K, class T, coUint NB_BUCKETS, class Hash>
+coHashMap<K, T, NB_BUCKETS, Hash>::coHashMap(coAllocator& _allocator)
 	: allocator(&_allocator)
 {
-	static_assert(std::is_trivially_copyable<T>::value, "Trivially copyable only");
-
 	//coHACK("coHashMap bucket allocation.");
 	buckets = static_cast<decltype(buckets)>(allocator->Allocate(NB_BUCKETS * sizeof(*buckets)));
 	coFill(buckets, NB_BUCKETS, invalidIndex);
 }
 
-template <class T, coUint NB_BUCKETS, class Hash>
-coHashMap<T, NB_BUCKETS, Hash>::~coHashMap()
+template <class K, class T, coUint NB_BUCKETS, class Hash>
+coHashMap<K, T, NB_BUCKETS, Hash>::~coHashMap()
 {
 	allocator->Free(entries);
 	allocator->Free(buckets);

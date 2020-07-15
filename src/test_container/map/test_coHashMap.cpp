@@ -8,7 +8,7 @@
 
 coTEST(coHashMap, coGet)
 {
-	coHashMap<coInt, 1024> h;
+	coHashMap<coUint64, coInt, 1024> h;
 
 	coEXPECT(coGet(h, coFastHash64(7), 0) == 0);
 	coEXPECT(coGet(h, coFastHash64(0), 0) == 0);
@@ -24,7 +24,7 @@ coTEST(coHashMap, coGet)
 
 coTEST(coHashMap, coFind)
 {
-	coHashMap<coInt, 1024> h;
+	coHashMap<coUint64, coInt, 1024> h;
 
 	coEXPECT(coFind(h, coFastHash64(7)) == nullptr);
 

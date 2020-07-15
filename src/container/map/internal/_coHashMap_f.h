@@ -12,11 +12,11 @@ public:
 	coUint32 entry;
 };
 
-template <class T, coUint NB_BUCKETS, class Hash>
-_coHashMapFindResult _coFindExt(const coHashMap<T, NB_BUCKETS, Hash>& _this, coUint64 _key)
+template <class K, class T, coUint NB_BUCKETS, class Hash>
+_coHashMapFindResult _coFindExt(const coHashMap<K, T, NB_BUCKETS, Hash>& _this, const K& _key)
 {
-	typedef coHashMapEntry<T> Entry;
-	typedef coHashMap<T, NB_BUCKETS, Hash> Self;
+	typedef coHashMapEntry<K, T> Entry;
+	typedef coHashMap<K, T, NB_BUCKETS, Hash> Self;
 
 	_coHashMapFindResult result;
 	if (_this.count == 0)
@@ -42,12 +42,12 @@ _coHashMapFindResult _coFindExt(const coHashMap<T, NB_BUCKETS, Hash>& _this, coU
 	return result;
 }
 
-template <class T, coUint NB_BUCKETS, class Hash>
-coHashMapEntry<T>* _coAddEntry(coHashMap<T, NB_BUCKETS, Hash>& _this, coUint64 _key, const T& _val)
+template <class K, class T, coUint NB_BUCKETS, class Hash>
+coHashMapEntry<K, T>* _coAddEntry(coHashMap<K, T, NB_BUCKETS, Hash>& _this, const K& _key, const T& _val)
 {
-	typedef coHashMap<T, NB_BUCKETS, Hash> Self;
+	typedef coHashMap<K, T, NB_BUCKETS, Hash> Self;
 	coReserve(_this, _this.count + 1);
-	typedef coHashMapEntry<T> Entry;
+	typedef coHashMapEntry<K, T> Entry;
 	const coUint32 bucketIndex = Hash()(_key) & Self::bucketMask;
 	coUint32& bucket = _this.buckets[bucketIndex];
 	Entry& entry = _this.entries[_this.count];
@@ -58,11 +58,11 @@ coHashMapEntry<T>* _coAddEntry(coHashMap<T, NB_BUCKETS, Hash>& _this, coUint64 _
 	++_this.count;
 	return &entry;
 }
-template <class T, coUint NB_BUCKETS, class Hash>
-void _coRemoveEntry(coHashMap<T, NB_BUCKETS, Hash>& _this, coUint64 _key)
+template <class K, class T, coUint NB_BUCKETS, class Hash>
+void _coRemoveEntry(coHashMap<K, T, NB_BUCKETS, Hash>& _this, const K& _key)
 {
-	typedef coHashMapEntry<T> Entry;
-	typedef coHashMap<T, NB_BUCKETS, Hash> Self;
+	typedef coHashMapEntry<K, T> Entry;
+	typedef coHashMap<K, T, NB_BUCKETS, Hash> Self;
 
 	const _coHashMapFindResult result = _coFindExt(_this, _key);
 	if (result.entry == Self::invalidIndex)
