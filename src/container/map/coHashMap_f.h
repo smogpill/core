@@ -49,7 +49,7 @@ void coClear(coHashMap<K, T, NB_BUCKETS, Hash>& _this)
 	coFill(_this.buckets, NB_BUCKETS, coHashMap<K, T, NB_BUCKETS, Hash>::invalidIndex);
 	_this.count = 0;
 #ifdef coDEBUG
-	coFillAsDeleted(_this.entries, _this.count * sizeof(coHashMapEntry<T>));
+	coFillAsDeleted(_this.entries, _this.count * sizeof(coHashMapEntry<K, T>));
 #endif
 }
 
