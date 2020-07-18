@@ -9,6 +9,7 @@
 #include "math/scalar/coAtomicInt32_f.h"
 #include "lang/result/coResult_f.h"
 #include <math/scalar/coUint32_f.h>
+#include <container/queue/coDynamicQueue_f.h>
 
 coDEFINE_SINGLETON(coTaskScheduler);
 
@@ -48,7 +49,7 @@ void coTaskScheduler::_ExecuteOneTask(const coTaskContext& context)
 	waitCondition.Reset();
 
 	lock.Lock();
-	coTask* task = readyTasks.count ? coPopBack(readyTasks) : nullptr;
+	coTask* task = readyTasks.count ? coPopFront(readyTasks) : nullptr;
 	lock.Unlock();
 	if (!task)
 	{

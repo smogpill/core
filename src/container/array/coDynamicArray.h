@@ -8,7 +8,6 @@ class coBinaryInputStream;
 template <class T>
 class coDynamicArray : public coArray<T>
 {
-	static_assert(std::is_trivially_copyable<T>::value, "Trivially copyable only");
 	typedef coArray<T> Super;
 public:
 	coDynamicArray() = default;

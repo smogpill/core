@@ -7,6 +7,7 @@ class coBinaryOutputStream;
 template <class T>
 class coArray
 {
+	static_assert(std::is_trivially_copyable<T>::value, "Trivially copyable only");
 public:
 	typedef T ValueType;
 	coArray() = default;

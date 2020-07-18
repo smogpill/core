@@ -7,6 +7,7 @@
 #include "pattern/thread/coLock.h"
 #include "pattern/singleton/coSingleton.h"
 #include "container/array/coDynamicArray.h"
+#include "container/queue/coDynamicQueue.h"
 class coTaskWorkerThread;
 class coTask;
 
@@ -27,7 +28,7 @@ protected:
 
 private:
 	coDynamicArray<coTaskWorkerThread*> workers;
-	coDynamicArray<coTask*> readyTasks;
+	coDynamicQueue<coTask*> readyTasks;
 	coDynamicArray<coTask*> waitingTasks;
 	coWaitCondition waitCondition;
 	mutable coLock lock;
