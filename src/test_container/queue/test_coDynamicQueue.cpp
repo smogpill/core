@@ -62,6 +62,25 @@ coTEST(coDynamicQueue, SimpleLoop)
 	}
 }
 
+coTEST(coDynamicQueue, SimpleLoop2)
+{
+	coDynamicQueue<coUint> a;
+	for (coUint i = 0; i < 1000; ++i)
+	{
+		coEXPECT(coIsEmpty(a));
+		for (coUint j = 0; j < 10; ++j)
+		{
+			coPushBack(a, i * 10 + j);
+		}
+		coEXPECT(!coIsEmpty(a));
+		for (coUint j = 0; j < 10; ++j)
+		{
+			coEXPECT(coPopFront(a) == i * 10 + j);
+		}
+		coEXPECT(coIsEmpty(a));
+	}
+}
+
 coTEST(coDynamicQueue, SequentialLoop)
 {
 	coDynamicQueue<coUint> a;

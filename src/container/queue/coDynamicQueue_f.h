@@ -22,7 +22,7 @@ void coReserve(coDynamicQueue<T>& q, coUint32 nbDesired)
 			const coUint32 end = q.begin + q.count;
 			if (end <= q.capacity)
 			{
-				coMemCopy(&newBuffer, &q.data[q.begin], q.count * sizeof(T));
+				coMemCopy(newBuffer, &q.data[q.begin], q.count * sizeof(T));
 			}
 			else
 			{
