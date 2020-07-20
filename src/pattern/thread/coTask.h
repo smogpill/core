@@ -7,7 +7,16 @@ class coTaskContext;
 class coTask
 {
 public:
+	enum Priority
+	{
+		HIGH,
+		DEFAULT,
+		LOW,
+
+		END
+	};
 	virtual ~coTask() {}
+	void SetPriority(Priority priority_) { priority = priority; }
 	virtual void Execute(const coTaskContext& context) {}
 	void SetNext(coTask* task);
 	coBool IsReady() const { return nbActiveDependencies == 0; }
@@ -17,4 +26,8 @@ protected:
 
 	coTask* next = nullptr;
 	coAtomicInt32 nbActiveDependencies = 0;
+
+private:
+	friend class coTaskScheduler;
+	Priority priority = Priority::DEFAULT;
 };

@@ -34,13 +34,13 @@ void coTaskScheduler::Add(coTask& task)
 	if (task.IsReady())
 	{
 		lock.Lock();
-		coPushBack(readyTasks, &task);
+		coPushBack(readyTasks[task.priority], &task);
 		waitCondition.WakeAll();
 		lock.Unlock();
 	}
 	else
 	{
-		coPushBack(waitingTasks, &task);
+		coPushBack(waitingTasks[task.priority], &task);
 	}
 }
 
@@ -49,7 +49,15 @@ void coTaskScheduler::_ExecuteOneTask(const coTaskContext& context)
 	waitCondition.Reset();
 
 	lock.Lock();
-	coTask* task = readyTasks.count ? coPopFront(readyTasks) : nullptr;
+	coTask* task = nullptr;
+	for (coDynamicQueue<coTask*>& tasks : readyTasks)
+	{
+		if (tasks.count)
+		{
+			task = coPopFront(tasks);
+			break;
+		}
+	}
 	lock.Unlock();
 	if (!task)
 	{
@@ -64,8 +72,8 @@ void coTaskScheduler::_ExecuteOneTask(const coTaskContext& context)
 		if (--nextTask->nbActiveDependencies == 0)
 		{
 			lock.Lock();
-			coRemoveUnordered(waitingTasks, nextTask);
-			coPushBack(readyTasks, nextTask);
+			coRemoveUnordered(waitingTasks[nextTask->priority], nextTask);
+			coPushBack(readyTasks[nextTask->priority], nextTask);
 			lock.Unlock();
 		}
 	}

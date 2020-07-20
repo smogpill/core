@@ -1,6 +1,7 @@
 // Copyright(c) 2019 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
+#include "coTask.h"
 #include "pattern/object/coObject.h"
 #include "pattern/thread/coWaitCondition.h"
 #include "pattern/thread/coTaskContext.h"
@@ -9,7 +10,6 @@
 #include "container/array/coDynamicArray.h"
 #include "container/queue/coDynamicQueue.h"
 class coTaskWorkerThread;
-class coTask;
 
 class coTaskScheduler : public coObject
 {
@@ -28,8 +28,8 @@ protected:
 
 private:
 	coDynamicArray<coTaskWorkerThread*> workers;
-	coDynamicQueue<coTask*> readyTasks;
-	coDynamicArray<coTask*> waitingTasks;
+	coDynamicQueue<coTask*> readyTasks[coTask::Priority::END];
+	coDynamicArray<coTask*> waitingTasks[coTask::Priority::END];
 	coWaitCondition waitCondition;
 	mutable coLock lock;
 };
