@@ -3,6 +3,7 @@
 #pragma once
 #include "../vector/coVec3_f.h"
 #include "coAabb.h"
+#include "coSphere.h"
 #include "coIntersection_f.h"
 
 inline coFloatx4 coSquareDistancePointSegment(const coVec3& p, const coVec3& a, const coVec3& b)
@@ -39,6 +40,18 @@ inline coFloatx4 coSquareDistance(const coAabb& a, const coAabb& b)
 	outer.max = coMax(a.max, b.max);
 	const coVec3 inner = coMax(0.0f, (outer.max - outer.min) - (a.max - a.min) - (b.max - b.min));
 	return coSquareLength(inner);
+}
+
+coFORCE_INLINE coFloatx4 coDistance(const coAabb& a, const coVec3& p)
+{
+	const coVec3 center = (a.max + a.min) * 0.5f;
+	const coVec3 d = coAbs(p - center) - (a.max - a.min) * 0.5f;
+	return coLength(coMax(d, 0.0f)) + coMin(coBitCast<coFloatx4>(coMax(d)), 0.0f);
+}
+
+coFORCE_INLINE coFloatx4 coDistance(const coAabb& a, const coSphere& s)
+{
+	return coDistance(a, s.centerAndRadius) - coBroadcastW(s.centerAndRadius);
 }
 
 inline coFloatx4 coSquareDistancePointTriangle(const coVec3& p, const coVec3& a, const coVec3& b, const coVec3& c)
