@@ -14,4 +14,4 @@ private:
 	const coConstString name;
 };
 
-#define coSCOPE_PROFILE(_name_) _coScopeProfile _scopeProfile##__LINE__(_name_)
+#define coSCOPE_PROFILE(_name_) _coScopeProfile coCONCAT(_scopeProfile, __LINE__)(_name_)
