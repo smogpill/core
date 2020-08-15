@@ -2,6 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
+#include "coBool32x3_f.h"
 #include <math/vector/coInt32x3.h>
 #include "io/stream/coBinaryOutputStream.h"
 #include "io/stream/coBinaryInputStream.h"
@@ -13,6 +14,8 @@ coFORCE_INLINE coInt32x3 coInt32x3_XYMask() { return coBitCast<coInt32x3>(_mm_se
 coFORCE_INLINE coInt32x3 coInt32x3_XZMask() { return coBitCast<coInt32x3>(_mm_set_epi32(0, 0xffffffff, 0, 0xffffffff)); }
 coFORCE_INLINE coInt32x3 coInt32x3_YZMask() { return coBitCast<coInt32x3>(_mm_set_epi32(0, 0xffffffff, 0xffffffff, 0)); }
 coFORCE_INLINE coInt32x3 coInt32x3_XYZMask() { return coBitCast<coInt32x3>(_mm_set_epi32(0, 0xffffffff, 0xffffffff, 0xffffffff)); }
+coFORCE_INLINE coBool32x3 operator== (const coInt32x3& a, const coInt32x3& b) { return coBitCast<coBool32x3>(_mm_cmpeq_epi32(coBitCast<__m128i>(a), coBitCast<__m128i>(b))); }
+coFORCE_INLINE coBool32x3 operator!= (const coInt32x3& a, const coInt32x3& b) { return coNot(coBitCast<coBool32x3>(_mm_cmpeq_epi32(coBitCast<__m128i>(a), coBitCast<__m128i>(b)))); }
 coFORCE_INLINE coInt32x3 operator& (const coInt32x3& a, const coInt32x3& b) { return coBitCast<coInt32x3>(_mm_and_si128(coBitCast<__m128i>(a), coBitCast<__m128i>(b))); }
 coFORCE_INLINE coInt32x3 operator| (const coInt32x3& a, const coInt32x3& b) { return coBitCast<coInt32x3>(_mm_or_si128(coBitCast<__m128i>(a), coBitCast<__m128i>(b))); }
 coFORCE_INLINE coInt32x3 operator^ (const coInt32x3& a, const coInt32x3& b) { return coBitCast<coInt32x3>(_mm_xor_si128(coBitCast<__m128i>(a), coBitCast<__m128i>(b))); }
