@@ -18,7 +18,7 @@ end
 function coSetWorkspaceDefaults(_name)
 	print("Generating workspace ".._name.."... (in "..co_buildPath..")")
 	workspace(_name)
-	configurations {"debug", "release", "prebuildDebug", "prebuildRelease"}
+	configurations {"debug", "dev", "release", "prebuildDebug", "prebuildRelease"}
 	location(co_buildPath)
 end
 
@@ -57,14 +57,14 @@ function coSetProjectDefaults(_name, _options)
 
 	if not (_options and _options.prebuildDependency) then
 		--removeconfigurations {"prebuild*"}
-		configurations { "debug", "release" }
+		configurations { "debug", "dev", "release" }
 	end
 
-	filter{"configurations:debug or prebuildDebug"}
+	filter{"configurations:debug or dev or prebuildDebug"}
 		defines {"coDEBUG"}
-	filter{"configurations:debug or release"}
+	filter{"configurations:debug or dev or release"}
 		defines {"coREFLECT_ENABLED"}
-	filter { "configurations:release or prebuildRelease" }
+	filter { "configurations:dev or release or prebuildRelease" }
 		optimize "On"
 	filter {}	
 end
@@ -99,10 +99,10 @@ function coSetCppProjectDefaults(_name)
 		--linkoptions { "/ENTRY:mainCRTStartup" } -- TODO: Not working with DLL, should avoid that case somehow.
 		linkoptions {"/ignore:4221"} -- warns when .cpp are empty depending on the order of obj linking.
 		
-	filter { "configurations:release or prebuildRelease" }
+	filter { "configurations:dev or release or prebuildRelease" }
 		optimize "Speed"
 		omitframepointer "On"
-	filter {"configurations:debug or release"}
+	filter {"configurations:debug or dev or release"}
 		--[[
 		if os.isfile("reflect.cpp") then
 			local projectBasePath = "../.."
