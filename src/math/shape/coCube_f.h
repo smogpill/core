@@ -1,6 +1,7 @@
 // Copyright(c) 2020 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
+#include <debug/log/coAssert.h>
 class coDynamicString;
 
 class coCubePermutation
@@ -20,4 +21,5 @@ public:
 
 extern const coCubePermutation co_cubeRotations[24];
 
+coFORCE_INLINE coUint8 coRotate(const coCubePermutation& rotation, coUint8 vertex) { coASSERT(vertex < 8); return rotation.values[vertex]; }
 void coGenerateCubeRotationsTable(coDynamicString& text);
