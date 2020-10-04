@@ -132,6 +132,16 @@ void coPrint(coDynamicString& text, const coCubePermutation& p)
 	text << " }";
 }
 
+coUint8 coInvRotate(const coCubePermutation& rotation, coUint8 vertex)
+{
+	coASSERT(vertex < 8);
+	for (coUint8 i = 0; i < 8; ++i)
+		if (rotation.values[i] == vertex)
+			return i;
+	coASSERT(false);
+	return coUint8(-1);
+}
+
 void coGenerateCubeRotationsTable(coDynamicString& text)
 {
 	coDynamicArray<coCubePermutation> cubeRotations;

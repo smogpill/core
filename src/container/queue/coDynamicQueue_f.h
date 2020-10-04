@@ -44,8 +44,7 @@ template <class T>
 T& coPushBack(coDynamicQueue<T>& q)
 {
 	const coUint32 nextCount = q.count + 1;
-	if (q.count == q.capacity)
-		coReserve(q, nextCount);
+	coReserve(q, nextCount);
 	const coUint32 index = (q.begin + q.count) & (q.capacity - 1);
 	q.count = nextCount;
 	return q.data[index];
