@@ -22,5 +22,7 @@ public:
 extern const coCubePermutation co_cubeRotations[24];
 
 coFORCE_INLINE coUint8 coRotate(const coCubePermutation& rotation, coUint8 vertex) { coASSERT(vertex < 8); return rotation.values[vertex]; }
+coUint8 coRotateEdge(const coCubePermutation& rotation, coUint8 edge);
 coUint8 coInvRotate(const coCubePermutation& rotation, coUint8 vertex);
+coUint8 coInvRotateEdge(const coCubePermutation& rotation, coUint8 edge);
 void coGenerateCubeRotationsTable(coDynamicString& text);

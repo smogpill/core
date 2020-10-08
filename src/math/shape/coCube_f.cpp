@@ -35,6 +35,9 @@ const coCubePermutation co_cubeRotations[24] =
 	{ 1, 0, 5, 4, 3, 2, 7, 6 }
 };
 
+const coUint8 co_cubeEdgeVertices[12][2] = { { 0, 1 },{ 1, 3 },{ 3, 2 },{ 2, 0 },{ 0, 4 },{ 1, 5 },{ 2, 6 },{ 3, 7 },{ 4, 5 },{ 5, 7 },{ 7, 6 },{ 6, 4 } };
+const coUint8 co_cubeFaceVertices[6][4] = { { 0, 1, 5, 4 },{ 1, 3, 7, 5 },{ 3, 2, 6, 7 },{ 2, 0, 4, 6 },{ 0, 1, 3, 2 },{ 4, 5, 7, 6 } };
+
 //   6_____7     4_____5
 // 4/____5/|   0/____1/| 
 // | 2___| 3   | 6___| 7 
@@ -159,3 +162,40 @@ void coGenerateCubeRotationsTable(coDynamicString& text)
 	}
 	text << "\n}";
 }
+
+coUint8 coRotateEdge(const coCubePermutation& rotation, coUint8 edge)
+{
+	coASSERT(edge < coARRAY_SIZE(co_cubeEdgeVertices));
+	const coUint8* inVerts = co_cubeEdgeVertices[edge];
+	coUint8 outVerts[2];
+	outVerts[0] = coRotate(rotation, inVerts[0]);
+	outVerts[1] = coRotate(rotation, inVerts[1]);
+	for (coUint8 i = 0; i < 12; ++i)
+	{
+		const coUint8* testVerts = co_cubeEdgeVertices[i];
+		if (outVerts[0] == testVerts[0] && outVerts[1] == testVerts[1]
+			|| outVerts[0] == testVerts[1] && outVerts[1] == testVerts[0])
+			return i;
+	}
+	coASSERT(false);
+	return 0;
+}
+
+coUint8 coInvRotateEdge(const coCubePermutation& rotation, coUint8 edge)
+{
+	coASSERT(edge < coARRAY_SIZE(co_cubeEdgeVertices));
+	const coUint8* inVerts = co_cubeEdgeVertices[edge];
+	coUint8 outVerts[2];
+	outVerts[0] = coInvRotate(rotation, inVerts[0]);
+	outVerts[1] = coInvRotate(rotation, inVerts[1]);
+	for (coUint8 i = 0; i < 12; ++i)
+	{
+		const coUint8* testVerts = co_cubeEdgeVertices[i];
+		if (outVerts[0] == testVerts[0] && outVerts[1] == testVerts[1]
+			|| outVerts[0] == testVerts[1] && outVerts[1] == testVerts[0])
+			return i;
+	}
+	coASSERT(false);
+	return 0;
+}
+
