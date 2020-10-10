@@ -13,7 +13,7 @@ class coDynamicString : public coDynamicArray<coChar>
 public:
 	coDynamicString() = default;
 	coDynamicString(coDynamicString&& _);
-	explicit coDynamicString(const coConstString& _s);
+	coDynamicString(const coConstString& _s);
 	explicit coDynamicString(const coDynamicString& _);
 	operator coString&() { return reinterpret_cast<coString&>(*this); }
 	operator const coString&() const { return reinterpret_cast<const coString&>(*this); }
