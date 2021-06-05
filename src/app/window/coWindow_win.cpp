@@ -8,6 +8,12 @@
 #include "container/string/coDynamicString16.h"
 #include "container/string/coDynamicString16_f.h"
 
+struct coWindowImpl
+{
+	HWND windowHandle;
+	HGLRC openglRenderingContextHandle;
+};
+
 static LRESULT CALLBACK coWindowProc(HWND _hwnd, UINT _msg, WPARAM _wParam, LPARAM _lParam)
 {
 	coWindow* window = reinterpret_cast<coWindow*>(::GetWindowLongPtrW(_hwnd, GWLP_USERDATA));
@@ -251,7 +257,8 @@ coResult coWindow::OnImplInstanceCreate()
 	pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
 	pfd.iPixelType = PFD_TYPE_RGBA;
 	pfd.cColorBits = 32;
-	pfd.cDepthBits = 32;
+	pfd.cDepthBits = 24;
+	pfd.cStencilBits = 8;
 	pfd.iLayerType = PFD_MAIN_PLANE;
 // 
 // 	// Choose the pixel format

@@ -7,13 +7,6 @@
 #include "lang/reflect/coTypeFactory.h"
 #include "lang/reflect/coTypeRegistry.h"
 
-coApp::coApp()
-	: defaultLogHandler(nullptr)
-	, exitRequested(false)
-{
-
-}
-
 coApp::~coApp()
 {
 	delete coTypeRegistry::instance;
@@ -22,13 +15,6 @@ coApp::~coApp()
 	coTypeFactory::instance = nullptr;
 	delete defaultLogHandler;
 	defaultLogHandler = nullptr;
-}
-
-coApp::InitConfig::InitConfig()
-	: argv(nullptr)
-	, nbArgs(0)
-{
-
 }
 
 coResult coApp::OnInit(const coObject::InitConfig& _config)

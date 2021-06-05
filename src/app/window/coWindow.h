@@ -20,9 +20,8 @@ public:
 	class InitConfig : public Super::InitConfig
 	{
 	public:
-		InitConfig();
 		coConstString name;
-		coInt32x2 clientSize;
+		coInt32x2 clientSize = coInt32x2(1024, 768);
 	};
 
 	coWindow();

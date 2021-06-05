@@ -17,12 +17,6 @@ coWindow::~coWindow()
 	OnImplDestruct();
 }
 
-coWindow::InitConfig::InitConfig()
-	: clientSize(0)
-{
-
-}
-
 coResult coWindow::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
