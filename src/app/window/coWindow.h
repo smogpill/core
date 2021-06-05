@@ -31,9 +31,10 @@ public:
 	ShowState GetShowState() const { return showState; }
 	coResult SetForeground();
 	coResult SetFocus();
-	void* GetImpl() const { return impl; }
-	void _SetImpl(void* _impl) { impl = _impl; }
 	const coInt32x2& GetClientSize() const { return clientSize; }
+#ifdef coMSWINDOWS
+	void _SetHwnd(HWND h) { hwnd = h; }
+#endif
 
 protected:
 	virtual coResult OnInit(const coObject::InitConfig& _config) override;
@@ -47,8 +48,14 @@ protected:
 	coResult OnImplApplyShowState(const ShowState& _state);
 
 private:
-	ShowState showState;
-	coInt32x2 clientSize;
+	coResult CreateRenderContext();
+	void DestroyRenderContext();
+	ShowState showState = ShowState::hidden;
+	coInt32x2 clientSize = coInt32x2(0);
 	coDynamicString name;
-	void* impl;
+
+#ifdef coMSWINDOWS
+	HWND hwnd = NULL;
+	HGLRC hglrc = NULL;
+#endif
 };

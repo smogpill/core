@@ -7,3 +7,5 @@
 #ifdef _WIN32
 #	define coMSWINDOWS
 #endif
+
+#include "platform/coOsHeaders.h"

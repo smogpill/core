@@ -5,9 +5,6 @@
 #include "lang/result/coResult_f.h"
 
 coWindow::coWindow()
-	: showState(ShowState::hidden)
-	, impl(nullptr)
-	, clientSize(0)
 {
 	OnImplConstruct();
 }

@@ -8,11 +8,7 @@
 #include "container/string/coDynamicString16.h"
 #include "container/string/coDynamicString16_f.h"
 
-struct coWindowImpl
-{
-	HWND windowHandle;
-	HGLRC openglRenderingContextHandle;
-};
+#pragma comment (lib, "opengl32.lib")
 
 static LRESULT CALLBACK coWindowProc(HWND _hwnd, UINT _msg, WPARAM _wParam, LPARAM _lParam)
 {
@@ -128,6 +124,12 @@ static LRESULT CALLBACK coWindowProc(HWND _hwnd, UINT _msg, WPARAM _wParam, LPAR
 		}
 		break;
 	}
+
+	case WM_CREATE:
+	{
+		
+		break;
+	}
 	
 	// 	case WM_CREATE:
 	// 	{
@@ -149,7 +151,7 @@ static LRESULT CALLBACK coWindowProc(HWND _hwnd, UINT _msg, WPARAM _wParam, LPAR
 	// 	break;
 	case WM_DESTROY:
 	{
-		window->_SetImpl(nullptr);
+		window->_SetHwnd(NULL);
 		::PostQuitMessage(0);
 		return 0;
 	}
@@ -220,13 +222,11 @@ static coResult coRegisterWindowClass(HINSTANCE _hinst, const WCHAR* _className)
 
 void coWindow::OnImplConstruct()
 {
-	HWND& hwnd = reinterpret_cast<HWND&>(impl);
-	hwnd = NULL;
 }
 
 void coWindow::OnImplDestruct()
 {
-	HWND& hwnd = reinterpret_cast<HWND&>(impl);
+	DestroyRenderContext();
 	if (hwnd != NULL)
 	{
 		const BOOL res = ::DestroyWindow(hwnd);
@@ -242,8 +242,6 @@ void coWindow::OnImplDestruct()
 
 coResult coWindow::OnImplInstanceCreate()
 {
-	//HWND& hwnd = reinterpret_cast<HWND&>(impl);
-
 // 	coUniquePtr<coDeviceContext_win> deviceContext(new coDeviceContext_win());
 // 	coTRY_RESULT(deviceContext->configure(_hwnd), "Failed to configure the device context");
 // 	coTRY_RESULT(deviceContext->init(), "Failed to init the device context");
@@ -325,8 +323,6 @@ void coWindow::OnImplInstanceDestroy()
 
 coResult coWindow::OnImplInit(const InitConfig& /*_config*/)
 {
-	HWND& hwnd = reinterpret_cast<HWND&>(impl);
-
 	const HINSTANCE hinstance = ::GetModuleHandleW(NULL);
 
 	const WCHAR WINDOW_CLASS_NAME[] = L"DEFAULT_WINDOW_CLASS";
@@ -391,12 +387,13 @@ coResult coWindow::OnImplInit(const InitConfig& /*_config*/)
 		return false;
 	}
 
+	coTRY(CreateRenderContext(), "Failed to create viewport");
+
 	return true;
 }
 
 coResult coWindow::OnImplApplyShowState(const ShowState& _state)
 {
-	HWND& hwnd = reinterpret_cast<HWND&>(impl);
 	if (hwnd == NULL)
 		return true;
 
@@ -486,14 +483,50 @@ coResult coWindow::OnImplApplyShowState(const ShowState& _state)
 	return true;
 }
 
+coResult coWindow::CreateRenderContext()
+{
+	PIXELFORMATDESCRIPTOR pfd = {};
+	pfd.nSize = sizeof(pfd);
+	pfd.nVersion = 1;
+	pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+	pfd.iPixelType = PFD_TYPE_RGBA;
+	pfd.cColorBits = 32;
+	pfd.cDepthBits = 24;
+	pfd.cStencilBits = 8;
+	pfd.iLayerType = PFD_MAIN_PLANE;
+
+	const HDC hdc = GetDC(hwnd);
+	const int pixelFormat = ChoosePixelFormat(hdc, &pfd);
+	if (SetPixelFormat(hdc, pixelFormat, &pfd) == FALSE)
+	{
+		coDynamicString str;
+		coDumpLastOsError(str);
+		coERROR("Failed to set the pixel format: " << str);
+		return false;
+	}
+
+	coTRY(hglrc == NULL, nullptr);
+	hglrc = wglCreateContext(hdc);
+	wglMakeCurrent(hdc, hglrc);
+
+	return true;
+}
+
+void coWindow::DestroyRenderContext()
+{
+	if (hglrc)
+	{
+		wglDeleteContext(hglrc);
+		hglrc = NULL;
+	}
+}
+
 coResult coWindow::SetForeground()
 {
-	HWND& hwnd = reinterpret_cast<HWND&>(impl);
 	return ::SetForegroundWindow(hwnd) != 0;
 }
 
 coResult coWindow::SetFocus()
 {
-	HWND& hwnd = reinterpret_cast<HWND&>(impl);
 	return ::SetFocus(hwnd) == hwnd;
 }
