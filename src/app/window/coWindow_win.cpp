@@ -530,3 +530,17 @@ coResult coWindow::SetFocus()
 {
 	return ::SetFocus(hwnd) == hwnd;
 }
+
+coResult coWindow::BeginRender()
+{
+	coTRY(hglrc, nullptr);
+	return true;
+}
+
+void coWindow::EndRender()
+{
+	if (hwnd != NULL)
+	{
+		SwapBuffers(GetDC(hwnd));
+	}
+}

@@ -27,7 +27,14 @@ coResult Main()
 
 	auto loop = [&]()
 	{
-		// nothing
+		coTRY(window.BeginRender(), nullptr);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glBegin(GL_LINES);
+		glVertex2f(.25f, 0.25f);
+		glVertex2f(.75f, .75f);
+		glEnd();
+		window.EndRender();
+		return true;
 	};
 
 	coTRY(app.RunLoop(loop), nullptr);

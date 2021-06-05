@@ -39,7 +39,7 @@ inline coResult coApp::RunLoop(F func)
 	while (!exitRequested)
 	{
 		coTRY(ProcessEvents(), "Failed to process app events");
-		func();
+		coTRY(func(), nullptr);
 	}
 	return true;
 }
