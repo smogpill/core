@@ -1,0 +1,44 @@
+// Copyright(c) 2021 Jounayd Id Salah
+// Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
+#include "render/pch.h"
+#include "render/shader/coShader.h"
+#include "io/file/coFile_f.h"
+#include "lang/result/coResult_f.h"
+
+coShader::~coShader()
+{
+	glDeleteShader(id);
+	coCHECK(glGetError() == GL_NO_ERROR, "glDeleteShader()");
+}
+
+coResult coShader::Init(Type type_, const coConstString& path)
+{
+	type = type_;
+	coDynamicArray<coByte> buffer;
+	coTRY(coReadFullFile(buffer, path), nullptr);
+
+	const GLenum glType = _GetGLType();
+	id = glCreateShader(glType);
+	coTRY(id, "glCreateShader()");
+	const GLchar* source = reinterpret_cast<const GLchar*>(buffer.data);
+	glShaderSource(id, 1, &source, nullptr);
+	coTRY(glGetError() == GL_NO_ERROR, "glShaderSource()" << path);
+	glCompileShader(id);
+	coTRY(glGetError() == GL_NO_ERROR, "glCompileShader()" << path);
+
+	return true;
+}
+
+GLenum coShader::_GetGLType() const
+{
+	switch (type)
+	{
+	case Type::VERTEX: return GL_VERTEX_SHADER;
+	case Type::FRAGMENT: return GL_FRAGMENT_SHADER;
+	case Type::COMPUTE: return GL_COMPUTE_SHADER;
+	default:
+	{
+		return GL_INVALID_ENUM;
+	}
+	}
+}

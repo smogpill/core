@@ -4,5 +4,8 @@
 
 #include "lang/publicPch.h"
 #include "platform/publicPch.h"
+#include "math/publicPch.h"
 #include <gl/GL.h>
+#define GL_GLEXT_PROTOTYPES
+#include <gl/glext.h>
 //#include <gl/GLU.h>

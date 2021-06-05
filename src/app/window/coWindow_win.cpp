@@ -152,7 +152,7 @@ static LRESULT CALLBACK coWindowProc(HWND _hwnd, UINT _msg, WPARAM _wParam, LPAR
 	// 	break;
 	case WM_DESTROY:
 	{
-		window->_SetHwnd(NULL);
+		window->Destroy();
 		::PostQuitMessage(0);
 		return 0;
 	}
@@ -495,4 +495,11 @@ coResult coWindow::SetForeground()
 coResult coWindow::SetFocus()
 {
 	return ::SetFocus(hwnd) == hwnd;
+}
+
+void coWindow::Destroy()
+{
+	delete renderContext;
+	renderContext = nullptr;
+	_SetHwnd(NULL);
 }

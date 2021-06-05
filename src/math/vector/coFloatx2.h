@@ -16,6 +16,12 @@ public:
 	}
 	coFORCE_INLINE coFloatx2(coFloat _xy) : x(_xy), y(_xy) {}
 	coFORCE_INLINE coFloatx2(coFloat _x, coFloat _y) : x(_x), y(_y) {}
+	coFORCE_INLINE coFloatx2(coFloatx2 _xx, coFloatx2 _yy)
+	{
+		const __m128 xx = coBitCast<__m128>(_xx);
+		const __m128 yy = coBitCast<__m128>(_yy);
+		*this = coBitCast<coFloatx2>(_mm_unpacklo_ps(xx, yy));
+	}
 
 	coFloat x;
 	coFloat y;

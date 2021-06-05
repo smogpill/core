@@ -3,6 +3,8 @@
 #pragma once
 #include "lang/result/coResult.h"
 
+class coVec3;
+
 class coRenderContext
 {
 public:
@@ -13,6 +15,7 @@ public:
 
 	coResult BeginRender();
 	void EndRender();
+
 	void Clear();
 
 private:

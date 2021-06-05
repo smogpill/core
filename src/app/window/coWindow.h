@@ -35,6 +35,7 @@ public:
 	coResult SetFocus();
 	const coInt32x2& GetClientSize() const { return clientSize; }
 	coRenderContext* GetRenderContext() const { return renderContext; };
+	void Destroy();
 #ifdef coMSWINDOWS
 	void _SetHwnd(HWND h) { hwnd = h; }
 #endif

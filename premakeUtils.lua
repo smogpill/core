@@ -50,7 +50,7 @@ function coSetProjectDefaults(_name, _options)
 	targetdir(buildAbsPath .. "/bin/$(Configuration)")
 	libdirs { "$(OutDir)" }
 	defines { "coVERSION_MAJOR="..co_versionMajor, "coVERSION_MINOR="..co_versionMinor, "coVERSION_BUILD="..co_versionBuild }
-	includedirs { projectBasePath.."/build/gen" }
+	includedirs { projectBasePath.."/build/gen", co_externalAbsPath }
 	includedirs(co_srcDirs)
 	debugdir "$(OutDir)"
 	defines { "coPROJECT_NAME=".._name }
