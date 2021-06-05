@@ -5,6 +5,8 @@
 #include "pattern/object/coObject.h"
 #include "math/vector/coInt32x2.h"
 
+class coRenderContext;
+
 class coWindow : public coObject
 {
 	coDECLARE_SUPER(coObject);
@@ -32,8 +34,7 @@ public:
 	coResult SetForeground();
 	coResult SetFocus();
 	const coInt32x2& GetClientSize() const { return clientSize; }
-	coResult BeginRender();
-	void EndRender();
+	coRenderContext* GetRenderContext() const { return renderContext; };
 #ifdef coMSWINDOWS
 	void _SetHwnd(HWND h) { hwnd = h; }
 #endif
@@ -50,8 +51,6 @@ protected:
 	coResult OnImplApplyShowState(const ShowState& _state);
 
 private:
-	coResult CreateRenderContext();
-	void DestroyRenderContext();
 	ShowState showState = ShowState::hidden;
 	coInt32x2 clientSize = coInt32x2(0);
 	coDynamicString name;
@@ -60,4 +59,5 @@ private:
 	HWND hwnd = NULL;
 	HGLRC hglrc = NULL;
 #endif
+	coRenderContext* renderContext = nullptr;
 };

@@ -7,6 +7,7 @@
 #include "platform/coOs.h"
 #include "container/string/coDynamicString16.h"
 #include "container/string/coDynamicString16_f.h"
+#include "render/context/coRenderContext.h"
 
 #pragma comment (lib, "opengl32.lib")
 
@@ -226,7 +227,8 @@ void coWindow::OnImplConstruct()
 
 void coWindow::OnImplDestruct()
 {
-	DestroyRenderContext();
+	delete renderContext;
+	renderContext = nullptr;
 	if (hwnd != NULL)
 	{
 		const BOOL res = ::DestroyWindow(hwnd);
@@ -387,7 +389,9 @@ coResult coWindow::OnImplInit(const InitConfig& /*_config*/)
 		return false;
 	}
 
-	coTRY(CreateRenderContext(), "Failed to create viewport");
+	coASSERT(renderContext == nullptr);
+	renderContext = new coRenderContext();
+	coTRY(renderContext->Init(hwnd), "Failed to init the render context");
 
 	return true;
 }
@@ -483,44 +487,6 @@ coResult coWindow::OnImplApplyShowState(const ShowState& _state)
 	return true;
 }
 
-coResult coWindow::CreateRenderContext()
-{
-	PIXELFORMATDESCRIPTOR pfd = {};
-	pfd.nSize = sizeof(pfd);
-	pfd.nVersion = 1;
-	pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
-	pfd.iPixelType = PFD_TYPE_RGBA;
-	pfd.cColorBits = 32;
-	pfd.cDepthBits = 24;
-	pfd.cStencilBits = 8;
-	pfd.iLayerType = PFD_MAIN_PLANE;
-
-	const HDC hdc = GetDC(hwnd);
-	const int pixelFormat = ChoosePixelFormat(hdc, &pfd);
-	if (SetPixelFormat(hdc, pixelFormat, &pfd) == FALSE)
-	{
-		coDynamicString str;
-		coDumpLastOsError(str);
-		coERROR("Failed to set the pixel format: " << str);
-		return false;
-	}
-
-	coTRY(hglrc == NULL, nullptr);
-	hglrc = wglCreateContext(hdc);
-	wglMakeCurrent(hdc, hglrc);
-
-	return true;
-}
-
-void coWindow::DestroyRenderContext()
-{
-	if (hglrc)
-	{
-		wglDeleteContext(hglrc);
-		hglrc = NULL;
-	}
-}
-
 coResult coWindow::SetForeground()
 {
 	return ::SetForegroundWindow(hwnd) != 0;
@@ -529,18 +495,4 @@ coResult coWindow::SetForeground()
 coResult coWindow::SetFocus()
 {
 	return ::SetFocus(hwnd) == hwnd;
-}
-
-coResult coWindow::BeginRender()
-{
-	coTRY(hglrc, nullptr);
-	return true;
-}
-
-void coWindow::EndRender()
-{
-	if (hwnd != NULL)
-	{
-		SwapBuffers(GetDC(hwnd));
-	}
 }
