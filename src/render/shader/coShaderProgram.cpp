@@ -22,6 +22,22 @@ coResult coShaderProgram::Init(const coArray<const coShader*>& shaders)
 		coTRY(glGetError() == GL_NO_ERROR, "glAttachShader()");
 	}
 	glLinkProgram(id);
+
+	GLint state = FALSE;
+	glGetProgramiv(id, GL_LINK_STATUS, &state);
+	if (state == FALSE)
+	{
+		GLint maxLength = 0;
+		glGetProgramiv(id, GL_INFO_LOG_LENGTH, &maxLength);
+
+		coDynamicArray<coChar> msg;
+		coResize(msg, maxLength);
+
+		glGetProgramInfoLog(id, maxLength, &maxLength, msg.data);
+		coERROR(msg.data);
+		return false;
+	}
+
 	coTRY(glGetError() == GL_NO_ERROR, "glLinkProgram()");
 
 	return true;

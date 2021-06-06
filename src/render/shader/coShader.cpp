@@ -24,6 +24,22 @@ coResult coShader::Init(Type type_, const coConstString& path)
 	glShaderSource(id, 1, &source, nullptr);
 	coTRY(glGetError() == GL_NO_ERROR, "glShaderSource()" << path);
 	glCompileShader(id);
+
+	GLint state = FALSE;
+	glGetShaderiv(id, GL_COMPILE_STATUS, &state);
+	if (state == FALSE)
+	{
+		GLint maxLength = 0;
+		glGetShaderiv(id, GL_INFO_LOG_LENGTH, &maxLength);
+
+		coDynamicArray<coChar> msg;
+		coResize(msg, maxLength);
+
+		glGetShaderInfoLog(id, maxLength, &maxLength, msg.data);
+		coERROR(msg.data);
+		return false;
+	}
+
 	coTRY(glGetError() == GL_NO_ERROR, "glCompileShader()" << path);
 
 	return true;
