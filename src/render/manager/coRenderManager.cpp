@@ -11,7 +11,7 @@ coResult coRenderManager::Init()
 	case GL3W_OK: return true;
 	case GL3W_ERROR_INIT: coERROR("gl3w: Failed to init."); return false;
 	case GL3W_ERROR_LIBRARY_OPEN: coERROR("gl3w: Failed to open lib gl"); return false;
-	case GL3W_ERROR_OPENGL_VERSION: coERROR("gl3w: Failed to retrieve OpenGL version."); return false;
+	case GL3W_ERROR_OPENGL_VERSION: return true;//coERROR("gl3w: Failed to retrieve OpenGL version."); return true;
 	default: return false;
 	}
 }

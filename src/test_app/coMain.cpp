@@ -6,6 +6,7 @@
 #include "app/window/coWindow.h"
 #include "lang/result/coResult_f.h"
 #include "render/context/coRenderContext.h"
+#include "render/view/coRenderView.h"
 #include "imgui/coImgui.h"
 
 coResult Main()
@@ -31,6 +32,7 @@ coResult Main()
 	coImgui imgui;
 	{
 		coTRY(imgui.Init(), nullptr);
+		imgui.SetWindow(&window);
 	}
 
 	auto loop = [&]()
@@ -39,15 +41,15 @@ coResult Main()
 		if (renderContext)
 		{
 			coTRY(renderContext->BeginRender(), nullptr);
-			imgui.Begin();
-			imgui.DrawDemo();
-			/*
-			glBegin(GL_LINES);
-			glVertex2f(.25f, 0.25f);
-			glVertex2f(.75f, .75f);
-			glEnd();
-			*/
-			imgui.End();
+			coRenderView* view = renderContext->GetMainRenderView();
+			if (view)
+			{
+				view->Begin();
+				imgui.Begin();
+				imgui.DrawDemo();
+				imgui.End();
+				view->End();
+			}
 			renderContext->EndRender();
 		}
 		return true;

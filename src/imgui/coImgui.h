@@ -3,6 +3,9 @@
 #pragma once
 #include "lang/result/coResult.h"
 
+struct ImGuiContext;
+class coWindow;
+
 class coImgui
 {
 public:
@@ -11,7 +14,10 @@ public:
 	void Begin();
 	void End();
 	void DrawDemo();
+	void SetWindow(coWindow* w) { window = w; }
 
 private:
 	coBool demo = false;
+	ImGuiContext* context = nullptr;
+	coWindow* window = nullptr;
 };

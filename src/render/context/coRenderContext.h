@@ -4,6 +4,7 @@
 #include "lang/result/coResult.h"
 
 class coVec3;
+class coRenderView;
 
 class coRenderContext
 {
@@ -15,15 +16,18 @@ public:
 
 	coResult BeginRender();
 	void EndRender();
+	coRenderView* GetMainRenderView() const { return mainRenderView; }
 
 	void Clear();
 
 private:
 	coResult Bind();
+	static coResult InitOpengl();
 
 #ifdef coMSWINDOWS
 	HWND hwnd = NULL;
 	HDC hdc = NULL;
 	HGLRC hglrc = NULL;
 #endif
+	coRenderView* mainRenderView = nullptr;
 };

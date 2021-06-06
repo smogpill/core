@@ -5,9 +5,11 @@
 #include "debug/log/coLog.h"
 #include "lang/result/coResult_f.h"
 #include "platform/coOs.h"
+#include "render/view/coRenderView.h"
 
 coRenderContext::~coRenderContext()
 {
+	delete mainRenderView;
 	if (hglrc)
 	{
 		if (!wglDeleteContext(hglrc))
@@ -25,6 +27,7 @@ coRenderContext::~coRenderContext()
 
 coResult coRenderContext::Init(HWND _hwnd)
 {
+	hwnd = _hwnd;
 	hdc = GetDC(_hwnd);
 	coTRY(hdc, "GetDC(): Failed to retrieve the device context handle from the window handle.");
 
@@ -56,6 +59,19 @@ coResult coRenderContext::Init(HWND _hwnd)
 		coERROR("wglCreateContext: " << str);
 		return false;
 	}
+
+	coTRY(Bind(), nullptr);
+	coTRY(InitOpengl(), nullptr);
+	mainRenderView = new coRenderView();
+	RECT rect;
+	if (GetClientRect(_hwnd, &rect) == FALSE)
+	{
+		coDynamicString str;
+		coDumpLastOsError(str);
+		coERROR("GetClientRect: " << str);
+		return false;
+	}
+	mainRenderView->SetViewport(0, 0, rect.right - rect.left, rect.bottom - rect.top);
 	return true;
 }
 
@@ -92,4 +108,22 @@ coResult coRenderContext::Bind()
 	}
 	return true;
 #endif
+}
+
+coResult coRenderContext::InitOpengl()
+{
+	static coBool done = false;
+	if (!done)
+	{
+		switch (gl3wInit())
+		{
+		case GL3W_OK: done = true; break;
+		case GL3W_ERROR_INIT: coERROR("gl3w: Failed to init."); return false;
+		case GL3W_ERROR_LIBRARY_OPEN: coERROR("gl3w: Failed to open lib gl"); return false;
+		case GL3W_ERROR_OPENGL_VERSION: coERROR("gl3w: Failed to retrieve OpenGL version."); return false;
+		default: return false;
+		}
+	}
+	
+	return true;
 }
