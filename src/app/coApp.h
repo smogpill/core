@@ -6,6 +6,7 @@
 #include "lang/result/coResult_f.h"
 
 class coDefaultLogHandler;
+class coRenderManager;
 
 class coApp : public coObject
 {
@@ -31,6 +32,7 @@ protected:
 
 private:
 	coDefaultLogHandler* defaultLogHandler = nullptr;
+	coRenderManager* renderManager = nullptr;
 };
 
 template<class F>

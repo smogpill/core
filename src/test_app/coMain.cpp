@@ -6,6 +6,7 @@
 #include "app/window/coWindow.h"
 #include "lang/result/coResult_f.h"
 #include "render/context/coRenderContext.h"
+#include "imgui/coImgui.h"
 
 coResult Main()
 {
@@ -26,16 +27,27 @@ coResult Main()
 		coTRY(window.SetShowState(coWindow::ShowState::default), nullptr);
 	}
 
+	// Imgui
+	coImgui imgui;
+	{
+		coTRY(imgui.Init(), nullptr);
+	}
+
 	auto loop = [&]()
 	{
 		coRenderContext* renderContext = window.GetRenderContext();
 		if (renderContext)
 		{
 			coTRY(renderContext->BeginRender(), nullptr);
+			imgui.Begin();
+			imgui.DrawDemo();
+			/*
 			glBegin(GL_LINES);
 			glVertex2f(.25f, 0.25f);
 			glVertex2f(.75f, .75f);
 			glEnd();
+			*/
+			imgui.End();
 			renderContext->EndRender();
 		}
 		return true;
