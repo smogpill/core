@@ -12,12 +12,12 @@ coResult coApp::ProcessEvents()
 		// Translate the message and dispatch it to WindowProc()
 		::TranslateMessage(&msg);
 		::DispatchMessage(&msg);
-	}
 
-	if (msg.message == WM_QUIT)
-	{
-		exitRequested = true;
-		return msg.wParam == 0;
+		if (msg.message == WM_QUIT)
+		{
+			exitRequested = true;
+			return msg.wParam == 0;
+		}
 	}
 
 	return true;

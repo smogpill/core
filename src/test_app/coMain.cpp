@@ -60,7 +60,7 @@ coResult Main()
 	return true;
 }
 
-coInt main()
+int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
 	//coTestRegistry::instance->RunAllTests();
 

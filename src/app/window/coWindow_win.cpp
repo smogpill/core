@@ -487,6 +487,10 @@ coResult coWindow::OnImplApplyShowState(const ShowState& _state)
 	return true;
 }
 
+void coWindow::ApplySize()
+{
+}
+
 coResult coWindow::SetForeground()
 {
 	return ::SetForegroundWindow(hwnd) != 0;

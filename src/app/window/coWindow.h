@@ -6,6 +6,7 @@
 #include "math/vector/coInt32x2.h"
 
 class coRenderContext;
+class coImgui;
 
 class coWindow : public coObject
 {
@@ -33,6 +34,7 @@ public:
 	ShowState GetShowState() const { return showState; }
 	coResult SetForeground();
 	coResult SetFocus();
+	void SetImgui(coImgui*);
 	const coInt32x2& GetClientSize() const { return clientSize; }
 	coRenderContext* GetRenderContext() const { return renderContext; };
 	void Destroy();
@@ -52,9 +54,12 @@ protected:
 	coResult OnImplApplyShowState(const ShowState& _state);
 
 private:
+	void ApplySize();
+
 	ShowState showState = ShowState::hidden;
 	coInt32x2 clientSize = coInt32x2(0);
 	coDynamicString name;
+	coImgui* imgui = nullptr;
 
 #ifdef coMSWINDOWS
 	HWND hwnd = NULL;

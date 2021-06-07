@@ -46,3 +46,14 @@ coResult coWindow::SetShowState(const ShowState& _state)
 	showState = _state;
 	return true;
 }
+
+void coWindow::SetImgui(coImgui* newImgui)
+{
+	if (imgui == newImgui)
+		return;
+	imgui = newImgui;
+	if (imgui)
+	{
+
+	}
+}
