@@ -521,6 +521,14 @@ LRESULT coWindow::_ProcessWindowMessages(UINT msg, WPARAM wParam, LPARAM lParam)
 		if (res)
 			return res;
 	}
+
+	switch (msg)
+	{
+	case WM_DESTROY:
+	{
+		Destroy();
+	}
+	}
 	return 0;
 }
 
