@@ -9,15 +9,18 @@ class coImgui
 {
 public:
 	~coImgui();
-	coResult Init();
+	coResult Init(HWND hwnd);
 	void Begin();
 	void End();
 	void DrawDemo();
-	void SetHWND(HWND hwnd_) { hwnd = hwnd_; }
+	void SetHWND(HWND hwnd_);
 	LRESULT _ProcessWindowMessages(UINT msg, WPARAM wParam, LPARAM lParam);
 
 private:
+	coBool UpdateMouseCursor();
+
 	HWND hwnd = NULL;
 	coBool demo = false;
 	ImGuiContext* context = nullptr;
+	ImGuiMouseCursor lastMouseCursor = ImGuiMouseCursor_COUNT;
 };

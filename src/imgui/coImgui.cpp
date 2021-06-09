@@ -11,11 +11,38 @@ coImgui::~coImgui()
 	ImGui::DestroyContext(context);
 }
 
-coResult coImgui::Init()
+coResult coImgui::Init(HWND hwnd_)
 {
+    hwnd = hwnd_;
 	context = ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
+    io.ImeWindowHandle = hwnd;
+    io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
 	ImGui::StyleColorsDark();
+
+    io.KeyMap[ImGuiKey_Tab] = VK_TAB;
+    io.KeyMap[ImGuiKey_LeftArrow] = VK_LEFT;
+    io.KeyMap[ImGuiKey_RightArrow] = VK_RIGHT;
+    io.KeyMap[ImGuiKey_UpArrow] = VK_UP;
+    io.KeyMap[ImGuiKey_DownArrow] = VK_DOWN;
+    io.KeyMap[ImGuiKey_PageUp] = VK_PRIOR;
+    io.KeyMap[ImGuiKey_PageDown] = VK_NEXT;
+    io.KeyMap[ImGuiKey_Home] = VK_HOME;
+    io.KeyMap[ImGuiKey_End] = VK_END;
+    io.KeyMap[ImGuiKey_Insert] = VK_INSERT;
+    io.KeyMap[ImGuiKey_Delete] = VK_DELETE;
+    io.KeyMap[ImGuiKey_Backspace] = VK_BACK;
+    io.KeyMap[ImGuiKey_Space] = VK_SPACE;
+    io.KeyMap[ImGuiKey_Enter] = VK_RETURN;
+    io.KeyMap[ImGuiKey_Escape] = VK_ESCAPE;
+    io.KeyMap[ImGuiKey_KeyPadEnter] = VK_RETURN;
+    io.KeyMap[ImGuiKey_A] = 'A';
+    io.KeyMap[ImGuiKey_C] = 'C';
+    io.KeyMap[ImGuiKey_V] = 'V';
+    io.KeyMap[ImGuiKey_X] = 'X';
+    io.KeyMap[ImGuiKey_Y] = 'Y';
+    io.KeyMap[ImGuiKey_Z] = 'Z';
+
 	return ImGui_ImplOpenGL3_Init();
 }
 
@@ -50,6 +77,14 @@ void coImgui::Begin()
 					io.MousePos = ImVec2((float)pos.x, (float)pos.y);
 	}
 
+    // Update OS mouse cursor with the cursor requested by imgui
+    ImGuiMouseCursor mouseCursor = io.MouseDrawCursor ? ImGuiMouseCursor_None : ImGui::GetMouseCursor();
+    if (lastMouseCursor != mouseCursor)
+    {
+        lastMouseCursor = mouseCursor;
+        UpdateMouseCursor();
+    }
+
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui::NewFrame();
 }
@@ -58,6 +93,39 @@ void coImgui::End()
 {
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+coBool coImgui::UpdateMouseCursor()
+{
+    ImGuiIO& io = ImGui::GetIO();
+    if (io.ConfigFlags & ImGuiConfigFlags_NoMouseCursorChange)
+        return false;
+
+    ImGuiMouseCursor imgui_cursor = ImGui::GetMouseCursor();
+    if (imgui_cursor == ImGuiMouseCursor_None || io.MouseDrawCursor)
+    {
+        // Hide OS mouse cursor if imgui is drawing it or if it wants no cursor
+        ::SetCursor(NULL);
+    }
+    else
+    {
+        // Show OS mouse cursor
+        LPTSTR win32_cursor = IDC_ARROW;
+        switch (imgui_cursor)
+        {
+        case ImGuiMouseCursor_Arrow:        win32_cursor = IDC_ARROW; break;
+        case ImGuiMouseCursor_TextInput:    win32_cursor = IDC_IBEAM; break;
+        case ImGuiMouseCursor_ResizeAll:    win32_cursor = IDC_SIZEALL; break;
+        case ImGuiMouseCursor_ResizeEW:     win32_cursor = IDC_SIZEWE; break;
+        case ImGuiMouseCursor_ResizeNS:     win32_cursor = IDC_SIZENS; break;
+        case ImGuiMouseCursor_ResizeNESW:   win32_cursor = IDC_SIZENESW; break;
+        case ImGuiMouseCursor_ResizeNWSE:   win32_cursor = IDC_SIZENWSE; break;
+        case ImGuiMouseCursor_Hand:         win32_cursor = IDC_HAND; break;
+        case ImGuiMouseCursor_NotAllowed:   win32_cursor = IDC_NO; break;
+        }
+        ::SetCursor(::LoadCursor(NULL, win32_cursor));
+    }
+    return true;
 }
 
 LRESULT coImgui::_ProcessWindowMessages(UINT msg, WPARAM wParam, LPARAM lParam)
@@ -123,8 +191,8 @@ LRESULT coImgui::_ProcessWindowMessages(UINT msg, WPARAM wParam, LPARAM lParam)
             io.AddInputCharacterUTF16((unsigned short)wParam);
         return 0;
     case WM_SETCURSOR:
-        //if (LOWORD(lParam) == HTCLIENT && ImGui_ImplWin32_UpdateMouseCursor())
-        //    return 1;
+        if (LOWORD(lParam) == HTCLIENT && UpdateMouseCursor())
+            return 1;
         return 0;
     case WM_DEVICECHANGE:
         return 0;

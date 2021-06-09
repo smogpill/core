@@ -402,8 +402,7 @@ coResult coWindow::OnImplInit(const InitConfig& /*_config*/)
 	coTRY(renderContext->Init(hwnd), "Failed to init the render context");
 
 	imgui = new coImgui();
-	imgui->SetHWND(hwnd);
-	coTRY(imgui->Init(), nullptr);
+	coTRY(imgui->Init(hwnd), nullptr);
 
 	return true;
 }
