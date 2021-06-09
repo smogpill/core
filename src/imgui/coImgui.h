@@ -4,7 +4,6 @@
 #include "lang/result/coResult.h"
 
 struct ImGuiContext;
-class coWindow;
 
 class coImgui
 {
@@ -14,10 +13,11 @@ public:
 	void Begin();
 	void End();
 	void DrawDemo();
-	void SetWindow(coWindow* w) { window = w; }
+	void SetHWND(HWND hwnd_) { hwnd = hwnd_; }
+	LRESULT _ProcessWindowMessages(UINT msg, WPARAM wParam, LPARAM lParam);
 
 private:
+	HWND hwnd = NULL;
 	coBool demo = false;
 	ImGuiContext* context = nullptr;
-	coWindow* window = nullptr;
 };

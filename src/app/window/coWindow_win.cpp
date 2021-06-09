@@ -8,12 +8,20 @@
 #include "container/string/coDynamicString16.h"
 #include "container/string/coDynamicString16_f.h"
 #include "render/context/coRenderContext.h"
+#include "imgui/coImgui.h"
 
 #pragma comment (lib, "opengl32.lib")
 
 static LRESULT CALLBACK coWindowProc(HWND _hwnd, UINT _msg, WPARAM _wParam, LPARAM _lParam)
 {
 	coWindow* window = reinterpret_cast<coWindow*>(::GetWindowLongPtrW(_hwnd, GWLP_USERDATA));
+	if (window)
+	{
+		const LRESULT result = window->_ProcessWindowMessages(_msg, _wParam, _lParam);
+		if (result)
+			return result;
+	}
+	
 	switch (_msg)
 	{
 	case WM_INPUT:
@@ -393,6 +401,10 @@ coResult coWindow::OnImplInit(const InitConfig& /*_config*/)
 	renderContext = new coRenderContext();
 	coTRY(renderContext->Init(hwnd), "Failed to init the render context");
 
+	imgui = new coImgui();
+	imgui->SetHWND(hwnd);
+	coTRY(imgui->Init(), nullptr);
+
 	return true;
 }
 
@@ -499,6 +511,17 @@ coResult coWindow::SetForeground()
 coResult coWindow::SetFocus()
 {
 	return ::SetFocus(hwnd) == hwnd;
+}
+
+LRESULT coWindow::_ProcessWindowMessages(UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	if (imgui)
+	{
+		const LRESULT res = imgui->_ProcessWindowMessages(msg, wParam, lParam);
+		if (res)
+			return res;
+	}
+	return 0;
 }
 
 void coWindow::Destroy()

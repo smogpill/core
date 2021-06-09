@@ -34,9 +34,10 @@ public:
 	ShowState GetShowState() const { return showState; }
 	coResult SetForeground();
 	coResult SetFocus();
-	void SetImgui(coImgui*);
 	const coInt32x2& GetClientSize() const { return clientSize; }
 	coRenderContext* GetRenderContext() const { return renderContext; };
+	LRESULT _ProcessWindowMessages(UINT msg, WPARAM wParam, LPARAM lParam);
+	coImgui* GetImgui() const { return imgui; }
 	void Destroy();
 #ifdef coMSWINDOWS
 	void _SetHwnd(HWND h) { hwnd = h; }

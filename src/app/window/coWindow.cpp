@@ -3,6 +3,7 @@
 #include "app/pch.h"
 #include "app/window/coWindow.h"
 #include "lang/result/coResult_f.h"
+#include "imgui/coImgui.h"
 
 coWindow::coWindow()
 {
@@ -11,6 +12,7 @@ coWindow::coWindow()
 
 coWindow::~coWindow()
 {
+	delete imgui;
 	OnImplDestruct();
 }
 
@@ -47,13 +49,3 @@ coResult coWindow::SetShowState(const ShowState& _state)
 	return true;
 }
 
-void coWindow::SetImgui(coImgui* newImgui)
-{
-	if (imgui == newImgui)
-		return;
-	imgui = newImgui;
-	if (imgui)
-	{
-
-	}
-}

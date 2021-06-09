@@ -28,26 +28,20 @@ coResult Main()
 		coTRY(window.SetShowState(coWindow::ShowState::default), nullptr);
 	}
 
-	// Imgui
-	coImgui imgui;
-	{
-		coTRY(imgui.Init(), nullptr);
-		imgui.SetWindow(&window);
-	}
-
 	auto loop = [&]()
 	{
 		coRenderContext* renderContext = window.GetRenderContext();
 		if (renderContext)
 		{
+			coImgui* imgui = window.GetImgui();
 			coTRY(renderContext->BeginRender(), nullptr);
 			coRenderView* view = renderContext->GetMainRenderView();
 			if (view)
 			{
 				view->Begin();
-				imgui.Begin();
-				imgui.DrawDemo();
-				imgui.End();
+				imgui->Begin();
+				imgui->DrawDemo();
+				imgui->End();
 				view->End();
 			}
 			renderContext->EndRender();
