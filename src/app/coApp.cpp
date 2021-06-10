@@ -7,6 +7,7 @@
 #include "lang/reflect/coTypeFactory.h"
 #include "lang/reflect/coTypeRegistry.h"
 #include "render/manager/coRenderManager.h"
+#include "io/dir/coDirectory_f.h"
 
 coApp::~coApp()
 {
@@ -21,6 +22,10 @@ coApp::~coApp()
 coResult coApp::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
+
+	//const InitConfig& config = static_cast<InitConfig>(_config);
+
+	coTRY(coInitDefaultDirs(), nullptr);
 
 	defaultLogHandler = new coDefaultLogHandler();
 	coLogHandler::instance = defaultLogHandler;
