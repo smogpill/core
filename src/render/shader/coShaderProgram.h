@@ -13,6 +13,7 @@ public:
 	~coShaderProgram();
 	coResult Init(const coArray<const coShader*>& shaders);
 	void Bind();
+	void Unbind();
 	coInt GetUniformLocation(const coChar* name) const;
 	void SetUniform(coInt location, const coMat4& value);
 	void SetUniform(coInt location, const coVec3& value);
@@ -24,6 +25,11 @@ private:
 inline void coShaderProgram::Bind()
 {
 	glUseProgram(id);
+}
+
+inline void coShaderProgram::Unbind()
+{
+	glUseProgram(0);
 }
 
 inline coInt coShaderProgram::GetUniformLocation(const coChar* name) const

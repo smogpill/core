@@ -82,7 +82,7 @@ function coSetCppProjectDefaults(_name)
 	cppdialect "C++17"
 	runtime "Release" -- Even on debug builds, Unreal is setup this way anyway.
 	flags { "NoMinimalRebuild", "FatalWarnings", "MultiProcessorCompile" }
-	files { "**.cpp", "**.h", "**.inl"}
+	files { "**.cpp", "**.h", "**.inl", "**.frag", "**.vert", "**.comp", "**.tesc", "**.tese", "**.geom"}
 
 	if os.isfile("pch.h") then
 		coSetPCH(co_projectDir, _name, "pch")
@@ -103,6 +103,17 @@ function coSetCppProjectDefaults(_name)
 		optimize "Speed"
 		omitframepointer "On"
 	filter {"configurations:debug or dev or release"}
+
+	filter {'files:**.vert or **.frag or **.comp or **.geom'}
+		shaderOutPath = "$(OutDir)/shaders/%{file.name}.spv"
+		buildmessage 'Compiling %{file.relpath}'
+		buildcommands
+		{
+			'$(GLSLANG)/glslangValidator.exe -G -o "'..shaderOutPath ..'" %{file.relpath}'
+		}
+		buildoutputs { shaderOutPath }
+	filter {}
+
 		--[[
 		if os.isfile("reflect.cpp") then
 			local projectBasePath = "../.."
@@ -118,24 +129,13 @@ function coSetCppProjectDefaults(_name)
 	filter {}
 end
 
-function coSetShaderProjectDefaults(_name)
-	coSetProjectDefaults(_name)
-	kind "Utility"
-
+function coSetShaderDefaults(_name)
 	-- Defaults
-	files { "**.vert", "**.frag"}
 	--language "C++" -- We don't have better here
 
 	---[[
-	shaderOutPath = "$(OutDir)/shaders/%{file.name}.spv"
-	filter {'files:**.vert or **.frag'}
-		buildmessage 'Compiling %{file.relpath}'
-		buildcommands
-		{
-			'$(VULKAN_SDK)/Bin/glslangValidator.exe -V -o "'..shaderOutPath ..'" %{file.relpath}'
-		}
-		buildoutputs { shaderOutPath }
-	filter {}
+	
+
 	--]]
 end
 
