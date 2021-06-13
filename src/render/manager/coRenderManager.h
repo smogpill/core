@@ -6,5 +6,6 @@
 class coRenderManager
 {
 public:
+
 	coResult Init();
 };

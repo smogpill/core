@@ -7,10 +7,10 @@ class coType;
 class coModule
 {
 public:
-	coResult Init();
+	virtual coResult InitTypes() { return true; }
+	virtual coResult Init() { return true; }
 
 protected:
-	virtual coResult OnInitTypes() { return true; }
 	void Add(const coType& type);
 	template <class T>
 	void Add()

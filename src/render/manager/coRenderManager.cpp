@@ -4,8 +4,11 @@
 #include "render/manager/coRenderManager.h"
 #include "lang/result/coResult_f.h"
 
+
 coResult coRenderManager::Init()
 {
+	return true;
+	/*
 	switch (gl3wInit())
 	{
 	case GL3W_OK: return true;
@@ -14,4 +17,5 @@ coResult coRenderManager::Init()
 	case GL3W_ERROR_OPENGL_VERSION: return true;//coERROR("gl3w: Failed to retrieve OpenGL version."); return true;
 	default: return false;
 	}
+	*/
 }

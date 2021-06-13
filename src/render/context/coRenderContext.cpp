@@ -7,6 +7,29 @@
 #include "platform/coOs.h"
 #include "render/view/coRenderView.h"
 
+void co_MessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
+{
+	switch (severity)
+	{
+	case GL_DEBUG_SEVERITY_HIGH:
+	case GL_DEBUG_SEVERITY_MEDIUM:
+	{
+		coERROR(message);
+		break;
+	}
+	case GL_DEBUG_SEVERITY_LOW:
+	{
+		coWARN(message);
+		break;
+	}
+	case GL_DEBUG_SEVERITY_NOTIFICATION:
+	{
+		coINFO(message);
+		break;
+	}
+	}
+}
+
 coRenderContext::~coRenderContext()
 {
 	delete mainRenderView;
@@ -124,6 +147,11 @@ coResult coRenderContext::InitOpengl()
 		default: return false;
 		}
 	}
+
+#ifdef coDEBUG
+	glEnable(GL_DEBUG_OUTPUT);
+	glDebugMessageCallback(co_MessageCallback, nullptr);
+#endif
 	
 	return true;
 }

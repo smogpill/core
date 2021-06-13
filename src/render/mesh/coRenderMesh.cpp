@@ -3,19 +3,13 @@
 #include "render/pch.h"
 #include "render/mesh/coRenderMesh.h"
 #include "container/array/coDynamicArray_f.h"
+#include <lang/result/coResult_f.h>
 
 coResult coRenderMesh::Init()
 {
 	glGenVertexArrays(1, &vertexArrayObject);
 	glGenBuffers(1, &vertexBufferObject);
 	glGenBuffers(1, &elementBufferObject);
-
-    glBindVertexArray(vertexArrayObject);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
-    glBindVertexArray(0);
 
 	return true;
 }
@@ -43,10 +37,17 @@ void coRenderMesh::SetBuffers(const coArray<coVec3>& positions, const coArray<co
 void coRenderMesh::SetBuffers(const coArray<Vertex>& vertices, const coArray<coUint32>& indices)
 {
     glBindVertexArray(vertexArrayObject);
+
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
     glBufferData(GL_ARRAY_BUFFER, vertices.count * sizeof(Vertex), vertices.data, GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferObject);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.count * sizeof(coUint32), indices.data, GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+
     glBindVertexArray(0);
     nbIndices = indices.count;
 }

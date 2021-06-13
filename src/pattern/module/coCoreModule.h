@@ -4,12 +4,18 @@
 #include "coModule.h"
 #include "lang/reflect/coTypeDecl.h"
 
+class coDefaultLogHandler;
+
 class coCoreModule : public coModule
 {
 	coDECLARE_SUPER(coModule);
 public:
 	coCoreModule();
 	~coCoreModule();
-protected:
-	virtual coResult OnInitTypes() override;
+
+	virtual coResult InitTypes() override;
+	virtual coResult Init() override;
+
+private:
+	coDefaultLogHandler* defaultLogHandler = nullptr;
 };

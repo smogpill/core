@@ -4,23 +4,36 @@
 #include "coCoreModule.h"
 #include <lang/result/coResult_f.h>
 #include <lang/reflect/coTypeFactory.h>
-
+#include "lang/reflect/coTypeRegistry.h"
+#include "debug/log/coDefaultLogHandler.h"
+#include "io/dir/coDirectory_f.h"
 #include <pattern/ecs/coComponent.h>
 
 coCoreModule::coCoreModule()
 {
-	coASSERT(!coTypeFactory::instance);
-	coTypeFactory::instance = new coTypeFactory();
+	coASSERT(coInitDefaultDirs());
+	coLogHandler::GiveInstance(new coDefaultLogHandler());
+	coTypeFactory::GiveInstance(new coTypeFactory());
+	coTypeRegistry::GiveInstance(new coTypeRegistry());
 }
 
 coCoreModule::~coCoreModule()
 {
-	delete coTypeFactory::instance;
-	coTypeFactory::instance = nullptr;
+	coTypeRegistry::DestroyInstance();
+	coTypeFactory::DestroyInstance();
+	coLogHandler::DestroyInstance();
 }
 
-coResult coCoreModule::OnInitTypes()
+coResult coCoreModule::InitTypes()
 {
+	coTRY(Super::InitTypes(), nullptr);
 	Add<coComponent>();
+	return true;
+}
+
+coResult coCoreModule::Init()
+{
+	coTRY(Super::Init(), nullptr);
+	coTRY(coTypeFactory::instance->Init(), nullptr);
 	return true;
 }

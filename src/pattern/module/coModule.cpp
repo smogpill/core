@@ -6,12 +6,6 @@
 #include <lang/reflect/coType.h>
 #include <lang/result/coResult_f.h>
 
-coResult coModule::Init()
-{
-	coTRY(OnInitTypes(), nullptr);
-	return true;
-}
-
 void coModule::Add(const coType& type)
 {
 	coASSERT(type.builder);

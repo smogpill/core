@@ -7,7 +7,6 @@
 
 class coDefaultLogHandler;
 class coRenderManager;
-class coModule;
 
 class coApp : public coObject
 {
@@ -32,8 +31,6 @@ protected:
 	coBool exitRequested = false;
 
 private:
-	coDynamicArray<coModule*> modules;
-	coDefaultLogHandler* defaultLogHandler = nullptr;
 	coRenderManager* renderManager = nullptr;
 };
 
