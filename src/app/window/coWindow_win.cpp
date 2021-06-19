@@ -2,6 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "app/pch.h"
 #include "app/window/coWindow.h"
+#include "app/input/coInputListener.h"
 #include "lang/result/coResult_f.h"
 #include "debug/log/coLog.h"
 #include "platform/coOs.h"
@@ -24,28 +25,6 @@ static LRESULT CALLBACK coWindowProc(HWND _hwnd, UINT _msg, WPARAM _wParam, LPAR
 	
 	switch (_msg)
 	{
-	case WM_INPUT:
-	{
-		// 		if (window->m_inputManager)
-		// 		{
-		// 			RAWINPUT rawInput = { 0 };
-		// 			UINT size8 = sizeof(rawInput);
-		// 			// Get the buffer size
-		// #ifdef coDEBUG
-		// 			UINT desiredSize8;
-		// 			GetRawInputData(reinterpret_cast<HRAWINPUT>(_lParam), RID_INPUT, nullptr, &desiredSize8, sizeof(RAWINPUTHEADER));
-		// 			coASSERT(desiredSize8 <= size8);
-		// #endif
-		// 
-		// 			GetRawInputData(reinterpret_cast<HRAWINPUT>(_lParam), RID_INPUT, &rawInput, &size8, sizeof(RAWINPUTHEADER));
-		// 			if (window->m_inputManager)
-		// 			{
-		// 				coTEST_RESULT(window->m_inputManager->processRawInput(rawInput),
-		// 					"The input manager failed to process windows messages");
-		// 			}
-		// 		}
-	}
-	break;
 	case WM_KEYDOWN:
 	case WM_SYSKEYDOWN:
 	{
@@ -397,6 +376,26 @@ coResult coWindow::OnImplInit(const InitConfig& /*_config*/)
 		return false;
 	}
 
+	// Input
+	RAWINPUTDEVICE rid[2];
+	rid[0].usUsagePage = HID_USAGE_PAGE_GENERIC;
+	rid[0].usUsage = HID_USAGE_GENERIC_MOUSE;
+	rid[0].dwFlags = RIDEV_INPUTSINK;
+	rid[0].hwndTarget = hwnd;
+
+	rid[1].usUsagePage = HID_USAGE_PAGE_GENERIC;
+	rid[1].usUsage = HID_USAGE_GENERIC_KEYBOARD;
+	rid[1].dwFlags = RIDEV_INPUTSINK;
+	rid[1].hwndTarget = hwnd;
+
+	if (RegisterRawInputDevices(rid, 2, sizeof(rid[0])) == FALSE)
+	{
+		coDynamicString s;
+		coDumpLastOsError(s);
+		coERROR("RegisterRawInputDevices failed: " << s);
+		return false;
+	}
+
 	coASSERT(renderContext == nullptr);
 	renderContext = new coRenderContext();
 	coTRY(renderContext->Init(hwnd), "Failed to init the render context");
@@ -523,9 +522,52 @@ LRESULT coWindow::_ProcessWindowMessages(UINT msg, WPARAM wParam, LPARAM lParam)
 
 	switch (msg)
 	{
+	case WM_MOUSEMOVE:
+	{
+
+		break;
+	}
+	case WM_INPUT:
+	{
+		UINT size8 = sizeof(RAWINPUT);
+		static BYTE buffer[sizeof(RAWINPUT)];
+		GetRawInputData((HRAWINPUT)lParam, RID_INPUT, buffer, &size8, sizeof(RAWINPUTHEADER));
+		const RAWINPUT* raw = (RAWINPUT*)buffer;
+		switch (raw->header.dwType)
+		{
+		case RIM_TYPEMOUSE:
+		{
+			const coInt relativeX = raw->data.mouse.lLastX;
+			const coInt relativeY = raw->data.mouse.lLastY;
+			if (inputListener)
+			{
+				inputListener->OnRelativeMouseMove(relativeX, relativeY);
+			}
+			break;
+		}
+		case RIM_TYPEKEYBOARD:
+		{
+			switch (raw->data.keyboard.Message)
+			{
+			case WM_KEYDOWN:
+			case WM_SYSKEYDOWN:
+			{
+				if (inputListener)
+				{
+					inputListener->OnVirtualKeyDown(raw->data.keyboard.VKey);
+				}
+				break;
+			}
+			}
+			break;
+		}
+		}
+		break;
+	}
 	case WM_DESTROY:
 	{
 		Destroy();
+		break;
 	}
 	}
 	return 0;

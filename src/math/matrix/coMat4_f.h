@@ -158,3 +158,9 @@ coFORCE_INLINE void coSetTranslation(coMat4& _this, const coVec3& v)
 {
 	_this.c3 = coVec4(v, 1.0f);
 }
+coFORCE_INLINE void coSetRotationNoScale(coMat4& _this, const coQuat& q)
+{
+	coMat3 m;
+	coSetRotation(m, q);
+	coSetUpperMat3(_this, m);
+}

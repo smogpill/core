@@ -7,6 +7,7 @@
 
 class coRenderContext;
 class coImgui;
+class coInputListener;
 
 class coWindow : public coObject
 {
@@ -34,6 +35,7 @@ public:
 	ShowState GetShowState() const { return showState; }
 	coResult SetForeground();
 	coResult SetFocus();
+	void SetInputListener(coInputListener* listener) { inputListener = listener; }
 	const coInt32x2& GetClientSize() const { return clientSize; }
 	coRenderContext* GetRenderContext() const { return renderContext; };
 	LRESULT _ProcessWindowMessages(UINT msg, WPARAM wParam, LPARAM lParam);
@@ -61,6 +63,7 @@ private:
 	coInt32x2 clientSize = coInt32x2(0);
 	coDynamicString name;
 	coImgui* imgui = nullptr;
+	coInputListener* inputListener = nullptr;
 
 #ifdef coMSWINDOWS
 	HWND hwnd = NULL;

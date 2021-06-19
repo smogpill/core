@@ -3,3 +3,6 @@
 #pragma once
 #include "app/publicPCH.h"
 #include "platform/coOsHeaders.h"
+#ifdef coMSWINDOWS
+#include <hidusage.h>
+#endif

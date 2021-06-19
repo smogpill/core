@@ -43,6 +43,7 @@ coFORCE_INLINE coQuat coRotation(const coFloatx3& _eulerAngles)
 	r  = coNormalize(r); // HACK
 	return r;
 }
+
 coFORCE_INLINE coQuat coRotation(const coVec3& _axis, coFloat _angle)
 {
 	coASSERT(coIsNormalized(_axis));
@@ -120,6 +121,10 @@ coFORCE_INLINE coQuat operator*(const coQuat& _a, const coQuat& _b)
 	a1 = coBitCast<coFloatx4>(coBitCast<coInt32x4>(a1) ^ coInt32x4_SIGN_MASK_W);
 	a0 = a0 + a1;
 	return coBitCast<coQuat>(a0);
+}
+coFORCE_INLINE coQuat& operator*=(coQuat& this_, const coQuat& b)
+{
+	return this_ = this_ * b;
 }
 // coFORCE_INLINE coQuat operator*(const coQuat& _q, const coFloatx4& _xyzw)
 // {

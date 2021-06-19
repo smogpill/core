@@ -48,4 +48,3 @@ coResult coWindow::SetShowState(const ShowState& _state)
 	showState = _state;
 	return true;
 }
-
