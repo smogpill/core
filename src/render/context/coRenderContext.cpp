@@ -147,11 +147,14 @@ coResult coRenderContext::InitOpengl()
 		default: return false;
 		}
 	}
+	glEnable(GL_DEPTH_TEST);
 
 #ifdef coDEBUG
 	glEnable(GL_DEBUG_OUTPUT);
 	glDebugMessageCallback(co_MessageCallback, nullptr);
 #endif
+
+	//glFrontFace(GL_CW);
 	
 	return true;
 }
