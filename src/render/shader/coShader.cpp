@@ -15,6 +15,8 @@ coResult coShader::Init(Type type_, const coConstString& rawPath)
 {
 	type = type_;
 
+	constexpr coBool compiled = true;
+
 	coDynamicString path = rawPath;
 	switch (type)
 	{
@@ -28,6 +30,11 @@ coResult coShader::Init(Type type_, const coConstString& rawPath)
 	}
 	}
 
+	if (compiled)
+	{
+		path << ".spv";
+	}
+
 	coDynamicArray<coByte> buffer;
 	coTRY(coReadFullFile(buffer, path), nullptr);
 
@@ -35,9 +42,18 @@ coResult coShader::Init(Type type_, const coConstString& rawPath)
 	id = glCreateShader(glType);
 	coTRY(id, "glCreateShader()");
 	const GLchar* source = reinterpret_cast<const GLchar*>(buffer.data);
-	glShaderSource(id, 1, &source, nullptr);
-	coTRY(glGetError() == GL_NO_ERROR, "glShaderSource()" << path);
-	glCompileShader(id);
+
+	if (compiled)
+	{
+		glShaderBinary(1, &id, GL_SHADER_BINARY_FORMAT_SPIR_V_ARB, buffer.data, buffer.count);
+		glSpecializeShader(id, "main", 0, nullptr, nullptr);
+	}
+	else
+	{
+		glShaderSource(id, 1, &source, nullptr);
+		coTRY(glGetError() == GL_NO_ERROR, "glShaderSource()" << path);
+		glCompileShader(id);
+	}
 
 	GLint state = FALSE;
 	glGetShaderiv(id, GL_COMPILE_STATUS, &state);
