@@ -2,7 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "app/pch.h"
 #include "app/window/coWindow.h"
-#include "app/input/coInputListener.h"
+#include "app/input/coInputContext.h"
 #include "lang/result/coResult_f.h"
 #include "debug/log/coLog.h"
 #include "platform/coOs.h"
@@ -18,8 +18,8 @@ static LRESULT CALLBACK coWindowProc(HWND _hwnd, UINT _msg, WPARAM _wParam, LPAR
 	coWindow* window = reinterpret_cast<coWindow*>(::GetWindowLongPtrW(_hwnd, GWLP_USERDATA));
 	if (window)
 	{
-		const LRESULT result = window->_ProcessWindowMessages(_msg, _wParam, _lParam);
-		if (result)
+		LRESULT result = 0;
+		if (window->_ProcessWindowMessages(_msg, _wParam, _lParam, result))
 			return result;
 	}
 	
@@ -71,14 +71,18 @@ static LRESULT CALLBACK coWindowProc(HWND _hwnd, UINT _msg, WPARAM _wParam, LPAR
 		{
 		case SC_MINIMIZE:
 		{
-
+			break;
 		}
-		break;
+		case SC_KEYMENU:
+		{
+			// Remove beeping sound when ALT + some key is pressed.
+			return 0;
+		}
 		case SC_SCREENSAVE:
 		{
 			return 0;
 		}
-		break;
+
 		default:
 			break;
 		}
@@ -137,6 +141,8 @@ static LRESULT CALLBACK coWindowProc(HWND _hwnd, UINT _msg, WPARAM _wParam, LPAR
 	// 		return 0;
 	// 	}
 	// 	break;
+	case WM_CLOSE:
+	case WM_QUIT:
 	case WM_DESTROY:
 	{
 		window->Destroy();
@@ -216,6 +222,9 @@ void coWindow::OnImplDestruct()
 {
 	delete renderContext;
 	renderContext = nullptr;
+	delete inputContext;
+	inputContext = nullptr;
+
 	if (hwnd != NULL)
 	{
 		const BOOL res = ::DestroyWindow(hwnd);
@@ -376,25 +385,8 @@ coResult coWindow::OnImplInit(const InitConfig& /*_config*/)
 		return false;
 	}
 
-	// Input
-	RAWINPUTDEVICE rid[2];
-	rid[0].usUsagePage = HID_USAGE_PAGE_GENERIC;
-	rid[0].usUsage = HID_USAGE_GENERIC_MOUSE;
-	rid[0].dwFlags = RIDEV_INPUTSINK;
-	rid[0].hwndTarget = hwnd;
-
-	rid[1].usUsagePage = HID_USAGE_PAGE_GENERIC;
-	rid[1].usUsage = HID_USAGE_GENERIC_KEYBOARD;
-	rid[1].dwFlags = RIDEV_INPUTSINK;
-	rid[1].hwndTarget = hwnd;
-
-	if (RegisterRawInputDevices(rid, 2, sizeof(rid[0])) == FALSE)
-	{
-		coDynamicString s;
-		coDumpLastOsError(s);
-		coERROR("RegisterRawInputDevices failed: " << s);
-		return false;
-	}
+	inputContext = new coInputContext();
+	coTRY(inputContext->Init(hwnd), nullptr);
 
 	coASSERT(renderContext == nullptr);
 	renderContext = new coRenderContext();
@@ -511,66 +503,30 @@ coResult coWindow::SetFocus()
 	return ::SetFocus(hwnd) == hwnd;
 }
 
-LRESULT coWindow::_ProcessWindowMessages(UINT msg, WPARAM wParam, LPARAM lParam)
+coBool coWindow::_ProcessWindowMessages(UINT msg, WPARAM wParam, LPARAM lParam, LRESULT& result)
 {
 	if (imgui)
 	{
-		const LRESULT res = imgui->_ProcessWindowMessages(msg, wParam, lParam);
-		if (res)
-			return res;
+		result = imgui->_ProcessWindowMessages(msg, wParam, lParam);
+		if (result)
+			return true;
+	}
+
+	if (inputContext)
+	{
+		if (inputContext->_ProcessWindowMessages(msg, wParam, lParam, result))
+			return true;
 	}
 
 	switch (msg)
 	{
-	case WM_MOUSEMOVE:
-	{
-
-		break;
-	}
-	case WM_INPUT:
-	{
-		UINT size8 = sizeof(RAWINPUT);
-		static BYTE buffer[sizeof(RAWINPUT)];
-		GetRawInputData((HRAWINPUT)lParam, RID_INPUT, buffer, &size8, sizeof(RAWINPUTHEADER));
-		const RAWINPUT* raw = (RAWINPUT*)buffer;
-		switch (raw->header.dwType)
-		{
-		case RIM_TYPEMOUSE:
-		{
-			const coInt relativeX = raw->data.mouse.lLastX;
-			const coInt relativeY = raw->data.mouse.lLastY;
-			if (inputListener)
-			{
-				inputListener->OnRelativeMouseMove(relativeX, relativeY);
-			}
-			break;
-		}
-		case RIM_TYPEKEYBOARD:
-		{
-			switch (raw->data.keyboard.Message)
-			{
-			case WM_KEYDOWN:
-			case WM_SYSKEYDOWN:
-			{
-				if (inputListener)
-				{
-					inputListener->OnVirtualKeyDown(raw->data.keyboard.VKey);
-				}
-				break;
-			}
-			}
-			break;
-		}
-		}
-		break;
-	}
 	case WM_DESTROY:
 	{
 		Destroy();
 		break;
 	}
 	}
-	return 0;
+	return false;
 }
 
 void coWindow::Destroy()
