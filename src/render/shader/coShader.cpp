@@ -11,9 +11,23 @@ coShader::~coShader()
 	coCHECK(glGetError() == GL_NO_ERROR, "glDeleteShader()");
 }
 
-coResult coShader::Init(Type type_, const coConstString& path)
+coResult coShader::Init(Type type_, const coConstString& rawPath)
 {
 	type = type_;
+
+	coDynamicString path = rawPath;
+	switch (type)
+	{
+	case Type::VERTEX: path << ".vert"; break;
+	case Type::FRAGMENT: path << ".frag"; break;
+	case Type::COMPUTE: path << ".comp"; break;
+	default:
+	{
+		coERROR("Unknown shader type: " << coUint8(type));
+		return false;
+	}
+	}
+
 	coDynamicArray<coByte> buffer;
 	coTRY(coReadFullFile(buffer, path), nullptr);
 
