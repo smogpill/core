@@ -187,7 +187,10 @@ public:
 
 private:
 	static coUint8 GetScancodeOffset(coUint32 scancode);
+	void SyncKeys();
+	void ClearKeys();
 
+	static const coUint32 keys[];
 	coUint8 keyStates[256] = {0};
 	coInt relativeMouseX = 0;
 	coInt relativeMouseY = 0;
