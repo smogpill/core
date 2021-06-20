@@ -50,6 +50,8 @@ coResult coShader::Init(Type type_, const coConstString& rawPath)
 	}
 	else
 	{
+		coResize(buffer, buffer.count + 1);
+		buffer[buffer.count - 1] = '\0';
 		glShaderSource(id, 1, &source, nullptr);
 		coTRY(glGetError() == GL_NO_ERROR, "glShaderSource()" << path);
 		glCompileShader(id);
