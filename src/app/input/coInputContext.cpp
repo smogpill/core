@@ -173,12 +173,12 @@ coResult coInputContext::Init(HWND hwnd_)
 	RAWINPUTDEVICE rid[2];
 	rid[0].usUsagePage = HID_USAGE_PAGE_GENERIC;
 	rid[0].usUsage = HID_USAGE_GENERIC_MOUSE;
-	rid[0].dwFlags = RIDEV_INPUTSINK | RIDEV_NOLEGACY;
+	rid[0].dwFlags = RIDEV_INPUTSINK;
 	rid[0].hwndTarget = hwnd_;
 
 	rid[1].usUsagePage = HID_USAGE_PAGE_GENERIC;
 	rid[1].usUsage = HID_USAGE_GENERIC_KEYBOARD;
-	rid[1].dwFlags = RIDEV_INPUTSINK | RIDEV_NOLEGACY;
+	rid[1].dwFlags = RIDEV_INPUTSINK;
 	rid[1].hwndTarget = hwnd_;
 
 	if (RegisterRawInputDevices(rid, 2, sizeof(rid[0])) == FALSE)
@@ -252,16 +252,14 @@ coBool coInputContext::_ProcessWindowMessages(UINT msg, WPARAM wParam, LPARAM lP
 			else if (keyboard.Flags & RI_KEY_E1)
 				scanCode |= 0xE100;
 
-			/*
-			Some scancodes we can ignore:
-			- 0xE11D: first part of the Pause scancode (handled above);
-			- 0xE02A: first part of the Print Screen scancode if no Shift, Control or Alt keys are pressed;
-			- 0xE02A, 0xE0AA, 0xE036, 0xE0B6: generated in addition of Insert, Delete, Home, End, Page Up, Page Down, Up, Down, Left, Right when num lock is on; or when num lock is off but one or both shift keys are pressed;
-			- 0xE02A, 0xE0AA, 0xE036, 0xE0B6: generated in addition of Numpad Divide and one or both Shift keys are pressed;
-			- Some of those a break scancode;
+			// Some scancodes we can ignore:
+			// - 0xE11D: first part of the Pause scancode (handled above);
+			// - 0xE02A: first part of the Print Screen scancode if no Shift, Control or Alt keys are pressed;
+			// - 0xE02A, 0xE0AA, 0xE036, 0xE0B6: generated in addition of Insert, Delete, Home, End, Page Up, Page Down, Up, Down, Left, Right when num lock is on; or when num lock is off but one or both shift keys are pressed;
+			// - 0xE02A, 0xE0AA, 0xE036, 0xE0B6: generated in addition of Numpad Divide and one or both Shift keys are pressed;
+			// - Some of those a break scancode;
 
-			When holding a key down, the pre/postfix (0xE02A) is not repeated.
-			*/
+			// When holding a key down, the pre/postfix (0xE02A) is not repeated.
 			if (scanCode == 0xE11D || scanCode == 0xE02A || scanCode == 0xE0AA || scanCode == 0xE0B6 || scanCode == 0xE036)
 			{
 				return false;

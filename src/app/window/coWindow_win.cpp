@@ -119,7 +119,6 @@ static LRESULT CALLBACK coWindowProc(HWND _hwnd, UINT _msg, WPARAM _wParam, LPAR
 
 	case WM_CREATE:
 	{
-		
 		break;
 	}
 	
