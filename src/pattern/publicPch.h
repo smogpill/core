@@ -3,4 +3,5 @@
 #pragma once
 
 #include "lang/publicPch.h"
+#include "debug/publicPch.h"
 #include <memory>

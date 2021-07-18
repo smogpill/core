@@ -61,7 +61,7 @@ function coSetProjectDefaults(_name, _options)
 	end
 
 	filter{"configurations:debug or dev or prebuildDebug"}
-		defines {"coDEBUG"}
+		defines {"coDEBUG", "coDEV"}
 	filter{"configurations:debug or dev or release"}
 		defines {"coREFLECT_ENABLED"}
 	filter { "configurations:dev or release or prebuildRelease" }

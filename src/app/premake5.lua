@@ -1,1 +1,2 @@
 coSetCppProjectDefaults("app")
+coSetProjectDependencies{"optick"}

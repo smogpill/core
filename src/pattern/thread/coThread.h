@@ -17,7 +17,7 @@ public:
 
 	void RequestStop() { stopRequested = true; }
 	coBool IsStopRequested() const { return stopRequested; }
-	coResult _Run() { return OnRun(); }
+	coResult _Run();
 protected:
 	virtual coResult OnStart() override;
 	virtual void OnStop() override;

@@ -1,1 +1,2 @@
 coSetCppProjectDefaults("pattern")
+coSetProjectDependencies{"optick"}

@@ -4,6 +4,7 @@
 #include "pattern/thread/coTaskWorkerThread.h"
 #include "pattern/thread/coTaskScheduler.h"
 #include "lang/result/coResult_f.h"
+#include "debug/profiler/coProfile.h"
 
 coTaskWorkerThread::coTaskWorkerThread(coTaskScheduler& scheduler_, coUint index_)
 	: scheduler(&scheduler_)
@@ -14,6 +15,7 @@ coTaskWorkerThread::coTaskWorkerThread(coTaskScheduler& scheduler_, coUint index
 coResult coTaskWorkerThread::OnRun()
 {
 	coTRY(Super::OnRun(), nullptr);
+	coPROFILE_THREAD("Worker");
 
 	coTaskContext context;
 	context.scheduler = scheduler;
