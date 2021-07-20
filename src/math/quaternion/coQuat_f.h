@@ -21,7 +21,27 @@ coFORCE_INLINE coBool32x4 coIsNormalized(const coQuat& _this, const coVec4& _squ
 
 coFORCE_INLINE coQuat coRotation(const coFloatx3& _eulerAngles)
 {
-	// Uses conventions from Unreal.
+	// Uses conventions from Unreal from FRotator::Quaternion()
+
+	/*
+	const float DEG_TO_RAD = PI/(180.f);
+	const float RADS_DIVIDED_BY_2 = DEG_TO_RAD/2.f;
+	float SP, SY, SR;
+	float CP, CY, CR;
+
+	const float PitchNoWinding = FMath::Fmod(Pitch, 360.0f);
+	const float YawNoWinding = FMath::Fmod(Yaw, 360.0f);
+	const float RollNoWinding = FMath::Fmod(Roll, 360.0f);
+
+	FMath::SinCos(&SP, &CP, PitchNoWinding * RADS_DIVIDED_BY_2);
+	FMath::SinCos(&SY, &CY, YawNoWinding * RADS_DIVIDED_BY_2);
+	FMath::SinCos(&SR, &CR, RollNoWinding * RADS_DIVIDED_BY_2);
+
+	FQuat RotationQuat;
+	RotationQuat.X =  CR*SP*SY - SR*CP*CY;
+	RotationQuat.Y = -CR*SP*CY - SR*CP*SY;
+	RotationQuat.Z =  CR*CP*SY - SR*SP*CY;
+	RotationQuat.W =  CR*CP*CY + SR*SP*SY;*/
 
 	const coFloatx3 halfAngles = _eulerAngles * 0.5f;
 	const coFloatx3 s = coSin(halfAngles);
@@ -135,14 +155,13 @@ coFORCE_INLINE coBool32x4 coIsValid(const coQuat& _this) { return coIsValid(coBi
 void coSetupSquad(coQuat& _out0, coQuat& _out1, coQuat& _out3, const coQuat& _q0, const coQuat& _q1, const coQuat& _q2, const coQuat& _q3);
 coFORCE_INLINE coVec3 coRotateVector(const coQuat& _this, const coVec3& _vec)
 {
-	// Alternative algo here: https://blog.molecular-matters.com/2013/05/24/a-faster-quaternion-vector-multiplication/
-	// t = 2 * cross(q.xyz, v)
-	// v' = v + q.w * t + cross(q.xyz, t)
+	// https://blog.molecular-matters.com/2013/05/24/a-faster-quaternion-vector-multiplication/
 
 	const coVec3 q = coBitCast<coVec3>(_this);
 	const coFloatx3 w = coFloatx3(coBroadcastW(_this));
-	const coVec3 r = 2.0f * coDot(q, _vec) * q + (w*w - coDot(q, q)) * _vec + 2.0f * w * coCross(q, _vec);
-	return r;
+	//return 2.0f * coDot(q, _vec) * q + (w*w - coDot(q, q)) * _vec + 2.0f * w * coCross(q, _vec);
+	const coVec3 t = 2.0f * coCross(q, _vec);
+	return _vec + w * t + coCross(q, t);
 }
 
 coFORCE_INLINE coVec3 coInverseRotateVector(const coQuat& _this, const coVec3& _vec)
