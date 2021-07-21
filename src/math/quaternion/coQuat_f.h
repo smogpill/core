@@ -21,44 +21,32 @@ coFORCE_INLINE coBool32x4 coIsNormalized(const coQuat& _this, const coVec4& _squ
 
 coFORCE_INLINE coQuat coRotation(const coFloatx3& _eulerAngles)
 {
-	// Uses conventions from Unreal from FRotator::Quaternion()
-
-	/*
-	const float DEG_TO_RAD = PI/(180.f);
-	const float RADS_DIVIDED_BY_2 = DEG_TO_RAD/2.f;
-	float SP, SY, SR;
-	float CP, CY, CR;
-
-	const float PitchNoWinding = FMath::Fmod(Pitch, 360.0f);
-	const float YawNoWinding = FMath::Fmod(Yaw, 360.0f);
-	const float RollNoWinding = FMath::Fmod(Roll, 360.0f);
-
-	FMath::SinCos(&SP, &CP, PitchNoWinding * RADS_DIVIDED_BY_2);
-	FMath::SinCos(&SY, &CY, YawNoWinding * RADS_DIVIDED_BY_2);
-	FMath::SinCos(&SR, &CR, RollNoWinding * RADS_DIVIDED_BY_2);
-
-	FQuat RotationQuat;
-	RotationQuat.X =  CR*SP*SY - SR*CP*CY;
-	RotationQuat.Y = -CR*SP*CY - SR*CP*SY;
-	RotationQuat.Z =  CR*CP*SY - SR*SP*CY;
-	RotationQuat.W =  CR*CP*CY + SR*SP*SY;*/
-
 	const coFloatx3 halfAngles = _eulerAngles * 0.5f;
 	const coFloatx3 s = coSin(halfAngles);
 	const coFloatx3 c = coCos(halfAngles);
 
-	const coFloat sp = s.y;
-	const coFloat cp = c.y;
 	const coFloat sy = s.z;
 	const coFloat cy = c.z;
+	const coFloat sp = s.y;
+	const coFloat cp = c.y;
 	const coFloat sr = s.x;
 	const coFloat cr = c.x;
 
 	coQuat r(nullptr);
+
+	// UE4 order (FRotator::Quaternion())
 	r.x = +cr*sp*sy - sr*cp*cy;
 	r.y = -cr*sp*cy - sr*cp*sy;
 	r.z = +cr*cp*sy - sr*sp*cy;
 	r.w = +cr*cp*cy + sr*sp*sy;
+
+	/*
+	Wikipedia order https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+	r.x = sr * cp * cy - cr * sp * sy;
+	r.y = cr * sp * cy + sr * cp * sy;
+	r.z = cr * cp * sy - sr * sp * cy;
+	r.w = cr * cp * cy + sr * sp * sy;
+	*/
 
 	r  = coNormalize(r); // HACK
 	return r;
