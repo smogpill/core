@@ -170,18 +170,13 @@ const coUint32 coInputContext::keys[] =
 
 coResult coInputContext::Init(HWND hwnd_)
 {
-	RAWINPUTDEVICE rid[2];
+	RAWINPUTDEVICE rid[1];
 	rid[0].usUsagePage = HID_USAGE_PAGE_GENERIC;
 	rid[0].usUsage = HID_USAGE_GENERIC_MOUSE;
 	rid[0].dwFlags = RIDEV_INPUTSINK;
 	rid[0].hwndTarget = hwnd_;
 
-	rid[1].usUsagePage = HID_USAGE_PAGE_GENERIC;
-	rid[1].usUsage = HID_USAGE_GENERIC_KEYBOARD;
-	rid[1].dwFlags = RIDEV_INPUTSINK;
-	rid[1].hwndTarget = hwnd_;
-
-	if (RegisterRawInputDevices(rid, 2, sizeof(rid[0])) == FALSE)
+	if (RegisterRawInputDevices(rid, 1, sizeof(rid[0])) == FALSE)
 	{
 		coDynamicString s;
 		coDumpLastOsError(s);
@@ -195,6 +190,10 @@ void coInputContext::EndFrame()
 {
 	relativeMouseX = 0;
 	relativeMouseY = 0;
+	for (coUint8& key : keyStates)
+	{
+		key &= ~coUint8(2);
+	}
 }
 
 coBool coInputContext::_ProcessWindowMessages(UINT msg, WPARAM wParam, LPARAM lParam, LRESULT& result)
@@ -221,8 +220,59 @@ coBool coInputContext::_ProcessWindowMessages(UINT msg, WPARAM wParam, LPARAM lP
         ClearKeys();
         return false;
     }
+    case WM_SYSKEYDOWN:
+    case WM_KEYDOWN:
+    {
+		coUint32 key = coUint32(wParam);
+		switch (key)
+		{
+		case VK_MENU:
+			key = ((lParam & 0x1000000) == 0) ? VK_LMENU : VK_RMENU;
+			break;
+		case VK_CONTROL:
+			key = ((lParam & 0x1000000) == 0) ? VK_LCONTROL : VK_RCONTROL;
+			break;
+		case VK_SHIFT:
+            key = MapVirtualKey((lParam & 0x00ff0000) >> 16, MAPVK_VSC_TO_VK_EX);
+			break;
+		case VK_CAPITAL:
+            //keys[EModifierKey::CapsLock] = (::GetKeyState(VK_CAPITAL) & 0x0001) != 0;
+			break;
+		default:
+			break;
+		}
+		const coUint32 scanCode = ::MapVirtualKey(key, MAPVK_VK_TO_VSC);
+		OnKeyDown(scanCode);
+        break;
+    }
+	case WM_SYSKEYUP:
+	case WM_KEYUP:
+	{
+		coUint32 key = coUint32(wParam);
+        switch (key)
+        {
+        case VK_MENU:
+            key = ((lParam & 0x1000000) == 0) ? VK_LMENU : VK_RMENU;
+            break;
+        case VK_CONTROL:
+            key = ((lParam & 0x1000000) == 0) ? VK_LCONTROL : VK_RCONTROL;
+            break;
+        case VK_SHIFT:
+            key = MapVirtualKey((lParam & 0x00ff0000) >> 16, MAPVK_VSC_TO_VK_EX);
+            break;
+        case VK_CAPITAL:
+            //keys[EModifierKey::CapsLock] = (::GetKeyState(VK_CAPITAL) & 0x0001) != 0;
+            break;
+        default:
+            break;
+        }
+		const coUint32 scanCode = ::MapVirtualKey(key, MAPVK_VK_TO_VSC);
+		OnKeyUp(scanCode);
+		break;
+	}
 	case WM_INPUT:
 	{
+        //GET_RAWINPUT_CODE_WPARAM(wParam);
 		UINT size8 = sizeof(RAWINPUT);
 		static BYTE buffer[sizeof(RAWINPUT)];
 		GetRawInputData((HRAWINPUT)lParam, RID_INPUT, buffer, &size8, sizeof(RAWINPUTHEADER));
@@ -236,44 +286,6 @@ coBool coInputContext::_ProcessWindowMessages(UINT msg, WPARAM wParam, LPARAM lP
 			relativeMouseY += mouse.lLastY;
 			break;
 		}
-		case RIM_TYPEKEYBOARD:
-		{
-			const RAWKEYBOARD& keyboard = raw->data.keyboard;
-			if (keyboard.VKey == 255)
-			{
-				// discard "fake keys" which are part of an escaped sequence
-				result = 0;
-				return true;
-			}
-			coUint scanCode = keyboard.MakeCode;
-			coASSERT(scanCode <= 0xff);
-			if (keyboard.Flags & RI_KEY_E0)
-				scanCode |= 0xE000;
-			else if (keyboard.Flags & RI_KEY_E1)
-				scanCode |= 0xE100;
-
-			// Some scancodes we can ignore:
-			// - 0xE11D: first part of the Pause scancode (handled above);
-			// - 0xE02A: first part of the Print Screen scancode if no Shift, Control or Alt keys are pressed;
-			// - 0xE02A, 0xE0AA, 0xE036, 0xE0B6: generated in addition of Insert, Delete, Home, End, Page Up, Page Down, Up, Down, Left, Right when num lock is on; or when num lock is off but one or both shift keys are pressed;
-			// - 0xE02A, 0xE0AA, 0xE036, 0xE0B6: generated in addition of Numpad Divide and one or both Shift keys are pressed;
-			// - Some of those a break scancode;
-
-			// When holding a key down, the pre/postfix (0xE02A) is not repeated.
-			if (scanCode == 0xE11D || scanCode == 0xE02A || scanCode == 0xE0AA || scanCode == 0xE0B6 || scanCode == 0xE036)
-			{
-				return false;
-			}
-
-			const coUint8 pressed = (keyboard.Flags & RI_KEY_BREAK) == 0;
-			const coUint8 offset = GetScancodeOffset(scanCode);
-			const coUint8 transition = (keyStates[offset] & 1) != pressed;
-			coUint8 value = keyStates[offset] & 0xfe;
-			value += (transition << 1);
-			value |= pressed;
-			keyStates[offset] = value;
-			break;
-		}
 		}
 		break;
 	}
@@ -281,22 +293,22 @@ coBool coInputContext::_ProcessWindowMessages(UINT msg, WPARAM wParam, LPARAM lP
 	return false;
 }
 
-coBool coInputContext::IsPressed(coUint16 scanCode) const
+coBool coInputContext::IsPressed(coUint32 scanCode) const
 {
 	const coUint8 offset = GetScancodeOffset(scanCode);
 	return (keyStates[offset] & 1) != 0;
 }
 
-coBool coInputContext::IsJustPressed(coUint16 scanCode) const
+coBool coInputContext::IsJustPressed(coUint32 scanCode) const
 {
 	const coUint8 offset = GetScancodeOffset(scanCode);
-	return (keyStates[offset] & 1) && (keyStates[offset] & 0xfe);
+	return (keyStates[offset] & 3) == 3;
 }
 
-coBool coInputContext::IsJustReleased(coUint16 scanCode) const
+coBool coInputContext::IsJustReleased(coUint32 scanCode) const
 {
 	const coUint8 offset = GetScancodeOffset(scanCode);
-	return !(keyStates[offset] & 1) && (keyStates[offset] & 0xfe);
+	return (keyStates[offset] & 3) == 2;
 }
 
 coUint8 coInputContext::GetScancodeOffset(coUint32 scancode)
@@ -323,18 +335,14 @@ void coInputContext::SyncKeys()
 	while (index < coARRAY_SIZE(keys))
     {
 		coUint scancode = keys[index];
-		coUint offset;
-		coUint vk;
-		coUint16 keyState;
-
 		if (scancode == 0x45)
 			scancode = 0xE045;
 		else if (scancode == 0xE11D45)
 			scancode = 0x45;
 
-		offset = GetScancodeOffset(scancode);
-		vk = MapVirtualKeyEx(scancode, MAPVK_VSC_TO_VK_EX, 0);
-		keyState = GetAsyncKeyState(vk);
+		const coUint32 offset = GetScancodeOffset(scancode);
+        const coUint32 vk = MapVirtualKeyEx(scancode, MAPVK_VSC_TO_VK_EX, 0);
+        const coUint16 keyState = GetAsyncKeyState(vk);
 		keyStates[offset] = ((keyState & (0x1 << 15)) > 0) ? 1 : 0;
 
 		index++;
@@ -346,7 +354,22 @@ void coInputContext::ClearKeys()
 	coUint index = 0;
 	while (index < coARRAY_SIZE(keyStates))
     {
-        keyStates[index] = (keyStates[index] & 1) << 1;
+        keyStates[index] = 0;
 		index++;
 	}
+}
+
+void coInputContext::OnKeyDown(coUint32 scanCode)
+{
+	const coUint8 offset = GetScancodeOffset(scanCode);
+	const coUint8 old = keyStates[offset] & 1;
+	keyStates[offset] |= ((~old & 1) << 1) | 1;
+}
+
+void coInputContext::OnKeyUp(coUint32 scanCode)
+{
+	const coUint8 offset = GetScancodeOffset(scanCode);
+	const coUint8 old = keyStates[offset] & 1;
+	keyStates[offset] &= 0xfe;
+	keyStates[offset] |= (old & 1) << 1;
 }

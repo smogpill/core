@@ -177,9 +177,9 @@ public:
 	};
 	coResult Init(HWND hwnd_);
 	void EndFrame();
-	coBool IsPressed(coUint16 scanCode) const;
-	coBool IsJustPressed(coUint16 scanCode) const;
-	coBool IsJustReleased(coUint16 scanCode) const;
+	coBool IsPressed(coUint32 scanCode) const;
+	coBool IsJustPressed(coUint32 scanCode) const;
+	coBool IsJustReleased(coUint32 scanCode) const;
 	coInt GetRelativeMouseX() const { return relativeMouseX; }
 	coInt GetRelativeMouseY() const { return relativeMouseY; }
 
@@ -189,9 +189,11 @@ private:
 	static coUint8 GetScancodeOffset(coUint32 scancode);
 	void SyncKeys();
 	void ClearKeys();
+	void OnKeyDown(coUint32 scanCode);
+	void OnKeyUp(coUint32 scanCode);
 
 	static const coUint32 keys[];
-	coUint8 keyStates[256] = {0};
+	coUint8 keyStates[256] = { 0 };
 	coInt relativeMouseX = 0;
 	coInt relativeMouseY = 0;
 };
