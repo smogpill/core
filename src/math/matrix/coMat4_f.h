@@ -63,6 +63,16 @@ coFORCE_INLINE coMat4 coTranspose(const coMat4& _a)
 	return out;
 }
 
+coFORCE_INLINE coMat4 coRemoveScale(const coMat4& m)
+{
+	coMat4 o(nullptr);
+	o.c0 = coNormalize(m.c0);
+	o.c1 = coNormalize(m.c1);
+	o.c2 = coNormalize(m.c2);
+	o.c3 = m.c3;
+	return o;
+}
+
 /*
 coFORCE_INLINE coMat4 coInverseAffineNoScale(const coMat4& _this)
 {
