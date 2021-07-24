@@ -4,6 +4,9 @@
 #include "render/shader/coShaderProgram.h"
 #include "render/shader/coShader.h"
 #include "lang/result/coResult_f.h"
+#include "math/matrix/coMat4.h"
+#include "math/vector/coVec3.h"
+#include "math/vector/coVec2.h"
 
 coShaderProgram::~coShaderProgram()
 {
@@ -41,4 +44,34 @@ coResult coShaderProgram::Init(const coArray<const coShader*>& shaders)
 	coTRY(glGetError() == GL_NO_ERROR, "glLinkProgram()");
 
 	return true;
+}
+
+void coShaderProgram::Bind()
+{
+	glUseProgram(id);
+}
+
+void coShaderProgram::Unbind()
+{
+	glUseProgram(0);
+}
+
+coInt coShaderProgram::GetUniformLocation(const coChar* name) const
+{
+	return glGetUniformLocation(id, name);
+}
+
+void coShaderProgram::SetUniform(coInt location, const coMat4& value)
+{
+	glUniformMatrix4fv(location, 1, GL_FALSE, &value.c0.x);
+}
+
+void coShaderProgram::SetUniform(coInt location, const coVec3& value)
+{
+	glUniform3fv(location, 1, &value.x);
+}
+
+void coShaderProgram::SetUniform(coInt location, const coVec2& value)
+{
+	glUniform2fv(location, 1, &value.x);
 }

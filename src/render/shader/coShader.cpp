@@ -20,6 +20,7 @@ coResult coShader::Init(Type type_, const coConstString& rawPath)
 	coDynamicString path = rawPath;
 	switch (type)
 	{
+	case Type::GEOMETRY: path << ".geom"; break;
 	case Type::VERTEX: path << ".vert"; break;
 	case Type::FRAGMENT: path << ".frag"; break;
 	case Type::COMPUTE: path << ".comp"; break;
@@ -81,6 +82,7 @@ GLenum coShader::_GetGLType() const
 {
 	switch (type)
 	{
+	case Type::GEOMETRY: return GL_GEOMETRY_SHADER;
 	case Type::VERTEX: return GL_VERTEX_SHADER;
 	case Type::FRAGMENT: return GL_FRAGMENT_SHADER;
 	case Type::COMPUTE: return GL_COMPUTE_SHADER;
