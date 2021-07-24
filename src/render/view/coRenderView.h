@@ -4,9 +4,6 @@
 #include "math/matrix/coMat4.h"
 #include "container/array/coArray.h"
 
-class coVec3;
-class coVec2;
-
 class coRenderView
 {
 public:
@@ -16,10 +13,6 @@ public:
 
 	void Begin();
 	void End();
-	void DrawLine(const coVec3& a, const coVec3& b);
-	void Draw2DLine(const coVec2& a, const coVec2& b);
-	void DrawTriangle(const coVec3& a, const coVec3& b, const coVec3& c);
-	void DrawTriangles(const coArray<coVec3>& triangles);
 
 private:
 	coInt x = 0;

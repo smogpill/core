@@ -20,8 +20,7 @@ public:
 	class InitConfig : public Super::InitConfig
 	{
 	public:
-		InitConfig();
-		Mode mode;
+		Mode mode = Mode::read;
 		coConstString path;
 	};
 	coFileAccess();
@@ -44,7 +43,7 @@ private:
 	void OnImplDestruct();
 	coResult OnImplInit(const InitConfig& _config);
 
-	Mode mode;
+	Mode mode = Mode::read;
 	coDynamicString path;
-	void* impl;
+	void* impl = nullptr;
 };

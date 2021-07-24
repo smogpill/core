@@ -10,8 +10,8 @@ class coShader
 public:
 	enum class Type
 	{
-		GEOMETRY,
 		VERTEX,
+		GEOMETRY,
 		FRAGMENT,
 		COMPUTE
 	};

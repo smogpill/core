@@ -5,8 +5,6 @@
 #include "lang/result/coResult_f.h"
 
 coFileAccess::coFileAccess()
-	: mode(Mode::read)
-	, impl(nullptr)
 {
 	OnImplConstruct();
 }
@@ -14,12 +12,6 @@ coFileAccess::coFileAccess()
 coFileAccess::~coFileAccess()
 {
 	OnImplDestruct();
-}
-
-coFileAccess::InitConfig::InitConfig()
-	: mode(Mode::read)
-{
-
 }
 
 coResult coFileAccess::OnInit(const coObject::InitConfig& _config)
