@@ -143,27 +143,27 @@ function coSetProjectDependencies(_deps)
 	end
 	for _,v in pairs(_deps) do 
 		table.insert(co_dependencies, v)
-		
-		local srcDir, foundDir = coFindDir(co_srcDirs, v)
-		if foundDir == nil then
-			error("Failed to find the project: "..v)
-		else 
-			if os.isdir(foundDir.."/shaders") then
-				shadersDir = srcDir.."/../"..co_buildPath.."/bin/$(Configuration)/shaders/"..v
-				--builddependencies { shadersDir.."/*" }
-				filter {'files:**.importShaders'}
-					buildmessage 'Importing shaders...'
+	end
+
+	-- Add custom build commands on the .importShaders file to import shaders from other projects
+	filter {'files:**.importShaders'}
+		buildmessage 'Importing shaders...'
+		for _,v in pairs(_deps) do 
+			local srcDir, foundDir = coFindDir(co_srcDirs, v)
+			if foundDir == nil then
+				error("Failed to find the project: "..v)
+			else 
+				if os.isdir(foundDir.."/shaders") then
+					shadersDir = srcDir.."/../"..co_buildPath.."/bin/$(Configuration)/shaders/"..v
 					buildinputs { shadersDir.."/*.spv" }
 					buildcommands { "{COPY} "..shadersDir.."/*.spv $(OutDir)shaders/"..v }
 					buildoutputs { "$(OutDir)shaders/"..v.."/*.spv" }
-				filter {}
-				
-				--postbuildcommands { "{COPY} "..shadersDir.."/* $(OutDir)shaders/"..v }
-				--IF EXIST G:\projects\core\build\vs2019\bin\debug\shaders\debug\*\ (xcopy /Q /E /Y /I G:\projects\core\build\vs2019\bin\debug\shaders\debug\* ..\bin\debug\shaders\debug > nul) ELSE (xcopy /Q /Y /I G:\projects\core\build\vs2019\bin\debug\shaders\debug\* ..\bin\debug\shaders\debug > nul)
-				
+					--postbuildcommands { "{COPY} "..shadersDir.."/* $(OutDir)shaders/"..v }					
+				end
 			end
 		end
-	end
+	filter {}
+
 	links(_deps)
 end
 
