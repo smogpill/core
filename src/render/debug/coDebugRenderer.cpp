@@ -47,19 +47,53 @@ void coDebugRenderer::DrawLine(const coVec3& a, const coVec3& b, const coColor& 
 
 void coDebugRenderer::DrawTriangle(const coVec3& a, const coVec3& b, const coVec3& c, const coColor& color)
 {
-	coPushBack(lines, Vertex(a, color));
-	coPushBack(lines, Vertex(b, color));
-	coPushBack(lines, Vertex(c, color));
+	coPushBack(triangles, Vertex(a, color));
+	coPushBack(triangles, Vertex(b, color));
+	coPushBack(triangles, Vertex(c, color));
 }
 
 void coDebugRenderer::Draw(const coAabb& aabb, const coColor& color)
 {
+	//coReserve(triangles, triangles.count + 12 * 3);
 
+	const coVec3 size = aabb.max - aabb.min;
+	const coVec3 sx = aabb.min + coVec3(size.x, 0, 0);
+	const coVec3 sy = aabb.min + coVec3(0, size.y, 0);
+	const coVec3 sz = aabb.min + coVec3(0, 0, size.z);
+
+	const coVec3 a(aabb.min);
+	const coVec3 b(aabb.min + sx);
+	const coVec3 c(aabb.min + sx + sy);
+	const coVec3 d(aabb.min + sy);
+	const coVec3 e(a + sz);
+	const coVec3 f(b + sz);
+	const coVec3 g(c + sz);
+	const coVec3 h(d + sz);
+
+	DrawTriangle(a, b, f, color);
+	DrawTriangle(a, f, e, color);
+
+	DrawTriangle(b, c, g, color);
+	DrawTriangle(b, g, f, color);
+
+	DrawTriangle(c, d, h, color);
+	DrawTriangle(c, h, g, color);
+
+	DrawTriangle(d, a, e, color);
+	DrawTriangle(d, e, h, color);
+
+	// Bottom
+	DrawTriangle(b, a, c, color);
+	DrawTriangle(d, c, a, color);
+
+	// Top
+	DrawTriangle(e, f, g, color);
+	DrawTriangle(e, g, h, color);
 }
 
 void coDebugRenderer::DrawWireframe(const coAabb& aabb, const coColor& color)
 {
-	coReserve(lines, 12);
+	//coReserve(lines, lines.count + 12);
 
 	const coVec3 size = aabb.max - aabb.min;
 	const coVec3 sx = aabb.min + coVec3(size.x, 0, 0);
@@ -100,15 +134,24 @@ void coDebugRenderer::Render(const coMat4& viewProj)
 
 	glBindVertexArray(vertexArrayObject);
 
+	// Lines
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
 	glBufferData(GL_ARRAY_BUFFER, lines.count * sizeof(Vertex), lines.data, GL_STREAM_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, pos));
 	glEnableVertexAttribArray(1);
 	glVertexAttribIPointer(1, 4, GL_UNSIGNED_BYTE, sizeof(Vertex), (void*)offsetof(Vertex, color));
-
 	glDrawArrays(GL_LINES, 0, lines.count);
 
+	// Triangles
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
+	glBufferData(GL_ARRAY_BUFFER, triangles.count * sizeof(Vertex), triangles.data, GL_STREAM_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, pos));
+	glEnableVertexAttribArray(1);
+	glVertexAttribIPointer(1, 4, GL_UNSIGNED_BYTE, sizeof(Vertex), (void*)offsetof(Vertex, color));
+	glDrawArrays(GL_TRIANGLES, 0, triangles.count);
+
 	glBindVertexArray(0);
-	shaderProgram->Unbind(); 
+	shaderProgram->Unbind();
 }
