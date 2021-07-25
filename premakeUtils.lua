@@ -18,7 +18,8 @@ end
 function coSetWorkspaceDefaults(_name)
 	print("Generating workspace ".._name.."... (in "..co_buildPath..")")
 	workspace(_name)
-	configurations {"debug", "dev", "release", "prebuildDebug", "prebuildRelease"}
+	co_allConfigurations = {"debug", "dev", "release", "prebuildDebug", "prebuildRelease"}
+	configurations(co_allConfigurations)
 	location(co_buildPath)
 end
 
@@ -147,7 +148,7 @@ function coSetProjectDependencies(_deps)
 
 	-- Add custom build commands on the .importShaders file to import shaders from other projects
 	filter {'files:**.importShaders'}
-		buildmessage 'Importing shaders...'
+	buildmessage 'Importing shaders...'
 		for _,v in pairs(_deps) do 
 			local srcDir, foundDir = coFindDir(co_srcDirs, v)
 			if foundDir == nil then
@@ -155,10 +156,14 @@ function coSetProjectDependencies(_deps)
 			else 
 				if os.isdir(foundDir.."/shaders") then
 					shadersDir = srcDir.."/../"..co_buildPath.."/bin/$(Configuration)/shaders/"..v
-					buildinputs { shadersDir.."/*.spv" }
-					buildcommands { "{COPY} "..shadersDir.."/*.spv $(OutDir)shaders/"..v }
-					buildoutputs { "$(OutDir)shaders/"..v.."/*.spv" }
-					--postbuildcommands { "{COPY} "..shadersDir.."/* $(OutDir)shaders/"..v }					
+					for _, f in pairs(os.matchfiles(foundDir.."/shaders/*")) do
+						name = path.getname(f)
+						local inputs = shadersDir.."/"..name..".spv"
+						buildinputs { inputs }
+						buildcommands { "{COPY} "..inputs.." $(OutDir)shaders/"..v }
+						buildoutputs { "$(OutDir)shaders/"..v.."/"..name..".spv" }
+					end
+					--postbuildcommands { "{COPY} "..shadersDir.."/* $(OutDir)shaders/"..v }				
 				end
 			end
 		end

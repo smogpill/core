@@ -110,5 +110,5 @@ void coDebugRenderer::Render(const coMat4& viewProj)
 	glDrawArrays(GL_LINES, 0, lines.count);
 
 	glBindVertexArray(0);
-	shaderProgram->Unbind();
+	shaderProgram->Unbind(); 
 }
