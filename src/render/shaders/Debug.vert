@@ -14,3 +14,4 @@ void main()
     gl_Position = modelViewProj * vec4(inPos, 1);
     outColor = ConvertColor(inColor);
 }
+ 

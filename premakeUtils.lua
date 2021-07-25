@@ -76,13 +76,13 @@ function coSetCppProjectDefaults(_name)
 	language "C++"
 	exceptionhandling "Off"
 	vectorextensions "SSE2"
-	floatingpoint "Fast"
+	floatingpoint "Strict" -- Not slower than Fast, and helps for cross-platform/compiler determinism.
 	editandcontinue "Off"
 	symbols "On"
 	cppdialect "C++17"
 	runtime "Release" -- Even on debug builds, Unreal is setup this way anyway.
 	flags { "NoMinimalRebuild", "FatalWarnings", "MultiProcessorCompile" }
-	files { "**.cpp", "**.h", "**.inl", "**.frag", "**.vert", "**.comp", "**.tesc", "**.tese", "**.geom"}
+	files { "**.cpp", "**.h", "**.inl", "**.frag", "**.vert", "**.comp", "**.tesc", "**.tese", "**.geom", "**.importShaders"}
 
 	if os.isfile("pch.h") then
 		coSetPCH(co_projectDir, _name, "pch")
@@ -105,12 +105,10 @@ function coSetCppProjectDefaults(_name)
 	filter {"configurations:debug or dev or release"}
 
 	filter {'files:**.vert or **.frag or **.comp or **.geom'}
-		shaderOutPath = "$(OutDir)/shaders/%{file.name}.spv"
+		co_shadersFolder = "$(OutDir)/shaders/".._name
+		shaderOutPath = co_shadersFolder.."/%{file.name}.spv"
 		buildmessage 'Compiling %{file.relpath}'
-		buildcommands
-		{
-			'$(GLSLANG)/glslangValidator.exe -G -o "'..shaderOutPath ..'" %{file.relpath}'
-		}
+		buildcommands { '$(GLSLANG)/glslangValidator.exe -G -o "'..shaderOutPath ..'" %{file.relpath}' }
 		buildoutputs { shaderOutPath }
 	filter {}
 
@@ -143,7 +141,29 @@ function coSetProjectDependencies(_deps)
 	if not co_dependencies then
 		co_dependencies = {}
 	end
-	for _,v in pairs(_deps) do table.insert(co_dependencies, v) end
+	for _,v in pairs(_deps) do 
+		table.insert(co_dependencies, v)
+		
+		local srcDir, foundDir = coFindDir(co_srcDirs, v)
+		if foundDir == nil then
+			error("Failed to find the project: "..v)
+		else 
+			if os.isdir(foundDir.."/shaders") then
+				shadersDir = srcDir.."/../"..co_buildPath.."/bin/$(Configuration)/shaders/"..v
+				--builddependencies { shadersDir.."/*" }
+				filter {'files:**.importShaders'}
+					buildmessage 'Importing shaders...'
+					buildinputs { shadersDir.."/*.spv" }
+					buildcommands { "{COPY} "..shadersDir.."/*.spv $(OutDir)shaders/"..v }
+					buildoutputs { "$(OutDir)shaders/"..v.."/*.spv" }
+				filter {}
+				
+				--postbuildcommands { "{COPY} "..shadersDir.."/* $(OutDir)shaders/"..v }
+				--IF EXIST G:\projects\core\build\vs2019\bin\debug\shaders\debug\*\ (xcopy /Q /E /Y /I G:\projects\core\build\vs2019\bin\debug\shaders\debug\* ..\bin\debug\shaders\debug > nul) ELSE (xcopy /Q /Y /I G:\projects\core\build\vs2019\bin\debug\shaders\debug\* ..\bin\debug\shaders\debug > nul)
+				
+			end
+		end
+	end
 	links(_deps)
 end
 

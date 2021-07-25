@@ -23,12 +23,12 @@ coResult coDebugRenderer::InitShaders()
 {
 	coShader* concreteVS = new coShader();
 	{
-		coTRY(concreteVS->Init(coShader::Type::VERTEX, "shaders/Debug"), nullptr);
+		coTRY(concreteVS->Init(coShader::Type::VERTEX, "shaders/render/Debug"), nullptr);
 		coPushBack(shaders, concreteVS);
 	}
 	coShader* concreteFS = new coShader();
 	{
-		coTRY(concreteFS->Init(coShader::Type::FRAGMENT, "shaders/Debug"), nullptr);
+		coTRY(concreteFS->Init(coShader::Type::FRAGMENT, "shaders/render/Debug"), nullptr);
 		coPushBack(shaders, concreteFS);
 	}
 	shaderProgram = new coShaderProgram();
