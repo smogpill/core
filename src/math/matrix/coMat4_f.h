@@ -174,3 +174,26 @@ coFORCE_INLINE void coSetRotationNoScale(coMat4& _this, const coQuat& q)
 	coSetRotation(m, q);
 	coSetUpperMat3(_this, m);
 }
+
+coFORCE_INLINE coMat4 coRotate(const coMat4& m, const coQuat& v)
+{
+	coMat4 r;
+	coSetRotationNoScale(r, v);
+	return r * m;
+}
+
+coFORCE_INLINE coMat4 coTranslate(const coMat4& m, const coVec3& v)
+{
+	coMat4 t;
+	coSetTranslation(t, v);
+	return t * m;
+}
+
+coFORCE_INLINE coMat4 coScale(const coMat4& m, const coVec3& v)
+{
+	coMat4 o = m;
+	o.c0 *= v.x;
+	o.c1 *= v.y;
+	o.c2 *= v.z;
+	return o;
+}
