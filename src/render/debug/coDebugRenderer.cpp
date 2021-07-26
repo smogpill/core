@@ -57,9 +57,9 @@ void coDebugRenderer::Draw(const coAabb& aabb, const coColor& color)
 	//coReserve(triangles, triangles.count + 12 * 3);
 
 	const coVec3 size = aabb.max - aabb.min;
-	const coVec3 sx = aabb.min + coVec3(size.x, 0, 0);
-	const coVec3 sy = aabb.min + coVec3(0, size.y, 0);
-	const coVec3 sz = aabb.min + coVec3(0, 0, size.z);
+	const coVec3 sx = coVec3(size.x, 0, 0);
+	const coVec3 sy = coVec3(0, size.y, 0);
+	const coVec3 sz = coVec3(0, 0, size.z);
 
 	const coVec3 a(aabb.min);
 	const coVec3 b(aabb.min + sx);
@@ -96,9 +96,9 @@ void coDebugRenderer::DrawWireframe(const coAabb& aabb, const coColor& color)
 	//coReserve(lines, lines.count + 12);
 
 	const coVec3 size = aabb.max - aabb.min;
-	const coVec3 sx = aabb.min + coVec3(size.x, 0, 0);
-	const coVec3 sy = aabb.min + coVec3(0, size.y, 0);
-	const coVec3 sz = aabb.min + coVec3(0, 0, size.z);
+	const coVec3 sx = coVec3(size.x, 0, 0);
+	const coVec3 sy = coVec3(0, size.y, 0);
+	const coVec3 sz = coVec3(0, 0, size.z);
 
 	const coVec3 a(aabb.min);
 	const coVec3 b(aabb.min + sx);
