@@ -122,3 +122,25 @@ coFORCE_INLINE void coSetRotation(coMat3& _this, const coQuat& _q)
 	_this.c1 = coVec3(2 * (qxy - qwz), 1 - 2 * (qxx + qzz), 2 * (qyz + qwx));
 	_this.c2 = coVec3(2 * (qxz + qwy), 2 * (qyz - qwx), 1 - 2 * (qxx + qyy));
 }
+
+coFORCE_INLINE coMat3 coInverse(const coMat3& m)
+{
+	// Impl from compute_inverse<3, 3, T, Q, Aligned> https://github.com/g-truc/glm/blob/master/glm/detail/func_matrix.inl (MIT license).
+	const coFloat invDet = 1.0f / (
+		+ m[0][0] * (m[1][1] * m[2][2] - m[2][1] * m[1][2])
+		- m[1][0] * (m[0][1] * m[2][2] - m[2][1] * m[0][2])
+		+ m[2][0] * (m[0][1] * m[1][2] - m[1][1] * m[0][2]));
+
+	coMat3 inverse;
+	inverse[0][0] = +(m[1][1] * m[2][2] - m[2][1] * m[1][2]) * invDet;
+	inverse[1][0] = -(m[1][0] * m[2][2] - m[2][0] * m[1][2]) * invDet;
+	inverse[2][0] = +(m[1][0] * m[2][1] - m[2][0] * m[1][1]) * invDet;
+	inverse[0][1] = -(m[0][1] * m[2][2] - m[2][1] * m[0][2]) * invDet;
+	inverse[1][1] = +(m[0][0] * m[2][2] - m[2][0] * m[0][2]) * invDet;
+	inverse[2][1] = -(m[0][0] * m[2][1] - m[2][0] * m[0][1]) * invDet;
+	inverse[0][2] = +(m[0][1] * m[1][2] - m[1][1] * m[0][2]) * invDet;
+	inverse[1][2] = -(m[0][0] * m[1][2] - m[1][0] * m[0][2]) * invDet;
+	inverse[2][2] = +(m[0][0] * m[1][1] - m[1][0] * m[0][1]) * invDet;
+
+	return inverse;
+}
