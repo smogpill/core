@@ -17,14 +17,27 @@ class coDebugRenderer
 	coDECLARE_SINGLETON(coDebugRenderer);
 public:
 	coResult Init();
-	void DrawLine(const coVec3& a, const coVec3& b, const coColor& color = coColor::s_white);
-	void DrawTriangle(const coVec3& a, const coVec3& b, const coVec3& c, const coColor& color = coColor::s_white);
-	void Draw(const coAabb& aabb, const coColor& color = coColor::s_white);
-	void DrawWireframe(const coAabb& aabb, const coColor& color = coColor::s_white);
+	enum Options
+	{
+		WIREFRAME = 1 << 0,
+		NO_DEPTH_TEST = 1 << 1, // Keep NO_DEPTH_TEST at 2, we use this as a trick to select buffers when drawing.
+	};
+	void DrawLine(const coVec3& a, const coVec3& b, const coColor& color = coColor::s_white, coUint32 options = 0);
+	void DrawTriangle(const coVec3& a, const coVec3& b, const coVec3& c, const coColor& color = coColor::s_white, coUint32 options = 0);
+	void Draw(const coAabb& aabb, const coColor& color = coColor::s_white, coUint32 options = 0);
 
 	void Render(const coMat4& viewProj);
 
 private:
+	enum Buffer
+	{
+		LINES,
+		TRIANGLES,
+		NO_DEPTH_TEST_LINES = 2,
+		NO_DEPTH_TEST_TRIANGLES = 3,
+
+		END
+	};
 	struct Vertex
 	{
 		Vertex() {}
@@ -34,8 +47,7 @@ private:
 	};
 	coResult InitShaders();
 
-	coDynamicArray<Vertex> lines;
-	coDynamicArray<Vertex> triangles;
+	coDynamicArray<Vertex> vertexBuffers[Buffer::END];
 	coDynamicArray<coShader*> shaders;
 	coShaderProgram* shaderProgram = nullptr;
 	GLuint vertexArrayObject = 0;

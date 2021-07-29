@@ -39,20 +39,35 @@ coResult coDebugRenderer::InitShaders()
 	return true;
 }
 
-void coDebugRenderer::DrawLine(const coVec3& a, const coVec3& b, const coColor& color)
+void coDebugRenderer::DrawLine(const coVec3& a, const coVec3& b, const coColor& color, coUint32 options)
 {
-	coPushBack(lines, Vertex(a, color));
-	coPushBack(lines, Vertex(b, color));
+	auto& buffer = vertexBuffers[Buffer::LINES | (options & Options::NO_DEPTH_TEST)];
+	coPushBack(buffer, Vertex(a, color));
+	coPushBack(buffer, Vertex(b, color));
 }
 
-void coDebugRenderer::DrawTriangle(const coVec3& a, const coVec3& b, const coVec3& c, const coColor& color)
+void coDebugRenderer::DrawTriangle(const coVec3& a, const coVec3& b, const coVec3& c, const coColor& color, coUint32 options)
 {
-	coPushBack(triangles, Vertex(a, color));
-	coPushBack(triangles, Vertex(b, color));
-	coPushBack(triangles, Vertex(c, color));
+	if (options & WIREFRAME)
+	{
+		auto& buffer = vertexBuffers[Buffer::LINES | (options & Options::NO_DEPTH_TEST)];
+		coPushBack(buffer, Vertex(a, color));
+		coPushBack(buffer, Vertex(b, color));
+		coPushBack(buffer, Vertex(b, color));
+		coPushBack(buffer, Vertex(c, color));
+		coPushBack(buffer, Vertex(c, color));
+		coPushBack(buffer, Vertex(a, color));
+	}
+	else
+	{
+		auto& buffer = vertexBuffers[Buffer::TRIANGLES | (options & Options::NO_DEPTH_TEST)];
+		coPushBack(buffer, Vertex(a, color));
+		coPushBack(buffer, Vertex(b, color));
+		coPushBack(buffer, Vertex(c, color));
+	}
 }
 
-void coDebugRenderer::Draw(const coAabb& aabb, const coColor& color)
+void coDebugRenderer::Draw(const coAabb& aabb, const coColor& color, coUint32 options)
 {
 	//coReserve(triangles, triangles.count + 12 * 3);
 
@@ -70,59 +85,45 @@ void coDebugRenderer::Draw(const coAabb& aabb, const coColor& color)
 	const coVec3 g(c + sz);
 	const coVec3 h(d + sz);
 
-	DrawTriangle(a, b, f, color);
-	DrawTriangle(a, f, e, color);
+	if (options & WIREFRAME)
+	{
+		DrawLine(a, b, color, options);
+		DrawLine(b, c, color, options);
+		DrawLine(c, d, color, options);
+		DrawLine(d, a, color, options);
 
-	DrawTriangle(b, c, g, color);
-	DrawTriangle(b, g, f, color);
+		DrawLine(e, f, color, options);
+		DrawLine(f, g, color, options);
+		DrawLine(g, h, color, options);
+		DrawLine(h, e, color, options);
 
-	DrawTriangle(c, d, h, color);
-	DrawTriangle(c, h, g, color);
+		DrawLine(a, e, color, options);
+		DrawLine(b, f, color, options);
+		DrawLine(c, g, color, options);
+		DrawLine(d, h, color, options);
+	}
+	else
+	{
+		DrawTriangle(a, b, f, color, options);
+		DrawTriangle(a, f, e, color, options);
 
-	DrawTriangle(d, a, e, color);
-	DrawTriangle(d, e, h, color);
+		DrawTriangle(b, c, g, color, options);
+		DrawTriangle(b, g, f, color, options);
 
-	// Bottom
-	DrawTriangle(b, a, c, color);
-	DrawTriangle(d, c, a, color);
+		DrawTriangle(c, d, h, color, options);
+		DrawTriangle(c, h, g, color, options);
 
-	// Top
-	DrawTriangle(e, f, g, color);
-	DrawTriangle(e, g, h, color);
-}
+		DrawTriangle(d, a, e, color, options);
+		DrawTriangle(d, e, h, color, options);
 
-void coDebugRenderer::DrawWireframe(const coAabb& aabb, const coColor& color)
-{
-	//coReserve(lines, lines.count + 12);
+		// Bottom
+		DrawTriangle(b, a, c, color, options);
+		DrawTriangle(d, c, a, color, options);
 
-	const coVec3 size = aabb.max - aabb.min;
-	const coVec3 sx = coVec3(size.x, 0, 0);
-	const coVec3 sy = coVec3(0, size.y, 0);
-	const coVec3 sz = coVec3(0, 0, size.z);
-
-	const coVec3 a(aabb.min);
-	const coVec3 b(aabb.min + sx);
-	const coVec3 c(aabb.min + sx + sy);
-	const coVec3 d(aabb.min + sy);
-	const coVec3 e(a + sz);
-	const coVec3 f(b + sz);
-	const coVec3 g(c + sz);
-	const coVec3 h(d + sz);
-
-	DrawLine(a, b, color);
-	DrawLine(b, c, color);
-	DrawLine(c, d, color);
-	DrawLine(d, a, color);
-
-	DrawLine(e, f, color);
-	DrawLine(f, g, color);
-	DrawLine(g, h, color);
-	DrawLine(h, e, color);
-
-	DrawLine(a, e, color);
-	DrawLine(b, f, color);
-	DrawLine(c, g, color);
-	DrawLine(d, h, color);
+		// Top
+		DrawTriangle(e, f, g, color, options);
+		DrawTriangle(e, g, h, color, options);
+	}
 }
 
 void coDebugRenderer::Render(const coMat4& viewProj)
@@ -134,24 +135,28 @@ void coDebugRenderer::Render(const coMat4& viewProj)
 
 	glBindVertexArray(vertexArrayObject);
 
-	// Lines
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, lines.count * sizeof(Vertex), lines.data, GL_STREAM_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, pos));
-	glEnableVertexAttribArray(1);
-	glVertexAttribIPointer(1, 4, GL_UNSIGNED_BYTE, sizeof(Vertex), (void*)offsetof(Vertex, color));
-	glDrawArrays(GL_LINES, 0, lines.count);
+	auto drawBuffer = [&](Buffer buffer, GLenum mode)
+	{
+		auto& vertexBuffer = vertexBuffers[buffer];
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
+		glBufferData(GL_ARRAY_BUFFER, vertexBuffer.count * sizeof(Vertex), vertexBuffer.data, GL_STREAM_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, pos));
+		glEnableVertexAttribArray(1);
+		glVertexAttribIPointer(1, 4, GL_UNSIGNED_BYTE, sizeof(Vertex), (void*)offsetof(Vertex, color));
+		glDrawArrays(mode, 0, vertexBuffer.count);
+	};
 
-	// Triangles
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, triangles.count * sizeof(Vertex), triangles.data, GL_STREAM_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, pos));
-	glEnableVertexAttribArray(1);
-	glVertexAttribIPointer(1, 4, GL_UNSIGNED_BYTE, sizeof(Vertex), (void*)offsetof(Vertex, color));
-	glDrawArrays(GL_TRIANGLES, 0, triangles.count);
+	drawBuffer(Buffer::LINES, GL_LINES);
+	drawBuffer(Buffer::TRIANGLES, GL_TRIANGLES);
+	glDisable(GL_DEPTH_TEST);
+	drawBuffer(Buffer::NO_DEPTH_TEST_LINES, GL_LINES);
+	drawBuffer(Buffer::NO_DEPTH_TEST_TRIANGLES, GL_TRIANGLES);
+	glEnable(GL_DEPTH_TEST);
 
 	glBindVertexArray(0);
 	shaderProgram->Unbind();
+
+	for (auto& buffer : vertexBuffers)
+		coClear(buffer);
 }
