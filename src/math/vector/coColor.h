@@ -22,4 +22,8 @@ public:
 	static const coColor s_red;
 	static const coColor s_green;
 	static const coColor s_blue;
+	static const coColor s_coolRed;
+	static const coColor s_coolGreen;
+	static const coColor s_coolBlue;
+	static const coColor s_coolOrange;
 };

@@ -9,6 +9,10 @@ const coColor coColor::s_black(0, 0, 0);
 const coColor coColor::s_red(255, 0, 0);
 const coColor coColor::s_green(0, 255, 0);
 const coColor coColor::s_blue(0, 0, 255);
+const coColor coColor::s_coolRed(241, 29, 29);
+const coColor coColor::s_coolGreen(61, 230, 59);
+const coColor coColor::s_coolBlue(0, 155, 178);
+const coColor coColor::s_coolOrange(255, 113, 0);
 
 coColor::operator coVec4() const
 {
