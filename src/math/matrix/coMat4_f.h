@@ -24,9 +24,32 @@ coFORCE_INLINE coVec4 operator* (const coMat4& _this, const coVec4& _a)
 	return coBitCast<coVec4>(mx + my + mz + mw);
 }
 
-coFORCE_INLINE coMat4 operator* (const coMat4& _a, const coMat4& _b)
+coFORCE_INLINE coMat4 operator* (const coMat4& a, const coMat4& b)
 {
-	return coMat4(_a * _b.c0, _a * _b.c1, _a * _b.c2, _a * _b.c3);
+	coMat4 o;
+	coVec4 tmp;
+
+	tmp = coBroadcastX(a[0]) * b[0];
+	tmp = coMulAdd(coBroadcastY(a[0]), b[1], tmp);
+	tmp = coMulAdd(coBroadcastZ(a[0]), b[2], tmp);
+	o.c0 = coMulAdd(coBroadcastW(a[0]), b[3], tmp);
+
+	tmp = coBroadcastX(a[1]) * b[0];
+	tmp = coMulAdd(coBroadcastY(a[1]), b[1], tmp);
+	tmp = coMulAdd(coBroadcastZ(a[1]), b[2], tmp);
+	o.c1 = coMulAdd(coBroadcastW(a[1]), b[3], tmp);
+
+	tmp = coBroadcastX(a[2]) * b[0];
+	tmp = coMulAdd(coBroadcastY(a[2]), b[1], tmp);
+	tmp = coMulAdd(coBroadcastZ(a[2]), b[2], tmp);
+	o.c2 = coMulAdd(coBroadcastW(a[2]), b[3], tmp);
+
+	tmp = coBroadcastX(a[3]) * b[0];
+	tmp = coMulAdd(coBroadcastY(a[3]), b[1], tmp);
+	tmp = coMulAdd(coBroadcastZ(a[3]), b[2], tmp);
+	o.c3 = coMulAdd(coBroadcastW(a[3]), b[3], tmp);
+
+	return o;
 }
 
 coFORCE_INLINE coMat4 operator* (const coMat4& m, const coFloat& f)

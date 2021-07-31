@@ -60,6 +60,8 @@ void coSetPerspective(coMat4& _this, coFloat _fovyRadians, coFloat _aspect, coFl
 	_this.c2 = coFloatx4(0, 0, _zFar * rangeInv, 1);
 	_this.c3 = coFloatx4(0, 0, -_zFar * _zNear * rangeInv, 0);
 
+	_this = coTranspose(_this);
+
 // 	assert(abs(aspect - std::numeric_limits<T>::epsilon()) > static_cast<T>(0));
 // 
 // 	T const tanHalfFovy = tan(fovy / static_cast<T>(2));

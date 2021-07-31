@@ -63,7 +63,7 @@ coInt coShaderProgram::GetUniformLocation(const coChar* name) const
 
 void coShaderProgram::SetUniform(coInt location, const coMat4& value)
 {
-	glUniformMatrix4fv(location, 1, GL_FALSE, &value.c0.x);
+	glUniformMatrix4fv(location, 1, GL_TRUE, &value.c0.x);
 }
 
 void coShaderProgram::SetUniform(coInt location, const coVec3& value)
