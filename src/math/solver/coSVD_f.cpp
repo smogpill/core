@@ -79,5 +79,5 @@ void coSolveBySymmetricSVD(coVec4& out, const coMat4& SymA, const coVec4& b)
 	coComputeSVD(sigma, V, SymA);
 	coMat4 invV(nullptr);
 	coSVD_ComputePseudoInverse(invV, sigma, V);
-	out = invV * b;
+	out = b * invV;
 }

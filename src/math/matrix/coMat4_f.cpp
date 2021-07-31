@@ -53,14 +53,20 @@ void coSetPerspective(coMat4& _this, coFloat _fovyRadians, coFloat _aspect, coFl
 	coASSERT(_aspect > 0.0001f);
 	coASSERT(_zFar - _zNear > 0.0001f);
 
+	/*
 	const coFloat h = 1.0f / coTan(_fovyRadians * 0.5f);
 	const coFloat rangeInv = 1.0f / (_zFar -_zNear);
 	_this.c0 = coFloatx4(h / _aspect, 0, 0, 0);
 	_this.c1 = coFloatx4(0, h, 0, 0);
 	_this.c2 = coFloatx4(0, 0, _zFar * rangeInv, 1);
 	_this.c3 = coFloatx4(0, 0, -_zFar * _zNear * rangeInv, 0);
+	*/
 
-	_this = coTranspose(_this);
+	const coFloat halfFOV = _fovyRadians * 0.5f;
+	_this.c0 = coVec4(1.0f / coTan(halfFOV), 0.0f, 0.0f, 0.0f);
+	_this.c1 = coVec4(0.0f, _aspect / coTan(halfFOV), 0.0f, 0.0f);
+	_this.c2 = coVec4(0.0f, 0.0f, ((_zNear == _zFar) ? 1.0f : _zFar / (_zFar - _zNear)), 1.0f);
+	_this.c3 = coVec4(0.0f, 0.0f, -_zNear * ((_zNear == _zFar) ? 1.0f : _zFar / (_zFar - _zNear)), 0.0f);
 
 // 	assert(abs(aspect - std::numeric_limits<T>::epsilon()) > static_cast<T>(0));
 // 

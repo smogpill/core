@@ -74,53 +74,16 @@ coFORCE_INLINE void coMakeLookAt(coMat3& this_, const coVec3& from, const coVec3
 	coMakeLookAt(this_, from, to, up);
 }
 
-coFORCE_INLINE void coSetRotation(coMat3& _this, const coQuat& _q)
+coFORCE_INLINE void coSetRotation(coMat3& _this, const coQuat& q)
 {
-	coASSERT(coIsNormalized(_q));
-
-	{
-		// Warning: Broken, check with identity.
-
-		// Implementation found in Vectormath.
-		// 	coFloatx4 xyzw_2, wwww, yzxw, zxyw, yzxw_2, zxyw_2;
-		// 	coFloatx4 tmp0, tmp1, tmp2, tmp3, tmp4, tmp5;
-		// 
-		// 	const coFloatx4& q = coBitCast<coFloatx4>(_q);
-		// 	xyzw_2 = q + q;
-		// 	wwww = coBroadcastW(q);
-		// 	yzxw = coShuffle<1, 2, 0, 3>(q, q);
-		// 	zxyw = coShuffle<2, 0, 1, 3>(q, q);
-		// 	yzxw_2 = coShuffle<1, 2, 0, 3>(xyzw_2, xyzw_2);
-		// 	zxyw_2 = coShuffle<2, 0, 1, 3>(xyzw_2, xyzw_2);
-		// 
-		// 	tmp0 = yzxw_2 * wwww;
-		// 	tmp1 = coFloatx4(1.0f) - yzxw * yzxw_2;
-		// 	tmp2 = yzxw * xyzw_2;
-		// 	tmp0 = zxyw * xyzw_2 + tmp0;
-		// 	tmp1 = tmp1 - zxyw * zxyw_2;
-		// 	tmp2 = tmp2 - zxyw_2 * wwww;
-		// 
-		// 	tmp3 = coSelectX(tmp0, tmp1);
-		// 	tmp4 = coSelectX(tmp1, tmp2);
-		// 	tmp5 = coSelectX(tmp2, tmp0);
-		// 	_this.c0 = coBitCast<coVec3>(coSelectZ(tmp3, tmp2));
-		// 	_this.c1 = coBitCast<coVec3>(coSelectZ(tmp4, tmp0));
-		// 	_this.c1 = coBitCast<coVec3>(coSelectZ(tmp5, tmp1));
-	}
-
-	const coFloat qxx(_q.x * _q.x);
-	const coFloat qyy(_q.y * _q.y);
-	const coFloat qzz(_q.z * _q.z);
-	const coFloat qxz(_q.x * _q.z);
-	const coFloat qxy(_q.x * _q.y);
-	const coFloat qyz(_q.y * _q.z);
-	const coFloat qwx(_q.w * _q.x);
-	const coFloat qwy(_q.w * _q.y);
-	const coFloat qwz(_q.w * _q.z);
-
-	_this.c0 = coVec3(1 - 2 * (qyy + qzz), 2 * (qxy + qwz), 2 * (qxz - qwy));
-	_this.c1 = coVec3(2 * (qxy - qwz), 1 - 2 * (qxx + qzz), 2 * (qyz + qwx));
-	_this.c2 = coVec3(2 * (qxz + qwy), 2 * (qyz - qwx), 1 - 2 * (qxx + qyy));
+	coASSERT(coIsNormalized(q));
+	const coFloat x2 = q.x + q.x;  const coFloat y2 = q.y + q.y;  const coFloat z2 = q.z + q.z;
+	const coFloat xx = q.x * x2;   const coFloat xy = q.x * y2;   const coFloat xz = q.x * z2;
+	const coFloat yy = q.y * y2;   const coFloat yz = q.y * z2;   const coFloat zz = q.z * z2;
+	const coFloat wx = q.w * x2;   const coFloat wy = q.w * y2;   const coFloat wz = q.w * z2;
+	_this.c0 = coVec3(1.0f - (yy + zz), xy + wz, xz - wy);
+	_this.c1 = coVec3(xy - wz, 1.0f - (xx + zz), yz + wx);
+	_this.c2 = coVec3(xz + wy, yz - wx, 1.0f - (xx + yy));
 }
 
 coFORCE_INLINE coMat3 coInverse(const coMat3& m)

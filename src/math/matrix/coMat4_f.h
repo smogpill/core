@@ -9,7 +9,7 @@
 #include "math/vector/coFloatx3.h"
 #include "math/vector/coFloatx4_f.h"
 
-coFORCE_INLINE coVec4 operator* (const coMat4& _this, const coVec4& _a)
+coFORCE_INLINE coVec4 operator* (const coVec4& _a, const coMat4& _this)
 {
 	const coFloatx4 ax = coBroadcastX(_a);
 	const coFloatx4 ay = coBroadcastY(_a);
@@ -68,7 +68,7 @@ coFORCE_INLINE coMat4& operator+=(coMat4& this_, const coMat4& a)
 
 coFORCE_INLINE coVec3 coTransformPosition(const coMat4& m, const coVec3& v)
 {
-	return coVec3(m* coVec4(v, 1.0f));
+	return coVec3(coVec4(v, 1.0f) * m);
 }
 
 void coMakeLookAt(coMat4& this_, const coVec3& eyePos, const coVec3& targetPos, const coVec3& up);
