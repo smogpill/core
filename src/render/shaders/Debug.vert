@@ -7,5 +7,5 @@ layout(location = 0) out vec4 outColor;
 void main()
 {
     gl_Position = modelViewProj * vec4(inPos, 1);
-    outColor = vec4(inColor);
+    outColor = vec4(inColor) / 255.0f;
 }

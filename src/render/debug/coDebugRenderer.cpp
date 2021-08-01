@@ -7,6 +7,8 @@
 #include "lang/result/coResult_f.h"
 #include <math/shape/coAabb.h>
 #include <math/vector/coVec3_f.h>
+#include <math/vector/coVec4_f.h>
+#include <math/matrix/coMat4_f.h>
 
 coDEFINE_SINGLETON(coDebugRenderer);
 
@@ -124,6 +126,13 @@ void coDebugRenderer::Draw(const coAabb& aabb, const coColor& color, coUint32 op
 		DrawTriangle(e, f, g, color, options);
 		DrawTriangle(e, g, h, color, options);
 	}
+}
+
+void coDebugRenderer::DrawFrame(const coMat4& frame, coFloat size, coUint32 options)
+{
+	DrawLine(coVec3(frame.c3), coVec3(frame.c3 + frame.c0 * size), coColor::s_coolRed, options);
+	DrawLine(coVec3(frame.c3), coVec3(frame.c3 + frame.c1 * size), coColor::s_coolGreen, options);
+	DrawLine(coVec3(frame.c3), coVec3(frame.c3 + frame.c2 * size), coColor::s_coolBlue, options);
 }
 
 void coDebugRenderer::Render(const coMat4& viewProj)

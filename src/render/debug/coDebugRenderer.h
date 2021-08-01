@@ -25,6 +25,7 @@ public:
 	void DrawLine(const coVec3& a, const coVec3& b, const coColor& color = coColor::s_white, coUint32 options = 0);
 	void DrawTriangle(const coVec3& a, const coVec3& b, const coVec3& c, const coColor& color = coColor::s_white, coUint32 options = 0);
 	void Draw(const coAabb& aabb, const coColor& color = coColor::s_white, coUint32 options = 0);
+	void DrawFrame(const coMat4& frame, coFloat size, coUint32 options = 0);
 
 	void Render(const coMat4& viewProj);
 
