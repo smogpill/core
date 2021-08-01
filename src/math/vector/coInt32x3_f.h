@@ -75,3 +75,4 @@ coFORCE_INLINE coBinaryInputStream& operator >> (coBinaryInputStream& stream, co
 	stream.Read(&a, 12);
 	return stream;
 }
+coDynamicString& operator<<(coDynamicString& s, const coInt32x3& a);
