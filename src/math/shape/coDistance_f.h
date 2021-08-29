@@ -20,6 +20,11 @@ inline coFloatx4 coSquareDistancePointSegment(const coVec3& p, const coVec3& a, 
 	return coSquareLength(ap) - e * e / f;
 }
 
+inline coFloatx4 coDistancePointSegment(const coVec3& p, const coVec3& a, const coVec3& b)
+{
+	return coSquareRoot(coSquareDistancePointSegment(p, a, b));
+}
+
 inline coFloatx4 coSquareDistanceSegmentSegment(const coVec3& a, const coVec3& b, const coVec3& c, const coVec3& d)
 {
 	coFloat t;
@@ -40,13 +45,6 @@ inline coFloatx4 coSquareDistance(const coAabb& a, const coAabb& b)
 	outer.max = coMax(a.max, b.max);
 	const coVec3 inner = coMax(0.0f, (outer.max - outer.min) - (a.max - a.min) - (b.max - b.min));
 	return coSquareLength(inner);
-}
-
-coFORCE_INLINE coFloatx4 coSquareDistance(const coAabb& a, const coVec3& p)
-{
-	const coVec3 center = (a.max + a.min) * 0.5f;
-	const coVec3 d = coAbs(p - center) - (a.max - a.min) * 0.5f;
-	return coSquareLength(coMax(d, 0.0f)) + coMin(coBitCast<coFloatx4>(coMax(d)), 0.0f);
 }
 
 coFORCE_INLINE coFloatx4 coDistance(const coAabb& a, const coVec3& p)
