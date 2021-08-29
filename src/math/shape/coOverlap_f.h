@@ -4,10 +4,32 @@
 #include "coDistance_f.h"
 #include <math/shape/coAabb_f.h>
 #include <math/shape/coSphere.h>
+#include <math/shape/coSegment_f.h>
 #include <math/vector/coFloatx3_f.h>
 #include <math/vector/coBool32x3_f.h>
 
 coFORCE_INLINE coBool32x3 coOverlapSolid(const coAabb& aabb, const coVec3& point) { return point >= aabb.min && point <= aabb.max; }
+coFORCE_INLINE coBool coOverlapSolid(const coAabb& aabb, const coSegment& seg)
+{
+	// Refs:
+	// - Another View on the Classic Ray-AABB Intersection Algorithm for BVH Traversal, Roman Wiche
+	// https://medium.com/@bromanz/another-view-on-the-classic-ray-aabb-intersection-algorithm-for-bvh-traversal-41125138b525
+	// - Fast, Branchless Ray/Bounding Box Intersections, Tavian Barnes
+	// https://tavianator.com/2011/ray_box.html
+	// https://tavianator.com/2015/ray_box_nan.html
+
+	const coVec3 delta = seg.p1 - seg.p0;
+	const coFloatx4 len = coLength(delta);
+	const coVec3 invDir = coInv(delta / len.x);
+	const coVec3 t1 = (aabb.min - seg.p0) * invDir;
+	const coVec3 t2 = (aabb.max - seg.p0) * invDir;
+	const coVec3 tmin1 = coMin(t1, t2);
+	const coVec3 tmax1 = coMax(t1, t2);
+	const coFloat tmin = coMax(0.0f, coMax(tmin1).x);
+	const coFloat tmax = coMin(len.x, coMin(tmax1).x);
+	return tmin <= tmax;
+}
+coBool coOverlapXY(const coSegment& _a, const coSegment& _b, coVec3& _hit);
 coFORCE_INLINE coBool32x3 coOverlapSolidSolid(const coAabb& a, const coAabb& b) { return coNot(coIsEmpty(coIntersect(a, b))); }
 coFORCE_INLINE coBool32x4 coOverlapSolidSolid(const coAabb& aabb, const coSphere& s) { return coDistance(aabb, s.centerAndRadius) <= coBroadcastW(s.centerAndRadius); }
 coFORCE_INLINE coBool coOverlapSolidHollow(const coAabb& aabb, const coSphere& s)
