@@ -13,16 +13,11 @@ coFORCE_INLINE coBool32x3 coIsValid(const coPlane& this_)
 	return coIsNormalized(coBitCast<coVec3>(this_.normalAndDistance));
 }
 
-coFORCE_INLINE void coSetFromNormalAndSignedDistance(coPlane& this_, const coVec3& normal, const coFloatx3& dist)
+coFORCE_INLINE void coSetFromNormalAndSignedDistance(coPlane& this_, const coVec3& normal, const coFloatx4& dist)
 {
-	coASSERT(coAreXYZEqual(dist));
-	this_.normalAndDistance = coSelectXYZ(reinterpret_cast<const coFloatx4&>(normal), -coBroadcastX(reinterpret_cast<const coFloatx4&>(dist)));
+	coASSERT(coAreXYZWEqual(dist));
+	this_.normalAndDistance = coSelectXYZ(reinterpret_cast<const coFloatx4&>(normal), -coBroadcastX(dist));
 	coASSERT(coIsValid(this_));
-}
-
-coFORCE_INLINE void coSetFromNormalAndPoint(coPlane& this_, const coVec3& normal, const coVec3& point)
-{
-	coSetFromNormalAndSignedDistance(this_, normal, coDot(normal, point));
 }
 
 coFORCE_INLINE coFloatx4 coDistance(const coPlane& this_, const coVec4& point)
@@ -34,6 +29,11 @@ coFORCE_INLINE coFloatx4 coDistance(const coPlane& this_, const coVec4& point)
 coFORCE_INLINE coFloatx3 coDistance(const coPlane& this_, const coVec3& point)
 {
 	return coDot(this_.normalAndDistance, coVec4(point, 1.0f));
+}
+
+coFORCE_INLINE coVec3 coProject(const coPlane& this_, const coVec3& point)
+{
+	return point - coDistance(this_, point) * coVec3(this_.normalAndDistance);
 }
 
 coFORCE_INLINE coBool32x4 coRayPlaneIntersection(const coPlane& this_, const coVec4& rayPoint, const coVec4& rayDir, coFloatx4& t)

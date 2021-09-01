@@ -4,8 +4,10 @@
 #include "coDistance_f.h"
 #include <math/shape/coAabb_f.h>
 #include <math/shape/coSphere.h>
+#include <math/shape/coPlane.h>
 #include <math/shape/coSegment_f.h>
 #include <math/vector/coFloatx3_f.h>
+#include <math/vector/coFloatx4_f.h>
 #include <math/vector/coBool32x3_f.h>
 
 coFORCE_INLINE coBool32x3 coOverlapSolid(const coAabb& aabb, const coVec3& point) { return point >= aabb.min && point <= aabb.max; }
@@ -28,6 +30,15 @@ coFORCE_INLINE coBool coOverlapSolid(const coAabb& aabb, const coSegment& seg)
 	const coFloat tmin = coMax(0.0f, coMax(tmin1).x);
 	const coFloat tmax = coMin(len.x, coMin(tmax1).x);
 	return tmin <= tmax;
+}
+coFORCE_INLINE coBool32x4 coOverlapSolid(const coAabb& aabb, const coPlane& plane)
+{
+	const coVec3 center = coGetCenter(aabb);
+	const coVec3 halfExtents = aabb.max - center;
+	const coVec3 normal = coVec3(plane.normalAndDistance);
+	const coFloatx4 r = coDot(halfExtents, coAbs(normal));
+	const coFloatx4 s = coDot(normal, center) - coBroadcastW(plane.normalAndDistance);
+	return coAbs(s) <= r;
 }
 coBool coOverlapXY(const coSegment& _a, const coSegment& _b, coVec3& _hit);
 coFORCE_INLINE coBool32x3 coOverlapSolidSolid(const coAabb& a, const coAabb& b) { return coNot(coIsEmpty(coIntersect(a, b))); }

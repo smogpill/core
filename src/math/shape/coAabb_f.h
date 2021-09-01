@@ -6,6 +6,7 @@
 #include "../vector/coVec3_f.h"
 
 coFORCE_INLINE coVec3 coGetSize(const coAabb& this_) { return this_.max - this_.min; }
+coFORCE_INLINE coVec3 coGetCenter(const coAabb& this_) { return (this_.max + this_.min) * 0.5f; }
 coFORCE_INLINE coAabb coIntersect(const coAabb& a, const coAabb& b) { return coAabb(coMax(a.min, b.min), coMin(a.max, b.max)); }
 coFORCE_INLINE coBool32x3 coIsEmpty(const coAabb& a) { return a.max < a.min; }
 coFORCE_INLINE coAabb coMerge(const coAabb& a, const coAabb& b) { return coAabb(coMin(a.min, b.min), coMax(a.max, b.max)); }
