@@ -43,6 +43,7 @@ void coPicker::Begin()
 	context->Clear();
 	shaderProgram->Bind();
 	frameBuffer->Bind(coFrameBuffer::READ_WRITE);
+	frameBuffer->Clear();
 	started = true;
 	glPointSize(8.0f);
 	BindID(coUint32x2(0));
@@ -86,7 +87,7 @@ coUint32 coPicker::PickID(const coVec2& pos) const
 
 coUint32 coPicker::PickID(const coUint32x2& pos) const
 {
-	coASSERT(started);
+	//coASSERT(started);
 	return PickValue(pos);
 }
 
@@ -115,10 +116,18 @@ coUint32 coPicker::PickValue(const coUint32x2& pos) const
 		return 0;
 	glFlush();
 	glFinish();
+	
+	frameBuffer->Bind(coFrameBuffer::READ_WRITE);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
+	glPixelStorei(GL_PACK_ALIGNMENT, 1);
+	glPixelStorei(GL_PACK_ROW_LENGTH, 0);
+	glPixelStorei(GL_PACK_SKIP_ROWS, 0);
+	glPixelStorei(GL_PACK_SKIP_PIXELS, 0);
+	glReadBuffer(GL_COLOR_ATTACHMENT0);
+	
 	coUint32 value;
 	glReadPixels(pos.x, pos.y, 1, 1, GL_RED_INTEGER, GL_UNSIGNED_INT, &value);
+	frameBuffer->Unbind();
 	return value;
 }
 

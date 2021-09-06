@@ -22,8 +22,9 @@ public:
 	coResult Init(const coUint32x2& size, Format format);
 	void Bind(BindMode mode);
 	void Unbind();
+	void Clear();
 private:
 	GLuint frameBufferObject = GL_INVALID_VALUE;
-	GLuint colorRBO = GL_INVALID_VALUE;
+	GLuint colorTexture = GL_INVALID_VALUE;
 	GLuint depthStencilRBO = GL_INVALID_VALUE;
 };

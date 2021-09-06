@@ -5,4 +5,5 @@ layout(location = 0) out uint outColor;
 void main()
 {
     outColor = inColor;
+    //outColor = 10;
 }
