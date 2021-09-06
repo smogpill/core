@@ -181,6 +181,7 @@ public:
 	coBool IsPressed(coUint32 scanCode) const;
 	coBool IsJustPressed(coUint32 scanCode) const;
 	coBool IsJustReleased(coUint32 scanCode) const;
+	coBool IsLeftMouseDoubleClick() const { return leftMouseDoubleClick; }
 	coInt GetRelativeMouseX() const { return relativeMouseX; }
 	coInt GetRelativeMouseY() const { return relativeMouseY; }
 	coUint32x2 GetClientMousePos() const { return coUint32x2(clientMouseX, clientMouseY); }
@@ -200,4 +201,5 @@ private:
 	coInt relativeMouseY = 0;
 	coInt clientMouseX = 0;
 	coInt clientMouseY = 0;
+	coBool leftMouseDoubleClick = false;
 };

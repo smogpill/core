@@ -190,6 +190,7 @@ void coInputContext::EndFrame()
 {
 	relativeMouseX = 0;
 	relativeMouseY = 0;
+    leftMouseDoubleClick = false;
 	for (coUint8& key : keyStates)
 	{
 		key &= ~coUint8(2);
@@ -293,6 +294,11 @@ coBool coInputContext::_ProcessWindowMessages(UINT msg, WPARAM wParam, LPARAM lP
     {
         clientMouseX = GET_X_LPARAM(lParam);
         clientMouseY = GET_Y_LPARAM(lParam);
+        break;
+    }
+    case WM_LBUTTONDBLCLK:
+    {
+        leftMouseDoubleClick = true;
         break;
     }
 	}

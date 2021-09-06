@@ -184,7 +184,7 @@ static coResult coRegisterWindowClass(HINSTANCE _hinst, const WCHAR* _className)
 		wndClass.cbWndExtra = 0;
 		wndClass.hInstance = _hinst;
 		wndClass.hIcon = hIcon;
-		wndClass.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
+		wndClass.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
 		wndClass.hbrBackground = nullptr;
 		wndClass.lpszMenuName = nullptr;
 		wndClass.lpszClassName = _className;
