@@ -2,6 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include "math/matrix/coMat4.h"
+#include "math/vector/coUint32x2.h"
 #include "container/array/coArray.h"
 
 class coRenderView
@@ -12,6 +13,7 @@ public:
 	void SetProjection(const coMat4& proj_) { proj = proj; }
 	coUint GetWidth() const { return width; }
 	coUint GetHeight() const { return height; }
+	coUint32x2 GetSize() const { return coUint32x2(width, height); }
 
 	void Begin();
 	void End();

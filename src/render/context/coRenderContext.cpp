@@ -62,6 +62,38 @@ coResult coRenderContext::Init(HWND _hwnd)
 		coERROR("wglCreateContext: " << str);
 		return false;
 	}
+	wglMakeCurrent(hdc, hglrc);
+
+	// Modern OpenGL context
+	{
+		PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribs = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
+
+		static int const glattriblist[] =
+		{
+		WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+		WGL_CONTEXT_MINOR_VERSION_ARB, 2,
+		WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB, 
+#ifdef coDEV
+		WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB,
+#else
+		WGL_CONTEXT_FLAGS_ARB, 0,
+#endif
+		0
+		};
+
+		HGLRC newContext = wglCreateContextAttribs(hdc, 0, glattriblist);
+		if (newContext == NULL)
+		{
+			coDynamicString str;
+			coDumpLastOsError(str);
+			coERROR("wglCreateContextAttribs: " << str);
+			return false;
+		}
+
+		wglMakeCurrent(hdc, newContext);
+		wglDeleteContext(hglrc);
+		hglrc = newContext;
+	}
 
 	coTRY(Bind(), nullptr);
 	coTRY(InitOpengl(), nullptr);

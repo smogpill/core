@@ -6,12 +6,14 @@
 #include "render/shader/coShaderProgram.h"
 #include "render/context/coRenderContext.h"
 #include "render/view/coRenderView.h"
+#include "render/buffer/coFrameBuffer.h"
 #include <lang/result/coResult_f.h>
 #include <math/vector/coVec2.h>
 #include <math/scalar/coUint32_f.h>
 
 coPicker::~coPicker()
 {
+	delete frameBuffer;
 	delete shaderProgram;
 	delete fragmentShader;
 	delete vertexShader;
@@ -30,6 +32,8 @@ coResult coPicker::Init(coRenderContext& context_)
 	coPushBack(shaderList, fragmentShader);
 	coTRY(shaderProgram->Init(shaderList), nullptr);
 	idShaderLocation = shaderProgram->GetUniformLocation("id");
+	frameBuffer = new coFrameBuffer();
+	coTRY(frameBuffer->Init(context_.GetMainRenderView()->GetSize(), coFrameBuffer::R32UI_D24_S8), nullptr);
 	return true;
 }
 
@@ -38,6 +42,7 @@ void coPicker::Begin()
 	coASSERT(!started);
 	context->Clear();
 	shaderProgram->Bind();
+	frameBuffer->Bind(coFrameBuffer::READ_WRITE);
 	started = true;
 	glPointSize(8.0f);
 	BindID(coUint32x2(0));
@@ -47,6 +52,7 @@ void coPicker::End()
 {
 	coASSERT(started);
 	started = false;
+	frameBuffer->Unbind();
 	shaderProgram->Unbind();
 }
 
@@ -70,18 +76,18 @@ coColor coPicker::PickColor(const coVec2& pos) const
 
 coColor coPicker::PickColor(const coUint32x2& pos) const
 {
-	const coUint32x4 value = PickValue(pos, GL_UNSIGNED_BYTE);
-	return coColor(coUint8(value.x), coUint8(value.y), coUint8(value.z), coUint8(value.w));
+	return coColor(PickValue(pos));
 }
 
-coUint32x4 coPicker::PickID(const coVec2& pos) const
+coUint32 coPicker::PickID(const coVec2& pos) const
 {
 	return PickID(Convert(pos));
 }
 
-coUint32x4 coPicker::PickID(const coUint32x2& pos) const
+coUint32 coPicker::PickID(const coUint32x2& pos) const
 {
-	return PickValue(pos, GL_UNSIGNED_INT);
+	coASSERT(started);
+	return PickValue(pos);
 }
 
 coUint32x2 coPicker::Convert(const coVec2& pos) const
@@ -95,48 +101,25 @@ coUint32x2 coPicker::Convert(const coVec2& pos) const
 	return coUint32x2(x, y);
 }
 
-coUint32x4 coPicker::PickValue(const coUint32x2& pos, GLenum type) const
+coUint32 coPicker::PickValue(const coUint32x2& pos) const
 {
 	const coRenderView* view = GetView();
 	if (view == nullptr)
-		return coUint32x4(0);
+		return 0;
 
 	const coUint width = view->GetWidth();
 	const coUint height = view->GetHeight();
 	if (width == 0 || height == 0)
-		return coUint32x4(0);
+		return 0;
 	if (pos.x >= width || pos.y >= height)
-		return coUint32x4(0);
+		return 0;
 	glFlush();
 	glFinish();
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-	coUint32x4 data;
-	switch (type)
-	{
-	case GL_UNSIGNED_BYTE:
-	{
-		coUint8 data8[4];
-		glReadPixels(pos.x, pos.y, 1, 1, GL_RGBA, type, data8);
-		data.x = data8[0];
-		data.y = data8[1];
-		data.z = data8[2];
-		data.w = data8[3];
-		break;
-	}
-	case GL_UNSIGNED_INT:
-	{
-		glReadPixels(pos.x, pos.y, 1, 1, GL_RGBA, type, &data.x);
-		break;
-	}
-	default:
-	{
-		coASSERT(false);
-		break;
-	}
-	}
-	
-	return data;
+	coUint32 value;
+	glReadPixels(pos.x, pos.y, 1, 1, GL_RED_INTEGER, GL_UNSIGNED_INT, &value);
+	return value;
 }
 
 coRenderView* coPicker::GetView() const

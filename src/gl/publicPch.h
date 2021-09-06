@@ -8,6 +8,7 @@
 #define GL_GLEXT_PROTOTYPES
 #include <gl/glcorearb.h>
 #include "gl/gl3w.h"
+#include <gl/wglext.h>
 //#define GL_GLEXT_PROTOTYPES
 //#include <gl/glext.h>
 //#include <gl/GLU.h>

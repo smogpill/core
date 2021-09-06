@@ -12,6 +12,7 @@ class coMat4;
 class coUint32x2;
 class coRenderView;
 class coRenderContext;
+class coFrameBuffer;
 
 class coPicker
 {
@@ -24,17 +25,18 @@ public:
 	void BindID(const coUint32x2 id);
 	coColor PickColor(const coVec2& pos) const;
 	coColor PickColor(const coUint32x2& pos) const;
-	coUint32x4 PickID(const coVec2& pos) const;
-	coUint32x4 PickID(const coUint32x2& pos) const;
+	coUint32 PickID(const coVec2& pos) const;
+	coUint32 PickID(const coUint32x2& pos) const;
 
 private:
 	coUint32x2 Convert(const coVec2& pos) const;
-	coUint32x4 PickValue(const coUint32x2& pos, GLenum type) const;
+	coUint32 PickValue(const coUint32x2& pos) const;
 	coRenderView* GetView() const;
 	coBool started = false;
 	coRenderContext* context = nullptr;
 	coShader* vertexShader = nullptr;
 	coShader* fragmentShader = nullptr;
 	coShaderProgram* shaderProgram = nullptr;
+	coFrameBuffer* frameBuffer = nullptr;
 	coInt idShaderLocation = 0;
 };

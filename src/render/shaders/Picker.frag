@@ -1,6 +1,6 @@
 #version 450
-layout(location = 0) in flat uvec4  inColor;
-layout(location = 0) out uvec4 outColor;
+layout(location = 0) in flat uint  inColor;
+layout(location = 0) out uint outColor;
 
 void main()
 {

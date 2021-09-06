@@ -10,6 +10,7 @@ public:
 	coFORCE_INLINE coColor() : r(0), g(0), b(0), a(255) {}
 	coFORCE_INLINE coColor(coUint8 r, coUint8 g, coUint8 b, coUint8 a = 255) : r(r), g(g), b(b), a(a) {}
 	coFORCE_INLINE coColor(const coColor& rgb, coUint8 a) : r(rgb.r), g(rgb.g), b(rgb.b), a(a) {}
+	coFORCE_INLINE coColor(coUint32 rgba) { reinterpret_cast<coUint32&>(*this) = rgba; }
 	operator coVec4() const;
 	coFORCE_INLINE operator coUint32() const { return reinterpret_cast<const coUint32&>(r); }
 
