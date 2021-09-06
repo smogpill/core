@@ -6,7 +6,7 @@
 #include "math/vector/coVec3.h"
 #include "container/array/coArray_f.h"
 
-void coRenderView::SetViewport(coInt x_, coInt y_, coInt width_, coInt height_)
+void coRenderView::SetViewport(coInt x_, coInt y_, coUint width_, coUint height_)
 {
 	x = x_;
 	y = y_;

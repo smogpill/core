@@ -16,6 +16,7 @@ class coDebugRenderer
 {
 	coDECLARE_SINGLETON(coDebugRenderer);
 public:
+	~coDebugRenderer();
 	coResult Init();
 	enum Options
 	{

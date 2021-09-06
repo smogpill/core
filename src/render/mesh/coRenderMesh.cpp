@@ -14,47 +14,57 @@ coResult coRenderMesh::Init()
 	return true;
 }
 
-void coRenderMesh::SetBuffers(const coArray<coVec3>& positions, const coArray<coVec3>& normals, const coArray<coUint32>& indices)
+void coRenderMesh::Fill(coArray<VertexPN>& vertices, const coArray<coVec3>& positions, const coArray<coVec3>& normals)
 {
-    coASSERT(positions.count == normals.count);
-    coDynamicArray<Vertex> vertices;
-    coResize(vertices, positions.count);
+    coASSERT(vertices.count == positions.count);
+    coASSERT(vertices.count == normals.count);
     for (coUint i = 0; i < positions.count; ++i)
     {
-        Vertex& vertex = vertices[i];
-        const coVec3& pos = positions[i];
-        const coVec3& normal = normals[i];
-        vertex.pos[0] = pos.x;
-        vertex.pos[1] = pos.y;
-        vertex.pos[2] = pos.z;
-        vertex.normal[0] = normal.x;
-        vertex.normal[1] = normal.y;
-        vertex.normal[2] = normal.z;
+        VertexPN& vertex = vertices[i];
+        vertex.SetPos(positions[i]);
+        vertex.SetNormal(normals[i]);
     }
-    SetBuffers(vertices, indices);
-}
-
-void coRenderMesh::SetBuffers(const coArray<Vertex>& vertices, const coArray<coUint32>& indices)
-{
-    glBindVertexArray(vertexArrayObject);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-    glBufferData(GL_ARRAY_BUFFER, vertices.count * sizeof(Vertex), vertices.data, GL_STATIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferObject);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.count * sizeof(coUint32), indices.data, GL_STATIC_DRAW);
-
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
-
-    glBindVertexArray(0);
-    nbIndices = indices.count;
 }
 
 void coRenderMesh::Draw()
 {
     glBindVertexArray(vertexArrayObject);
-    glDrawElements(GL_TRIANGLES, nbIndices, GL_UNSIGNED_INT, 0);
+    if (drawWithIndices)
+    {
+        glDrawElements(GL_TRIANGLES, nbIndices, GL_UNSIGNED_INT, 0);
+    }
+    else
+    {
+        glDrawArrays(GL_TRIANGLES, 0, nbVertices);
+    }
     glBindVertexArray(0);
+}
+
+void coRenderMesh::DrawAsPoints()
+{
+    glBindVertexArray(vertexArrayObject);
+    glDrawArrays(GL_POINTS, 0, nbVertices);
+    glBindVertexArray(0);
+}
+
+void coRenderMesh::VertexP::SetVertexAttribs()
+{
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexP), (void*)0);
+}
+
+void coRenderMesh::VertexPN::SetVertexAttribs()
+{
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)offsetof(VertexPN, normal));
+}
+
+void coRenderMesh::VertexPUx2::SetVertexAttribs()
+{
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPUx2), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_UNSIGNED_INT, GL_FALSE, sizeof(VertexPUx2), (void*)offsetof(VertexPUx2, u));
 }

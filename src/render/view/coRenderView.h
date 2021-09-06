@@ -7,9 +7,11 @@
 class coRenderView
 {
 public:
-	void SetViewport(coInt x, coInt y, coInt width, coInt height);
+	void SetViewport(coInt x, coInt y, coUint width, coUint height);
 	void SetView(const coMat4& view_) { view = view_; }
 	void SetProjection(const coMat4& proj_) { proj = proj; }
+	coUint GetWidth() const { return width; }
+	coUint GetHeight() const { return height; }
 
 	void Begin();
 	void End();
@@ -17,8 +19,8 @@ public:
 private:
 	coInt x = 0;
 	coInt y = 0;
-	coInt width = 0;
-	coInt height = 0;
+	coUint width = 0;
+	coUint height = 0;
 	coMat4 view;
 	coMat4 proj;
 };

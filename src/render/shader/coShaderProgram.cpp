@@ -5,8 +5,11 @@
 #include "render/shader/coShader.h"
 #include "lang/result/coResult_f.h"
 #include "math/matrix/coMat4.h"
-#include "math/vector/coVec3.h"
 #include "math/vector/coVec2.h"
+#include "math/vector/coVec3.h"
+#include "math/vector/coVec4.h"
+#include "math/vector/coUint32x2.h"
+#include "math/vector/coUint32x4.h"
 
 coShaderProgram::~coShaderProgram()
 {
@@ -61,9 +64,9 @@ coInt coShaderProgram::GetUniformLocation(const coChar* name) const
 	return glGetUniformLocation(id, name);
 }
 
-void coShaderProgram::SetUniform(coInt location, const coMat4& value)
+void coShaderProgram::SetUniform(coInt location, const coVec2& value)
 {
-	glUniformMatrix4fv(location, 1, GL_FALSE, &value.c0.x);
+	glUniform2fv(location, 1, &value.x);
 }
 
 void coShaderProgram::SetUniform(coInt location, const coVec3& value)
@@ -71,7 +74,22 @@ void coShaderProgram::SetUniform(coInt location, const coVec3& value)
 	glUniform3fv(location, 1, &value.x);
 }
 
-void coShaderProgram::SetUniform(coInt location, const coVec2& value)
+void coShaderProgram::SetUniform(coInt location, const coVec4& value)
 {
-	glUniform2fv(location, 1, &value.x);
+	glUniform4fv(location, 1, &value.x);
+}
+
+void coShaderProgram::SetUniform(coInt location, const coUint32x2& value)
+{
+	glUniform2uiv(location, 1, &value.x);
+}
+
+void coShaderProgram::SetUniform(coInt location, const coUint32x4& value)
+{
+	glUniform4uiv(location, 1, &value.x);
+}
+
+void coShaderProgram::SetUniform(coInt location, const coMat4& value)
+{
+	glUniformMatrix4fv(location, 1, GL_FALSE, &value.c0.x);
 }

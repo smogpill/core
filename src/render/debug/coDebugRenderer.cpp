@@ -12,6 +12,13 @@
 
 coDEFINE_SINGLETON(coDebugRenderer);
 
+coDebugRenderer::~coDebugRenderer()
+{
+	delete shaderProgram;
+	for (coShader* shader : shaders)
+		delete shader;
+}
+
 coResult coDebugRenderer::Init()
 {
 	coTRY(InitShaders(), nullptr);

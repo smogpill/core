@@ -5,8 +5,11 @@
 #include <lang/result/coResult.h>
 class coShader;
 class coMat4;
+class coVec4;
 class coVec3;
 class coVec2;
+class coUint32x2;
+class coUint32x4;
 
 class coShaderProgram
 {
@@ -16,9 +19,12 @@ public:
 	void Bind();
 	void Unbind();
 	coInt GetUniformLocation(const coChar* name) const;
-	void SetUniform(coInt location, const coMat4& value);
-	void SetUniform(coInt location, const coVec3& value);
 	void SetUniform(coInt location, const coVec2& value);
+	void SetUniform(coInt location, const coVec3& value);
+	void SetUniform(coInt location, const coVec4& value);
+	void SetUniform(coInt location, const coUint32x2& value);
+	void SetUniform(coInt location, const coUint32x4& value);
+	void SetUniform(coInt location, const coMat4& value);
 
 private:
 	GLuint id = 0;

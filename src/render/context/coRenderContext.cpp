@@ -2,36 +2,15 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "render/pch.h"
 #include "render/context/coRenderContext.h"
+#include "render/picker/coPicker.h"
+#include "render/view/coRenderView.h"
 #include "debug/log/coLog.h"
 #include "lang/result/coResult_f.h"
 #include "platform/coOs.h"
-#include "render/view/coRenderView.h"
-
-void co_MessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
-{
-	switch (severity)
-	{
-	case GL_DEBUG_SEVERITY_HIGH:
-	case GL_DEBUG_SEVERITY_MEDIUM:
-	{
-		coERROR(message);
-		break;
-	}
-	case GL_DEBUG_SEVERITY_LOW:
-	{
-		coWARN(message);
-		break;
-	}
-	case GL_DEBUG_SEVERITY_NOTIFICATION:
-	{
-		coINFO(message);
-		break;
-	}
-	}
-}
 
 coRenderContext::~coRenderContext()
 {
+	delete picker;
 	delete mainRenderView;
 	if (hglrc)
 	{
@@ -95,6 +74,9 @@ coResult coRenderContext::Init(HWND _hwnd)
 		return false;
 	}
 	mainRenderView->SetViewport(0, 0, rect.right - rect.left, rect.bottom - rect.top);
+
+	picker = new coPicker();
+	coTRY(picker->Init(*this), nullptr);
 	return true;
 }
 
@@ -133,6 +115,29 @@ coResult coRenderContext::Bind()
 #endif
 }
 
+void coRenderContext::OnDebugMessage(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
+{
+	switch (severity)
+	{
+	case GL_DEBUG_SEVERITY_HIGH:
+	case GL_DEBUG_SEVERITY_MEDIUM:
+	{
+		coERROR(message);
+		break;
+	}
+	case GL_DEBUG_SEVERITY_LOW:
+	{
+		coWARN(message);
+		break;
+	}
+	case GL_DEBUG_SEVERITY_NOTIFICATION:
+	{
+		//coINFO(message);
+		break;
+	}
+	}
+}
+
 coResult coRenderContext::InitOpengl()
 {
 	static coBool done = false;
@@ -151,7 +156,7 @@ coResult coRenderContext::InitOpengl()
 
 #ifdef coDEBUG
 	glEnable(GL_DEBUG_OUTPUT);
-	glDebugMessageCallback(co_MessageCallback, nullptr);
+	glDebugMessageCallback(OnDebugMessage, nullptr);
 #endif
 
 	//glFrontFace(GL_CW);
