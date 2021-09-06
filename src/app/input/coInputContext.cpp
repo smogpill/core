@@ -289,6 +289,12 @@ coBool coInputContext::_ProcessWindowMessages(UINT msg, WPARAM wParam, LPARAM lP
 		}
 		break;
 	}
+    case WM_MOUSEMOVE:
+    {
+        clientMouseX = GET_X_LPARAM(lParam);
+        clientMouseY = GET_Y_LPARAM(lParam);
+        break;
+    }
 	}
 	return false;
 }

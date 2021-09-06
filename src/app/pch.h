@@ -5,4 +5,5 @@
 #include "platform/coOsHeaders.h"
 #ifdef coMSWINDOWS
 #include <hidusage.h>
+#include <windowsx.h>
 #endif

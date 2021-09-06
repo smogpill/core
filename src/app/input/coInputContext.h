@@ -2,6 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include <lang/result/coResult.h>
+#include <math/vector/coUint32x2.h>
 
 // Impl based on https://handmade.network/wiki/2823-keyboard_inputs_-_scancodes,_raw_input,_text_input,_key_names
 
@@ -182,6 +183,7 @@ public:
 	coBool IsJustReleased(coUint32 scanCode) const;
 	coInt GetRelativeMouseX() const { return relativeMouseX; }
 	coInt GetRelativeMouseY() const { return relativeMouseY; }
+	coUint32x2 GetClientMousePos() const { return coUint32x2(clientMouseX, clientMouseY); }
 
 	coBool _ProcessWindowMessages(UINT msg, WPARAM wParam, LPARAM lParam, LRESULT& result);
 
@@ -196,4 +198,6 @@ private:
 	coUint8 keyStates[256] = { 0 };
 	coInt relativeMouseX = 0;
 	coInt relativeMouseY = 0;
+	coInt clientMouseX = 0;
+	coInt clientMouseY = 0;
 };
