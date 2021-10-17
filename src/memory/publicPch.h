@@ -4,4 +4,5 @@
 
 #include "lang/publicPch.h"
 #include <cstring>
+#include <cstdlib>
 #include <memory.h>

@@ -9,3 +9,8 @@ coPlane::coPlane(const coVec3& normal, const coVec3& point)
 {
 	normalAndDistance = coSelectXYZ(reinterpret_cast<const coFloatx4&>(normal), -coBroadcastX(coDot(normal, point)));
 }
+
+coPlane::coPlane(const coVec3& a, const coVec3& b, const coVec3& c)
+	: coPlane(coNormalize(coCross(b-a, c-b)), a)
+{
+}

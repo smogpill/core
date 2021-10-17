@@ -64,6 +64,11 @@ coInt coShaderProgram::GetUniformLocation(const coChar* name) const
 	return glGetUniformLocation(id, name);
 }
 
+void coShaderProgram::SetUniform(coInt location, coBool value)
+{
+	glUniform1i(location, value);
+}
+
 void coShaderProgram::SetUniform(coInt location, const coVec2& value)
 {
 	glUniform2fv(location, 1, &value.x);
