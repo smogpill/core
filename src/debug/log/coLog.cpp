@@ -16,7 +16,7 @@ void coLog(coLogType _type, const coConstString& _file, coUint _line, const coCo
 
 coDynamicString& _coGetTempLogString()
 {
-	static coDynamicString str;
+	static thread_local coDynamicString str;
 	coClear(str);
 	return str;
 }
