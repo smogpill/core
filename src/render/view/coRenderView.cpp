@@ -19,6 +19,8 @@ void coRenderView::Begin()
 	glViewport(x, y, width, height);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
+	glCullFace(GL_BACK);
+	glFrontFace(GL_CCW);
 
 	/*
 	glMatrixMode(GL_MODELVIEW);
