@@ -37,8 +37,8 @@ coFORCE_INLINE coBool32x4 coOverlapSolid(const coAabb& aabb, const coPlane& plan
 	const coVec3 halfExtents = aabb.max - center;
 	const coVec3 normal = coVec3(plane.normalAndDistance);
 	const coFloatx4 r = coDot(halfExtents, coAbs(normal));
-	const coFloatx4 s = coDot(normal, center) - coBroadcastW(plane.normalAndDistance);
-	return coAbs(s) <= r;
+	const coFloatx4 dist = coDot(plane.normalAndDistance, coVec4(center, 1.0f));
+	return coAbs(dist) <= r;
 }
 coBool coOverlapXY(const coSegment& _a, const coSegment& _b, coVec3& _hit);
 coFORCE_INLINE coBool32x3 coOverlapSolidSolid(const coAabb& a, const coAabb& b) { return coNot(coIsEmpty(coIntersect(a, b))); }
