@@ -5,7 +5,7 @@
 class coConfig
 {
 public:
-	static bool breakOnError;
+	static volatile bool breakOnError;
 };
 
 #if defined(__clang__)
@@ -28,11 +28,12 @@ public:
 #endif
 
 inline void _coReturnVoid(int) {}  // to avoid some gcc warnings with the comma operator
+bool _IsDebuggerPresent();
 
 #ifdef coMSVC_COMPILER
-#	define coBREAK() _coReturnVoid(coConfig::breakOnError && (__debugbreak(), 1))
+#	define coBREAK() _coReturnVoid(coConfig::breakOnError && _IsDebuggerPresent() && (__debugbreak(), 1))
 #else
-#	define coBREAK() _coReturnVoid(coConfig::breakOnError && ::raise(SIGINT))
+#	define coBREAK() _coReturnVoid(coConfig::breakOnError && _IsDebuggerPresent() && ::raise(SIGINT))
 #endif
 
 #if defined(coGCC_COMPATIBLE_COMPILER) || defined(coCLANG_COMPILER)

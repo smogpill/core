@@ -4,4 +4,9 @@
 #include "lang/pch.h"
 #include "lang/coCompiler.h"
 
-bool coConfig::breakOnError = true;
+volatile bool coConfig::breakOnError = true;
+
+bool _IsDebuggerPresent()
+{
+	return IsDebuggerPresent();
+}
