@@ -271,6 +271,14 @@ coFORCE_INLINE void coSetRotationNoScale(coMat4& _this, const coQuat& q)
 	coSetUpperMat3(_this, m);
 }
 
+//! X: Roll, Y: Pitch, Z: Yaw
+coFORCE_INLINE void coSetRotationNoScale(coMat4& this_, const coFloatx3& eulerAngles)
+{
+	coMat3 m;
+	coSetRotation(m, eulerAngles);
+	coSetUpperMat3(this_, m);
+}
+
 coFORCE_INLINE coMat4 coRotate(const coMat4& m, const coQuat& v)
 {
 	coMat4 r;

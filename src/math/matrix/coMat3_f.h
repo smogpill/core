@@ -86,6 +86,12 @@ coFORCE_INLINE void coSetRotation(coMat3& _this, const coQuat& q)
 	_this.c2 = coVec3(xz + wy, yz - wx, 1.0f - (xx + yy));
 }
 
+coFORCE_INLINE void coSetRotation(coMat3& this_, const coFloatx3& eulerAngles)
+{
+	// todo
+	coSetRotation(this_, coRotation(eulerAngles));
+}
+
 coFORCE_INLINE coMat3 coInverse(const coMat3& m)
 {
 	// Impl from compute_inverse<3, 3, T, Q, Aligned> https://github.com/g-truc/glm/blob/master/glm/detail/func_matrix.inl (MIT license).
