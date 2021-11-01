@@ -30,8 +30,8 @@ const coUint16 _coCharCategoryTable[256] =
 	_coCC(punct), _coCC(rawdel), _coCC(rawdel), _coCC(rawdel),
 	//40  (         41  )         42  *         43  +
 	//44  ,         45  -         46  .         47  /
-	_coCC(punct), _coCC(punct), _coCC(rawdel), _coCC(rawdel),
-	_coCC(rawdel), _coCC(rawdel), _coCC(period), _coCC(rawdel),
+	_coCC(punct), _coCC(punct), _coCC(rawdel), _coCC(sign),
+	_coCC(rawdel), _coCC(sign), _coCC(period), _coCC(rawdel),
 	//48  0         49  1         50  2         51  3
 	//52  4         53  5         54  6         55  7
 	_coCC(digit), _coCC(digit), _coCC(digit), _coCC(digit),

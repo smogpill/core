@@ -35,13 +35,13 @@ void coStringInputStream::PassLine()
 {
 	while (pos < buffer.count)
 	{
-		if (!coIsVerticalWhitespace(buffer.data[pos]))
+		if (coIsVerticalWhitespace(buffer.data[pos]))
 			break;
 		++pos;
 	}
 	while (pos < buffer.count)
 	{
-		if (coIsVerticalWhitespace(buffer.data[pos]))
+		if (!coIsVerticalWhitespace(buffer.data[pos]))
 			break;
 		++pos;
 	}
@@ -79,7 +79,7 @@ coStringInputStream& operator >> (coStringInputStream& stream, coFloat& v)
 	while (stream.pos < stream.buffer.count)
 	{
 		const coByte c = stream.buffer.data[stream.pos];
-		if (!coIsDigitOrPeriodOrUnder(c))
+		if (!coIsDigitOrPeriodOrSign(c))
 			break;
 		if (subPos < 31)
 			s[subPos++] = c;

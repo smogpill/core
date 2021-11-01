@@ -1,7 +1,6 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
-
 #include "container/map/coHashMap.h"
 
 class _coHashMapFindResult
@@ -32,11 +31,11 @@ _coHashMapFindResult _coFindExt(const coHashMap<K, T, NB_BUCKETS, Hash>& _this, 
 	result.previousEntry = Self::invalidIndex;
 	while (result.entry != Self::invalidIndex)
 	{
-		const Entry* entry = _this.entries[result.entry];
-		if (entry->key == _key)
+		const Entry& entry = _this.entries[result.entry];
+		if (entry.key == _key)
 			break;
 		result.previousEntry = result.entry;
-		result.entry = entry->next;
+		result.entry = entry.next;
 	}
 
 	return result;
@@ -46,8 +45,8 @@ template <class K, class T, coUint NB_BUCKETS, class Hash>
 coHashMapEntry<K, T>* _coAddEntry(coHashMap<K, T, NB_BUCKETS, Hash>& _this, const K& _key, const T& _val)
 {
 	typedef coHashMap<K, T, NB_BUCKETS, Hash> Self;
-	coReserve(_this, _this.count + 1);
 	typedef coHashMapEntry<K, T> Entry;
+	coReserve(_this, _this.count + 1);
 	const coUint32 bucketIndex = Hash()(_key) & Self::bucketMask;
 	coUint32& bucket = _this.buckets[bucketIndex];
 	Entry& entry = _this.entries[_this.count];
@@ -77,10 +76,10 @@ void _coRemoveEntry(coHashMap<K, T, NB_BUCKETS, Hash>& _this, const K& _key)
 
 	if (result.entry != _this.count - 1)
 	{
-		Entry& entry = _this.entries[_this.count - 1];
-		_coHashMapFindResult last = _coFindExt(_this, entry.key);
+		Entry& lastEntry = _this.entries[_this.count - 1];
+		_coHashMapFindResult last = _coFindExt(_this, lastEntry.key);
 		if (last.previousEntry == Self::invalidIndex)
-			_this.buckets[last.bucket].next = result.entry;
+			_this.buckets[last.bucket] = result.entry;
 		else
 			_this.entries[last.previousEntry].next = result.entry;
 	}

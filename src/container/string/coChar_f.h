@@ -14,8 +14,9 @@ enum _coCharCategory : coUint16
 	_coCharCategory_lower = 1 << 6,		// a-z
 	_coCharCategory_under = 1 << 7,		// _
 	_coCharCategory_period = 1 << 8,	// .
-	_coCharCategory_rawdel = 1 << 9,	// {}[]#<>%:;?*+-/^&|~!=,"'
+	_coCharCategory_rawdel = 1 << 9,	// {}[]#<>%:;?*/^&|~!=,"'
 	_coCharCategory_punct = 1 << 10,	// `$@()
+	_coCharCategory_sign = 1 << 11,		// +-
 	_coCharCategory_xupper = _coCharCategory_xletter | _coCharCategory_upper,
 	_coCharCategory_xlower = _coCharCategory_xletter | _coCharCategory_lower,
 	_coCharCategory_letter = _coCharCategory_upper | _coCharCategory_lower,
@@ -32,7 +33,7 @@ coFORCE_INLINE coBool coIsIdentifierBodyCompatible(coChar _c) { return (_coCharC
 coFORCE_INLINE coBool coIsFileNameCompatible(coChar _c) { return (_coCharCategoryTable[_c] & (_coCharCategory_under | _coCharCategory_letter | _coCharCategory_space | _coCharCategory_digit | _coCharCategory_period | _coCharCategory_punct)) != 0; }
 coFORCE_INLINE coBool coIsDigit(coChar _c) { return (_coCharCategoryTable[_c] & _coCharCategory_digit) != 0; }
 coFORCE_INLINE coBool coIsDigitOrPeriod(coChar _c) { return (_coCharCategoryTable[_c] & (_coCharCategory_digit | _coCharCategory_period)) != 0; }
-coFORCE_INLINE coBool coIsDigitOrPeriodOrUnder(coChar _c) { return (_coCharCategoryTable[_c] & (_coCharCategory_digit | _coCharCategory_period | _coCharCategory_under)) != 0; }
+coFORCE_INLINE coBool coIsDigitOrPeriodOrSign(coChar _c) { return (_coCharCategoryTable[_c] & (_coCharCategory_digit | _coCharCategory_period | _coCharCategory_sign)) != 0; }
 coFORCE_INLINE coBool coIsLowerCase(coChar _c) { return (_coCharCategoryTable[_c] & _coCharCategory_lower) != 0; }
 coFORCE_INLINE coBool coIsUpperCase(coChar _c) { return (_coCharCategoryTable[_c] & _coCharCategory_upper) != 0; }
 coFORCE_INLINE coBool coIsLetter(coChar _c) { return (_coCharCategoryTable[_c] & (_coCharCategory_upper | _coCharCategory_lower)) != 0; }

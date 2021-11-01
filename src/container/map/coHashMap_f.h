@@ -104,3 +104,9 @@ void coRemove(coHashMap<K, T, NB_BUCKETS, Hash>& _this, coHashMapEntry<K, T>* _e
 {
 	_coRemoveEntry(_this, _entry->key);
 }
+
+template <class K, class T, coUint NB_BUCKETS, class Hash>
+void coRemove(coHashMap<K, T, NB_BUCKETS, Hash>& _this, const K& _key)
+{
+	_coRemoveEntry(_this, _key);
+}
