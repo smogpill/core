@@ -4,4 +4,6 @@
 
 #include "lang/publicPch.h"
 #include "debug/publicPch.h"
+#include "container/publicPch.h"
+#include "math/publicPch.h"
 #include <memory>

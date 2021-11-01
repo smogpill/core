@@ -1,6 +1,7 @@
 // Copyright(c) 2020 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
+#include "container/map/coHashMapHash.h"
 class coBinaryOutputStream;
 class coBinaryInputStream;
 
@@ -16,4 +17,10 @@ public:
 
 	coUint64 low = 0;
 	coUint64 high = 0;
+};
+
+template <>
+struct coHashMapHash<coUuid>
+{
+	coUint32 operator()(const coUuid& v) const;
 };

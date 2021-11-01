@@ -1,8 +1,9 @@
-// Copyright(c) 2016 Jounayd Id Salah
+// Copyright(c) 2016-2021 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
-
 #include "lang/reflect/coTypeDecl.h"
+class coBinaryOutputStream;
+class coBinaryInputStream;
 
 class alignas(16) coFloatx2
 {
@@ -22,6 +23,8 @@ public:
 		const __m128 yy = coBitCast<__m128>(_yy);
 		*this = coBitCast<coFloatx2>(_mm_unpacklo_ps(xx, yy));
 	}
+	void Write(coBinaryOutputStream& stream) const;
+	void Read(coBinaryInputStream& stream);
 
 	coFloat x;
 	coFloat y;

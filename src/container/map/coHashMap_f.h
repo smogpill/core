@@ -1,28 +1,16 @@
-// Copyright(c) 2016 Jounayd Id Salah
+// Copyright(c) 2016-2021 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
-
+#include "coHashMapHash_f.h"
 #include <container/map/coHashMap.h>
 #include <container/map/internal/_coHashMap_f.h>
 #include <lang/coStdWrapper.h>
 #include <math/scalar/coUint32_f.h>
-#include <math/hash/coHash_f.h>
 
 template <class K, class T, coUint NB_BUCKETS, class Hash> coFORCE_INLINE coHashMapEntry<K, T>* coBegin(coHashMap<K, T, NB_BUCKETS, Hash>& _this) { return _this.entries; }
 template <class K, class T, coUint NB_BUCKETS, class Hash> coFORCE_INLINE const coHashMapEntry<K, T>* coBegin(const coHashMap<K, T, NB_BUCKETS, Hash>& _this) { return _this.entries; }
 template <class K, class T, coUint NB_BUCKETS, class Hash> coFORCE_INLINE coHashMapEntry<K, T>* coEnd(coHashMap<K, T, NB_BUCKETS, Hash>& _this) { return _this.entries + _this.count; }
 template <class K, class T, coUint NB_BUCKETS, class Hash> coFORCE_INLINE const coHashMapEntry<K, T>* coEnd(const coHashMap<K, T, NB_BUCKETS, Hash>& _this) { return _this.entries + _this.count; }
-
-template <class K>
-coUint32 coHashMapHash<K>::operator()(const K& v) const
-{
-	return coHash32(v);
-}
-
-inline coUint32 coHashMapHash<coUint64>::operator()(const coUint64& v) const
-{
-	return static_cast<coUint32>(coFastHash32(coUint32(v)) ^ coFastHash32(coUint32(v >> 32)));
-}
 
 template <class K, class T, coUint NB_BUCKETS, class Hash>
 void coReserve(coHashMap<K, T, NB_BUCKETS, Hash>& _this, coUint32 _desiredCapacity)

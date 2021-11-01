@@ -14,8 +14,9 @@ public:
 	void SetPos(coUint32 pos);
 	coUint32 GetPos() const { return pos; }
 	virtual void SetErrorMode() override;
+	coBool IsEnd() const { return pos == buffer.count; }
 
-private:
+protected:
 	const coArray<coByte> buffer;
 	coUint32 pos = 0;
 };
