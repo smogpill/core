@@ -31,6 +31,5 @@ void coEntityHandle::DeepRead(coBinaryInputStream& stream)
 {
 	coEntity* entity = new coEntity();
 	stream >> *entity;
-	entity->Init();
 	*this = coEntitySystem::instance->Give(*entity);
 }

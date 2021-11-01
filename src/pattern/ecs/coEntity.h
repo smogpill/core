@@ -4,6 +4,7 @@
 #include "coEntityHandle.h"
 #include <container/array/coDynamicArray.h>
 #include <lang/reflect/coType.h>
+#include <lang/result/coResult.h>
 #include <pattern/uuid/coUuid.h>
 
 class coComponent;
@@ -23,8 +24,11 @@ public:
 	const coUuid& GetUuid() const { return uuid; }
 	void Write(coBinaryOutputStream& stream) const;
 	void Read(coBinaryInputStream& stream);
-	void Init();
 	void _OnSetHandle(const coEntityHandle& h) { handle = h; }
+	coResult Init();
+	void Release();
+	coResult Start();
+	void Stop();
 
 private:
 	coDynamicArray<coComponent*> components;

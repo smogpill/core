@@ -9,3 +9,23 @@ coDEFINE_TYPE(coComponent)
 {
 	return true;
 }
+
+coResult coComponent::Init()
+{
+	return OnInit();
+}
+
+void coComponent::Release()
+{
+	OnRelease();
+}
+
+coResult coComponent::Start()
+{
+	return OnStart();;
+}
+
+void coComponent::Stop()
+{
+	OnStop();
+}
