@@ -10,19 +10,66 @@
 #include "math/vector/coVec4.h"
 #include "math/vector/coUint32x2.h"
 #include "math/vector/coUint32x4.h"
+#include "io/path/coPath_f.h"
+#include "pattern/pointer/coUnique.h"
 
 coShaderProgram::~coShaderProgram()
 {
 	glDeleteProgram(id);
 	coCHECK(glGetError() == GL_NO_ERROR, "glDeleteProgram()");
+	for (coShader* shader : shaders)
+		delete shader;
 }
 
-coResult coShaderProgram::Init(const coArray<const coShader*>& shaders)
+coResult coShaderProgram::Init(const coString& path)
+{
+	coTRY(coExists(path), nullptr);
+
+	coDynamicString filePath;
+	
+	filePath = path;
+	filePath << ".vert";
+	if (coExists(filePath))
+	{
+		coUnique<coShader> shader(new coShader());
+		coTRY(shader->Init(coShader::Type::VERTEX, path), nullptr);
+		coPushBack(shaders, shader.release());
+	}
+
+	filePath = path;
+	filePath << ".geom";
+	{
+		coUnique<coShader> shader(new coShader());
+		coTRY(shader->Init(coShader::Type::GEOMETRY, path), nullptr);
+		coPushBack(shaders, shader.release());
+	}
+
+	filePath = path;
+	filePath << ".frag";
+	{
+		coUnique<coShader> shader(new coShader());
+		coTRY(shader->Init(coShader::Type::FRAGMENT, path), nullptr);
+		coPushBack(shaders, shader.release());
+	}
+
+	filePath = path;
+	filePath << ".comp";
+	{
+		coUnique<coShader> shader(new coShader());
+		coTRY(shader->Init(coShader::Type::COMPUTE, path), nullptr);
+		coPushBack(shaders, shader.release());
+	}
+
+	coTRY(Init(shaders), nullptr);
+	return true;
+}
+
+coResult coShaderProgram::Init(const coArray<coShader*>& shaders_)
 {
 	id = glCreateProgram();
 	coTRY(id, "glCreateProgram()");
 
-	for (const coShader* shader : shaders)
+	for (const coShader* shader : shaders_)
 	{
 		glAttachShader(id, shader->_GetGLId());
 		coTRY(glGetError() == GL_NO_ERROR, "glAttachShader()");

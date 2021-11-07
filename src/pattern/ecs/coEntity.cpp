@@ -24,6 +24,7 @@ coEntity::~coEntity()
 
 void coEntity::AddAndGiveOwnership(coComponent& comp)
 {
+	comp.entity = this;
 	coPushBack(components, &comp);
 }
 

@@ -41,7 +41,7 @@ coResult coDebugRenderer::InitShaders()
 		coPushBack(shaders, concreteFS);
 	}
 	shaderProgram = new coShaderProgram();
-	coDynamicArray<const coShader*> shaderList;
+	coDynamicArray<coShader*> shaderList;
 	coPushBack(shaderList, concreteVS);
 	coPushBack(shaderList, concreteFS);
 	coTRY(shaderProgram->Init(shaderList), nullptr);

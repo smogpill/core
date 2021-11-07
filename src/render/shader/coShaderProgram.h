@@ -2,6 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include <container/array/coArray.h>
+#include <container/array/coDynamicArray.h>
 #include <lang/result/coResult.h>
 class coShader;
 class coMat4;
@@ -15,7 +16,8 @@ class coShaderProgram
 {
 public:
 	~coShaderProgram();
-	coResult Init(const coArray<const coShader*>& shaders);
+	coResult Init(const coString& path);
+	coResult Init(const coArray<coShader*>& shaders);
 	void Bind();
 	void Unbind();
 	coInt GetUniformLocation(const coChar* name) const;
@@ -29,4 +31,5 @@ public:
 
 private:
 	GLuint id = 0;
+	coDynamicArray<coShader*> shaders;
 };

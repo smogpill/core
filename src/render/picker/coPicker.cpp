@@ -27,7 +27,7 @@ coResult coPicker::Init(coRenderContext& context_)
 	fragmentShader = new coShader();
 	coTRY(fragmentShader->Init(coShader::Type::FRAGMENT, "shaders/render/Picker"), nullptr);
 	shaderProgram = new coShaderProgram();
-	coDynamicArray<const coShader*> shaderList;
+	coDynamicArray<coShader*> shaderList;
 	coPushBack(shaderList, vertexShader);
 	coPushBack(shaderList, fragmentShader);
 	coTRY(shaderProgram->Init(shaderList), nullptr);
