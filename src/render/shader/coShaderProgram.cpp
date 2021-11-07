@@ -21,14 +21,14 @@ coShaderProgram::~coShaderProgram()
 		delete shader;
 }
 
-coResult coShaderProgram::Init(const coString& path)
+coResult coShaderProgram::Init(const coConstString& path)
 {
-	coTRY(coExists(path), nullptr);
+	//coTRY(coExists(path), "Missing: "<<path);
 
 	coDynamicString filePath;
 	
 	filePath = path;
-	filePath << ".vert";
+	filePath << ".vert.spv";
 	if (coExists(filePath))
 	{
 		coUnique<coShader> shader(new coShader());
@@ -37,7 +37,8 @@ coResult coShaderProgram::Init(const coString& path)
 	}
 
 	filePath = path;
-	filePath << ".geom";
+	filePath << ".geom.spv";
+	if (coExists(filePath))
 	{
 		coUnique<coShader> shader(new coShader());
 		coTRY(shader->Init(coShader::Type::GEOMETRY, path), nullptr);
@@ -45,7 +46,8 @@ coResult coShaderProgram::Init(const coString& path)
 	}
 
 	filePath = path;
-	filePath << ".frag";
+	filePath << ".frag.spv";
+	if (coExists(filePath))
 	{
 		coUnique<coShader> shader(new coShader());
 		coTRY(shader->Init(coShader::Type::FRAGMENT, path), nullptr);
@@ -53,7 +55,8 @@ coResult coShaderProgram::Init(const coString& path)
 	}
 
 	filePath = path;
-	filePath << ".comp";
+	filePath << ".comp.spv";
+	if (coExists(filePath))
 	{
 		coUnique<coShader> shader(new coShader());
 		coTRY(shader->Init(coShader::Type::COMPUTE, path), nullptr);

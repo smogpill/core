@@ -6,6 +6,9 @@
 #include "io/stream/coBinaryOutputStream.h"
 #include "math/hash/coHash_f.h"
 
+coUuid coMakeUuid();
+coUuid coMakeUuid(const coChar*);
+
 coFORCE_INLINE void coUuid::Write(coBinaryOutputStream& stream) const
 {
 	stream << low;

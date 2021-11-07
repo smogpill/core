@@ -5,6 +5,7 @@
 #include "coEntityHandle.h"
 #include "coEntity.h"
 #include <container/array/coDynamicArray_f.h>
+#include <lang/result/coResult_f.h>
 
 coDEFINE_SINGLETON(coEntitySystem);
 
@@ -47,4 +48,46 @@ const coEntityHandle& coEntitySystem::Get(const coUuid& uuid) const
 			return entity->GetHandle();
 	}
 	return coEntityHandle::empty;
+}
+
+coResult coEntitySystem::Init(const coArray<coEntityHandle>& handles)
+{
+	for (const coEntityHandle& handle : handles)
+	{
+		coEntity* entity = Get(handle);
+		coASSERT(entity);
+		coTRY(entity->Init(), nullptr);
+	}
+	return true;
+}
+
+coResult coEntitySystem::Start(const coArray<coEntityHandle>& handles)
+{
+	for (const coEntityHandle& handle : handles)
+	{
+		coEntity* entity = Get(handle);
+		coASSERT(entity);
+		coTRY(entity->Start(), nullptr);
+	}
+	return true;
+}
+
+void coEntitySystem::Stop(const coArray<coEntityHandle>& handles)
+{
+	for (const coEntityHandle& handle : handles)
+	{
+		coEntity* entity = Get(handle);
+		coASSERT(entity);
+		entity->Stop();
+	}
+}
+
+void coEntitySystem::Release(const coArray<coEntityHandle>& handles)
+{
+	for (const coEntityHandle& handle : handles)
+	{
+		coEntity* entity = Get(handle);
+		coASSERT(entity);
+		entity->Release();
+	}
 }

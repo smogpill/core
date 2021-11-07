@@ -16,7 +16,7 @@ class coShaderProgram
 {
 public:
 	~coShaderProgram();
-	coResult Init(const coString& path);
+	coResult Init(const coConstString& path);
 	coResult Init(const coArray<coShader*>& shaders);
 	void Bind();
 	void Unbind();
