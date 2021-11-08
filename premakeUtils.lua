@@ -148,22 +148,25 @@ function coSetProjectDependencies(_deps)
 
 	-- Add custom build commands on the .importShaders file to import shaders from other projects
 	filter {'files:**.importShaders'}
-	buildmessage 'Importing shaders...'
+		buildmessage 'Importing shaders...'
 		for _,v in pairs(_deps) do 
 			local srcDir, foundDir = coFindDir(co_srcDirs, v)
 			if foundDir == nil then
 				error("Failed to find the project: "..v)
 			else 
-				if os.isdir(foundDir.."/shaders") then
-					shadersDir = srcDir.."/../"..co_buildPath.."/bin/$(Configuration)/shaders/"..v
-					for _, f in pairs(os.matchfiles(foundDir.."/shaders/*")) do
-						name = path.getname(f)
-						local inputs = shadersDir.."/"..name..".spv"
-						buildinputs { inputs }
-						buildcommands { "{COPY} "..inputs.." $(OutDir)shaders/"..v }
-						buildoutputs { "$(OutDir)shaders/"..v.."/"..name..".spv" }
+				if path.normalize(path.join(srcDir, "..")) ~= path.normalize(co_baseAbsPath) then
+					if os.isdir(foundDir.."/shaders") then
+						print("Setting up shaders import from: "..foundDir.."/shaders")
+						shadersDir = srcDir.."/../"..co_buildPath.."/bin/$(Configuration)/shaders/"..v
+						for _, f in pairs(os.matchfiles(foundDir.."/shaders/*")) do
+							name = path.getname(f)
+							local inputs = shadersDir.."/"..name..".spv"
+							buildinputs { inputs }
+							buildcommands { "{COPY} "..inputs.." $(OutDir)shaders/"..v }
+							buildoutputs { "$(OutDir)shaders/"..v.."/"..name..".spv" }
+						end
+						--postbuildcommands { "{COPY} "..shadersDir.."/* $(OutDir)shaders/"..v }				
 					end
-					--postbuildcommands { "{COPY} "..shadersDir.."/* $(OutDir)shaders/"..v }				
 				end
 			end
 		end
