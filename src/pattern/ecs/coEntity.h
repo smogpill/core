@@ -20,7 +20,7 @@ public:
 	const coArray<coComponent*>& GetComponents() const { return components; }
 	template <class T> T* GetComponent() const;
 	const coEntityHandle& GetHandle() const { return handle; }
-	void SetUuid(const coUuid& id) { uuid = uuid; }
+	void SetUuid(const coUuid& uuid_) { uuid = uuid_; }
 	const coUuid& GetUuid() const { return uuid; }
 	void Write(coBinaryOutputStream& stream) const;
 	void Read(coBinaryInputStream& stream);
