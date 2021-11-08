@@ -50,14 +50,28 @@ const coEntityHandle& coEntitySystem::Get(const coUuid& uuid) const
 	return coEntityHandle::empty;
 }
 
+coResult coEntitySystem::Init(const coEntityHandle& handle)
+{
+	coEntity* entity = Get(handle);
+	coTRY(entity, nullptr);
+	coTRY(entity->Init(), nullptr);
+	return true;
+}
+
 coResult coEntitySystem::Init(const coArray<coEntityHandle>& handles)
 {
 	for (const coEntityHandle& handle : handles)
 	{
-		coEntity* entity = Get(handle);
-		coASSERT(entity);
-		coTRY(entity->Init(), nullptr);
+		coTRY(Init(handle), nullptr);
 	}
+	return true;
+}
+
+coResult coEntitySystem::Start(const coEntityHandle& handle)
+{
+	coEntity* entity = Get(handle);
+	coTRY(entity, nullptr);
+	coTRY(entity->Start(), nullptr);
 	return true;
 }
 
@@ -65,29 +79,37 @@ coResult coEntitySystem::Start(const coArray<coEntityHandle>& handles)
 {
 	for (const coEntityHandle& handle : handles)
 	{
-		coEntity* entity = Get(handle);
-		coASSERT(entity);
-		coTRY(entity->Start(), nullptr);
+		coTRY(Init(handle), nullptr);
 	}
 	return true;
+}
+
+void coEntitySystem::Stop(const coEntityHandle& handle)
+{
+	coEntity* entity = Get(handle);
+	if (entity)
+		entity->Stop();
 }
 
 void coEntitySystem::Stop(const coArray<coEntityHandle>& handles)
 {
 	for (const coEntityHandle& handle : handles)
 	{
-		coEntity* entity = Get(handle);
-		coASSERT(entity);
-		entity->Stop();
+		Stop(handle);
 	}
+}
+
+void coEntitySystem::Release(const coEntityHandle& handle)
+{
+	coEntity* entity = Get(handle);
+	if (entity)
+		entity->Release();
 }
 
 void coEntitySystem::Release(const coArray<coEntityHandle>& handles)
 {
 	for (const coEntityHandle& handle : handles)
 	{
-		coEntity* entity = Get(handle);
-		coASSERT(entity);
-		entity->Release();
+		Release(handle);
 	}
 }

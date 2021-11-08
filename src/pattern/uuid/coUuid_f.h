@@ -8,6 +8,7 @@
 
 coUuid coMakeUuid();
 coUuid coMakeUuid(const coChar*);
+coFORCE_INLINE coBool coIsNull(const coUuid& u) { return u.high == 0 && u.low == 0; }
 
 coFORCE_INLINE void coUuid::Write(coBinaryOutputStream& stream) const
 {
