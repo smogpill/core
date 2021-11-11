@@ -23,7 +23,15 @@ void coComponent::Release()
 
 coResult coComponent::Start()
 {
-	return OnStart();;
+	return OnStart();
+}
+
+void coComponent::Write(coBinaryOutputStream& stream) const
+{
+}
+
+void coComponent::Read(coBinaryInputStream& stream)
+{
 }
 
 void coComponent::Stop()
@@ -34,4 +42,9 @@ void coComponent::Stop()
 const coEntityHandle& coComponent::GetEntityHandle() const
 {
 	return entity ? entity->GetHandle() : coEntityHandle::empty;
+}
+
+coComponent* coComponent::Clone() const
+{
+	return nullptr;
 }

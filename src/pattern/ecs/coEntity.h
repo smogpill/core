@@ -15,6 +15,7 @@ class coEntity
 {
 public:
 	coEntity();
+	coEntity(const coEntity&);
 	~coEntity();
 	void AddAndGiveOwnership(coComponent& comp);
 	const coArray<coComponent*>& GetComponents() const { return components; }
@@ -29,6 +30,9 @@ public:
 	void Release();
 	coResult Start();
 	void Stop();
+	coResult Save(coBinaryOutputStream& stream) const;
+	coResult Load(coBinaryInputStream& stream);
+	coEntity* Clone() const;
 
 private:
 	coDynamicArray<coComponent*> components;

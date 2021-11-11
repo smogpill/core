@@ -84,6 +84,22 @@ coResult coEntitySystem::Start(const coArray<coEntityHandle>& handles)
 	return true;
 }
 
+coResult coEntitySystem::Save(const coEntityHandle& handle, coBinaryOutputStream& stream)
+{
+	coEntity* entity = Get(handle);
+	if (entity)
+		coTRY(entity->Save(stream), nullptr);
+	return true;
+}
+
+coResult coEntitySystem::Load(const coEntityHandle& handle, coBinaryInputStream& stream)
+{
+	coEntity* entity = Get(handle);
+	if (entity)
+		coTRY(entity->Load(stream), nullptr);
+	return true;
+}
+
 void coEntitySystem::Stop(const coEntityHandle& handle)
 {
 	coEntity* entity = Get(handle);

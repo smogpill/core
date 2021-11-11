@@ -16,6 +16,15 @@ coEntity::coEntity()
 	uuid.low = ++uuidGenerator;
 }
 
+coEntity::coEntity(const coEntity& other)
+{
+	for (const coComponent* comp : other.components)
+	{
+		coPushBack(components, comp->Clone());
+		//newComp->entity = this;
+	}
+}
+
 coEntity::~coEntity()
 {
 	for (coComponent* comp : components)
@@ -89,4 +98,26 @@ void coEntity::Stop()
 	{
 		comp->Stop();
 	}
+}
+
+coResult coEntity::Save(coBinaryOutputStream& stream) const
+{
+	for (coComponent* comp : components)
+	{
+		comp->Write(stream);
+	}
+	return true;
+}
+
+coResult coEntity::Load(coBinaryInputStream& stream)
+{
+	coASSERT(false);
+	return true;
+}
+
+coEntity* coEntity::Clone() const
+{
+	//coEntity* clone = new coEntity(*this);
+	coASSERT(false);
+	return nullptr;
 }

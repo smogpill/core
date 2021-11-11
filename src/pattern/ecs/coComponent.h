@@ -13,13 +13,14 @@ class coComponent
 {
 	coDECLARE_REFLECTED_VIRTUAL();
 public:
-	virtual void Write(coBinaryOutputStream& stream) const {}
-	virtual void Read(coBinaryInputStream& stream) {}
 	coResult Init();
-	void Release();
 	coResult Start();
+	virtual void Write(coBinaryOutputStream& stream) const;
+	virtual void Read(coBinaryInputStream& stream);
+	void Release();
 	void Stop();
 	coEntity* GetEntity() const { return entity; }
+	coComponent* Clone() const;
 	const coEntityHandle& GetEntityHandle() const;
 	template <class T>
 	T* GetComponent() const { coASSERT(entity); return entity->GetComponent<T>(); }
@@ -29,6 +30,8 @@ protected:
 	virtual void OnRelease() {}
 	virtual coResult OnStart() { return true; }
 	virtual void OnStop() {}
+	virtual void OnSave(coBinaryOutputStream& stream) const {}
+	virtual void OnLoad(coBinaryInputStream& stream) {}
 
 private:
 	friend class coEntity;

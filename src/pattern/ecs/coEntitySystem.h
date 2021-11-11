@@ -7,6 +7,8 @@
 class coEntity;
 class coEntityHandle;
 class coUuid;
+class coBinaryOutputStream;
+class coBinaryInputStream;
 
 class coEntitySystem
 {
@@ -25,6 +27,8 @@ public:
 	coResult Init(const coArray<coEntityHandle>& entities);
 	coResult Start(const coEntityHandle& entity);
 	coResult Start(const coArray<coEntityHandle>& entities);
+	coResult Save(const coEntityHandle& entity, coBinaryOutputStream& stream);
+	coResult Load(const coEntityHandle& entity, coBinaryInputStream& stream);
 	void Stop(const coEntityHandle& entity);
 	void Stop(const coArray<coEntityHandle>& entities);
 	void Release(const coEntityHandle& entity);
