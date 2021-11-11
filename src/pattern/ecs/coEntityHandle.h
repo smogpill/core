@@ -13,6 +13,7 @@ public:
 	void Read(coBinaryInputStream& stream);
 	void DeepWrite(coBinaryOutputStream& stream) const;
 	void DeepRead(coBinaryInputStream& stream);
+	coBool IsNull() const { return val == 0; }
 	static const coEntityHandle empty;
 
 	coUint64 val = 0;
