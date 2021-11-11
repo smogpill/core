@@ -120,6 +120,11 @@ coFORCE_INLINE coUint32 coRand(coUint32& _seed, coUint32 _range)
 	return coRand(_seed) % _range;
 }
 
+coFORCE_INLINE coUint32 coRand(coUint32& _seed, coUint32 from, coUint32 to)
+{
+	return from + (coRand(_seed) % (to - from));
+}
+
 /// @param 0 returns 0
 coFORCE_INLINE coUint32 coHighestBitIndex(coUint32 _a)
 {

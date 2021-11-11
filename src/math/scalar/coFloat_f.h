@@ -144,6 +144,11 @@ coFORCE_INLINE coFloat coRand01(coUint32& _seed)
 	return coBitCast<coFloat>((_seed >> 9) | 0x3f800000) - 1.0f;
 }
 
+coFORCE_INLINE coFloat coRand(coUint32& _seed, coFloat from, coFloat to)
+{
+	return from + coRand01(_seed) * (to - from);
+}
+
 /// If 0, returns a very small coFloat. Returns the same value instead.
 /// [opt] can be used to avoid a branch
 coFORCE_INLINE constexpr coFloat coDenullify(coFloat _x)
