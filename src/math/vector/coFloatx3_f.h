@@ -83,6 +83,7 @@ coFORCE_INLINE coFloatx3 coMod(coFloatx3 _a, coFloatx3 _b) { return coFloatx3(co
 coFORCE_INLINE coFloatx3 coConvertToRad(coFloatx3 degrees) { return degrees * 0.01745329252f; }
 coFORCE_INLINE coFloatx3 coConvertToDeg(coFloatx3 radians) { return radians * 57.2957795131f; }
 coFORCE_INLINE coFloatx3 coRand01x3(coUint32& seed) { return coFloatx3(coRand01(seed), coRand01(seed), coRand01(seed)); }
+coFORCE_INLINE coFloatx3 coRand11x3(coUint32& seed) { return coFloatx3(coRand11(seed), coRand11(seed), coRand11(seed)); }
 coFORCE_INLINE coBinaryOutputStream& operator<<(coBinaryOutputStream& stream, const coFloatx3& a)
 {
 	stream.Write(&a, 12);
