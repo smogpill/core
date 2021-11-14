@@ -9,8 +9,12 @@
 template <class T>
 coDynamicArray<T> _coBevel(const coDynamicArray<T>& curve, coFloat width, coUint nbSegments, coBool loop)
 {
+	// https://wiki.blender.jp/Dev:Source/Modeling/Bevel
+
 	if (curve.count < 3)
 		return coDynamicArray<T>(curve);
+
+	nbSegments = coMax(1u, nbSegments); // Security
 	coDynamicArray<T> out;
 	coReserve(out, curve.count + coMax(0, curve.count - 2));
 
@@ -21,7 +25,17 @@ coDynamicArray<T> _coBevel(const coDynamicArray<T>& curve, coFloat width, coUint
 		const coFloat dot = coDot(prevDir, nextDir).x;
 		const coFloat angle = coAcos(dot);
 		const coFloat offset = width / (2.0f * coSin(angle * 0.5f));
+		const T offsetU = -prevDir;
+		const T offsetV = -nextDir;
 		coPushBack(out, cur + prevDir * offset);
+		const T circleOrigin = cur + nextDir * offset + prevDir * offset;
+		for (coUint segmentIdx = 1; segmentIdx < nbSegments; ++segmentIdx)
+		{
+			const coFloat arc = coFloat_halfPi * coFloat(segmentIdx) / nbSegments;
+			const coFloat u = coSin(arc);
+			const coFloat v = coCos(arc);
+			coPushBack(out, circleOrigin + offsetU * u * offset + offsetV * v * offset);
+		}
 		coPushBack(out, cur + nextDir * offset);
 	};
 
