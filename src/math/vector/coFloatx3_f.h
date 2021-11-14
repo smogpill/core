@@ -58,6 +58,7 @@ coFORCE_INLINE coFloatx3 coShuffle(const coFloatx3& _a) { return coBitCast<coFlo
 coFORCE_INLINE coFloatx3 coBroadcastX(const coFloatx3& _a) { return coBitCast<coFloatx3>(coShuffle<0, 0, 0, 0>(coBitCast<coFloatx4>(_a))); }
 coFORCE_INLINE coFloatx3 coBroadcastY(const coFloatx3& _a) { return coBitCast<coFloatx3>(coShuffle<1, 1, 1, 1>(coBitCast<coFloatx4>(_a))); }
 coFORCE_INLINE coFloatx3 coBroadcastZ(const coFloatx3& _a) { return coBitCast<coFloatx3>(coShuffle<2, 2, 2, 2>(coBitCast<coFloatx4>(_a))); }
+coFORCE_INLINE coFloatx3 coSelectXY(coFloatx3 a) { a.z = 0.0f; return a; }
 coFORCE_INLINE coFloatx3 coAbs(const coFloatx3& _a) { return coBitCast<coFloatx3>(coAbs(coBitCast<coFloatx4>(_a))); }
 coFORCE_INLINE coFloatx3 coSquareRoot(const coFloatx3& _a) { return coBitCast<coFloatx3>(coSquareRoot(coBitCast<coFloatx4>(_a))); }
 coFORCE_INLINE coFloatx3 coInv(const coFloatx3& _a) { return coBitCast<coFloatx3>(coInv(coBitCast<coFloatx4>(_a))); }
