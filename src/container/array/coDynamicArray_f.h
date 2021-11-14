@@ -128,6 +128,7 @@ coDynamicArray<T>::coDynamicArray(coDynamicArray<T>&& _other)
 	: Super(_other)
 	, capacity(_other.capacity)
 {
+	_other.data = nullptr;
 	_other.capacity = 0;
 }
 
