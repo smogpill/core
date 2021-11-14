@@ -5,5 +5,5 @@
 #include "math/vector/coVec2.h"
 #include "math/vector/coVec3.h"
 
-coDynamicArray<coVec2> coBevel(const coDynamicArray<coVec2>& curve, coFloat width, coUint nbSegments);
-coDynamicArray<coVec3> coBevel(const coDynamicArray<coVec3>& curve, coFloat width, coUint nbSegments);
+coDynamicArray<coVec2> coBevel(const coDynamicArray<coVec2>& curve, coFloat width, coUint nbSegments, coBool loop);
+coDynamicArray<coVec3> coBevel(const coDynamicArray<coVec3>& curve, coFloat width, coUint nbSegments, coBool loop);

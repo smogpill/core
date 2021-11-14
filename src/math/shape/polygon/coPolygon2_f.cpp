@@ -35,5 +35,5 @@ void coMakeRectangle(coPolygon2& out, const coVec2& size)
 
 void coBevel(coPolygon2& out, coFloat width, coUint nbSegments)
 {
-	out.vertices = coBevel(out.vertices, width, nbSegments);
+	out.vertices = coBevel(out.vertices, width, nbSegments, true);
 }
