@@ -3,5 +3,8 @@
 #pragma once
 #include "container/array/coDynamicArray.h"
 #include "math/vector/coVec2.h"
+#include "coPolygon2.h"
 
-void coMakeCircle(coDynamicArray<coVec2>& out, const coFloat radius, coUint nbSegments);
+void coMakeCircle(coPolygon2& out, const coFloat radius, coUint nbSegments);
+void coMakeRectangle(coPolygon2& out, const coVec2& size);
+void coBevel(coPolygon2& out, coFloat width, coUint nbSegments);

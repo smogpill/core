@@ -3,6 +3,7 @@
 #pragma once
 
 #include "lang/reflect/coTypeDecl.h"
+#include "math/vector/coFloatx2.h"
 #include "math/vector/coFloatx3.h"
 class coBinaryOutputStream;
 class coBinaryInputStream;
@@ -29,6 +30,7 @@ public:
 	}
 	coFORCE_INLINE coFloatx4(const coFloatx3& _xyz, const coFloatx3& _www) : x(_xyz.x), y(_xyz.y), z(_xyz.z), w(_www.x) {}
 
+	coFORCE_INLINE operator const coFloatx2& () const { return reinterpret_cast<const coFloatx2&>(*this); }
 	coFORCE_INLINE operator const coFloatx3& () const { return reinterpret_cast<const coFloatx3&>(*this); }
 	//coFORCE_INLINE operator coFloat () const { return x; }
 	coFORCE_INLINE coFloat& operator[](coUint _i) { return (&x)[_i]; }
