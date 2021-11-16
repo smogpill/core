@@ -3,6 +3,7 @@
 #pragma once
 #include "lang/reflect/coTypeDecl.h"
 #include "math/vector/coInt32x3.h"
+#include "math/vector/coFloatx2.h"
 class coFloatx4;
 class coBinaryOutputStream;
 class coBinaryInputStream;
@@ -26,12 +27,8 @@ public:
 		const __m128 zzz = coBitCast<__m128>(_zzz);
 		*this = coBitCast<coFloatx3>(_mm_unpacklo_ps(_mm_unpacklo_ps(xxx, zzz), _mm_unpacklo_ps(yyy, yyy)));
 	}
-	coFORCE_INLINE coFloatx3(const coInt32x3& _xyz)
-		: x(coFloat(_xyz.x))
-		, y(coFloat(_xyz.y))
-		, z(coFloat(_xyz.z))
-	{
-	}
+	coFORCE_INLINE coFloatx3(const coInt32x3& _xyz) : x(coFloat(_xyz.x)) , y(coFloat(_xyz.y)) , z(coFloat(_xyz.z)) {}
+	coFORCE_INLINE coFloatx3(const coFloatx2& _xy, const coFloatx3& _www) : x(_xy.x), y(_xy.y), z(_www.z) {}
 	coFORCE_INLINE coFloat& operator[](coUint _i) { return (&x)[_i]; }
 	coFORCE_INLINE coFloat operator[](coUint _i) const { return (&x)[_i]; }
 	//coFORCE_INLINE operator coFloat () const { return x; }
