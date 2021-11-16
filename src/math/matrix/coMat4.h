@@ -1,8 +1,8 @@
-// Copyright(c) 2016 Jounayd Id Salah
+// Copyright(c) 2016-2021 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
-
 #include "math/vector/coVec4.h"
+#include "coMat3.h"
 
 class alignas(16) coMat4
 {
@@ -25,6 +25,7 @@ public:
 
 	coFORCE_INLINE coVec4& operator[](coUint _i) { return (&c0)[_i]; }
 	coFORCE_INLINE const coVec4& operator[](coUint _i) const { return (&c0)[_i]; }
+	coFORCE_INLINE operator const coMat3& () const { return reinterpret_cast<const coMat3&>(*this); }
 
 	coVec4 c0;
 	coVec4 c1;

@@ -5,8 +5,16 @@
 #include "math/transform/coTransform.h"
 #include "math/vector/coBool32x4_f.h"
 #include "math/vector/coFloatx3_f.h"
+#include "math/matrix/coMat4_f.h"
 #include "math/quaternion/coQuat_f.h"
 #include "io/stream/coBinaryOutputStream.h"
+
+coFORCE_INLINE coTransform::coTransform(const coMat4& m)
+{
+	rotation = coGetRotationNoScale(coRemoveScale(m));
+	translation = m.c3;
+	scale = coGetScaleXYZ(m);
+}
 
 coBool32x4 coIsValid(const coTransform& _this);
 coFORCE_INLINE coVec3 coTransformPosition(const coTransform& _this, const coVec3& _pos)

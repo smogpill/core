@@ -3,3 +3,5 @@
 #include "math/pch.h"
 #include "math/quaternion/coQuat.h"
 #include "math/scalar/coFloat_f.h"
+
+const coQuat coQuat::identity(0, 0, 0, 1);

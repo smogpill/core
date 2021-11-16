@@ -13,4 +13,6 @@ public:
 	coFORCE_INLINE coQuat(const coFloatx4& _xyzw) : coFloatx4(_xyzw) {}
 	coFORCE_INLINE coQuat(const coFloatx4& _xxxx, const coFloatx4& _yyyy, const coFloatx4& _zzzz, const coFloatx4& _wwww) : coFloatx4(_xxxx, _yyyy, _zzzz, _wwww) {}
 	coFORCE_INLINE explicit coQuat(coNullPtr) {}
+
+	static const coQuat identity;
 };

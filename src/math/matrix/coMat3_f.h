@@ -1,4 +1,4 @@
-// Copyright(c) 2016 Jounayd Id Salah
+// Copyright(c) 2016-2021 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
@@ -90,6 +90,68 @@ coFORCE_INLINE void coSetRotation(coMat3& this_, const coFloatx3& eulerAngles)
 {
 	// todo
 	coSetRotation(this_, coRotation(eulerAngles));
+}
+
+coFORCE_INLINE coQuat coGetRotationNoScale(const coMat3& m)
+{
+	// Stolen from FQuat::FQuat(const FMatrix& M) from Unreal
+
+	if (coNearEqual0(m.c0) || coNearEqual0(m.c1) || coNearEqual0(m.c2))
+	{
+		return coQuat::identity;
+	}
+
+	coQuat out;
+	coFloat s;
+
+	// Check diagonal (trace)
+	const coFloat tr = m.c0.x + m.c1.y + m.c2.z;
+
+	if (tr > 0.0f)
+	{
+		const coFloat invS = coInvSquareRoot(tr + 1.f);
+		out.w = 0.5f * (1.f / invS);
+		s = 0.5f * invS;
+
+		out.x = (m.c1.z - m.c2.y) * s;
+		out.y = (m.c2.x - m.c0.z) * s;
+		out.z = (m.c0.y - m.c1.x) * s;
+	}
+	else
+	{
+		// diagonal is negative
+		coInt32 i = 0;
+
+		if (m.c1.y > m.c0.x)
+			i = 1;
+
+		if (m.c2.z > m[i][i])
+			i = 2;
+
+		static const coInt32 nxt[3] = { 1, 2, 0 };
+		const coInt32 j = nxt[i];
+		const coInt32 k = nxt[j];
+
+		s = m[i][i] - m[j][j] - m[k][k] + 1.0f;
+
+		coFloat InvS = coInvSquareRoot(s);
+
+		coFloat qt[4];
+		qt[i] = 0.5f * (1.f / InvS);
+
+		s = 0.5f * InvS;
+
+		qt[3] = (m[j][k] - m[k][j]) * s;
+		qt[j] = (m[i][j] + m[j][i]) * s;
+		qt[k] = (m[i][k] + m[k][i]) * s;
+
+		out.x = qt[0];
+		out.y = qt[1];
+		out.z = qt[2];
+		out.w = qt[3];
+	}
+
+	return out;
 }
 
 coFORCE_INLINE coMat3 coInverse(const coMat3& m)

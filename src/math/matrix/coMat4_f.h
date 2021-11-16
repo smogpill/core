@@ -1,4 +1,4 @@
-// Copyright(c) 2016 Jounayd Id Salah
+// Copyright(c) 2016-2021 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
@@ -94,6 +94,11 @@ coFORCE_INLINE coMat4 coTranspose(const coMat4& _a)
 	out.c2 = coShuffle<0, 2, 0, 2>(tmp2, tmp3);
 	out.c3 = coShuffle<1, 3, 1, 3>(tmp2, tmp3);
 	return out;
+}
+
+coFORCE_INLINE coQuat coGetRotationNoScale(const coMat4& m)
+{
+	return coGetRotationNoScale(static_cast<const coMat3&>(m));
 }
 
 coFORCE_INLINE coMat4 coRemoveScale(const coMat4& m)
