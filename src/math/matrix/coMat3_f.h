@@ -96,7 +96,7 @@ coFORCE_INLINE coQuat coGetRotationNoScale(const coMat3& m)
 {
 	// Stolen from FQuat::FQuat(const FMatrix& M) from Unreal
 
-	if (coNearEqual0(m.c0) || coNearEqual0(m.c1) || coNearEqual0(m.c2))
+	if (coAreAllTrue(coNearEqual0(m.c0)) || coAreAllTrue(coNearEqual0(m.c1)) || coAreAllTrue(coNearEqual0(m.c2)))
 	{
 		return coQuat::identity;
 	}
