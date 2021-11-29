@@ -5,6 +5,7 @@
 #include <math/vector/coBool32x3.h>
 #include "../vector/coVec3_f.h"
 
+coFORCE_INLINE void coClear(coAabb& a) { a = coAabb::empty; }
 coFORCE_INLINE coVec3 coGetSize(const coAabb& this_) { return this_.max - this_.min; }
 coFORCE_INLINE coVec3 coGetCenter(const coAabb& this_) { return (this_.max + this_.min) * 0.5f; }
 coFORCE_INLINE coAabb coIntersect(const coAabb& a, const coAabb& b) { return coAabb(coMax(a.min, b.min), coMin(a.max, b.max)); }
@@ -20,3 +21,15 @@ coFORCE_INLINE coAabb& operator+= (coAabb& this_, const coFloatx3& b) { this_.mi
 coFORCE_INLINE coAabb& operator-= (coAabb& this_, const coFloatx3& b) { this_.min -= b; this_.max -= b; return this_; }
 coFORCE_INLINE coAabb operator- (const coAabb& a, const coFloatx3& b) { return coAabb(a.min - b, a.max - b); }
 coFORCE_INLINE coAabb operator+ (const coAabb& a, const coFloatx3& b) { return coAabb(a.min + b, a.max + b); }
+coFORCE_INLINE coFloat coGetSurfaceArea(const coAabb& a)
+{
+	if (coIsEmpty(a))
+	{
+		return 0.0f;
+	}
+	else
+	{
+		const coVec3 size = a.max - a.min;
+		return 2.0f * (size.x * size.y + size.y * size.z + size.z * size.x);
+	}
+}

@@ -1,0 +1,7 @@
+// Copyright(c) 2021 Jounayd Id Salah
+// Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
+#include "math/pch.h"
+#include "../coAabb.h"
+
+const coAabb coAabb::empty = coAabb(coVec3(1), coVec3(0));
+const coAabb coAabb::zero = coAabb(coVec3(0), coVec3(0));

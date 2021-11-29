@@ -8,10 +8,13 @@ class coAabb
 {
 	coDECLARE_REFLECTED_NO_VIRTUAL();
 public:
-	coAabb() {}
+	coAabb() : coAabb(empty) {}
 	coAabb(coNullPtr) : min(nullptr), max(nullptr) {}
 	coAabb(const coVec3& _min, const coVec3& _max) : min(_min), max(_max) {}
 
 	coVec3 min;
 	coVec3 max;
+
+	static const coAabb empty;
+	static const coAabb zero;
 };
