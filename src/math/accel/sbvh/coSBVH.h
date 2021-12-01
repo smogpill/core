@@ -3,6 +3,7 @@
 #pragma once
 #include <container/array/coDynamicArray.h>
 #include <math/vector/coVec3.h>
+#include <math/vector/coFloatx4.h>
 #include <math/shape/coAabb.h>
 class coRay;
 
@@ -11,8 +12,8 @@ class coSBVH
 public:
 	void Build(const coArray<coVec3>& vertices, const coArray<coUint32>& indices);
 	void FindOverlaps(coDynamicArray<coUint32>& outTriangles, const coAabb& aabb) const;
-	void FindOverlaps(coDynamicArray<coUint32>& outTriangles, const coVec3& halfSize, const coRay& ray, coFloat maxLen) const;
-	void FindOverlaps(coDynamicArray<coUint32>& outTriangles, const coRay& ray, coFloat maxLen) const;
+	void FindOverlaps(coDynamicArray<coUint32>& outTriangles, const coVec3& halfSize, const coRay& ray) const;
+	void FindOverlaps(coDynamicArray<coUint32>& outTriangles, const coRay& ray) const;
 
 private:
 	struct Node
@@ -32,7 +33,7 @@ private:
 	{
 		coVec3 origin;
 		coVec3 invDir;
-		coVec3 len;
+		coFloatx4 len;
 	};
 	struct MovingAABB
 	{

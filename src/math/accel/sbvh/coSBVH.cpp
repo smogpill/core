@@ -377,26 +377,26 @@ void coSBVH::FindOverlaps(coDynamicArray<coUint32>& triangles_, const coAabb& aa
 	FindOverlapsImpl(triangles_, aabb_);
 }
 
-void coSBVH::FindOverlaps(coDynamicArray<coUint32>& triangles_, const coRay& ray_, coFloat maxLen_) const
+void coSBVH::FindOverlaps(coDynamicArray<coUint32>& triangles_, const coRay& ray_)const
 {
 	Ray2 ray2;
 	ray2.origin = ray_.origin;
 	// We add some epsilon because Recipral seems to create NaN instead of inf with the 0 components of the direction.
-	ray2.invDir = coInv(ray_.dir + coVec3(1e-20f));
+	ray2.invDir = coInv(ray_.dirAndLength + coVec3(1e-20f));
 	coASSERT(coIsValid(ray2.invDir));
-	ray2.len = coVec3(maxLen_);
+	ray2.len = coBroadcastW(ray_.dirAndLength);
 
 	FindOverlapsImpl(triangles_, ray2);
 }
 
-void coSBVH::FindOverlaps(coDynamicArray<coUint32>& triangles_, const coVec3& halfSize_, const coRay& ray_, coFloat maxLen_) const
+void coSBVH::FindOverlaps(coDynamicArray<coUint32>& triangles_, const coVec3& halfSize_, const coRay& ray_) const
 {
 	MovingAABB movingAabb;
 	movingAabb.ray.origin = ray_.origin;
 	// We add some epsilon because Recipral seems to create NaN instead of inf with the 0 components of the direction.
-	movingAabb.ray.invDir = coInv(ray_.dir + coVec3(1e-20f));
+	movingAabb.ray.invDir = coInv(ray_.dirAndLength + coVec3(1e-20f));
 	coASSERT(coIsValid(movingAabb.ray.invDir));
-	movingAabb.ray.len = coVec3(maxLen_);
+	movingAabb.ray.len = coBroadcastW(ray_.dirAndLength);
 	movingAabb.halfSize = halfSize_;
 
 	FindOverlapsImpl(triangles_, movingAabb);
