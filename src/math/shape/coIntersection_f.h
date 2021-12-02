@@ -50,8 +50,8 @@ coFORCE_INLINE coBool coIntersect(const coRay& ray, const coTriangle& triangle, 
 
 	const coVec3 v0v1 = triangle.b - triangle.a;
 	const coVec3 v0v2 = triangle.c - triangle.a;
-	const coVec3 pvec = coCross(ray.dirAndLength, v0v2);
-	const coVec4 det = coDot(v0v1, pvec);
+	const coVec3 pvec = coCross(ray.GetDir(), v0v2);
+	const coFloatx4 det = coDot(v0v1, pvec);
 	if (culling)
 	{
 		// if the determinant is negative the triangle is backfacing
@@ -71,7 +71,7 @@ coFORCE_INLINE coBool coIntersect(const coRay& ray, const coTriangle& triangle, 
 	if (u < 0 || u > 1) return false;
 
 	coVec3 qvec = coCross(tvec, v0v1);
-	v = (coDot(ray.dirAndLength, qvec) * invDet).x;
+	v = (coDot(ray.GetDir(), qvec) * invDet).x;
 	if (v < 0 || u + v > 1) return false;
 
 	t = (coDot(v0v2, qvec) * invDet).x;

@@ -6,10 +6,10 @@
 
 coFORCE_INLINE coFloatx4 coSquareDistance(const coInfiniteRay& ray, const coVec3& point)
 {
-	return coSquareLength(coCross(ray.dirAndLength, point - ray.origin));
+	return coSquareLength(coCross(ray.GetDir(), point - ray.origin));
 }
 
 coFORCE_INLINE coFloatx4 coDistance(const coInfiniteRay& ray, const coVec3& point)
 {
-	return coLength(coCross(ray.dirAndLength, point - ray.origin));
+	return coLength(coCross(ray.GetDir(), point - ray.origin));
 }

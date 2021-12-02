@@ -56,5 +56,5 @@ coFORCE_INLINE coBool32x4 coRayPlaneIntersection(const coPlane& this_, const coV
 
 coFORCE_INLINE coBool32x3 coRayPlaneIntersection(const coPlane& this_, const coInfiniteRay& ray, coFloatx3& t)
 {
-	return coRayPlaneIntersection(this_, coFloatx4(ray.origin, 1.0f), coFloatx4(ray.dirAndLength, 0.0f), reinterpret_cast<coFloatx4&>(t));
+	return coRayPlaneIntersection(this_, coFloatx4(ray.origin, 1.0f), coFloatx4(ray.GetDir(), 0.0f), reinterpret_cast<coFloatx4&>(t));
 }
