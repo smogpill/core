@@ -3,5 +3,5 @@
 #include "math/pch.h"
 #include "../coAabb.h"
 
-const coAabb coAabb::empty = coAabb(coVec3(1), coVec3(0));
+const coAabb coAabb::empty = coAabb(coVec3(1e30f), coVec3(-1e30f));
 const coAabb coAabb::zero = coAabb(coVec3(0), coVec3(0));

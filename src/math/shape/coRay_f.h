@@ -3,6 +3,7 @@
 #pragma once
 #include "coRay.h"
 #include "../vector/coVec3_f.h"
+#include "math/transform/coTransform_f.h"
 
 coFORCE_INLINE coFloatx4 coSquareDistance(const coInfiniteRay& ray, const coVec3& point)
 {
@@ -12,4 +13,12 @@ coFORCE_INLINE coFloatx4 coSquareDistance(const coInfiniteRay& ray, const coVec3
 coFORCE_INLINE coFloatx4 coDistance(const coInfiniteRay& ray, const coVec3& point)
 {
 	return coLength(coCross(ray.GetDir(), point - ray.origin));
+}
+
+coFORCE_INLINE coRay coInverseTransform(const coTransform& t, const coRay& ray)
+{
+	coRay out(nullptr);
+	out.origin = coInverseTransformPosition(t, ray.origin);
+	out.dirAndLength = coVec4(coInverseTransformVector(t, coVec3(ray.dirAndLength)), ray.dirAndLength.w / t.scale.z);
+	return out;
 }
