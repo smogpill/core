@@ -66,6 +66,11 @@ coFORCE_INLINE coMat4& operator+=(coMat4& this_, const coMat4& a)
 	return this_;
 }
 
+coFORCE_INLINE coVec3 coTransformVector(const coMat4& m, const coVec3& v)
+{
+	return coVec3(coVec4(v, 0.0f) * m);
+}
+
 coFORCE_INLINE coVec3 coTransformPosition(const coMat4& m, const coVec3& v)
 {
 	return coVec3(coVec4(v, 1.0f) * m);
@@ -265,6 +270,12 @@ coFORCE_INLINE void coSetWithScale(coMat4& _this, const coTransform& _t)
 	_this.c1 *= coBroadcastY(coBitCast<coFloatx4>(scale));
 	_this.c2 *= coBroadcastZ(coBitCast<coFloatx4>(scale));
 }
+
+coFORCE_INLINE coMat4::coMat4(const coTransform& t)
+{
+	coSetWithScale(*this, t);
+}
+
 coFORCE_INLINE void coSetTranslation(coMat4& _this, const coVec3& v)
 {
 	_this.c3 = coVec4(v, 1.0f);

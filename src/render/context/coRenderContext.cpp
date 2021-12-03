@@ -191,8 +191,6 @@ coResult coRenderContext::InitOpengl()
 	glEnable(GL_DEBUG_OUTPUT);
 	glDebugMessageCallback(OnDebugMessage, nullptr);
 #endif
-
-	//glFrontFace(GL_CW);
 	
 	return true;
 }

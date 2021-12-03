@@ -384,7 +384,7 @@ void coSBVH::FindOverlaps(coDynamicArray<coUint32>& triangles_, const coRay& ray
 	// We add some epsilon because Recipral seems to create NaN instead of inf with the 0 components of the direction.
 	ray2.invDir = coInv(ray_.GetDir() + coVec3(1e-20f));
 	coASSERT(coIsValid(ray2.invDir));
-	ray2.len = coBroadcastW(ray_.dirAndLength);
+ 	ray2.len = coBroadcastW(ray_.dirAndLength);
 
 	FindOverlapsImpl(triangles_, ray2);
 }

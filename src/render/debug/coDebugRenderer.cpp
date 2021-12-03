@@ -5,7 +5,7 @@
 #include "render/shader/coShader.h"
 #include "render/shader/coShaderProgram.h"
 #include "lang/result/coResult_f.h"
-#include <math/shape/coAabb.h>
+#include <math/shape/coAabb_f.h>
 #include <math/vector/coVec3_f.h>
 #include <math/vector/coVec4_f.h>
 #include <math/matrix/coMat4_f.h>
@@ -87,8 +87,8 @@ void coDebugRenderer::Draw(const coAabb& aabb, const coColor& color, coUint32 op
 
 	const coVec3 a(aabb.min);
 	const coVec3 b(aabb.min + sx);
-	const coVec3 c(aabb.min + sx + sy);
-	const coVec3 d(aabb.min + sy);
+	const coVec3 c(aabb.min + sy);
+	const coVec3 d(aabb.min + sx + sy);
 	const coVec3 e(a + sz);
 	const coVec3 f(b + sz);
 	const coVec3 g(c + sz);
@@ -97,40 +97,40 @@ void coDebugRenderer::Draw(const coAabb& aabb, const coColor& color, coUint32 op
 	if (options & WIREFRAME)
 	{
 		DrawLine(a, b, color, options);
-		DrawLine(b, c, color, options);
-		DrawLine(c, d, color, options);
-		DrawLine(d, a, color, options);
+		DrawLine(b, d, color, options);
+		DrawLine(d, c, color, options);
+		DrawLine(c, a, color, options);
 
 		DrawLine(e, f, color, options);
-		DrawLine(f, g, color, options);
-		DrawLine(g, h, color, options);
-		DrawLine(h, e, color, options);
+		DrawLine(f, h, color, options);
+		DrawLine(h, g, color, options);
+		DrawLine(g, e, color, options);
 
 		DrawLine(a, e, color, options);
 		DrawLine(b, f, color, options);
-		DrawLine(c, g, color, options);
 		DrawLine(d, h, color, options);
+		DrawLine(c, g, color, options);
 	}
 	else
 	{
-		DrawTriangle(a, b, f, color, options);
-		DrawTriangle(a, f, e, color, options);
+		DrawTriangle(a, f, b, color, options);
+		DrawTriangle(a, e, f, color, options);
 
-		DrawTriangle(b, c, g, color, options);
-		DrawTriangle(b, g, f, color, options);
+		DrawTriangle(b, h, d, color, options);
+		DrawTriangle(b, f, h, color, options);
 
-		DrawTriangle(c, d, h, color, options);
-		DrawTriangle(c, h, g, color, options);
+		DrawTriangle(d, g, c, color, options);
+		DrawTriangle(d, h, g, color, options);
 
-		DrawTriangle(d, a, e, color, options);
-		DrawTriangle(d, e, h, color, options);
-
-		// Bottom
-		DrawTriangle(b, a, c, color, options);
-		DrawTriangle(d, c, a, color, options);
+		DrawTriangle(c, e, a, color, options);
+		DrawTriangle(c, g, e, color, options);
 
 		// Top
-		DrawTriangle(e, f, g, color, options);
+		DrawTriangle(b, c, a, color, options);
+		DrawTriangle(b, d, c, color, options);
+		
+		// Bottom
+		DrawTriangle(e, h, f, color, options);
 		DrawTriangle(e, g, h, color, options);
 	}
 }
@@ -140,6 +140,11 @@ void coDebugRenderer::DrawFrame(const coMat4& frame, coFloat size, coUint32 opti
 	DrawLine(coVec3(frame.c3), coVec3(frame.c3 + frame.c0 * size), coColor::s_coolRed, options);
 	DrawLine(coVec3(frame.c3), coVec3(frame.c3 + frame.c1 * size), coColor::s_coolGreen, options);
 	DrawLine(coVec3(frame.c3), coVec3(frame.c3 + frame.c2 * size), coColor::s_coolBlue, options);
+}
+
+void coDebugRenderer::DrawDot(const coVec3& pos, coFloat radius, const coColor& color, coUint32 options)
+{
+	Draw(coAabb(-coVec3(radius), coVec3(radius)) + pos, color, options);
 }
 
 void coDebugRenderer::Render(const coMat4& viewProj)
