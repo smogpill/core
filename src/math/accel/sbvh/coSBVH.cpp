@@ -297,7 +297,6 @@ coUint32 coSBVH::BuildRec(const coArray<Ref>& refs_, const coArray<coAabb>& prim
 	}
 
 	Node node;
-	node.splitAxis = splitAxis;
 	node.leaf = false;
 
 	coPushBack(nodes, node);
@@ -406,7 +405,7 @@ template <class T>
 coFORCE_INLINE void coSBVH::FindOverlapsImpl(coDynamicArray<coUint32>& triangles_, const T& query) const
 {
 	coClear(triangles_);
-	if (nodes.count)
+	if (nodes.count == 0)
 		return;
 
 	// Init stack

@@ -20,7 +20,6 @@ private:
 	{
 		coAabb aabb;
 		coBool leaf = false;
-		coUint8 splitAxis = 0;
 		coUint32 datas[2] = {};
 	};
 	struct Ref
