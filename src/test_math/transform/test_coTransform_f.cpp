@@ -77,7 +77,7 @@ coTEST(coTransform_f, coInverseTransformVector)
 		r = coInverseTransformVector(t, coFloatx3(-1, 0, 0));
 		coEXPECT(coNearEqual(r, coFloatx3(0, 1.f / 8.f, 0), epsilon));
 		r = coInverseTransformVector(t, coFloatx3(0, -1, 0));
-		coEXPECT(coNearEqual(r, coFloatx3(-1.0 / 7.f, 0, 0), epsilon));
+		coEXPECT(coNearEqual(r, coFloatx3(-1.0f / 7.f, 0, 0), epsilon));
 	}
 }
 
