@@ -4,11 +4,12 @@
 #include "coPackFormat.h"
 #include "math/hash/coHash_f.h"
 
-void coPackFormat::AddField(const coConstString& name, coUint8 id, coUint16 size8)
+const coPackFormat coPackFormat::empty;
+
+void coPackFormat::AddField(const coConstString& name, coUint16 size8)
 {
 	Reserve(nbFields + 1);
 	nameHashes[nbFields] = coHash32(name);
-	ids[nbFields] = id;
 	offsets[nbFields] = totalSize;
 	totalSize += size8;
 	++nbFields;
@@ -21,7 +22,7 @@ coUint8 coPackFormat::GetIndex(const coConstString& name) const
 	{
 		if (nameHashes[i] == hash)
 		{
-			return ids[i];
+			return coUint8(i);
 		}
 	}
 	return coUint8(-1);

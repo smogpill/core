@@ -14,9 +14,16 @@ coTEST(coPack, Simple)
 	const coUint16 kBool = coHash16(coConstString("bool"));
 	coPackFormat format;
 	format.AddField("group", 0);
-	format.AddField("bool", 1, sizeof(coBool));
+	format.AddField("int", sizeof(coInt32));
 
 	coPack pack;
+	coPackEntry obj = pack.PushEntry(format);
+	obj.SetField("int", 7777);
+
+	coInt32 res;
+	const coPackEntry root = pack.GetRoot(format);
+	coEXPECT(root.GetField("int", res));
+	coEXPECT(res == 7777);
 	//coPackEntry root(pack);
 	//coSetEntry(root, 0, true);
 }

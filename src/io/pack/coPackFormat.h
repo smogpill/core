@@ -9,14 +9,17 @@ class coPackFormat
 {
 public:
 	static const coUint8 s_invalidFieldIndex = coUint8(-1);
-	void AddField(const coConstString& name, coUint8 id, coUint16 size8);
+	void AddField(const coConstString& name, coUint16 size8);
 	coUint8 GetIndex(const coConstString& name) const;
 	const coChar* GetName(coUint8 index) const;
 	coUint16 GetOffset(coUint8 index) const;
 	coUint16 GetTotalSize() const { return totalSize; }
 
+	static const coPackFormat empty;
+
 private:
 	friend class coPackEntry;
+	friend class coPack;
 	void Reserve(coUint16 nb);
 
 	coUint16 nbFields = 0;
@@ -26,5 +29,5 @@ private:
 	coUint16* offsets = nullptr;
 	coUint16* nameOffsets = nullptr;
 	coChar* names = nullptr;
-	coUint16 totalSize = 0;
+	coUint16 totalSize = 4;
 };

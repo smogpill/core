@@ -33,8 +33,8 @@ coTEST(coTestPackReader, coBool)
 {
 	coPack pack;
 	coPackFormat format;
-	format.AddField("a", 0, sizeof(coBool));
-	format.AddField("b", 1, sizeof(coBool));
+	format.AddField("a", sizeof(coBool));
+	format.AddField("b", sizeof(coBool));
 	coTextPackReader reader(pack, format);
 	coEXPECT(reader.Read("{a = true;}"));
 	coEXPECT(reader.Read("{b = false;}"));
@@ -44,15 +44,15 @@ coTEST(coTestPackReader, Identifier)
 {
 	coPack pack;
 	coPackFormat format;
-	format.AddField("a", 0, sizeof(coBool));
-	format.AddField("ab4c", 1, sizeof(coBool));
-	format.AddField("_ab2c", 2, sizeof(coBool));
-	format.AddField("_", 3, sizeof(coBool));
-	format.AddField("__", 4, sizeof(coBool));
-	format.AddField("_954", 5, sizeof(coBool));
-	format.AddField("_AbC", 6, sizeof(coBool));
-	format.AddField("_A", 7, sizeof(coBool));
-	format.AddField("_a_", 8, sizeof(coBool));
+	format.AddField("a", sizeof(coBool));
+	format.AddField("ab4c", sizeof(coBool));
+	format.AddField("_ab2c", sizeof(coBool));
+	format.AddField("_", sizeof(coBool));
+	format.AddField("__", sizeof(coBool));
+	format.AddField("_954", sizeof(coBool));
+	format.AddField("_AbC", sizeof(coBool));
+	format.AddField("_A", sizeof(coBool));
+	format.AddField("_a_", sizeof(coBool));
 	coTextPackReader reader(pack, format);
 	coEXPECT(reader.Read("{a = true;}"));
 	//coEXPECT(!reader.Read("{0: false;}"));
