@@ -70,8 +70,10 @@ coBool coPackEntry::GetField(const coConstString& name, coDynamicString& value) 
 	const coUint32 valueOffset = *(const coUint32*)(&pack.buffer[tableAbsoluteOffset + offset]);
 	const coUint32* data = (const coUint32*)&pack.buffer[tableAbsoluteOffset + valueOffset];
 	const coUint32 size = *data - 1;
-	coResize(value, size);
-	coMemCopy(value.data, data + 1, size);
+	coConstString s;
+	s.data = (const coChar*)(data + 1);
+	s.count = *data - 1;
+	value = s;
 	return true;
 }
 
