@@ -7,5 +7,6 @@
 class coPack
 {
 public:
-	coDynamicArray<coByte> data;
+	coDynamicArray<coByte> vtables;
+	coDynamicArray<coByte> buffer;
 };

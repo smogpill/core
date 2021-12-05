@@ -4,11 +4,13 @@
 #include "coPackFormat.h"
 #include "math/hash/coHash_f.h"
 
-void coPackFormat::AddField(const coConstString& name, coUint8 index)
+void coPackFormat::AddField(const coConstString& name, coUint8 id, coUint16 size8)
 {
 	Reserve(nbFields + 1);
 	nameHashes[nbFields] = coHash32(name);
-	indices[nbFields] = index;
+	ids[nbFields] = id;
+	offsets[nbFields] = totalSize;
+	totalSize += size8;
 	++nbFields;
 }
 
@@ -19,17 +21,23 @@ coUint8 coPackFormat::GetIndex(const coConstString& name) const
 	{
 		if (nameHashes[i] == hash)
 		{
-			return indices[i];
+			return ids[i];
 		}
 	}
 	return coUint8(-1);
 }
 
-const coChar* coPackFormat::GetName(coUint8 index)
+const coChar* coPackFormat::GetName(coUint8 index) const
 {
 	coASSERT(index < nbFields);
 	const coUint16 offset = nameOffsets[index];
 	return &names[offset];
+}
+
+coUint16 coPackFormat::GetOffset(coUint8 index) const
+{
+	coASSERT(index < nbFields);
+	return offsets[index];
 }
 
 void coPackFormat::Reserve(coUint16 nb)
@@ -39,12 +47,16 @@ void coPackFormat::Reserve(coUint16 nb)
 		coASSERT(nbFields <= capacity);
 		auto* newNameHashes = new coUint32[nb];
 		auto* newIndices = new coUint8[nb];
+		auto* newOffsets = new coUint16[nb];
 		coMemCopy(newNameHashes, nameHashes, nbFields * sizeof(*nameHashes));
-		coMemCopy(newIndices, indices, nbFields * sizeof(*indices));
+		coMemCopy(newIndices, ids, nbFields * sizeof(*ids));
+		coMemCopy(newOffsets, offsets, nbFields * sizeof(*offsets));
 		delete[] nameHashes;
-		delete[] indices;
+		delete[] ids;
+		delete[] offsets;
 		nameHashes = newNameHashes;
-		indices = newIndices;
+		ids = newIndices;
+		offsets = newOffsets;
 		capacity = nb;
 	}
 }
