@@ -7,6 +7,7 @@
 #include <io/pack/coPackFormat.h>
 #include <math/hash/coHash_f.h>
 #include <container/string/coConstString.h>
+#include <container/string/coDynamicString_f.h>
 
 coTEST(coPack, Simple)
 {
@@ -15,15 +16,24 @@ coTEST(coPack, Simple)
 	coPackFormat format;
 	format.AddField("group", 0);
 	format.AddField("int", sizeof(coInt32));
+	format.AddField("string", sizeof(coUint32));
 
 	coPack pack;
 	coPackEntry obj = pack.PushEntry(format);
+	obj.SetField("string", coConstString("chicken"));
 	obj.SetField("int", 7777);
 
-	coInt32 res;
 	const coPackEntry root = pack.GetRoot(format);
-	coEXPECT(root.GetField("int", res));
-	coEXPECT(res == 7777);
+	{
+		coInt32 o;
+		coEXPECT(root.GetField("int", o));
+		coEXPECT(o == 7777);
+	}
+	{
+		coDynamicString o;
+		coEXPECT(root.GetField("string", o));
+		coEXPECT(o == "chicken");
+	}
 	//coPackEntry root(pack);
 	//coSetEntry(root, 0, true);
 }
