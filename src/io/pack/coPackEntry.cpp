@@ -50,6 +50,8 @@ void coPackEntry::SetInlineField(const coConstString& name, const void* data, co
 	//coPushBackArray(pack.buffer, coArray<const coByte>(reinterpret_cast<const coByte*>(&value), sizeof(T)));
 }
 
+
+
 void coPackEntry::SetField(const coConstString& name, const coConstString& s)
 {
 	const coUint32 absoluteOffset = pack.buffer.count;

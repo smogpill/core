@@ -10,6 +10,7 @@
 class coComponent;
 class coBinaryOutputStream;
 class coBinaryInputStream;
+class coPackEntry;
 
 class coEntity
 {
@@ -32,6 +33,7 @@ public:
 	void Stop();
 	coResult Save(coBinaryOutputStream& stream) const;
 	coResult Load(coBinaryInputStream& stream);
+	void Save(coPackEntry& entry) const;
 	coEntity* Clone() const;
 
 private:

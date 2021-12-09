@@ -14,13 +14,13 @@ public:
 	template <class T>
 	void SetField(const coConstString& name, const T& value) { SetInlineField(name, &value, sizeof(T)); }
 	void SetField(const coConstString& name, const coConstString& s);
+	void SetInlineField(const coConstString& name, const void* data, coUint16 size);
 	template <class T>
 	coBool GetField(const coConstString& name, T& value) const;
 	coBool GetField(const coConstString& name, coDynamicString& value) const;
+	coBool GetInlineField(const coConstString& name, void* data, coUint16 size) const;
 	
 private:
-	void SetInlineField(const coConstString& name, const void* data, coUint16 size);
-	coBool GetInlineField(const coConstString& name, void* data, coUint16 size) const;
 	coUint16 GetFieldOffset(const coConstString& name) const;
 	coPack& pack;
 	const coPackFormat& format;

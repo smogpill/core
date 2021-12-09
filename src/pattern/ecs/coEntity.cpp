@@ -7,8 +7,10 @@
 #include "lang/result/coResult_f.h"
 #include <lang/reflect/coType.h>
 #include <lang/reflect/coTypeFactory.h>
+#include <lang/reflect/coField_f.h>
 #include <io/stream/coBinaryInputStream.h>
 #include <io/stream/coBinaryOutputStream.h>
+#include <io/pack/coPackEntry_f.h>
 
 coEntity::coEntity()
 {
@@ -104,6 +106,7 @@ coResult coEntity::Save(coBinaryOutputStream& stream) const
 {
 	for (coComponent* comp : components)
 	{
+		const coType* type = comp->GetType();
 		comp->Write(stream);
 	}
 	return true;
@@ -113,6 +116,22 @@ coResult coEntity::Load(coBinaryInputStream& stream)
 {
 	coASSERT(false);
 	return true;
+}
+
+void coEntity::Save(coPackEntry& entry) const
+{
+	for (coComponent* comp : components)
+	{
+		const coType* type = comp->GetType();
+		if (type->packFormat)
+		{
+			coPackEntry compEntry = entry.PushEntry(*type->packFormat);
+			for (const coField* field : type->fields)
+			{
+				//compEntry.SetField(field->name, );
+			}
+		}
+	}
 }
 
 coEntity* coEntity::Clone() const

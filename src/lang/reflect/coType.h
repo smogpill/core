@@ -6,6 +6,7 @@
 class coField;
 class coFunction;
 class coTypeBuilder;
+class coPackFormat;
 typedef void* (*coCreateFunc)();
 
 class coType : public coSymbol
@@ -20,4 +21,5 @@ public:
 	coDynamicArray<coField*> fields;
 	coDynamicArray<coFunction*> functions;
 	coTypeBuilder* builder = nullptr;
+	coPackFormat* packFormat = nullptr;
 };
