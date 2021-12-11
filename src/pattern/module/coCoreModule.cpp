@@ -12,9 +12,9 @@
 coCoreModule::coCoreModule()
 {
 	coASSERT(coInitDefaultDirs());
-	coLogHandler::GiveInstance(new coDefaultLogHandler());
-	coTypeFactory::GiveInstance(new coTypeFactory());
-	coTypeRegistry::GiveInstance(new coTypeRegistry());
+	coLogHandler::SetInstance(new coDefaultLogHandler());
+	coTypeFactory::SetInstance(new coTypeFactory());
+	coTypeRegistry::SetInstance(new coTypeRegistry());
 }
 
 coCoreModule::~coCoreModule()

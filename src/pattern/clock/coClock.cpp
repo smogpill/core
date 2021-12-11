@@ -28,4 +28,5 @@ void coClock::Step()
 		time = newTime;
 	}
 	lastTimeStamp = timeStamp;
+	++nbSteps;
 }

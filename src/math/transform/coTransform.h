@@ -12,7 +12,8 @@ public:
 	coFORCE_INLINE coTransform() : scale(1.0f) {}
 	coFORCE_INLINE coTransform(coNullPtr) : rotation(nullptr), translation(nullptr), scale(nullptr) {}
 	explicit coTransform(const coMat4&);
-
+	
+	static const coTransform identity;
 	coQuat rotation;
 	coVec3 translation;
 	coVec3 scale;

@@ -112,6 +112,19 @@ void coRemoveOrdered(coArray<T>& _this, const T& _e)
 }
 
 template <class T>
+void coRemoveOrderedBeforeIndex(coArray<T>& a, const coUint endIdx)
+{
+	static_assert(std::is_trivially_copyable<T>::value, "Trivially copyable only");
+	if (endIdx)
+	{
+		coASSERT(endIdx <= a.count);
+		for (coUint i = endIdx; i < a.count; ++i)
+			a.data[i - endIdx] = a.data[i];
+		a.count -= endIdx;
+	}
+}
+
+template <class T>
 void coRemoveUnorderedByIndex(coArray<T>& _this, coUint _index)
 {
 	_this[_index] = coBack(_this);
