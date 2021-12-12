@@ -8,13 +8,6 @@
 #include "math/collision/intersection/coIntersectRaySphere_f.h"
 #include "math/collision/intersection/coIntersectRayCapsule_f.h"
 
-// Comment from physx\source\geomutils\src\sweep\GuSweepSphereTriangle.cpp, from Physx 4:
-// PT: using GU_CULLING_EPSILON_RAY_TRIANGLE fails here, in capsule-vs-mesh's triangle extrusion, when
-// the sweep dir is almost the same as the capsule's dir (i.e. when we usually fallback to the sphere codepath).
-// I suspect det becomes so small that we lose all accuracy when dividing by det and using the result in computing
-// impact distance.
-#define coLOCAL_EPSILON 0.00001f
-
 // PT: special version computing (u,v) even when the ray misses the tri. Version working on precomputed edges.
 static coFORCE_INLINE coUint32 rayTriSpecial(const coVec3& orig, const coVec3& dir, const coVec3& vert0, const coVec3& edge1, const coVec3& edge2, coFloat& t, coFloat& u, coFloat& v)
 {
@@ -30,9 +23,15 @@ static coFORCE_INLINE coUint32 rayTriSpecial(const coVec3& orig, const coVec3& d
 	// If determinant is near zero, ray lies in plane of triangle
 	const coFloat det = coDot(edge1, pvec).x;
 
+	// PT: using GU_CULLING_EPSILON_RAY_TRIANGLE fails here, in capsule-vs-mesh's triangle extrusion, when
+	// the sweep dir is almost the same as the capsule's dir (i.e. when we usually fallback to the sphere codepath).
+	// I suspect det becomes so small that we lose all accuracy when dividing by det and using the result in computing
+	// impact distance.
+	constexpr coFloat localEpsilon 0.00001f;
+
 	// the non-culling branch
 //	if(det>-GU_CULLING_EPSILON_RAY_TRIANGLE && det<GU_CULLING_EPSILON_RAY_TRIANGLE)
-	if (det > -coLOCAL_EPSILON && det < coLOCAL_EPSILON)
+	if (det > -localEpsilon && det < localEpsilon)
 		return 0;
 	const coFloat oneOverDet = 1.0f / det;
 
