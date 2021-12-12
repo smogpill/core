@@ -58,3 +58,9 @@ coFORCE_INLINE constexpr T& coBitCast(A& _a)
 #	define coLIKELY(_x_) __builtin_expect(!!(_x_), true)
 #	define coUNLIKELY(_x_) __builtin_expect(!!(_x_), false)
 #endif
+
+#ifdef coMSVC_COMPILER
+#	define coRESTRICT __restrict
+#else
+#	define coRESTRICT __restrict__
+#endif

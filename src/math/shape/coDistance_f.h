@@ -20,6 +20,34 @@ inline coFloatx4 coSquareDistancePointSegment(const coVec3& p, const coVec3& a, 
 	return coSquareLength(ap) - e * e / f;
 }
 
+coFORCE_INLINE coFloat coSquareDistancePointSegment2(const coVec3& p0, const coVec3& dir, const coVec3& point, coFloat* param = nullptr)
+{
+	coVec3 diff = point - p0;
+	coFloat fT = coDot(diff, dir).x;
+
+	if (fT <= 0.0f)
+		fT = 0.0f;
+	else
+	{
+		const coFloat sqrLen = coSquareLength(dir).x;
+		if (fT >= sqrLen)
+		{
+			fT = 1.0f;
+			diff -= dir;
+		}
+		else
+		{
+			fT /= sqrLen;
+			diff -= fT * dir;
+		}
+	}
+
+	if (param)
+		*param = fT;
+
+	return coSquareLength(diff).x;
+}
+
 inline coFloatx4 coDistancePointSegment(const coVec3& p, const coVec3& a, const coVec3& b)
 {
 	return coSquareRoot(coSquareDistancePointSegment(p, a, b));
@@ -497,6 +525,68 @@ inline coFloat coSquareDistanceSegmentSegment2(const coVec3& vOrigin0, const coV
 	}
 
 	return fD2;
+}
+
+coFORCE_INLINE coVec3 coGetClosestPointPointTriangle2(const coVec3& p, const coVec3& a, const coVec3& b, const coVec3& c, const coVec3& ab, const coVec3& ac)
+{
+	//=====
+	// Impl from closestPtPointTriangle2(), \physx\source\geomutils\src\distance\GuDistancePointTriangle.h
+	// Most comments are from the original code.
+	// Thanks to the talented people at PhysX for this great piece of work, and for sharing it.
+	//=====
+
+	// Check if P in vertex region outside A
+	//const PxVec3 ab = b - a;
+	//const PxVec3 ac = c - a;
+	const coVec3 ap = p - a;
+	const coFloat d1 = coDot(ab, ap).x;
+	const coFloat d2 = coDot(ac, ap).x;
+	if (d1 <= 0.0f && d2 <= 0.0f)
+		return a;	// Barycentric coords 1,0,0
+
+	// Check if P in vertex region outside B
+	const coVec3 bp = p - b;
+	const coFloat d3 = coDot(ab, bp).x;
+	const coFloat d4 = coDot(ac, bp).x;
+	if (d3 >= 0.0f && d4 <= d3)
+		return b;	// Barycentric coords 0,1,0
+
+	// Check if P in edge region of AB, if so return projection of P onto AB
+	const coFloat vc = d1 * d4 - d3 * d2;
+	if (vc <= 0.0f && d1 >= 0.0f && d3 <= 0.0f)
+	{
+		const coFloat v = d1 / (d1 - d3);
+		return a + v * ab;	// barycentric coords (1-v, v, 0)
+	}
+
+	// Check if P in vertex region outside C
+	const coVec3 cp = p - c;
+	const coFloat d5 = coDot(ab, cp).x;
+	const coFloat d6 = coDot(ac, cp).x;
+	if (d6 >= 0.0f && d5 <= d6)
+		return c;	// Barycentric coords 0,0,1
+
+	// Check if P in edge region of AC, if so return projection of P onto AC
+	const coFloat vb = d5 * d2 - d1 * d6;
+	if (vb <= 0.0f && d2 >= 0.0f && d6 <= 0.0f)
+	{
+		const coFloat w = d2 / (d2 - d6);
+		return a + w * ac;	// barycentric coords (1-w, 0, w)
+	}
+
+	// Check if P in edge region of BC, if so return projection of P onto BC
+	const coFloat va = d3 * d6 - d5 * d4;
+	if (va <= 0.0f && (d4 - d3) >= 0.0f && (d5 - d6) >= 0.0f)
+	{
+		const coFloat w = (d4 - d3) / ((d4 - d3) + (d5 - d6));
+		return b + w * (c - b);	// barycentric coords (0, 1-w, w)
+	}
+
+	// P inside face region. Compute Q through its barycentric coords (u,v,w)
+	const coFloat denom = 1.0f / (va + vb + vc);
+	const coFloat v = vb * denom;
+	const coFloat w = vc * denom;
+	return a + ab * v + ac * w;
 }
 
 inline coVec3 coGetClosestPointPointTriangle(const coVec3& p, const coVec3& a, const coVec3& b, const coVec3& c, coFloat& s, coFloat& t)
