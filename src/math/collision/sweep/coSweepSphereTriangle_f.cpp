@@ -27,7 +27,7 @@ static coFORCE_INLINE coUint32 rayTriSpecial(const coVec3& orig, const coVec3& d
 	// the sweep dir is almost the same as the capsule's dir (i.e. when we usually fallback to the sphere codepath).
 	// I suspect det becomes so small that we lose all accuracy when dividing by det and using the result in computing
 	// impact distance.
-	constexpr coFloat localEpsilon 0.00001f;
+	constexpr coFloat localEpsilon = 0.00001f;
 
 	// the non-culling branch
 //	if(det>-GU_CULLING_EPSILON_RAY_TRIANGLE && det<GU_CULLING_EPSILON_RAY_TRIANGLE)
