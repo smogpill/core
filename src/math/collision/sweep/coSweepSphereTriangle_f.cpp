@@ -327,6 +327,21 @@ coBool coSweepSphereTriangle(const coVec3* coRESTRICT triVerts, const coVec3& no
 	return coTestRayVsSphereOrCapsule(impactDistance, TestSphere, center, radius, dir, triVerts, e0, e1);
 }
 
+void coComputeSphereTriImpactData(coVec3& hit, coVec3& normal, const coVec3& center, const coVec3& dir, float t, const coTriangle& tri)
+{
+	const coVec3 newSphereCenter = center + dir * t;
 
+	// We need the impact point, not computed by the new code
+	coFloat u_unused, v_unused;
+	const coVec3 localHit = closestPtPointTriangle(newSphereCenter, tri.a, tri.b, tri.c, u_unused, v_unused);
 
+	// This is responsible for the cap-vs-box stuck while jumping. However it's needed to slide on box corners!
+	// PT: this one is also dubious since the sphere/capsule center can be far away from the hit point when the radius is big!
+	coVec3 localNormal = newSphereCenter - localHit;
+	const coFloat m = localNormal.normalize();
+	if (m < 1e-3f)
+		tri.normal(localNormal);
 
+	hit = localHit;
+	normal = localNormal;
+}

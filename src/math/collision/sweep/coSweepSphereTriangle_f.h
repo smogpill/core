@@ -9,3 +9,29 @@ class coTriangle;
 coBool coSweepSphereTriangle(const coVec3* coRESTRICT triVerts, const coVec3& normal, const coVec3& center, coFloat radius, const coVec3& dir, coFloat& impactDistance, coBool& directHit, coBool testInitialOverlap);
 coBool coSweepSphereTriangles(coUint32 nbTris, const coTriangle* coRESTRICT triangles, const coVec3& center, const coFloat radius, const coVec3& unitDir, coFloat distance,											// Ray data
 	const coUint32* coRESTRICT cachedIndex, coSweepHit& h, coVec3& triNormalOut, coBool isDoubleSided, coBool meshBothSides, coBool anyHit, coBool testInitialOverlap);
+
+// PT: computes proper impact data for sphere-sweep-vs-tri, after the closest tri has been found
+coFORCE_INLINE coBool coComputeSphereTriangleImpactData(coSweepHit& h, coVec3& triNormalOut, coUint32 index, coFloat curT,
+	const coVec3& center, const coVec3& unitDir, const coVec3& bestTriNormal,
+	const coTriangle* coRESTRICT triangles,
+	coBool isDoubleSided, coBool meshBothSides)
+{
+	if (index == coUint32(-1))
+		return false;	// We didn't touch any triangle
+
+	// Compute impact data only once, using best triangle
+	coVec3 hitPos, normal;
+	coComputeSphereTriImpactData(hitPos, normal, center, unitDir, curT, triangles[index]);
+
+	// PT: by design, returned normal is opposed to the sweep direction.
+	if (coShouldFlipNormal(normal, meshBothSides, isDoubleSided, bestTriNormal, unitDir))
+		normal = -normal;
+
+	h.position = hitPos;
+	h.normal = normal;
+	h.distance = curT;
+	h.faceIndex = index;
+	h.flags = coHitFlag::eNORMAL | coHitFlag::ePOSITION;
+	triNormalOut = bestTriNormal;
+	return true;
+}
