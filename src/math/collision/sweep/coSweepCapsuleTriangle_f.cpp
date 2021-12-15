@@ -3,10 +3,13 @@
 #include "math/pch.h"
 #include "coSweepCapsuleTriangle_f.h"
 #include "coSweepSphereTriangle_f.h"
+#include "coSweepTriangleUtils_f.h"
 #include "math/shape/capsule/coCapsule.h"
 #include "math/shape/triangle/coTriangle_f.h"
 #include "math/vector/coVec3_f.h"
 #include "math/collision/intersection/coIntersectCapsuleTriangle_f.h"
+
+constexpr coFloat GU_EPSILON_SAME_DISTANCE = 1e-3f;
 
 //=====
 // Impl from \physx\source\geomutils\src\sweep\GuSweepCapsuleTriangle.cpp from PhysX 4
@@ -29,7 +32,7 @@ coFORCE_INLINE coFloat coComputeAlignmentValue(const coVec3& triNormal, const co
 	// depending on their winding. We take the absolute value to ignore the impact of winding. We negate the result
 	// to make the function compatible with the initial code, which assumed single-sided triangles and expected -1
 	// for best triangles.
-	return -coAbs(coDot(triNormal, unitDir));
+	return -coAbs(coDot(triNormal, unitDir)).x;
 }
 
 /**
@@ -80,142 +83,33 @@ coFORCE_INLINE coBool coKeepTriangle(coFloat triImpactDistance, coFloat triAlign
 ///////////////////////////////////////////////////////////////////////////////
 
 #define OUTPUT_TRI(pp0, pp1, pp2){ \
-	extrudedTris[nbExtrudedTris].verts[0] = pp0; \
-	extrudedTris[nbExtrudedTris].verts[1] = pp1; \
-	extrudedTris[nbExtrudedTris].verts[2] = pp2; \
+	extrudedTris[nbExtrudedTris].a = pp0; \
+	extrudedTris[nbExtrudedTris].b = pp1; \
+	extrudedTris[nbExtrudedTris].c = pp2; \
 	extrudedTrisNormals[nbExtrudedTris] = coGetRawNormal(extrudedTris[nbExtrudedTris]); \
 	nbExtrudedTris++;}
 
 #define OUTPUT_TRI2(p0, p1, p2, d){ \
 	coTriangle& tri = extrudedTris[nbExtrudedTris]; \
-	tri.verts[0] = p0; \
-	tri.verts[1] = p1; \
-	tri.verts[2] = p2; \
-	const coVec3 nrm = coGetRawNormal(tri); \
+	tri.a = p0; \
+	tri.b = p1; \
+	tri.c = p2; \
+	coVec3 nrm = coGetRawNormal(tri); \
 	if(coDot(nrm, d).x>0.0f) { \
-	coVec3 tmp = tri.verts[1]; \
-	tri.verts[1] = tri.verts[2]; \
-	tri.verts[2] = tmp; \
+	coVec3 tmp = tri.b; \
+	tri.b = tri.c; \
+	tri.c = tmp; \
 	nrm = -nrm; \
 	} \
 	extrudedTrisNormals[nbExtrudedTris] = nrm; \
 	nbExtrudedTris++; }
 
-coFORCE_INLINE coUint32 coGetInitIndex(const coUint32* coRESTRICT cachedIndex, coUint32 nbTris)
-{
-	coUint32 initIndex = 0;	// PT: by default the first triangle to process is just the first one in the array
-	if (cachedIndex)			// PT: but if we cached the last closest triangle from a previous call...
-	{
-		coASSERT(*cachedIndex < nbTris);
-		initIndex = *cachedIndex;	// PT: ...then we should start with that one, to potentially shrink the ray as early as possible
-	}
-	return initIndex;
-}
-
-coFORCE_INLINE coUint32 coGetTriangleIndex(coUint32 i, coUint32 cachedIndex)
-{
-	coUint32 triangleIndex;
-	if (i == 0)
-		triangleIndex = cachedIndex;
-	else if (i == cachedIndex)
-		triangleIndex = 0;
-	else
-		triangleIndex = i;
-	return triangleIndex;
-}
-
-// PT: quick triangle culling for sphere-based sweeps
-// Please refer to %SDKRoot%\InternalDocumentation\GU\coarseCulling.png for details & diagram.
-coFORCE_INLINE coBool coCoarseCullingTri(const coVec3& center, const coVec3& dir, coFloat t, coFloat radius, const coVec3* coRESTRICT triVerts)
-{
-	// PT: compute center of triangle ### could be precomputed?
-	const coVec3 triCenter = (triVerts[0] + triVerts[1] + triVerts[2]) * (1.0f / 3.0f);
-
-	// PT: distance between the triangle center and the swept path (an LSS)
-	// Same as: distancePointSegmentSquared(center, center+dir*t, TriCenter);
-	coFloat d = coSquareRoot(squareDistance(center, dir, t, triCenter)) - radius - 0.0001f;
-
-	if (d < 0.0f)	// The triangle center lies inside the swept sphere
-		return true;
-
-	d *= d;
-
-	// PT: coarse capsule-vs-triangle overlap test ### distances could be precomputed?
-	if (1)
-	{
-		if (d <= coSquareLength(triCenter - triVerts[0]).x)
-			return true;
-		if (d <= coSquareLength(triCenter - triVerts[1]).x)
-			return true;
-		if (d <= coSquareLength(triCenter - triVerts[2]).x)
-			return true;
-	}
-	else
-	{
-		const coFloat d0 = coSquareLength(triCenter - triVerts[0]).x;
-		const coFloat d1 = coSquareLength(triCenter - triVerts[1]).x;
-		const coFloat d2 = coSquareLength(triCenter - triVerts[2]).x;
-		coFloat triRadius = coMax(d0, d1);
-		triRadius = coMax(triRadius, d2);
-		if (d <= triRadius)
-			return true;
-	}
-	return false;
-}
-
-// PT: quick triangle rejection for sphere-based sweeps.
-// Please refer to %SDKRoot%\InternalDocumentation\GU\cullTriangle.png for details & diagram.
-coFORCE_INLINE coBool coCullTriangle(const coVec3* coRESTRICT triVerts, const coVec3& dir, coFloat radius, coFloat t, const coFloat dpc0)
-{
-	// PT: project triangle on axis
-	const coFloat dp0 = coDot(triVerts[0], dir);
-	const coFloat dp1 = coDot(triVerts[1], dir);
-	const coFloat dp2 = coDot(triVerts[2], dir);
-
-	// PT: keep min value = earliest possible impact distance
-	coFloat dp = dp0;
-	dp = coMin(dp, dp1);
-	dp = coMin(dp, dp2);
-
-	// PT: make sure we keep triangles that are about as close as best current distance
-	radius += 0.001f + GU_EPSILON_SAME_DISTANCE;
-
-	// PT: if earliest possible impact distance for this triangle is already larger than
-	// sphere's current best known impact distance, we can skip the triangle
-	if (dp > dpc0 + t + radius)
-	{
-		//PX_ASSERT(resx == 0.0f);
-		return false;
-	}
-
-	// PT: if triangle is fully located before the sphere's initial position, skip it too
-	const coFloat dpc1 = dpc0 - radius;
-	if (dp0 < dpc1 && dp1 < dpc1 && dp2 < dpc1)
-	{
-		//PX_ASSERT(resx == 0.0f);
-		return false;
-	}
-
-	//PX_ASSERT(resx != 0.0f);
-	return true;
-}
-
-// PT: combined triangle culling for sphere-based sweeps
-coFORCE_INLINE coBool coRejectTriangle(const coVec3& center, const coVec3& unitDir, coFloat curT, coFloat radius, const coVec3* coRESTRICT triVerts, const coFloat dpc0)
-{
-	if (!coCoarseCullingTri(center, unitDir, curT, radius, triVerts))
-		return true;
-	if (!coCullTriangle(triVerts, unitDir, radius, curT, dpc0))
-		return true;
-	return false;
-}
-
 // PT: implements the spec for IO sweeps in a single place (to ensure consistency)
-coFORCE_INLINE coBool coSetInitialOverlapResults(PxSweepHit& hit, const coVec3& unitDir, coUint32 faceIndex)
+coFORCE_INLINE coBool coSetInitialOverlapResults(coSweepHit& hit, const coVec3& unitDir, coUint32 faceIndex)
 {
 	// PT: please write these fields in the order they are listed in the struct.
 	hit.faceIndex = faceIndex;
-	hit.flags = PxHitFlag::eNORMAL | PxHitFlag::eFACE_INDEX;
+	hit.flags = coHitFlag::eNORMAL | coHitFlag::eFACE_INDEX;
 	hit.normal = -unitDir;
 	hit.distance = 0.0f;
 	return true;	// PT: true indicates a hit, saves some lines in calling code
@@ -225,24 +119,24 @@ coBool coSweepCapsuleTriangles_Precise(coUint32 nbTris, const coTriangle* coREST
 	const coCapsule& capsule,									// Capsule data
 	const coVec3& unitDir, const coFloat distance,			// Ray data
 	const coUint32* coRESTRICT cachedIndex,					// Cache data
-	PxSweepHit& hit, coVec3& triNormalOut,					// Results
-	PxHitFlags hitFlags, coBool isDoubleSided,				// Query modifiers
+	coSweepHit& hit, coVec3& triNormalOut,					// Results
+	coHitFlags hitFlags, coBool isDoubleSided,				// Query modifiers
 	const BoxPadded* cullBox)								// Cull data
 {
 	if (!nbTris)
 		return false;
 
-	const coBool meshBothSides = hitFlags & PxHitFlag::eMESH_BOTH_SIDES;
+	const coBool meshBothSides = hitFlags & coHitFlag::eMESH_BOTH_SIDES;
 	const coBool doBackfaceCulling = !isDoubleSided && !meshBothSides;
-	const coBool anyHit = hitFlags & PxHitFlag::eMESH_ANY;
-	const coBool testInitialOverlap = !(hitFlags & PxHitFlag::eASSUME_NO_INITIAL_OVERLAP);
+	const coBool anyHit = hitFlags & coHitFlag::eMESH_ANY;
+	const coBool testInitialOverlap = !(hitFlags & coHitFlag::eASSUME_NO_INITIAL_OVERLAP);
 
 	// PT: we can fallback to sphere sweep:
 	// - if the capsule is degenerate (i.e. it's a sphere)
 	// - if the sweep direction is the same as the capsule axis, in which case we can just sweep the top or bottom sphere
 
 	const coVec3 extrusionDir = (capsule.a - capsule.b) * 0.5f;	// Extrusion dir = capsule segment
-	const PxReal halfHeight = coLength(extrusionDir).x;
+	const coFloat halfHeight = coLength(extrusionDir).x;
 	bool mustExtrude = halfHeight != 0.0f;
 	if (!mustExtrude)
 	{
@@ -252,7 +146,7 @@ coBool coSweepCapsuleTriangles_Precise(coUint32 nbTris, const coTriangle* coREST
 	else
 	{
 		const coVec3 capsuleAxis = extrusionDir / halfHeight;
-		const coFloat colinearity = coAbs(coDot(capsuleAxis, unitDir));
+		const coFloat colinearity = coAbs(coDot(capsuleAxis, unitDir)).x;
 		mustExtrude = (colinearity < (1.0f - COLINEARITY_EPSILON));
 	}
 
@@ -271,7 +165,7 @@ coBool coSweepCapsuleTriangles_Precise(coUint32 nbTris, const coTriangle* coREST
 			const coUint32 initIndex = coGetInitIndex(cachedIndex, nbTris);
 
 			coFloat curT = distance;
-			const coFloat dpc0 = coDot(sphereCenter, unitDir);
+			const coFloat dpc0 = coDot(sphereCenter, unitDir).x;
 
 			coFloat bestAlignmentValue = 2.0f;
 
@@ -283,16 +177,16 @@ coBool coSweepCapsuleTriangles_Precise(coUint32 nbTris, const coTriangle* coREST
 
 				const coTriangle& currentTri = triangles[i];
 
-				if (coRejectTriangle(sphereCenter, unitDir, curT, capsule.radius, currentTri.verts, dpc0))
+				if (coRejectTriangle(sphereCenter, unitDir, curT, capsule.radius, &currentTri.a, dpc0))
 					continue;
 
-				const coVec3 triNormal = coGetRawNormal(currenTri);
+				coVec3 triNormal = coGetRawNormal(currentTri);
 
 				// Backface culling
 				if (doBackfaceCulling && (coDot(triNormal, unitDir) > 0.0f))
 					continue;
 
-				if (testInitialOverlap && coIntersectCapsuleTriangle(triNormal, currentTri.verts[0], currentTri.verts[1], currentTri.verts[2], capsule, params))
+				if (testInitialOverlap && coIntersectCapsuleTriangle(triNormal, currentTri.a, currentTri.b, currentTri.c, capsule, params))
 				{
 					triNormalOut = -unitDir;
 					return coSetInitialOverlapResults(hit, unitDir, i);
@@ -306,7 +200,7 @@ coBool coSweepCapsuleTriangles_Precise(coUint32 nbTris, const coTriangle* coREST
 
 				coFloat currentDistance;
 				bool unused;
-				if (!coSweepSphereVSTri(currentTri.verts, triNormal, sphereCenter, capsule.radius, unitDir, currentDistance, unused, false))
+				if (!coSweepSphereTriangle(&currentTri.a, triNormal, sphereCenter, capsule.radius, unitDir, currentDistance, unused, false))
 					continue;
 
 				const coFloat distEpsilon = GU_EPSILON_SAME_DISTANCE; // pick a farther hit within distEpsilon that is more opposing than the previous closest hit
@@ -342,8 +236,8 @@ coBool coSweepCapsuleTriangles_Precise(coUint32 nbTris, const coTriangle* coREST
 	coVec3 bestTriNormal(0.0f);
 	coFloat mostOpposingHitDot = 2.0f;
 
-	CapsuleTriangleOverlapData params;
-	params.init(capsule);
+	coCapsuleTriangleOverlapData params;
+	params.Init(capsule);
 
 	for (coUint32 ii = 0; ii < nbTris; ++ii)	// We need i for returned triangle index
 	{
@@ -353,8 +247,7 @@ coBool coSweepCapsuleTriangles_Precise(coUint32 nbTris, const coTriangle* coREST
 
 ///////////// PT: this part comes from "ExtrudeMesh"
 		// Create triangle normal
-		coVec3 denormalizedNormal;
-		currentSrcTri.denormalizedNormal(denormalizedNormal);
+		coVec3 denormalizedNormal = coGetRawNormal(currentSrcTri);
 
 		// Backface culling
 		if (doBackfaceCulling && (coDot(denormalizedNormal, unitDir).x > 0.0f))
@@ -362,11 +255,11 @@ coBool coSweepCapsuleTriangles_Precise(coUint32 nbTris, const coTriangle* coREST
 
 		if (cullBox)
 		{
-			if (!coIntersectTriangleBox(*cullBox, currentSrcTri.verts[0], currentSrcTri.verts[1], currentSrcTri.verts[2]))
+			if (!coIntersectTriangleBox(*cullBox, currentSrcTri.a, currentSrcTri.b, currentSrcTri.c))
 				continue;
 		}
 
-		if (testInitialOverlap && coIntersectCapsuleTriangle(denormalizedNormal, currentSrcTri.verts[0], currentSrcTri.verts[1], currentSrcTri.verts[2], capsule, params))
+		if (testInitialOverlap && coIntersectCapsuleTriangle(denormalizedNormal, currentSrcTri.a, currentSrcTri.b, currentSrcTri.c, capsule, params))
 		{
 			triNormalOut = -unitDir;
 			return coSetInitialOverlapResults(hit, unitDir, i);
@@ -375,15 +268,15 @@ coBool coSweepCapsuleTriangles_Precise(coUint32 nbTris, const coTriangle* coREST
 		// Extrude mesh on the fly
 		coUint32 nbExtrudedTris = 0;
 
-		const coVec3 p0 = currentSrcTri.verts[0] - extrusionDir;
-		const coVec3 p1 = currentSrcTri.verts[1] - extrusionDir;
-		const coVec3 p2 = currentSrcTri.verts[2] - extrusionDir;
+		const coVec3 p0 = currentSrcTri.a - extrusionDir;
+		const coVec3 p1 = currentSrcTri.b - extrusionDir;
+		const coVec3 p2 = currentSrcTri.c - extrusionDir;
 
-		const coVec3 p0b = currentSrcTri.verts[0] + extrusionDir;
-		const coVec3 p1b = currentSrcTri.verts[1] + extrusionDir;
-		const coVec3 p2b = currentSrcTri.verts[2] + extrusionDir;
+		const coVec3 p0b = currentSrcTri.a + extrusionDir;
+		const coVec3 p1b = currentSrcTri.b + extrusionDir;
+		const coVec3 p2b = currentSrcTri.c + extrusionDir;
 
-		if (coDot(denormalizedNormal, extrusionDir) >= 0.0f)
+		if (coDot(denormalizedNormal, extrusionDir).x >= 0.0f)
 			OUTPUT_TRI(p0b, p1b, p2b)
 		else
 			OUTPUT_TRI(p0, p1, p2)
@@ -421,7 +314,7 @@ coBool coSweepCapsuleTriangles_Precise(coUint32 nbTris, const coTriangle* coREST
 				continue;
 
 			// PT: beware, culling is only ok on the sphere I think
-			if (coRejectTriangle(capsuleCenter, unitDir, curT, radius, currentTri.verts, dpc0))
+			if (coRejectTriangle(capsuleCenter, unitDir, curT, radius, &currentTri.a, dpc0))
 				continue;
 
 			const coFloat magnitude = coLength(triNormal).x;
@@ -432,7 +325,7 @@ coBool coSweepCapsuleTriangles_Precise(coUint32 nbTris, const coTriangle* coREST
 
 			coFloat currentDistance;
 			bool unused;
-			if (!coSweepSphereVSTri(currentTri.verts, triNormal, capsuleCenter, radius, unitDir, currentDistance, unused, false))
+			if (!coSweepSphereTriangle(&currentTri.a, triNormal, capsuleCenter, radius, unitDir, currentDistance, unused, false))
 				continue;
 
 			const coFloat distEpsilon = GU_EPSILON_SAME_DISTANCE; // pick a farther hit within distEpsilon that is more opposing than the previous closest hit			
@@ -470,9 +363,9 @@ Exit:
 		// different from the hit between the *sphere* and the extruded mesh.
 
 		// Touched tri
-		const coVec3& p0 = triangles[hit.faceIndex].verts[0];
-		const coVec3& p1 = triangles[hit.faceIndex].verts[1];
-		const coVec3& p2 = triangles[hit.faceIndex].verts[2];
+		const coVec3& p0 = triangles[hit.faceIndex].a;
+		const coVec3& p1 = triangles[hit.faceIndex].b;
+		const coVec3& p2 = triangles[hit.faceIndex].c;
 
 		// AP: measured to be a bit faster than the scalar version
 		const coVec3 delta = unitDir * hit.distance;
@@ -483,7 +376,7 @@ Exit:
 			pointOnSeg, pointOnTri);
 		V3StoreU(pointOnTri, hit.position);
 
-		hit.flags = PxHitFlag::eNORMAL | PxHitFlag::ePOSITION;
+		hit.flags = coHitFlag::eNORMAL | coHitFlag::ePOSITION;
 	}
 	return true;
 }

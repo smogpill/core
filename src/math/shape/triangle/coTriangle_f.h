@@ -4,7 +4,7 @@
 #include "coTriangle.h"
 #include "math/vector/coVec3_f.h"
 
-coFORCE_INLINE coVec3 coGetRawNormal(const coTriangle& t) const
+coFORCE_INLINE coVec3 coGetRawNormal(const coTriangle& t)
 {
 	return coCross(t.b - t.a, t.c - t.a);
 }

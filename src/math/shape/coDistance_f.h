@@ -48,6 +48,34 @@ coFORCE_INLINE coFloat coSquareDistancePointSegment2(const coVec3& p0, const coV
 	return coSquareLength(diff).x;
 }
 
+
+// PT: computes distance between a point 'point' and a segment. The segment is defined as a starting point 'p0'
+// and a direction vector 'dir' plus a length 't'. Segment's endpoint is p0 + dir * t.
+//
+//                     point
+//                      o
+//                   __/|
+//                __/ / |
+//             __/   /  |(B)
+//          __/  (A)/   |
+//       __/       /    |                dir
+//  p0 o/---------o---------------o--    -->
+//                t (t<=fT)       t (t>fT)
+//                return (A)^2    return (B)^2
+//
+//     |<-------------->|
+//             fT
+//
+coFORCE_INLINE coFloat coSquareDistancePointSegment3(const coVec3& p0, const coVec3& dir, coFloat t, const coVec3& point)
+{
+	coVec3 diff = point - p0;
+	coFloat fT = coDot(diff, dir).x;
+	fT = coMax(fT, 0.0f);
+	fT = coMin(fT, t);
+	diff -= fT * dir;
+	return coSquareLength(diff).x;
+}
+
 inline coFloatx4 coDistancePointSegment(const coVec3& p, const coVec3& a, const coVec3& b)
 {
 	return coSquareRoot(coSquareDistancePointSegment(p, a, b));

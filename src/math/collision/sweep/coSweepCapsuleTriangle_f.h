@@ -2,48 +2,73 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include <lang/coCppExtensions.h>
+#include <math/matrix/coMat3.h>
+#include "../query/coQueries.h"
 class coCapsule;
 class coTriangle;
 class coVec3;
 
-struct coHitFlag
+class Box
 {
-	enum Enum
+public:
+	/**
+	\brief Constructor
+	*/
+	coFORCE_INLINE Box()
 	{
-		ePOSITION = (1 << 0),					//!< "position" member of #PxQueryHit is valid
-		eNORMAL = (1 << 1),						//!< "normal" member of #PxQueryHit is valid
-		eUV = (1 << 3),							//!< "u" and "v" barycentric coordinates of #PxQueryHit are valid. Not applicable to sweep queries.
-		eASSUME_NO_INITIAL_OVERLAP = (1 << 4),	//!< Performance hint flag for sweeps when it is known upfront there's no initial overlap.
-												//!< NOTE: using this flag may cause undefined results if shapes are initially overlapping.
-		eMESH_MULTIPLE = (1 << 5),				//!< Report all hits for meshes rather than just the first. Not applicable to sweep queries.
-		eMESH_ANY = (1 << 6),					//!< Report any first hit for meshes. If neither eMESH_MULTIPLE nor eMESH_ANY is specified,
-												//!< a single closest hit will be reported for meshes.
-		eMESH_BOTH_SIDES = (1 << 7),			//!< Report hits with back faces of mesh triangles. Also report hits for raycast
-												//!< originating on mesh surface and facing away from the surface normal. Not applicable to sweep queries.
-												//!< Please refer to the user guide for heightfield-specific differences.
-		ePRECISE_SWEEP = (1 << 8),				//!< Use more accurate but slower narrow phase sweep tests.
-												//!< May provide better compatibility with PhysX 3.2 sweep behavior.
-		eMTD = (1 << 9),						//!< Report the minimum translation depth, normal and contact point.
-		eFACE_INDEX = (1 << 10),				//!< "face index" member of #PxQueryHit is valid
+	}
 
-		eDEFAULT = ePOSITION | eNORMAL | eFACE_INDEX,
+	/**
+	\brief Constructor
 
-		/** \brief Only this subset of flags can be modified by pre-filter. Other modifications will be discarded. */
-		eMODIFIABLE_FLAGS = eMESH_MULTIPLE | eMESH_BOTH_SIDES | eASSUME_NO_INITIAL_OVERLAP | ePRECISE_SWEEP
-	};
+	\param origin Center of the OBB
+	\param extent Extents/radii of the obb.
+	\param base rotation to apply to the obb.
+	*/
+	//! Construct from center, extent and rotation
+	coFORCE_INLINE Box(const coVec3& origin, const coVec3& extent, const coMat3& base) : rot(base), center(origin), extents(extent)
+	{}
+
+	//! Copy constructor
+	coFORCE_INLINE Box(const Box& other) : rot(other.rot), center(other.center), extents(other.extents)
+	{}
+
+	/**
+	\brief Destructor
+	*/
+	coFORCE_INLINE ~Box()
+	{
+	}
+
+	//! Assignment operator
+	coFORCE_INLINE const Box& operator=(const Box& other)
+	{
+		rot = other.rot;
+		center = other.center;
+		extents = other.extents;
+		return *this;
+	}
+
+	coMat3	rot;
+	coVec3	center;
+	coVec3	extents;
 };
+//static_assert(sizeof(Box) == 60);
 
-struct coSweepHit : public PxLocationHit
+//! A padded version of Gu::Box, to safely load its data using SIMD
+class BoxPadded : public Box
 {
-	PX_INLINE			PxSweepHit() {}
-
-	coUint32			padTo16Bytes;
+public:
+	coFORCE_INLINE BoxPadded() {}
+	coFORCE_INLINE ~BoxPadded() {}
+	coUint32	padding;
 };
+//static_assert(sizeof(BoxPadded) == 64);
 
 coBool coSweepCapsuleTriangles_Precise(coUint32 nbTris, const coTriangle* coRESTRICT triangles,
 	const coCapsule& capsule,
 	const coVec3& unitDir, const coFloat distance,
 	const coUint32* coRESTRICT cachedIndex,
-	PxSweepHit& hit, coVec3& triNormalOut,
+	coSweepHit& hit, coVec3& triNormalOut,
 	coUint16 hitFlags, coBool doubleSided,
 	const BoxPadded* cullBox = nullptr);

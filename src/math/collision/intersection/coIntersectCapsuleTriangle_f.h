@@ -14,7 +14,7 @@ public:
 	void Init(const coCapsule& capsule)
 	{
 		const coVec3 dir = capsule.a - capsule.b;
-		const coFloat BDotB = coDot(dir, dir);
+		const coFloat BDotB = coDot(dir, dir).x;
 		mCapsuleDir = dir;
 		mBDotB = BDotB;
 		mOneOverBDotB = BDotB != 0.0f ? 1.0f / BDotB : 0.0f;

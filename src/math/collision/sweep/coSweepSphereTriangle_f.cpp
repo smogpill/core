@@ -1,12 +1,14 @@
 // Copyright(c) 2021 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "math/pch.h"
-#include "coSweepSphere_f.h"
+#include "coSweepSphereTriangle_f.h"
+#include "coSweepTriangleUtils_f.h"
 #include "math/vector/coVec3_f.h"
 #include "math/shape/coDistance_f.h"
 #include "math/shape/coIntersection_f.h"
 #include "math/collision/intersection/coIntersectRaySphere_f.h"
 #include "math/collision/intersection/coIntersectRayCapsule_f.h"
+#include "../query/coQueries.h"
 
 // PT: special version computing (u,v) even when the ray misses the tri. Version working on precomputed edges.
 static coFORCE_INLINE coUint32 rayTriSpecial(const coVec3& orig, const coVec3& dir, const coVec3& vert0, const coVec3& edge1, const coVec3& edge2, coFloat& t, coFloat& u, coFloat& v)
@@ -121,6 +123,75 @@ static coFORCE_INLINE coBool coTestRayVsSphereOrCapsule(coFloat& impactDistance,
 		}
 	}
 	return false;
+}
+
+coBool coSweepSphereTriangles(coUint32 nbTris, const coTriangle* coRESTRICT triangles,							// Triangle data
+	const coVec3& center, const coFloat radius,										// Sphere data
+	const coVec3& unitDir, coFloat distance,											// Ray data
+	const coUint32* coRESTRICT cachedIndex,											// Cache data
+	coSweepHit& h, coVec3& triNormalOut,												// Results
+	coBool isDoubleSided, coBool meshBothSides, coBool anyHit, coBool testInitialOverlap)	// Query modifiers
+{
+	if (!nbTris)
+		return false;
+
+	const coBool doBackfaceCulling = !isDoubleSided && !meshBothSides;
+
+	coUint32 index = coUint32(-1);
+	const coUint32 initIndex = coGetInitIndex(cachedIndex, nbTris);
+
+	coFloat curT = distance;
+	const coFloat dpc0 = coDot(center, unitDir).x;
+
+	coFloat bestAlignmentValue = 2.0f;
+
+	coVec3 bestTriNormal(0.0f);
+
+	for (coUint32 ii = 0; ii < nbTris; ii++)	// We need i for returned triangle index
+	{
+		const coUint32 i = coGetTriangleIndex(ii, initIndex);
+
+		const coTriangle& currentTri = triangles[i];
+
+		if (coRejectTriangle(center, unitDir, curT, radius, &currentTri.a, dpc0))
+			continue;
+
+		coVec3 triNormal = coGetRawNormal(currentTri);
+
+		// Backface culling
+		if (doBackfaceCulling && (coDot(triNormal, unitDir).x > 0.0f))
+			continue;
+
+		const coFloat magnitude = coLength(triNormal);
+		if (magnitude == 0.0f)
+			continue;
+
+		triNormal /= magnitude;
+
+		coFloat currentDistance;
+		coBool unused;
+		if (!coSweepSphereVSTri(&currentTri.a, triNormal, center, radius, unitDir, currentDistance, unused, testInitialOverlap))
+			continue;
+
+		const coFloat distEpsilon = GU_EPSILON_SAME_DISTANCE; // pick a farther hit within distEpsilon that is more opposing than the previous closest hit
+		const coFloat hitDot = coComputeAlignmentValue(triNormal, unitDir);
+		if (!coKeepTriangle(currentDistance, hitDot, curT, bestAlignmentValue, distance, distEpsilon))
+			continue;
+
+		if (currentDistance == 0.0f)
+		{
+			triNormalOut = -unitDir;
+			return coSetInitialOverlapResults(h, unitDir, i);
+		}
+
+		curT = currentDistance;
+		index = i;
+		bestAlignmentValue = hitDot;
+		bestTriNormal = triNormal;
+		if (anyHit)
+			break;
+	}
+	return coComputeSphereTriangleImpactData(h, triNormalOut, index, curT, center, unitDir, bestTriNormal, triangles, isDoubleSided, meshBothSides);
 }
 
 coBool coSweepSphereTriangle(const coVec3* coRESTRICT triVerts, const coVec3& normal, const coVec3& center, coFloat radius, const coVec3& dir, coFloat& impactDistance, coBool& directHit, coBool testInitialOverlap)
@@ -255,3 +326,7 @@ coBool coSweepSphereTriangle(const coVec3* coRESTRICT triVerts, const coVec3& no
 	}
 	return coTestRayVsSphereOrCapsule(impactDistance, TestSphere, center, radius, dir, triVerts, e0, e1);
 }
+
+
+
+
