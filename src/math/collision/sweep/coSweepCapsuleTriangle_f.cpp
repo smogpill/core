@@ -9,8 +9,6 @@
 #include "math/vector/coVec3_f.h"
 #include "math/collision/intersection/coIntersectCapsuleTriangle_f.h"
 
-constexpr coFloat GU_EPSILON_SAME_DISTANCE = 1e-3f;
-
 //=====
 // Impl from \physx\source\geomutils\src\sweep\GuSweepCapsuleTriangle.cpp from PhysX 4
 // Most comments are from the original code.
@@ -253,11 +251,13 @@ coBool coSweepCapsuleTriangles_Precise(coUint32 nbTris, const coTriangle* coREST
 		if (doBackfaceCulling && (coDot(denormalizedNormal, unitDir).x > 0.0f))
 			continue;
 
+		/*
 		if (cullBox)
 		{
 			if (!coIntersectTriangleBox(*cullBox, currentSrcTri.a, currentSrcTri.b, currentSrcTri.c))
 				continue;
 		}
+		*/
 
 		if (testInitialOverlap && coIntersectCapsuleTriangle(denormalizedNormal, currentSrcTri.a, currentSrcTri.b, currentSrcTri.c, capsule, params))
 		{
@@ -370,11 +370,15 @@ Exit:
 		// AP: measured to be a bit faster than the scalar version
 		const coVec3 delta = unitDir * hit.distance;
 		coVec3 pointOnSeg, pointOnTri;
-		coDistanceSegmentTriangleSquared(
+
+		/*
+		* coDistanceSegmentTriangleSquared(
 			V3LoadU(capsule.a + delta), V3LoadU(capsule.b + delta),
 			V3LoadU(p0), V3LoadU(p1), V3LoadU(p2),
 			pointOnSeg, pointOnTri);
-		V3StoreU(pointOnTri, hit.position);
+			V3StoreU(pointOnTri, hit.position);
+		*/
+		
 
 		hit.flags = coHitFlag::eNORMAL | coHitFlag::ePOSITION;
 	}

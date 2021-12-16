@@ -2,6 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include "math/shape/capsule/coCapsule.h"
+#include "math/vector/coVec3_f.h"
 
 // PT: precomputed data for capsule-triangle test. Useful when testing the same capsule vs several triangles.
 class coCapsuleTriangleOverlapData

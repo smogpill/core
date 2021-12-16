@@ -6,6 +6,7 @@
 #include "math/vector/coVec3_f.h"
 #include "math/shape/coDistance_f.h"
 #include "math/shape/coIntersection_f.h"
+#include "math/shape/triangle/coTriangle_f.h"
 #include "math/collision/intersection/coIntersectRaySphere_f.h"
 #include "math/collision/intersection/coIntersectRayCapsule_f.h"
 #include "../query/coQueries.h"

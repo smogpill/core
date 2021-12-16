@@ -15,7 +15,7 @@
 coFORCE_INLINE coFloat coDistancePointSegmentSquaredInternal(const coVec3& p0, const coVec3& dir, const coVec3& point, coFloat* param = nullptr)
 {
 	coVec3 diff = point - p0;
-	coFloat fT = coDot(diff, dir);
+	coFloat fT = coDot(diff, dir).x;
 
 	if (fT <= 0.0f)
 	{
@@ -23,7 +23,7 @@ coFORCE_INLINE coFloat coDistancePointSegmentSquaredInternal(const coVec3& p0, c
 	}
 	else
 	{
-		const coFloat sqrLen = coSquareLength(dir);
+		const coFloat sqrLen = coSquareLength(dir).x;
 		if (fT >= sqrLen)
 		{
 			fT = 1.0f;
@@ -39,15 +39,15 @@ coFORCE_INLINE coFloat coDistancePointSegmentSquaredInternal(const coVec3& p0, c
 	if (param)
 		*param = fT;
 
-	return coSquareLength(diff);
+	return coSquareLength(diff).x;
 }
 
 // PT: tests if projections of capsule & triangle overlap on given axis
 coFORCE_INLINE coUint32 coTestAxis(const coVec3& p0, const coVec3& p1, const coVec3& p2, const coCapsule& capsule, const coVec3& axis)
 {
 	// Project capsule
-	coFloat min0 = coDot(capsule.a, axis);
-	coFloat max0 = coDot(capsule.b, axis);
+	coFloat min0 = coDot(capsule.a, axis).x;
+	coFloat max0 = coDot(capsule.b, axis).x;
 	if (min0 > max0)
 		coSwap(min0, max0);
 	const coFloat MR = coLength(axis).x * capsule.radius;
@@ -58,10 +58,10 @@ coFORCE_INLINE coUint32 coTestAxis(const coVec3& p0, const coVec3& p1, const coV
 	coFloat min1, max1;
 	{
 		min1 = max1 = coDot(p0, axis).x;
-		coFloat dp = coDot(p1, axis);
+		coFloat dp = coDot(p1, axis).x;
 		if (dp < min1)	min1 = dp;
 		if (dp > max1)	max1 = dp;
-		dp = coDot(p2, axis);
+		dp = coDot(p2, axis).x;
 		if (dp < min1)	min1 = dp;
 		if (dp > max1)	max1 = dp;
 	}
@@ -79,10 +79,10 @@ coFORCE_INLINE coVec3 coComputeEdgeAxis(const coVec3& p, const coVec3& a,
 	coFloat BDotB, coFloat oneOverBDotB)
 {
 	const coVec3 T = q - p;
-	const coFloat ADotA = coDot(a, a);
-	const coFloat ADotB = coDot(a, b);
-	const coFloat ADotT = coDot(a, T);
-	const coFloat BDotT = coDot(b, T);
+	const coFloat ADotA = coDot(a, a).x;
+	const coFloat ADotB = coDot(a, b).x;
+	const coFloat ADotT = coDot(a, T).x;
+	const coFloat BDotT = coDot(b, T).x;
 
 	const coFloat denom = ADotA * BDotB - ADotB * ADotB;
 
@@ -108,7 +108,7 @@ coFORCE_INLINE coVec3 coComputeEdgeAxis(const coVec3& p, const coVec3& a,
 
 coBool coIntersectCapsuleTriangle(const coVec3& N, const coVec3& p0, const coVec3& p1, const coVec3& p2, const coCapsule& capsule, const coCapsuleTriangleOverlapData& params)
 {
-	coASSERT(capsule.a != capsule.b);
+	coASSERT(!coNearEqual(capsule.a, capsule.b));
 
 	{
 		const coFloat d2 = coDistancePointSegmentSquaredInternal(capsule.a, params.mCapsuleDir, p0);

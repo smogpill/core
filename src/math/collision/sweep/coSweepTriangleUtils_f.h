@@ -5,6 +5,8 @@
 #include <math/vector/coVec3_f.h>
 #include "math/shape/coDistance_f.h"
 
+constexpr coFloat GU_EPSILON_SAME_DISTANCE = 1e-3f;
+
 coFORCE_INLINE coUint32 coGetInitIndex(const coUint32* coRESTRICT cachedIndex, coUint32 nbTris)
 {
 	coUint32 initIndex = 0;	// PT: by default the first triangle to process is just the first one in the array
@@ -14,6 +16,18 @@ coFORCE_INLINE coUint32 coGetInitIndex(const coUint32* coRESTRICT cachedIndex, c
 		initIndex = *cachedIndex;	// PT: ...then we should start with that one, to potentially shrink the ray as early as possible
 	}
 	return initIndex;
+}
+
+coFORCE_INLINE coBool coShouldFlipNormal(const coVec3& normal, coBool meshBothSides, coBool isDoubleSided, const coVec3& triangleNormal, const coVec3& dir)
+{
+	// PT: this function assumes that input normal is opposed to the ray/sweep direction. This is always
+	// what we want except when we hit a single-sided back face with 'meshBothSides' enabled.
+
+	if (!meshBothSides || isDoubleSided)
+		return false;
+
+	coASSERT(coDot(normal, dir).x <= 0.0f);	// PT: if this fails, the logic below cannot be applied
+	return coDot(triangleNormal, dir).x > 0.0f;	// PT: true for back-facing hits
 }
 
 coFORCE_INLINE coUint32 coGetTriangleIndex(coUint32 i, coUint32 cachedIndex)
