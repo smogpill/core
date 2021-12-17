@@ -172,7 +172,7 @@ coBool coSweepSphereTriangles(coUint32 nbTris, const coTriangle* coRESTRICT tria
 
 		coFloat currentDistance;
 		coBool unused;
-		if (!coSweepSphereVSTri(&currentTri.a, triNormal, center, radius, unitDir, currentDistance, unused, testInitialOverlap))
+		if (!coSweepSphereTriangle(&currentTri.a, triNormal, center, radius, unitDir, currentDistance, unused, testInitialOverlap))
 			continue;
 
 		const coFloat distEpsilon = GU_EPSILON_SAME_DISTANCE; // pick a farther hit within distEpsilon that is more opposing than the previous closest hit
