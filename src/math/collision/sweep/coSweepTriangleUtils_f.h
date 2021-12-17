@@ -4,6 +4,9 @@
 #include <debug/log/coAssert.h>
 #include <math/vector/coVec3_f.h>
 #include "math/shape/coDistance_f.h"
+#include "math/shape/triangle/coTriangle_f.h"
+#include "math/collision/distance/coDistancePointTriangle_f.h"
+#include "../query/coQueries.h"
 
 constexpr coFloat GU_EPSILON_SAME_DISTANCE = 1e-3f;
 
@@ -126,4 +129,36 @@ coFORCE_INLINE coBool coRejectTriangle(const coVec3& center, const coVec3& unitD
 	if (!coCullTriangle(triVerts, unitDir, radius, curT, dpc0))
 		return true;
 	return false;
+}
+
+inline void coComputeSphereTriImpactData(coVec3& hit, coVec3& normal, const coVec3& center, const coVec3& dir, coFloat t, const coTriangle& tri)
+{
+	const coVec3 newSphereCenter = center + dir * t;
+
+	// We need the impact point, not computed by the new code
+	coFloat u_unused, v_unused;
+	const coVec3 localHit = coClosestPtPointTriangle(newSphereCenter, tri.a, tri.b, tri.c, u_unused, v_unused);
+
+	// This is responsible for the cap-vs-box stuck while jumping. However it's needed to slide on box corners!
+	// PT: this one is also dubious since the sphere/capsule center can be far away from the hit point when the radius is big!
+	coVec3 localNormal = newSphereCenter - localHit;
+	const coFloat m = coLength(localNormal).x;
+	if (m > 0.0f)
+		localNormal /= m;
+	if (m < 1e-3f)
+		localNormal = coGetNormal(tri);
+
+	hit = localHit;
+	normal = localNormal;
+}
+
+// PT: implements the spec for IO sweeps in a single place (to ensure consistency)
+coFORCE_INLINE coBool coSetInitialOverlapResults(coSweepHit& hit, const coVec3& unitDir, coUint32 faceIndex)
+{
+	// PT: please write these fields in the order they are listed in the struct.
+	hit.faceIndex = faceIndex;
+	hit.flags = coHitFlag::eNORMAL | coHitFlag::eFACE_INDEX;
+	hit.normal = -unitDir;
+	hit.distance = 0.0f;
+	return true;	// PT: true indicates a hit, saves some lines in calling code
 }

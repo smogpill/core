@@ -8,3 +8,8 @@ coFORCE_INLINE coVec3 coGetRawNormal(const coTriangle& t)
 {
 	return coCross(t.b - t.a, t.c - t.a);
 }
+
+coFORCE_INLINE coVec3 coGetNormal(const coTriangle& t)
+{
+	return coNormalize(coGetRawNormal(t));
+}
