@@ -28,6 +28,12 @@ public:
 		const __m128 wwww = coBitCast<__m128>(_wwww);
 		*this = coBitCast<coFloatx4>(_mm_unpacklo_ps(_mm_unpacklo_ps(xxxx, zzzz), _mm_unpacklo_ps(yyyy, wwww)));
 	}
+	explicit coFORCE_INLINE coFloatx4(const coFloatx3& _xyz) : x(_xyz.x), y(_xyz.y), z(_xyz.z)
+	{
+#ifdef coDEBUG
+		w = std::numeric_limits<float>::quiet_NaN();
+#endif
+	}
 	coFORCE_INLINE coFloatx4(const coFloatx3& _xyz, const coFloatx4& _wwww) : x(_xyz.x), y(_xyz.y), z(_xyz.z), w(_wwww.x) {}
 
 	coFORCE_INLINE operator const coFloatx2& () const { return reinterpret_cast<const coFloatx2&>(*this); }

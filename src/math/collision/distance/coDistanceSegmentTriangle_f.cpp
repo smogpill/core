@@ -2,12 +2,39 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "math/pch.h"
 #include "coDistanceSegmentTriangle_f.h"
+#include "coDistanceSegmentSegment_f.h"
+
+coFORCE_INLINE coFloatx4 FSel(const coBool32x4 c, const coFloatx4 a, const coFloatx4 b)
+{
+	return coBitCast<coFloatx4>(_mm_or_ps(_mm_andnot_ps(coBitCast<__m128>(c), coBitCast<__m128>(b)), _mm_and_ps(coBitCast<__m128>(c), coBitCast<__m128>(a))));
+}
+
+coFORCE_INLINE coVec3 V3Sel(const coBool32x4 c, const coVec3 a, const coVec3 b)
+{
+	return coBitCast<coVec3>(_mm_or_ps(_mm_andnot_ps(coBitCast<__m128>(c), coBitCast<__m128>(b)), _mm_and_ps(coBitCast<__m128>(c), coBitCast<__m128>(a))));
+}
+
+coFORCE_INLINE coBool32x4 coIsValidTriangleBarycentricCoord(const coFloatx4 v, const coFloatx4 w)
+{
+	//=====
+	// Impl from isValidTriangleBarycentricCoord(), \PhysX\physx\source\geomutils\src\common\GuBarycentricCoordinates.h, PhysX 4
+	// Most comments are from the original code.
+	// Thanks to the talented people at PhysX for this great piece of work, and for sharing it.
+	//=====
+	const coFloatx4 zero = -coFloatx4(FLT_EPSILON);
+	const coFloatx4 one = coFloatx4(1.0f) + coFloatx4(FLT_EPSILON);
+
+	const coBool32x4 con0 = (v >= zero) && (one >= v);
+	const coBool32x4 con1 = (w >= zero) && (one >= w);
+	const coBool32x4 con2 = one > (v + w);
+	return con0 && con1 && con2;
+}
 
 /*
 	closest0 is the closest point on segment pq
 	closest1 is the closest point on triangle abc
 */
-coFloatx4 Gu::distanceSegmentTriangleSquared(const coVec3 p, const coVec3 q,
+coFloatx4 coDistanceSegmentTriangleSquared(const coVec3 p, const coVec3 q,
 	const coVec3 a, const coVec3 b, const coVec3 c, coVec3& closest0, coVec3& closest1)
 {
 	//=====
@@ -50,20 +77,20 @@ coFloatx4 Gu::distanceSegmentTriangleSquared(const coVec3 p, const coVec3 q,
 
 
 	// intersect with the plane
-	if (BAllEqTTTT(con))
+	if (coAreAllTrue(con))
 	{
 		//compute the intersect point
 		const coFloatx4 nom = -coDot(n, ap);
 		const coFloatx4 denom = coInv(coDot(n, pq));
 		const coFloatx4 t = nom * denom;
-		const coVec3 ip = V3ScaleAdd(pq, t, p);//V3Add(p, V3Scale(pq, t));
+		const coVec3 ip = coMulAdd(pq, coVec3(t), p);//V3Add(p, V3Scale(pq, t));
 		const coVec3 v2 = ip - a;
 		const coFloatx4 d20 = coDot(v2, ab);
 		const coFloatx4 d21 = coDot(v2, ac);
 		const coFloatx4 v0 = (d11 * d20 - d01 * d21) * bdenom;
 		const coFloatx4 w0 = (d00 * d21 - d01 * d20) * bdenom;
-		const coBool32x4 con0 = isValidTriangleBarycentricCoord(v0, w0);
-		if (BAllEqTTTT(con0))
+		const coBool32x4 con0 = coIsValidTriangleBarycentricCoord(v0, w0);
+		if (coAreAllTrue(con0))
 		{
 			closest0 = closest1 = ip;
 			return zero;
@@ -72,7 +99,7 @@ coFloatx4 Gu::distanceSegmentTriangleSquared(const coVec3 p, const coVec3 q,
 
 
 	coVec4 t40, t41;
-	const coVec4 sqDist44 = distanceSegmentSegmentSquared4(p, pq, a, ab, b, bc, a, ac, a, ab, t40, t41);
+	const coVec4 sqDist44 = coDistanceSegmentSegmentSquared4(p, pq, a, ab, b, bc, a, ac, a, ab, t40, t41);
 
 	const coFloatx4 t00 = coBroadcastX(t40);
 	const coFloatx4 t10 = coBroadcastY(t40);
@@ -86,14 +113,14 @@ coFloatx4 Gu::distanceSegmentTriangleSquared(const coVec3 p, const coVec3 q,
 	const coFloatx4 sqDist1(coBroadcastY(sqDist44));
 	const coFloatx4 sqDist2(coBroadcastZ(sqDist44));
 
-	const coVec3 closestP00 = V3ScaleAdd(pq, t00, p);
-	const coVec3 closestP01 = V3ScaleAdd(ab, t01, a);
+	const coVec3 closestP00 = coMulAdd(pq, t00, p);
+	const coVec3 closestP01 = coMulAdd(ab, t01, a);
 
-	const coVec3 closestP10 = V3ScaleAdd(pq, t10, p);
-	const coVec3 closestP11 = V3ScaleAdd(bc, t11, b);
+	const coVec3 closestP10 = coMulAdd(pq, t10, p);
+	const coVec3 closestP11 = coMulAdd(bc, t11, b);
 
-	const coVec3 closestP20 = V3ScaleAdd(pq, t20, p);
-	const coVec3 closestP21 = V3ScaleAdd(ac, t21, a);
+	const coVec3 closestP20 = coMulAdd(pq, t20, p);
+	const coVec3 closestP21 = coMulAdd(ac, t21, a);
 
 
 	//Get the closest point of all edges
@@ -109,7 +136,7 @@ coFloatx4 Gu::distanceSegmentTriangleSquared(const coVec3 p, const coVec3 q,
 	const coVec3 closestPE1 = V3Sel(con2, closestP01, V3Sel(con3, closestP11, closestP21)); // closestP on triangle
 
 
-	const coVec3 closestP31 = V3NegScaleSub(n, dist3, p);//V3Sub(p, V3Scale(n, dist3));
+	const coVec3 closestP31 = p - n * dist3;
 	const coVec3 closestP30 = p;
 
 	//Compute the barycentric coordinate for project point of q
@@ -120,11 +147,9 @@ coFloatx4 Gu::distanceSegmentTriangleSquared(const coVec3 p, const coVec3 q,
 	const coFloatx4 w0 = (d00 * pD21 - d01 * pD20) * bdenom;
 
 	//check closestP3 is inside the triangle
-	const coBool32x4 con0 = isValidTriangleBarycentricCoord(v0, w0);
+	const coBool32x4 con0 = coIsValidTriangleBarycentricCoord(v0, w0);
 
-
-
-	const coVec3 closestP41 = V3NegScaleSub(n, dist4, q);// V3Sub(q, V3Scale(n, dist4));
+	const coVec3 closestP41 = q - n * dist4;
 	const coVec3 closestP40 = q;
 
 	//Compute the barycentric coordinate for project point of q
@@ -134,7 +159,7 @@ coFloatx4 Gu::distanceSegmentTriangleSquared(const coVec3 p, const coVec3 q,
 	const coFloatx4 v1 = (d11 * qD20 - d01 * qD21) * bdenom;
 	const coFloatx4 w1 = (d00 * qD21 - d01 * qD20) * bdenom;
 
-	const coBool32x4 con1 = isValidTriangleBarycentricCoord(v1, w1);
+	const coBool32x4 con1 = coIsValidTriangleBarycentricCoord(v1, w1);
 
 	/*
 		p is interior point but not q
