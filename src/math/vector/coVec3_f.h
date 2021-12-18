@@ -40,6 +40,11 @@ coFORCE_INLINE coVec3 coAnyOrthogonal(const coVec3& _a)
 	}
 }
 
+coFORCE_INLINE coVec3 coReflect(const coVec3& incomingVec, const coVec3& normal)
+{
+	return incomingVec - normal * 2.0f * coDot(incomingVec, normal);
+}
+
 coFORCE_INLINE coVec3 coLambertNoTangent(const coVec3& nor, coFloat u, coFloat v)
 {
 	// https://www.shadertoy.com/view/MsdGzl
