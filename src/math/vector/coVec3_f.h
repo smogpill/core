@@ -13,6 +13,10 @@ coFORCE_INLINE coFloatx4 coDot(const coVec3& _a, const coVec3& _b)
 	const coFloatx4 mul = coBitCast<coFloatx4>(_a) * coBitCast<coFloatx4>(_b);
 	return coBroadcastX(mul) + coBroadcastY(mul) + coBroadcastZ(mul);
 }
+coFORCE_INLINE coFloatx3 coSum(const coVec3& a)
+{
+	return coBroadcastX(a) + coBroadcastY(a) + coBroadcastZ(a);
+}
 coFORCE_INLINE coVec3 coCross(const coVec3& _a, const coVec3& _b)
 {
 	const coVec3 tmp0 = coShuffle<1, 2, 0>(_a, _a);

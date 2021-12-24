@@ -9,6 +9,8 @@
 
 class coQuat;
 
+coMat3 coGetPolarDecompositionRotation(const coMat3& M, coFloat tolerance);
+
 coFORCE_INLINE coVec3 operator* (const coMat3& this_, const coVec3& a)
 {
 	const coFloatx3 ax = coBroadcastX(a);
@@ -33,6 +35,18 @@ coFORCE_INLINE coMat3& operator+=(coMat3& this_, const coMat3& a)
 	return this_;
 }
 
+coFORCE_INLINE void coSetRow(coMat3& a, coUint rowIdx, const coVec3& value)
+{
+	a.c0[rowIdx] = value.x;
+	a.c1[rowIdx] = value.y;
+	a.c2[rowIdx] = value.z;
+}
+
+coFORCE_INLINE coVec3 coGetRow(const coMat3& a, const coUint rowIdx)
+{
+	return coVec3(a.c0[rowIdx], a.c1[rowIdx], a.c2[rowIdx]);
+}
+
 coFORCE_INLINE coVec3 coGetScale(const coMat3& _a)
 {
 	return coVec3(coLength(_a.c0), coLength(_a.c1), coLength(_a.c2));
@@ -47,16 +61,15 @@ coFORCE_INLINE coMat3 coRemoveScale(const coMat3& _a)
 	return m;
 }
 
-coFORCE_INLINE coMat3 coTranspose(const coMat3& _a)
+coFORCE_INLINE coMat3 coTranspose(const coMat3& a)
 {
-	const coFloatx3 tmp0 = coShuffle<0, 1, 0>(_a.c0, _a.c1);
-	const coFloatx3 tmp1 = coShuffle<0, 1, 0>(_a.c2, _a.c2);
-	const coFloatx3 tmp2 = coShuffle<2, 3, 2>(_a.c0, _a.c1);
-	const coFloatx3 tmp3 = coShuffle<2, 3, 2>(_a.c2, _a.c2);
-	coMat3 out;
-	out.c0 = coShuffle<0, 2, 0>(tmp0, tmp1);
-	out.c1 = coShuffle<1, 3, 1>(tmp0, tmp1);
-	out.c2 = coShuffle<0, 2, 0>(tmp2, tmp3);
+	// https://www.gamedev.net/forums/topic/692392-towards-an-optimal-vex-sse-33float-matrix-transpose/5357850/
+	const __m128 T0 = _mm_unpacklo_ps(coBitCast<__m128>(a.c0), coBitCast<__m128>(a.c1));
+	const __m128 T1 = _mm_unpackhi_ps(coBitCast<__m128>(a.c0), coBitCast<__m128>(a.c1));
+	coMat3 out(nullptr);
+	out.c0 = coBitCast<coVec3>(_mm_movelh_ps(T0, coBitCast<__m128>(a.c2)));
+	out.c1 = coBitCast<coVec3>(_mm_shuffle_ps(T0, coBitCast<__m128>(a.c2), _MM_SHUFFLE(3, 1, 3, 2)));
+	out.c2 = coBitCast<coVec3>(_mm_shuffle_ps(T1, coBitCast<__m128>(a.c2), _MM_SHUFFLE(3, 2, 1, 0)));
 	return out;
 }
 
@@ -174,4 +187,20 @@ coFORCE_INLINE coMat3 coInverse(const coMat3& m)
 	inverse[2][2] = +(m[0][0] * m[1][1] - m[1][0] * m[0][1]) * invDet;
 
 	return inverse;
+}
+
+coFORCE_INLINE coFloatx3 coOneNorm(const coMat3& m)
+{
+	const coFloatx3 a = coSum(coAbs(m.c0));
+	const coFloatx3 b = coSum(coAbs(m.c1));
+	const coFloatx3 c = coSum(coAbs(m.c2));
+	return coMax(a, coMax(b, c));
+}
+
+coFORCE_INLINE coFloatx3 coInfNorm(const coMat3& m)
+{
+	const coFloatx3 a = coAbs(coBroadcastX(m.c0)) + coAbs(coBroadcastX(m.c1)) + coAbs(coBroadcastX(m.c2));
+	const coFloatx3 b = coAbs(coBroadcastY(m.c0)) + coAbs(coBroadcastY(m.c1)) + coAbs(coBroadcastY(m.c2));
+	const coFloatx3 c = coAbs(coBroadcastZ(m.c0)) + coAbs(coBroadcastZ(m.c1)) + coAbs(coBroadcastZ(m.c2));
+	return coMax(a, coMax(b, c));
 }

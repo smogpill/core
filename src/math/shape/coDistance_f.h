@@ -115,26 +115,6 @@ coFORCE_INLINE coFloatx4 coDistance(const coAabb& a, const coSphere& s)
 	return coDistance(a, s.centerAndRadius) - coBroadcastW(s.centerAndRadius);
 }
 
-inline coFloatx4 coSquareDistancePointTriangle(const coVec3& p, const coVec3& a, const coVec3& b, const coVec3& c)
-{
-	// https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
-	const coVec3 ba = b - a; const coVec3 pa = p - a;
-	const coVec3 cb = c - b; const coVec3 pb = p - b;
-	const coVec3 ac = a - c; const coVec3 pc = p - c;
-	const coVec3 nor = coCross(ba, ac);
-
-	const coFloatx4 f = coSign(coDot(coCross(ba, nor), pa))
-		+ coSign(coDot(coCross(cb, nor), pb))
-		+ coSign(coDot(coCross(ac, nor), pc));
-	const coFloatx4 v = f < 2.0f ?
-		coMin(coMin(
-			coSquareLength(ba * coClamp01(coDot(ba, pa) / coSquareLength(ba)) - pa),
-			coSquareLength(cb * coClamp01(coDot(cb, pb) / coSquareLength(cb)) - pb)),
-			coSquareLength(ac * coClamp01(coDot(ac, pc) / coSquareLength(ac)) - pc))
-		: coDot(nor, pa) * coDot(nor, pa) / coSquareLength(nor);
-	return v;
-}
-
 inline coFloatx4 coSquareDistancePointQuad(const coVec3& p, const coVec3& a, const coVec3& b, const coVec3& c, const coVec3& d)
 {
 	// https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
