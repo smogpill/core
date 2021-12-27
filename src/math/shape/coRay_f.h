@@ -19,11 +19,7 @@ coFORCE_INLINE coFloatx4 coDistance(const coInfiniteRay& ray, const coVec3& poin
 coFORCE_INLINE coRay coInverseTransform(const coTransform& t, const coRay& ray)
 {
 	coRay out(nullptr);
-	coMat4 m(t);
-	coMat4 inv = coInverse(m);
-	out.origin = coTransformPosition(inv, ray.origin);
-	out.dirAndLength = coVec4(coNormalize(coTransformVector(inv, coVec3(ray.dirAndLength))), ray.dirAndLength.w / t.scale.z);
-	//out.origin = coInverseTransformPosition(t, ray.origin);
-	//out.dirAndLength = coVec4(coInverseTransformVector(t, coVec3(ray.dirAndLength)), ray.dirAndLength.w / t.scale.z);
+	out.origin = coInverseTransformPosition(t, ray.origin);
+	out.dirAndLength = coVec4(coInverseTransformVector(t, coVec3(ray.dirAndLength)), ray.dirAndLength.w / t.scale.z);
 	return out;
 }
