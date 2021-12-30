@@ -60,7 +60,7 @@ coFloatx4 coDistanceSegmentTriangleSquared(const coVec3 p, const coVec3 q,
 	const coFloatx4 d11 = coDot(ac, ac);
 	const coFloatx4 tDenom = d00 * d11 - d01 * d01;
 
-	const coFloatx4 bdenom = FSel(tDenom > zero, coInv(tDenom), zero);
+	const coFloatx4 bdenom = FSel(tDenom > zero, coInvert(tDenom), zero);
 
 	const coVec3 n = coNormalize(coCross(ab, ac)); // normalize vector
 
@@ -81,7 +81,7 @@ coFloatx4 coDistanceSegmentTriangleSquared(const coVec3 p, const coVec3 q,
 	{
 		//compute the intersect point
 		const coFloatx4 nom = -coDot(n, ap);
-		const coFloatx4 denom = coInv(coDot(n, pq));
+		const coFloatx4 denom = coInvert(coDot(n, pq));
 		const coFloatx4 t = nom * denom;
 		const coVec3 ip = coMulAdd(pq, coVec3(t), p);//V3Add(p, V3Scale(pq, t));
 		const coVec3 v2 = ip - a;

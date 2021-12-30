@@ -94,8 +94,8 @@ coFORCE_INLINE coFloatx4 coMake_floatx4XYZ0(const coFloatx3& _xyz)
 }
 coFORCE_INLINE coFloatx4 coAbs(const coFloatx4& _a) { return coBitCast<coFloatx4>(_mm_andnot_ps(__m128_SIGN_MASK, coBitCast<__m128>(_a))); }
 coFORCE_INLINE coFloatx4 coSquareRoot(const coFloatx4& _a) { return coBitCast<coFloatx4>(_mm_sqrt_ps(coBitCast<__m128>(_a))); }
-coFORCE_INLINE coFloatx4 coInv(const coFloatx4& _a) { return coFloatx4_ONE / _a; }
-coFORCE_INLINE coFloatx4 coInvApprox(const coFloatx4& _a) { return coBitCast<coFloatx4>(_mm_rcp_ps(coBitCast<__m128>(_a))); }
+coFORCE_INLINE coFloatx4 coInvert(const coFloatx4& _a) { return coFloatx4_ONE / _a; }
+coFORCE_INLINE coFloatx4 coInvertApprox(const coFloatx4& _a) { return coBitCast<coFloatx4>(_mm_rcp_ps(coBitCast<__m128>(_a))); }
 coFORCE_INLINE coFloatx4 coInvSquareRoot(const coFloatx4& _a)
 {
 	// newton-raphson (impl found in Vectormath)

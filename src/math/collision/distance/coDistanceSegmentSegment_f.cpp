@@ -96,8 +96,8 @@ coVec4 coDistanceSegmentSegmentSquared4(const coVec3 p, const coVec3 d0,
 
 	const coVec4 a(dd);
 
-	const coVec4 aRecip(coInv(a));
-	const coVec4 eRecip(coInv(e));
+	const coVec4 aRecip(coInvert(a));
+	const coVec4 eRecip(coInvert(e));
 
 	//if segments not parallell, compute closest point on two segments and clamp to segment1
 	const coVec4 denom = a * e - b * b;

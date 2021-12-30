@@ -22,7 +22,7 @@ coFORCE_INLINE coBool coOverlapSolid(const coAabb& aabb, const coSegment& seg)
 
 	const coVec3 delta = seg.p1 - seg.p0;
 	const coFloatx4 len = coLength(delta);
-	const coVec3 invDir = coInv(delta / len.x);
+	const coVec3 invDir = coInvert(delta / len.x);
 	const coVec3 t1 = (aabb.min - seg.p0) * invDir;
 	const coVec3 t2 = (aabb.max - seg.p0) * invDir;
 	const coVec3 tmin1 = coMin(t1, t2);
