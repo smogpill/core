@@ -161,6 +161,7 @@ coFORCE_INLINE void coSBVH::FindOverlaps(COLLECTOR collector, const coSphere& sp
 				return;
 		}
 		triangleIndices[nb++] = triangleIdx;
+		collector(triangleIdx);
 	};
 	FindOverlapsImpl(collector2, aabb);
 }
