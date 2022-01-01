@@ -18,7 +18,7 @@ public:
 	void FindOverlaps(coDynamicArray<coUint32>& outTriangles, const coVec3& halfSize, const coRay& ray) const;
 	void FindOverlaps(coDynamicArray<coUint32>& outTriangles, const coRay& ray) const;
 	template <coUint MAX_NB, class COLLECTOR>
-	void FindOverlaps(COLLECTOR collector, const coSphere& sphere) const;
+	coUint32 FindOverlaps(COLLECTOR collector, const coSphere& sphere) const;
 
 private:
 	struct Node
@@ -45,7 +45,7 @@ private:
 		coVec3 halfSize;
 	};
 	template <class COLLECTOR, class T>
-	void FindOverlapsImpl(COLLECTOR collector, const T& query) const;
+	coUint32 FindOverlapsImpl(COLLECTOR collector, const T& query) const;
 	coUint32 BuildRec(const coArray<Ref>& refs, const coArray<coAabb>& primitives, coUint32 depth);
 	void Split(coAabb* left, coAabb* right, const coUint32 primIndex, coUint8 axis, coFloat pos);
 	static coBool Overlap(const coAabb& a, const coAabb& b);
@@ -63,10 +63,10 @@ private:
 
 
 template <class COLLECTOR, class T>
-coFORCE_INLINE void coSBVH::FindOverlapsImpl(COLLECTOR collector, const T& query) const
+coFORCE_INLINE coUint32 coSBVH::FindOverlapsImpl(COLLECTOR collector, const T& query) const
 {
 	if (nodes.count == 0)
-		return;
+		return 0;
 
 	// Init stack
 	// Note: Allocating 2 x maxDepth for security, but the real value should be 
@@ -75,12 +75,14 @@ coFORCE_INLINE void coSBVH::FindOverlapsImpl(COLLECTOR collector, const T& query
 	coUint32 stack[2 * maxDepth];
 	stack[0] = 0;
 	coUint32 stackIdx = 0;
+	coUint32 nbTests = 0;
 
 	// Depth-first visit
 	do
 	{
 		const coUint32 nodeIdx = stack[stackIdx--];
 		const Node& node = nodes[nodeIdx];
+		++nbTests;
 		if (!Overlap(node.aabb, query))
 		{
 			continue;
@@ -102,6 +104,7 @@ coFORCE_INLINE void coSBVH::FindOverlapsImpl(COLLECTOR collector, const T& query
 			stack[++stackIdx] = node.datas[1];
 		}
 	} while (stackIdx != coUint32(-1));
+	return nbTests;
 }
 
 coFORCE_INLINE coBool coSBVH::Overlap(const coAabb& a, const coAabb& b)
@@ -146,7 +149,7 @@ coFORCE_INLINE coBool coSBVH::Overlap(const coAabb& a, const Ray2& ray)
 }
 
 template <coUint MAX_NB, class COLLECTOR>
-void coSBVH::FindOverlaps(COLLECTOR collector, const coSphere& sphere) const
+coUint32 coSBVH::FindOverlaps(COLLECTOR collector, const coSphere& sphere) const
 {
 	const coFloatx4 radius = coBroadcastW(sphere.centerAndRadius);
 	const coAabb aabb(coVec3(sphere.centerAndRadius) - radius, coVec3(sphere.centerAndRadius) + radius);
@@ -164,5 +167,5 @@ void coSBVH::FindOverlaps(COLLECTOR collector, const coSphere& sphere) const
 		triangleIndices[nb++] = triangleIdx;
 		collector(triangleIdx);
 	};
-	FindOverlapsImpl(collector2, aabb);
+	return FindOverlapsImpl(collector2, aabb);
 }
