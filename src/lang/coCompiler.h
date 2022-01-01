@@ -44,6 +44,8 @@ bool _IsDebuggerPresent();
 
 #ifdef coMSVC_COMPILER
 #	define coFORCE_INLINE __forceinline
+#	define coNO_INLINE __declspec(noinline)
 #else
 #	define coFORCE_INLINE inline __attribute__((always_inline))
+#	define coNO_INLINE __attribute__((noinline))
 #endif

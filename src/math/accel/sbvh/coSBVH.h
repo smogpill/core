@@ -58,6 +58,7 @@ private:
 	coDynamicArray<coAabb> aabbs;
 	coDynamicArray<Node> nodes;
 	coDynamicArray<Ref> refs;
+	coUint32 depth = 0;
 };
 
 
@@ -145,7 +146,7 @@ coFORCE_INLINE coBool coSBVH::Overlap(const coAabb& a, const Ray2& ray)
 }
 
 template <coUint MAX_NB, class COLLECTOR>
-coFORCE_INLINE void coSBVH::FindOverlaps(COLLECTOR collector, const coSphere& sphere) const
+void coSBVH::FindOverlaps(COLLECTOR collector, const coSphere& sphere) const
 {
 	const coFloatx4 radius = coBroadcastW(sphere.centerAndRadius);
 	const coAabb aabb(coVec3(sphere.centerAndRadius) - radius, coVec3(sphere.centerAndRadius) + radius);

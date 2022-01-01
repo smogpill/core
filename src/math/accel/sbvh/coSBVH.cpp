@@ -108,6 +108,8 @@ coUint32 coSBVH::BuildRec(const coArray<Ref>& refs_, const coArray<coAabb>& prim
 {
 	// Impl based on: https://github.com/lighttransport/nanort/blob/sbvh/nanort.h (MIT license)
 
+	depth = coMax(depth, depth_);
+
 	const coUint32 nbPrimitives = refs_.count;
 	coASSERT(nbPrimitives >= 0);
 

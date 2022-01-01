@@ -1,9 +1,9 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
-
 #include "pattern/object/coObject.h"
 #include "lang/result/coResult_f.h"
+#include "debug/profiler/coProfile.h"
 
 class coDefaultLogHandler;
 class coRenderManager;
@@ -39,6 +39,7 @@ inline coResult coApp::RunLoop(F func)
 {
 	while (!exitRequested)
 	{
+		coPROFILE_FRAME("MainThread");
 		coTRY(ProcessEvents(), "Failed to process app events");
 		coTRY(func(), nullptr);
 	}

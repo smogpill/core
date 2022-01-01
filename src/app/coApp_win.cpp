@@ -2,7 +2,6 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "app/pch.h"
 #include "app/coApp.h"
-#include "debug/profiler/coProfile.h"
 
 coResult coApp::ProcessEvents()
 {
@@ -10,8 +9,6 @@ coResult coApp::ProcessEvents()
 
 	while (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 	{
-		coPROFILE_FRAME("MainThread");
-
 		// Translate the message and dispatch it to WindowProc()
 		::TranslateMessage(&msg);
 		::DispatchMessage(&msg);
