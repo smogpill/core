@@ -4,15 +4,15 @@
 #include <container/string/coConstString.h>
 #include "coProfile.h"
 
-class _coScopeProfile
+class _coScopeTime
 {
 public:
-	_coScopeProfile(const coConstString& name);
-	~_coScopeProfile();
+	_coScopeTime(const coConstString& name);
+	~_coScopeTime();
 
 private:
 	coUint64 startTime;
 	const coConstString name;
 };
 
-#define coSCOPE_PROFILE(_name_) _coScopeProfile coCONCAT(_scopeProfile, __LINE__)(_name_); coPROFILE_EVENT(_name_)
+#define coLOG_SCOPE_TIME(_name_) _coScopeTime coCONCAT(_scopeProfile, __LINE__)(_name_); coPROFILE_EVENT(_name_)

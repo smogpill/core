@@ -135,6 +135,63 @@ void coDebugRenderer::Draw(const coAabb& aabb, const coColor& color, coUint32 op
 	}
 }
 
+void coDebugRenderer::DrawBox(const coMat4& mat, const coColor& color, coUint32 options)
+{
+	const coVec3 pos = mat.c3;
+	const coVec3 vx = mat.c0;
+	const coVec3 vy = mat.c1;
+	const coVec3 vz = mat.c2;
+
+	const coVec3 a(pos - vx - vy - vz);
+	const coVec3 b(pos + vx - vy - vz);
+	const coVec3 c(pos - vx + vy - vz);
+	const coVec3 d(pos + vx + vy - vz);
+	const coVec3 e(pos - vx - vy + vz);
+	const coVec3 f(pos + vx - vy + vz);
+	const coVec3 g(pos - vx + vy + vz);
+	const coVec3 h(pos + vx + vy + vz);
+
+	if (options & WIREFRAME)
+	{
+		DrawLine(a, b, color, options);
+		DrawLine(b, d, color, options);
+		DrawLine(d, c, color, options);
+		DrawLine(c, a, color, options);
+
+		DrawLine(e, f, color, options);
+		DrawLine(f, h, color, options);
+		DrawLine(h, g, color, options);
+		DrawLine(g, e, color, options);
+
+		DrawLine(a, e, color, options);
+		DrawLine(b, f, color, options);
+		DrawLine(d, h, color, options);
+		DrawLine(c, g, color, options);
+	}
+	else
+	{
+		DrawTriangle(a, f, b, color, options);
+		DrawTriangle(a, e, f, color, options);
+
+		DrawTriangle(b, h, d, color, options);
+		DrawTriangle(b, f, h, color, options);
+
+		DrawTriangle(d, g, c, color, options);
+		DrawTriangle(d, h, g, color, options);
+
+		DrawTriangle(c, e, a, color, options);
+		DrawTriangle(c, g, e, color, options);
+
+		// Top
+		DrawTriangle(b, c, a, color, options);
+		DrawTriangle(b, d, c, color, options);
+
+		// Bottom
+		DrawTriangle(e, h, f, color, options);
+		DrawTriangle(e, g, h, color, options);
+	}
+}
+
 void coDebugRenderer::DrawFrame(const coMat4& frame, coFloat size, coUint32 options)
 {
 	DrawLine(coVec3(frame.c3), coVec3(frame.c3 + frame.c0 * size), coColor::s_coolRed, options);

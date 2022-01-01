@@ -26,6 +26,7 @@ public:
 	void DrawLine(const coVec3& a, const coVec3& b, const coColor& color = coColor::s_white, coUint32 options = 0);
 	void DrawTriangle(const coVec3& a, const coVec3& b, const coVec3& c, const coColor& color = coColor::s_white, coUint32 options = 0);
 	void Draw(const coAabb& aabb, const coColor& color = coColor::s_white, coUint32 options = 0);
+	void DrawBox(const coMat4& mat, const coColor& color = coColor::s_white, coUint32 options = 0);
 	void DrawFrame(const coMat4& frame, coFloat size, coUint32 options = 0);
 	void DrawDot(const coVec3& pos, coFloat radius, const coColor& color = coColor::s_white, coUint32 options = 0);
 

@@ -19,6 +19,8 @@ public:
 	void FindOverlaps(coDynamicArray<coUint32>& outTriangles, const coRay& ray) const;
 	template <coUint MAX_NB, class COLLECTOR>
 	coUint32 FindOverlaps(COLLECTOR collector, const coSphere& sphere) const;
+	template <class COLLECTOR>
+	coUint32 FindAABBPathsAtOverlap(COLLECTOR collector, const coSphere& sphere) const;
 
 private:
 	struct Node
@@ -168,4 +170,42 @@ coUint32 coSBVH::FindOverlaps(COLLECTOR collector, const coSphere& sphere) const
 		collector(triangleIdx);
 	};
 	return FindOverlapsImpl(collector2, aabb);
+}
+
+template <class COLLECTOR>
+coUint32 coSBVH::FindAABBPathsAtOverlap(COLLECTOR collector, const coSphere& sphere) const
+{
+	const coFloatx4 radius = coBroadcastW(sphere.centerAndRadius);
+	const coAabb aabb(coVec3(sphere.centerAndRadius) - radius, coVec3(sphere.centerAndRadius) + radius);
+	if (nodes.count == 0)
+		return 0;
+
+	// Init stack
+	// Note: Allocating 2 x maxDepth for security, but the real value should be 
+	// close to maxDepth because we are depth-first.
+	static_assert(maxDepth <= 1024, ""); // Should be reasonable, or else a different alloc strategy should be preferred.
+	coUint32 stack[2 * maxDepth];
+	stack[0] = 0;
+	coUint32 stackIdx = 0;
+	coUint32 nbTests = 0;
+
+	// Depth-first visit
+	do
+	{
+		const coUint32 nodeIdx = stack[stackIdx--];
+		const Node& node = nodes[nodeIdx];
+		++nbTests;
+		if (!Overlap(node.aabb, aabb))
+		{
+			continue;
+		}
+		collector(node.aabb);
+		if (!node.leaf)
+		{
+			coASSERT(stackIdx + 2u < coARRAY_SIZE(stack));
+			stack[++stackIdx] = node.datas[0];
+			stack[++stackIdx] = node.datas[1];
+		}
+	} while (stackIdx != coUint32(-1));
+	return nbTests;
 }
