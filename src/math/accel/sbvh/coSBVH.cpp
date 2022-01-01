@@ -107,6 +107,8 @@ void coSBVH::Split(coAabb* left_, coAabb* right_, const coUint32 triangleIdx_, c
 coUint32 coSBVH::BuildRec(const coArray<Ref>& refs_, const coArray<coAabb>& primitives_, coUint32 depth_)
 {
 	// Impl based on: https://github.com/lighttransport/nanort/blob/sbvh/nanort.h (MIT license)
+	// Current impl is too basic (the split is in the middle, no threshold to stop the spatial split, etc.)
+	// Better and closer to the paper impl here: https://github.com/jan-van-bergen/GPU-Pathtracer/blob/master/Src/BVH/Builders/SBVHBuilder.cpp
 
 	depth = coMax(depth, depth_);
 

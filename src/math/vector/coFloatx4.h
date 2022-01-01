@@ -34,7 +34,7 @@ public:
 		w = std::numeric_limits<float>::quiet_NaN();
 #endif
 	}
-	coFORCE_INLINE coFloatx4(const coFloatx3& _xyz, const coFloatx4& _wwww) : x(_xyz.x), y(_xyz.y), z(_xyz.z), w(_wwww.x) {}
+	coFORCE_INLINE coFloatx4(const coFloatx3& _xyz, const coFloatx4& _wwww) : x(_xyz.x), y(_xyz.y), z(_xyz.z), w(_wwww.w) {}
 
 	coFORCE_INLINE operator const coFloatx2& () const { return reinterpret_cast<const coFloatx2&>(*this); }
 	coFORCE_INLINE operator const coFloatx3& () const { return reinterpret_cast<const coFloatx3&>(*this); }
