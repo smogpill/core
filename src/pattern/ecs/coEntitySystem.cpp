@@ -79,7 +79,7 @@ coResult coEntitySystem::Start(const coArray<coEntityHandle>& handles)
 {
 	for (const coEntityHandle& handle : handles)
 	{
-		coTRY(Init(handle), nullptr);
+		coTRY(Start(handle), nullptr);
 	}
 	return true;
 }

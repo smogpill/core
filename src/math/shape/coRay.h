@@ -21,5 +21,6 @@ class coInfiniteRay : public coRay
 {
 public:
 	coInfiniteRay() = default;
+	coInfiniteRay(const coRay& ray) : coRay(ray) {}
 	coInfiniteRay(const coVec3& origin_, const coVec3& dir_) : coRay(origin_, dir_) {}
 };
