@@ -5,7 +5,7 @@
 #include "math/vector/coVec3_f.h"
 #include <container/array/coDynamicArray_f.h>
 
-void coTriangulateXY(const coPolygon3& poly, coDynamicArray<coUint32>& triangles, TriangulateScratch& scratch)
+void coTriangulateXY(const coPolygon3& poly, coDynamicArray<coUint32>& triangles, coTriangulateScratch& scratch)
 {
 	coClear(scratch.remainingIndices);
 	coClear(scratch.sorted);

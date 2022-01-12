@@ -4,8 +4,9 @@
 #include "coPolygon3.h"
 #include <math/vector/coBool32x3_f.h>
 #include <math/vector/coVec3_f.h>
+#include <container/array/coDynamicArray_f.h>
 
-class TriangulateScratch
+class coTriangulateScratch
 {
 public:
 	coDynamicArray<coUint32> remainingIndices;
@@ -13,7 +14,8 @@ public:
 	coDynamicArray<coFloat> deviations;
 };
 
-void coTriangulateXY(const coPolygon3& poly, coDynamicArray<coUint32>& triangles, TriangulateScratch& scratch);
+coFORCE_INLINE void coClear(coPolygon3& poly) { coClear(poly.vertices); }
+void coTriangulateXY(const coPolygon3& poly, coDynamicArray<coUint32>& triangles, coTriangulateScratch& scratch);
 coFloat coSignedAreaXY(const coPolygon3& poly);
 coFORCE_INLINE coBool coIsClockwiseXY(const coPolygon3& poly) { return coSignedAreaXY(poly) < 0.0f; }
 coFORCE_INLINE coBool coIsCornerConvexXY(const coVec3& v0, const coVec3& v1, const coVec3& v2)
