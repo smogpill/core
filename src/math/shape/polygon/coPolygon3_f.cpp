@@ -5,14 +5,12 @@
 #include "math/vector/coVec3_f.h"
 #include <container/array/coDynamicArray_f.h>
 
-void coTriangulateXY(const coPolygon3& poly, coDynamicArray<coUint32>& triangles, coTriangulateScratch& scratch)
+void _coPrepareTriangulate(const coPolygon3& poly, coDynamicArray<coUint32>& triangles, coTriangulateScratch& scratch)
 {
 	coClear(scratch.remainingIndices);
 	coClear(scratch.sorted);
 	coClear(scratch.deviations);
 	coClear(triangles);
-	coASSERT(!coIsClockwiseXY(poly));
-
 	const coUint32 nbPoints = poly.vertices.count;
 
 	// Copy the provided points to a dynamic list to work on.
@@ -21,6 +19,82 @@ void coTriangulateXY(const coPolygon3& poly, coDynamicArray<coUint32>& triangles
 		for (coUint32 i = 0; i < nbPoints; ++i)
 			scratch.remainingIndices[i] = i;
 	}
+}
+
+void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>& triangles, coTriangulateScratch& scratch)
+{
+	_coPrepareTriangulate(poly, triangles, scratch);
+
+	// Remove "ear" triangles one by one.
+	coBool iterate = true;
+	while (iterate)
+	{
+		iterate = false;
+
+		// For every vertex
+		for (coUint32 i = 0; i < scratch.remainingIndices.count; ++i)
+		{
+			const coUint32 remainingPrev = i == 0 ? (scratch.remainingIndices.count - 1) : (i - 1);
+			const coUint32 remainingCur = i;
+			const coUint32 remainingNext = i == (scratch.remainingIndices.count - 1) ? 0 : (i + 1);
+			const coUint32 prevIdx = scratch.remainingIndices[remainingPrev];
+			const coUint32 curIdx = scratch.remainingIndices[remainingCur];
+			const coUint32 nextIdx = scratch.remainingIndices[remainingNext];
+			const coVec3& prev = poly.vertices[prevIdx];
+			const coVec3& cur = poly.vertices[curIdx];
+			const coVec3& next = poly.vertices[nextIdx];
+
+			// If interior vertex, continue
+			{
+				const coVec3 v1 = prev - cur;
+				const coVec3 v2 = next - cur;
+				const coVec3 cross = coCross(v1, v2);
+				if (cross[2] <= 0.f)
+				{
+					continue;
+				}
+			}
+
+			// If any other point is inside the triangle, continue
+			{
+				coBool ignore = false;
+				for (coUint32 j = 0; j < scratch.remainingIndices.count; ++j)
+				{
+					// Skip the current triangle
+					if (j == remainingPrev || j == remainingCur || j == remainingNext)
+						continue;
+
+					const coUint32 n = scratch.remainingIndices[j];
+					const coVec3& v = poly.vertices[n];
+					if (coIsInsideTriangleXY(prev, cur, next, v))
+					{
+						ignore = true;
+						break;
+					}
+				}
+				if (ignore)
+				{
+					continue;
+				}
+			}
+
+			iterate = true;
+
+			coPushBack(triangles, prevIdx);
+			coPushBack(triangles, curIdx);
+			coPushBack(triangles, nextIdx);
+
+			// Remove vertex
+			coRemoveOrderedByIndex(scratch.remainingIndices, i);
+			--i;
+		}
+	}
+}
+
+void coTriangulateWithVaryingZ(const coPolygon3& poly, coDynamicArray<coUint32>& triangles, coTriangulateScratch& scratch)
+{
+	coASSERT(!coIsClockwiseXY(poly));
+	_coPrepareTriangulate(poly, triangles, scratch);
 
 	// Remove "ear" triangles one by one.
 	coBool iterate = true;
@@ -59,11 +133,11 @@ void coTriangulateXY(const coPolygon3& poly, coDynamicArray<coUint32>& triangles
 						// # Other attempts:
 
 						// Using the Y delta directly. Does not differientate between very large triangles and small triangles.
-						//aDeviations[uPoint] = MATH::Abs(vCur.GetY() - vPrev.GetY()) + MATH::Abs(vCur.GetY() - vNext.GetY());
+						//aDeviations[uPoint] = MATH::Abs(cur.GetY() - prev.GetY()) + MATH::Abs(cur.GetY() - next.GetY());
 
 						// Using the triangle normal. A neighbor of an outliner point can be affected too much but that outlier to the point 
 						// where it can have a worse deviation because its triangle is smaller than the outlier's one. 
-						//const VECTOR4 vNormal = VECTOR4::Normalize3(VECTOR4::CrossProduct(vCur - vPrev, vNext - vCur));
+						//const VECTOR4 vNormal = VECTOR4::Normalize3(VECTOR4::CrossProduct(cur - prev, next - cur));
 						//aDeviations[uPoint] = 1.0f - MATH::Abs(vNormal.GetY());
 					}
 				}

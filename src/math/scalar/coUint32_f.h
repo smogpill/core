@@ -149,7 +149,7 @@ coFORCE_INLINE coUint32 coLowestBitIndex(coUint32 _a)
 #endif
 }
 
-coFORCE_INLINE coUint32 coReverse(coUint32 _a)
+coFORCE_INLINE coUint32 coRevert(coUint32 _a)
 {
 	_a = ((_a & 0xaaaaaaaa) >> 1) | ((_a & 0x55555555) << 1);
 	_a = ((_a & 0xcccccccc) >> 2) | ((_a & 0x33333333) << 2);

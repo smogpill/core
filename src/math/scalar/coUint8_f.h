@@ -18,7 +18,7 @@ coFORCE_INLINE coFloat coMake_float(coUint8 _a)
 	return coBitCast<coFloat>(static_cast<coUint32>(_a) | coBitCast<coUint32>(32768.0f)) - 32768.0f;
 }
 
-coFORCE_INLINE coUint8 coReverse(coUint8 _a)
+coFORCE_INLINE coUint8 coRevert(coUint8 _a)
 {
 	// return = (_n * 0x0202020202ULL & 0x010884422010ULL) % 1023; 64bits version
 	return static_cast<coUint8>(((_a * 0x80200802ULL) & 0x0884422110ULL) * 0x0101010101ULL >> 32);

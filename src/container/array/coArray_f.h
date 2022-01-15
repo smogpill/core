@@ -307,7 +307,7 @@ void coShuffle(coArray<T>& _this, coUint32& _seed)
 }
 
 template <class T>
-void coReverse(coArray<T>& _this)
+void coRevert(coArray<T>& _this)
 {
 	for (coInt i = 0, j = _this.count-1; i < j; ++i, --j)
 	{
