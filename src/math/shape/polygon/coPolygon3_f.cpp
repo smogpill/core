@@ -35,17 +35,19 @@ coFORCE_INLINE coBool _coIsInsideTriangleXY(const coVec3& a, const coVec3& b, co
 	return (b1 == b2) & (b2 == b3);
 }
 
-void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>& triangles, coTriangulateScratch& scratch, const coVec3& planeNormal)
+void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>& triangleVertices, coTriangulateScratch& scratch, const coVec3& planeNormal)
 {
 	//coASSERT(!coIsClockwiseXY(poly));
-	_coPrepareTriangulate(poly, triangles, scratch);
+	coASSERT(!coContainsFlatVertices(poly));
+	_coPrepareTriangulate(poly, triangleVertices, scratch);
+
+	const coUint32 expectedNbTriangles = poly.vertices.count - 2;
+	coUint32 nbRemainingTriangles = expectedNbTriangles;
+	coUint32 nbRemainingIterations = expectedNbTriangles;
 
 	// Remove "ear" triangles one by one.
-	coBool iterate = true;
-	while (iterate)
+	while (nbRemainingIterations)
 	{
-		iterate = false;
-
 		// For every vertex
 		for (coUint32 i = 0; i < scratch.remainingIndices.count; ++i)
 		{
@@ -63,7 +65,7 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 			{
 				const coVec3 v1 = prev - cur;
 				const coVec3 v2 = next - cur;
-				if (coDot(coCross(v1, v2), planeNormal).x <= 0.f)
+				if (coDot(coCross(v1, v2), planeNormal).x < 0.f)
 				{
 					continue;
 				}
@@ -92,25 +94,31 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 				}
 			}
 
-			iterate = true;
-
-			coPushBack(triangles, prevIdx);
-			coPushBack(triangles, curIdx);
-			coPushBack(triangles, nextIdx);
+			coPushBack(triangleVertices, prevIdx);
+			coPushBack(triangleVertices, curIdx);
+			coPushBack(triangleVertices, nextIdx);
+			--nbRemainingTriangles;
+			if (!nbRemainingTriangles)
+			{
+				coASSERT(triangleVertices.count % 3 == 0);
+				coASSERT(triangleVertices.count / 3 == expectedNbTriangles);
+				return;
+			}
 
 			// Remove vertex
 			coRemoveOrderedByIndex(scratch.remainingIndices, i);
 			--i;
 		}
+		--nbRemainingIterations;
 	}
 
-	//coASSERT(scratch.remainingIndices.count == 0);
+	coASSERT(nbRemainingTriangles == 0); // The algorithm did not manage to make enough triangles.
 }
 
-void coTriangulateWithVaryingZ(const coPolygon3& poly, coDynamicArray<coUint32>& triangles, coTriangulateScratch& scratch)
+void coTriangulateWithVaryingZ(const coPolygon3& poly, coDynamicArray<coUint32>& triangleVertices, coTriangulateScratch& scratch)
 {
 	coASSERT(!coIsClockwiseXY(poly));
-	_coPrepareTriangulate(poly, triangles, scratch);
+	_coPrepareTriangulate(poly, triangleVertices, scratch);
 
 	// Remove "ear" triangles one by one.
 	coBool iterate = true;
@@ -217,16 +225,17 @@ void coTriangulateWithVaryingZ(const coPolygon3& poly, coDynamicArray<coUint32>&
 			iterate = true;
 
 			// Create the triangle
-			coPushBack(triangles, prevIdx);
-			coPushBack(triangles, curIdx);
-			coPushBack(triangles, nextIdx);
+			coPushBack(triangleVertices, prevIdx);
+			coPushBack(triangleVertices, curIdx);
+			coPushBack(triangleVertices, nextIdx);
 
 			// Remove vertex
 			coRemoveOrderedByIndex(scratch.remainingIndices, i);
 			break;
 		}
 	}
-	coASSERT(triangles.count % 3 == 0);
+	coASSERT(triangleVertices.count % 3 == 0);
+	coASSERT(triangleVertices.count / 3 == poly.vertices.count - 2);
 }
 
 coFloat coSignedAreaXY(const coPolygon3& poly)
@@ -251,4 +260,55 @@ coFloat coSignedAreaXY(const coPolygon3& poly)
 	}
 
 	return sum * 0.5f;
+}
+
+coBool coContainsFlatVertices(const coPolygon3& poly, coFloat epsilon)
+{
+	coUint32 prev = poly.vertices.count - 1;
+	const coFloatx4 epsilonx4 = epsilon;
+	for (coUint32 cur = 0; cur < poly.vertices.count; ++cur)
+	{
+		coUint32 next = cur + 1;
+		if (next == poly.vertices.count)
+			next = 0;
+		const coVec3& a = poly.vertices[prev];
+		const coVec3& b = poly.vertices[cur];
+		const coVec3& c = poly.vertices[next];
+		const coVec3 ab = coSafeNormalize(b - a);
+		const coVec3 bc = coSafeNormalize(c - b);
+		const coFloatx4 dot = coDot(ab, bc);
+		if (coAbs(dot - coFloatx4(1.0f)) < epsilon)
+			return true;
+		prev = cur;
+	}
+	return false;
+}
+
+void coRemoveFlatVertices(coPolygon3& poly, coFloat epsilon)
+{
+	coUint32 prev = poly.vertices.count - 1;
+	const coFloatx4 epsilonx4 = epsilon;
+	for (coUint32 cur = 0; cur < poly.vertices.count; ++cur)
+	{
+		coUint32 next = cur + 1;
+		if (next == poly.vertices.count)
+			next = 0;
+		const coVec3& a = poly.vertices[prev];
+		const coVec3& b = poly.vertices[cur];
+		const coVec3& c = poly.vertices[next];
+		const coVec3 ab = coSafeNormalize(b - a);
+		const coVec3 bc = coSafeNormalize(c - b);
+		const coFloatx4 dot = coDot(ab, bc);
+		if (coAbs(dot - coFloatx4(1.0f)) < epsilon)
+		{
+			coRemoveOrderedByIndex(poly.vertices, cur);
+			--cur;
+			if (prev == poly.vertices.count)
+				prev = poly.vertices.count - 1;
+		}
+		else
+		{
+			prev = cur;
+		}
+	}
 }
