@@ -15,19 +15,7 @@ public:
 };
 
 coFORCE_INLINE void coClear(coPolygon3& poly) { coClear(poly.vertices); }
-void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>& triangles, coTriangulateScratch& scratch);
+void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>& triangles, coTriangulateScratch& scratch, const coVec3& planeNormal);
 void coTriangulateWithVaryingZ(const coPolygon3& poly, coDynamicArray<coUint32>& triangles, coTriangulateScratch& scratch);
 coFloat coSignedAreaXY(const coPolygon3& poly);
 coFORCE_INLINE coBool coIsClockwiseXY(const coPolygon3& poly) { return coSignedAreaXY(poly) < 0.0f; }
-coFORCE_INLINE coBool coIsCornerConvexXY(const coVec3& v0, const coVec3& v1, const coVec3& v2)
-{
-	return !coAreAllFalse(coBroadcastZ(coCross(v0 - v1, v2 - v1)) >= coFloatx3(0.0f));
-}
-coFORCE_INLINE coBool coIsInsideTriangleXY(const coVec3& v0, const coVec3& v1, const coVec3& v2, const coVec3& vP)
-{
-	const coBool b1 = coIsCornerConvexXY(vP, v0, v1);
-	const coBool b2 = coIsCornerConvexXY(vP, v1, v2);
-	const coBool b3 = coIsCornerConvexXY(vP, v2, v0);
-
-	return (b1 == b2) & (b2 == b3);
-}

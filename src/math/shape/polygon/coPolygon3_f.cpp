@@ -3,6 +3,7 @@
 #include "math/pch.h"
 #include "coPolygon3_f.h"
 #include "math/vector/coVec3_f.h"
+#include "math/shape/triangle/coTriangle_f.h"
 #include <container/array/coDynamicArray_f.h>
 
 void _coPrepareTriangulate(const coPolygon3& poly, coDynamicArray<coUint32>& triangles, coTriangulateScratch& scratch)
@@ -21,8 +22,22 @@ void _coPrepareTriangulate(const coPolygon3& poly, coDynamicArray<coUint32>& tri
 	}
 }
 
-void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>& triangles, coTriangulateScratch& scratch)
+coFORCE_INLINE coBool _coIsCornerConvexXY(const coVec3& a, const coVec3& b, const coVec3& c)
 {
+	return !coAreAllFalse(coBroadcastZ(coCross(a - b, c - b)) >= coFloatx3(0.0f));
+}
+coFORCE_INLINE coBool _coIsInsideTriangleXY(const coVec3& a, const coVec3& b, const coVec3& c, const coVec3& p)
+{
+	const coBool b1 = _coIsCornerConvexXY(p, a, b);
+	const coBool b2 = _coIsCornerConvexXY(p, b, c);
+	const coBool b3 = _coIsCornerConvexXY(p, c, a);
+
+	return (b1 == b2) & (b2 == b3);
+}
+
+void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>& triangles, coTriangulateScratch& scratch, const coVec3& planeNormal)
+{
+	//coASSERT(!coIsClockwiseXY(poly));
 	_coPrepareTriangulate(poly, triangles, scratch);
 
 	// Remove "ear" triangles one by one.
@@ -48,8 +63,7 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 			{
 				const coVec3 v1 = prev - cur;
 				const coVec3 v2 = next - cur;
-				const coVec3 cross = coCross(v1, v2);
-				if (cross[2] <= 0.f)
+				if (coDot(coCross(v1, v2), planeNormal).x <= 0.f)
 				{
 					continue;
 				}
@@ -66,7 +80,7 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 
 					const coUint32 n = scratch.remainingIndices[j];
 					const coVec3& v = poly.vertices[n];
-					if (coIsInsideTriangleXY(prev, cur, next, v))
+					if (coOverlap(coTriangle(prev, cur, next), v))
 					{
 						ignore = true;
 						break;
@@ -89,6 +103,8 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 			--i;
 		}
 	}
+
+	//coASSERT(scratch.remainingIndices.count == 0);
 }
 
 void coTriangulateWithVaryingZ(const coPolygon3& poly, coDynamicArray<coUint32>& triangles, coTriangulateScratch& scratch)
@@ -186,7 +202,7 @@ void coTriangulateWithVaryingZ(const coPolygon3& poly, coDynamicArray<coUint32>&
 
 					const coUint32 n = scratch.remainingIndices[j];
 					const coVec3& v = poly.vertices[n];
-					if (coIsInsideTriangleXY(prev, cur, next, v))
+					if (_coIsInsideTriangleXY(prev, cur, next, v))
 					{
 						ignore = true;
 						break;

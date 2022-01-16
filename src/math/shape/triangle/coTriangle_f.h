@@ -13,3 +13,14 @@ coFORCE_INLINE coVec3 coGetNormal(const coTriangle& t)
 {
 	return coNormalize(coGetRawNormal(t));
 }
+
+coFORCE_INLINE coBool32x4 coOverlap(const coTriangle& t, const coVec3& p)
+{
+	const coVec3 pa = t.a - p;
+	const coVec3 pb = t.b - p;
+	const coVec3 pc = t.c - p;
+	const coVec3 u = coCross(pb, pc);
+	const coVec3 v = coCross(pc, pa);
+	const coVec3 w = coCross(pa, pb);
+	return coDot(u, v) >= 0.0f && coDot(u, w) >= 0.0f;
+}
