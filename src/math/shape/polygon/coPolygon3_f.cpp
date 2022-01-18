@@ -112,7 +112,18 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 		--nbRemainingIterations;
 	}
 
-	coASSERT(nbRemainingTriangles == 0); // The algorithm did not manage to make enough triangles.
+	// Some triangles can be dismissed since they can be flat/colinear.
+	// Check the issue with this case:
+	// [0]{ -17.7500000, -10.2500000, 6.42884827}
+	// [1]{ -18.5347691, -10.8032837, 6.42884064 }
+	// [2]{ -18.2500000, -9.75000000, 6.42884827 }
+	// [3]{ -17.4375000, -9.18750000, 6.42885590 }
+	// [4]{ -17.1250000, -9.37500000, 6.42885590 }
+	// [5]{ -16.9375000, -9.31250000, 6.42885590 }
+	// Can be viewed some plotting software, like desmos.com
+	//
+	// With the last triangle to be found being 2,4,5, and sadly being flat.
+	//coASSERT(nbRemainingTriangles == 0); // The algorithm did not manage to make enough triangles.
 }
 
 void coTriangulateWithVaryingZ(const coPolygon3& poly, coDynamicArray<coUint32>& triangleVertices, coTriangulateScratch& scratch)
