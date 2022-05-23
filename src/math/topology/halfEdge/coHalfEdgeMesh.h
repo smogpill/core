@@ -7,5 +7,8 @@
 class coHalfEdgeMesh
 {
 public:
+	coHalfEdgeMesh() {}
+	coHalfEdgeMesh(const coArray<coUint32>& indices, const coUint32 nbVertices);
+
 	coDynamicArray<coHalfEdge> halfEdges;
 };
