@@ -14,7 +14,7 @@ coDynamicArray<T>::coDynamicArray(const T(&_a)[N])
 	: coDynamicArray()
 {
 	coResize(*this, N);
-	coMemCopy(data, _a, sizeof(_a));
+	coMemCopy(this->data, _a, sizeof(_a));
 }
 
 template <class T>
@@ -22,7 +22,7 @@ coDynamicArray<T>::coDynamicArray(std::initializer_list<T> _l)
 	: coDynamicArray()
 {
 	coResize(*this, static_cast<coUint32>(_l.size()));
-	coMemCopy(data, _l.begin(), static_cast<coUint>(_l.size() * sizeof(T)));
+	coMemCopy(this->data, _l.begin(), static_cast<coUint>(_l.size() * sizeof(T)));
 }
 
 coUint32 _coComputeBestArrayCapacity(coUint32 _capacity);
@@ -142,8 +142,8 @@ template <class T>
 coDynamicArray<T>& coDynamicArray<T>::operator=(const coArray<const T>& _other)
 {
 	coReserve(*this, _other.count);
-	coMemCopy(data, _other.data, _other.count * sizeof(T));
-	count = _other.count;
+	coMemCopy(this->data, _other.data, _other.count * sizeof(T));
+	this->count = _other.count;
 	return *this;
 }
 

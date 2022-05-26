@@ -12,7 +12,7 @@ public:
 	~coDynamicQueue()
 	{
 		coAllocator* allocator = coAllocator::GetHeap();
-		coAllocator::GetHeap()->FreeAligned(data);
+		coAllocator::GetHeap()->FreeAligned(this->data);
 	}
 	coUint32 capacity = 0;
 };

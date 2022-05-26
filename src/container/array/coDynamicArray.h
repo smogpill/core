@@ -16,7 +16,7 @@ public:
 	~coDynamicArray()
 	{
 		coAllocator* allocator = coAllocator::GetHeap();
-		coAllocator::GetHeap()->FreeAligned(data);
+		coAllocator::GetHeap()->FreeAligned(this->data);
 	}
 	explicit coDynamicArray(std::initializer_list<T> _l);
 
