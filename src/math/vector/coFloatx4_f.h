@@ -113,10 +113,11 @@ coFORCE_INLINE coFloatx4 coTruncate(const coFloatx4& _a)
 }
 coFORCE_INLINE coFloatx4 coFloor(const coFloatx4& _a)
 {
-	const coFloatx4 trunc = coTruncate(_a);
-	const coInt32x4 posMask = coBitCast<coInt32x4>(_a >= coBitCast<coFloatx4>(_mm_setzero_ps()));
-	const coFloatx4 sub = coSelect(coBitCast<coFloatx4>(_mm_setzero_ps()), coFloatx4(1.0f), posMask);
-	return trunc - sub;
+	return coBitCast<coFloatx4>(_mm_floor_ps(coBitCast<__m128>(_a)));
+}
+coFORCE_INLINE coFloatx4 coCeil(const coFloatx4& _a)
+{
+	return coBitCast<coFloatx4>(_mm_ceil_ps(coBitCast<__m128>(_a)));
 }
 coFORCE_INLINE coFloatx4 coSign(const coFloatx4& x) { return coSelect(1.0f, -1.0f, coBitCast<coInt32x4>(x >= 0.f)); }
 coFORCE_INLINE coFloatx4 coPow2(const coFloatx4& _a) { return  _a * _a; }
@@ -142,6 +143,58 @@ namespace _coFloatx4
 };
 coFORCE_INLINE coFloatx4 coSin(const coFloatx4& _a)
 {
+	/*
+	// From V4Sin from PhysX 4.1
+	const Vec4V recipTwoPi = V4LoadA(g_PXReciprocalTwoPi.f);
+	const Vec4V twoPi = V4LoadA(g_PXTwoPi.f);
+	const Vec4V tmp = V4Mul(a, recipTwoPi);
+	const Vec4V b = V4Round(tmp);
+	const Vec4V V1 = V4NegMulSub(twoPi, b, a);
+
+	// sin(V) ~= V - V^3 / 3! + V^5 / 5! - V^7 / 7! + V^9 / 9! - V^11 / 11! + V^13 / 13! -
+	//           V^15 / 15! + V^17 / 17! - V^19 / 19! + V^21 / 21! - V^23 / 23! (for -PI <= V < PI)
+	const coFloatx4 V2 = V1 * V1;
+	const coFloatx4 V3 = V2 * V1;
+	const coFloatx4 V5 = V3 * V2;
+	const coFloatx4 V7 = V5 * V2;
+	const coFloatx4 V9 = V7 * V2;
+	const coFloatx4 V11 = V9 * V2;
+	const coFloatx4 V13 = V11 * V2;
+	const coFloatx4 V15 = V13 * V2;
+	const coFloatx4 V17 = V15 * V2;
+	const coFloatx4 V19 = V17 * V2;
+	const coFloatx4 V21 = V19 * V2;
+	const coFloatx4 V23 = V21 * V2;
+
+	const Vec4V sinCoefficients0 = V4LoadA(g_PXSinCoefficients0.f);
+	const Vec4V sinCoefficients1 = V4LoadA(g_PXSinCoefficients1.f);
+	const Vec4V sinCoefficients2 = V4LoadA(g_PXSinCoefficients2.f);
+
+	const coFloatx4 S1 = coBroadcastY(sinCoefficients0);
+	const coFloatx4 S2 = coBroadcastZ(sinCoefficients0);
+	const coFloatx4 S3 = coBroadcastW(sinCoefficients0);
+	const coFloatx4 S4 = coBroadcastX(sinCoefficients1);
+	const coFloatx4 S5 = coBroadcastY(sinCoefficients1);
+	const coFloatx4 S6 = coBroadcastZ(sinCoefficients1);
+	const coFloatx4 S7 = coBroadcastW(sinCoefficients1);
+	const coFloatx4 S8 = coBroadcastX(sinCoefficients2);
+	const coFloatx4 S9 = coBroadcastY(sinCoefficients2);
+	const coFloatx4 S10 = coBroadcastZ(sinCoefficients2);
+	const coFloatx4 S11 = coBroadcastW(sinCoefficients2);
+
+	coFloatx4 result;
+	result = coMulAdd(S1, V3, V1);
+	result = coMulAdd(S2, V5, result);
+	result = coMulAdd(S3, V7, result);
+	Result = coMulAdd(S4, V9, result);
+	result = coMulAdd(S5, V11, result);
+	result = coMulAdd(S6, V13, result);
+	result = coMulAdd(S7, V15, result);
+	result = coMulAdd(S8, V17, result);
+	result = coMulAdd(S9, V19, result);
+	result = coMulAdd(S10, V21, result);
+	result = coMulAdd(S11, V23, result);
+	return result;*/
 	// Based on: http://forum.devmaster.net/t/fast-and-accurate-sine-cosine/9648
 	coFloatx4 y = _a * coFloatx4_::inv2Pi;
 	y = y - coFloor(y + coFloatx4(0.5f));
