@@ -10,6 +10,8 @@ public:
 	coHalfEdgeMesh() {}
 	coHalfEdgeMesh(const coArray<coUint32>& indices, coUint32 nbVertices = coUint32(-1));
 
+	void RemoveHalfEdge(coUint32 edgeIdx);
+
 	coUint32 GetNbFaces() const;
 	coUint32 GetNbNonDegenerateFaces() const;
 	coUint32 GetNbDegenerateFaces() const;

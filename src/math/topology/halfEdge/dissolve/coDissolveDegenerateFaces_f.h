@@ -3,4 +3,4 @@
 #pragma once
 class coHalfEdgeMesh;
 
-//void coDissolveDegenerateFaces(coHalfEdgeMesh&);
+void coDissolveDegenerateFaces(coHalfEdgeMesh&);

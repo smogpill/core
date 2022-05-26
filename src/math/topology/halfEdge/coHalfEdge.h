@@ -5,6 +5,8 @@
 class coHalfEdge
 {
 public:
+	void SwapEdgeIdx(coUint32 oldIdx, coUint32 newIdx);
+
 	coUint32 next = coUint32(-1);
 	coUint32 prev = coUint32(-1);
 	coUint32 nextRadial = coUint32(-1);

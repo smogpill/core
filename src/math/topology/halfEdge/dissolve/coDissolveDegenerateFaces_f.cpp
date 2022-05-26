@@ -7,15 +7,13 @@
 
 void coDissolveDegenerateFaces(coHalfEdgeMesh& mesh)
 {
-	coASSERT(false);
 	auto& halfEdges = mesh.halfEdges;
 	for (coUint32 edgeIdx = 0; edgeIdx < halfEdges.count;)
 	{
 		coHalfEdge& edge = halfEdges[edgeIdx];
 		if (edge.next == edge.prev)
 		{
-			coHalfEdge& next = halfEdges[edge.next];
-			coRemoveUnorderedByIndex(halfEdges, edgeIdx);
+			mesh.RemoveHalfEdge(edgeIdx);
 			continue;
 		}
 		++edgeIdx;

@@ -97,6 +97,36 @@ coHalfEdgeMesh::coHalfEdgeMesh(const coArray<coUint32>& indices, coUint32 nbVert
 	}
 }
 
+void coHalfEdgeMesh::RemoveHalfEdge(coUint32 edgeIdx)
+{
+	coHalfEdge& edge = halfEdges[edgeIdx];
+
+	// Unlink
+	const coUint32 prev = edge.prev;
+	const coUint32 prevRadial = edge.prevRadial;
+	halfEdges[edge.next].prev = edge.prev;
+	halfEdges[prev].next = edge.next;
+	halfEdges[edge.nextRadial].prevRadial = edge.prevRadial;
+	halfEdges[prevRadial].nextRadial = edge.nextRadial;
+
+	const coUint32 lastEdgeIdx = halfEdges.count - 1;
+
+	// Update edge indices of the last halfEdge of the list
+	if (edgeIdx != lastEdgeIdx)
+	{
+		coHalfEdge& newEdge = halfEdges[lastEdgeIdx];
+		newEdge.edgeIdx = edgeIdx;
+		const coUint32 newPrev = newEdge.prev;
+		const coUint32 newPrevRadial = newEdge.prevRadial;
+		halfEdges[newEdge.next].prev = edgeIdx;
+		halfEdges[newPrev].next = edgeIdx;
+		halfEdges[newEdge.nextRadial].prevRadial = edgeIdx;
+		halfEdges[newPrevRadial].nextRadial = edgeIdx;
+	}
+
+	coRemoveUnorderedByIndex(halfEdges, edgeIdx);
+}
+
 coUint32 coHalfEdgeMesh::GetNbFaces() const
 {
 	coUint32 nb = 0;
