@@ -163,7 +163,7 @@ void coTriangulateWithVaryingZ(const coPolygon3& poly, coDynamicArray<coUint32>&
 						// Should handle:
 						// - differences between big and small triangles
 						// - an outliner will be punished twice (one per edge), while its neighbor will be punished once (unlike the triangle normal heuristic).
-						scratch.deviations[vertIdx] = coAbs(coSafeNormalize(prev - cur).z) + coAbs(coSafeNormalize(next - cur).z);
+						scratch.deviations[vertIdx] = coAbs(coNormalize(prev - cur).z) + coAbs(coNormalize(next - cur).z);
 
 						// # Other attempts:
 
@@ -285,8 +285,8 @@ coBool coContainsFlatVertices(const coPolygon3& poly, coFloat epsilon)
 		const coVec3& a = poly.vertices[prev];
 		const coVec3& b = poly.vertices[cur];
 		const coVec3& c = poly.vertices[next];
-		const coVec3 ab = coSafeNormalize(b - a);
-		const coVec3 bc = coSafeNormalize(c - b);
+		const coVec3 ab = coNormalize(b - a);
+		const coVec3 bc = coNormalize(c - b);
 		const coFloatx4 dot = coDot(ab, bc);
 		if (coAbs(dot - coFloatx4(1.0f)) < epsilon)
 			return true;
@@ -307,8 +307,8 @@ void coRemoveFlatVertices(coPolygon3& poly, coFloat epsilon)
 		const coVec3& a = poly.vertices[prev];
 		const coVec3& b = poly.vertices[cur];
 		const coVec3& c = poly.vertices[next];
-		const coVec3 ab = coSafeNormalize(b - a);
-		const coVec3 bc = coSafeNormalize(c - b);
+		const coVec3 ab = coNormalize(b - a);
+		const coVec3 bc = coNormalize(c - b);
 		const coFloatx4 dot = coDot(ab, bc);
 		if (coAbs(dot - coFloatx4(1.0f)) < epsilon)
 		{

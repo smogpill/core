@@ -20,8 +20,8 @@ void coDissolveFlatVertices(coHalfEdgeMesh& mesh, const coArray<coVec3>& vertexP
 			const coVec3& a0Pos = vertexPositions[a0.vertexIdx];
 			const coVec3& a1Pos = vertexPositions[a1.vertexIdx];
 			const coVec3& a2Pos = vertexPositions[a2.vertexIdx];
-			const coVec3 dirA01 = coSafeNormalize(a1Pos - a0Pos);
-			const coVec3 dirA12 = coSafeNormalize(a2Pos - a1Pos);
+			const coVec3 dirA01 = coNormalize(a1Pos - a0Pos);
+			const coVec3 dirA12 = coNormalize(a2Pos - a1Pos);
 			if (coAbs(coDot(dirA01, dirA12) - 1.0f) > tolerance)
 			{
 				continue;

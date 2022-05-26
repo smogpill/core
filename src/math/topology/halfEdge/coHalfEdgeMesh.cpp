@@ -96,3 +96,41 @@ coHalfEdgeMesh::coHalfEdgeMesh(const coArray<coUint32>& indices, coUint32 nbVert
 		}
 	}
 }
+
+coUint32 coHalfEdgeMesh::GetNbFaces() const
+{
+	coUint32 nb = 0;
+	auto functor = [&](const coHalfEdge& edge)
+	{
+		++nb;
+		return true;
+	};
+	VisitFaces(functor);
+	return nb;
+}
+
+coUint32 coHalfEdgeMesh::GetNbNonDegenerateFaces() const
+{
+	coUint32 nb = 0;
+	auto functor = [&](const coHalfEdge& edge)
+	{
+		if (edge.next != edge.prev)
+			++nb;
+		return true;
+	};
+	VisitFaces(functor);
+	return nb;
+}
+
+coUint32 coHalfEdgeMesh::GetNbDegenerateFaces() const
+{
+	coUint32 nb = 0;
+	auto functor = [&](const coHalfEdge& edge)
+	{
+		if (edge.next == edge.prev)
+			++nb;
+		return true;
+	};
+	VisitFaces(functor);
+	return nb;
+}

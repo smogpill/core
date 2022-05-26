@@ -75,8 +75,8 @@ coFORCE_INLINE coMat3 coTranspose(const coMat3& a)
 
 coFORCE_INLINE void coMakeLookAt(coMat3& this_, const coVec3& from, const coVec3& to, const coVec3& up)
 {
-	const coVec3 z = coSafeNormalize(to - from);
-	const coVec3 x = coSafeNormalize(coCross(up, z));
+	const coVec3 z = coNormalize(to - from);
+	const coVec3 x = coNormalize(coCross(up, z));
 	const coVec3 y = coCross(z, x);
 	this_ = coMat3(x, y, z);
 }
