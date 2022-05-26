@@ -65,3 +65,28 @@ coTEST(coMergePlanarFaces, two_triangles_but_with_flat_vertex)
 	coDissolveDegenerateFaces(m);
 	coEXPECT(m.GetNbNonDegenerateFaces() == 1);
 }
+
+coTEST(coMergePlanarFaces, triangle_hole_in_larger_triangle)
+{
+	// 5
+	//
+	//   2
+	//   0 1
+	// 3          4
+	const coDynamicArray<coVec3> positions
+	({
+		coVec3(1, 1, 0),
+		coVec3(2, 1, 0),
+		coVec3(1, 2, 0),
+		coVec3(0, 0, 0),
+		coVec3(5, 0, 0),
+		coVec3(0, 5, 0)
+		});
+	const coDynamicArray<coUint32> indices({ 3, 4, 0, 0, 4, 1, 1, 4, 5, 2, 1, 5, 3, 2, 5, 3, 0, 2 });
+	coHalfEdgeMesh m(indices);
+	coDynamicArray<coVec3> normals;
+	coComputeTriangleNormals(positions, indices, normals);
+	coMergePlanarFaces(m, normals, 1e-4f);
+	coDissolveDegenerateFaces(m);
+	coEXPECT(m.GetNbNonDegenerateFaces() == 1);
+}
