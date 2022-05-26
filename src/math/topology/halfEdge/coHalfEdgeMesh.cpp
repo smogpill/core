@@ -5,33 +5,21 @@
 #include <container/map/coHashMap.h>
 #include "coHalfEdgeMesh.h"
 
-coHalfEdgeMesh::coHalfEdgeMesh(const coArray<coUint32>& indices, const coUint32 nbVertices)
+coHalfEdgeMesh::coHalfEdgeMesh(const coArray<coUint32>& indices, coUint32 nbVertices)
 {
 	coASSERT(indices.count % 3 == 0);
-	const coUint32 nbTriangles = indices.count / 3;
 
-	/*
-	struct Edge
+	// If no vertex count was provided, just compute a working count by searching for the max vertex index used.
+	if (nbVertices == coUint32(-1))
 	{
-		coUint32 verts[2];
-		coUint32 halfEdge;
-		coUint32 next;
-	};
-
-	coHashMap<coUint64, coUint32, 1024, [](const coUint64 key){return }>
-	coHash
-	coUint32 edgeBuckets[1024];
-	for (coUint32& bucket : edgeBuckets)
-	{
-		bucket = coUint32(-1);
+		coUint32 maxIdx = indices.count ? indices[0] : coUint32(-1);
+		for (coUint32 ind : indices)
+			if (ind > maxIdx)
+				maxIdx = ind;
+		nbVertices = maxIdx + 1;
 	}
 
-	auto computeEdgeKey = [](const coUint32 a, const coUint32 b)
-	{
-
-	};
-
-	*/
+	const coUint32 nbTriangles = indices.count / 3;
 
 	struct VertexToHalfEdge
 	{
@@ -54,6 +42,7 @@ coHalfEdgeMesh::coHalfEdgeMesh(const coArray<coUint32>& indices, const coUint32 
 		coPushBack(vertexToHalfEdge, VertexToHalfEdge());
 	};
 
+	// Create edge loops
 	coReserve(halfEdges, nbTriangles * 3);
 	for (coUint32 triangleIdx = 0; triangleIdx < nbTriangles; ++triangleIdx)
 	{
@@ -75,13 +64,15 @@ coHalfEdgeMesh::coHalfEdgeMesh(const coArray<coUint32>& indices, const coUint32 
 		}
 	}
 
+	// Link neighboring edge loops
 	{
-		coUint32 indexIdx = 0;
+		coUint32 triangleStartIdx = 0;
 		for (coUint32 triangleIdx = 0; triangleIdx < nbTriangles; ++triangleIdx)
 		{
 			for (coUint32 i = 0; i < 3; ++i)
 			{
-				const coUint32 nextIndexIdx = (indexIdx + 1) % 3;
+				const coUint32 indexIdx = triangleStartIdx + i;
+				const coUint32 nextIndexIdx = triangleStartIdx + (i + 1) % 3;
 				coHalfEdge& halfEdge = halfEdges[indexIdx];
 				const coUint32 vertexIdx = indices[indexIdx];
 				const coUint32 nextVertexIdx = indices[nextIndexIdx];
@@ -95,12 +86,13 @@ coHalfEdgeMesh::coHalfEdgeMesh(const coArray<coUint32>& indices, const coUint32 
 					if (nextHalfEdge.vertexIdx == vertexIdx)
 					{
 						coHalfEdge& nextRadial = halfEdges[halfEdge.nextRadial];
-						halfEdge.nextRadial = itIdx;
+						nextRadial.prevRadial = entry.halfEdge;
+						halfEdge.nextRadial = entry.halfEdge;
 					}
 					itIdx = entry.next;
 				} while (vertexToHalfEdge[itIdx].halfEdge != coUint32(-1));
-				++indexIdx;
 			}
+			triangleStartIdx += 3;
 		}
 	}
 }
