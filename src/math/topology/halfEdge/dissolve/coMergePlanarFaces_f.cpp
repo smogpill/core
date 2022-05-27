@@ -3,6 +3,7 @@
 #include "math/pch.h"
 #include "../../../vector/coVec3_f.h"
 #include "../coHalfEdgeMesh.h"
+#include "coAbsorbFace_f.h"
 #include "coMergePlanarFaces_f.h"
 
 void coMergePlanarFaces(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals, coFloat tolerance)
@@ -20,6 +21,8 @@ void coMergePlanarFaces(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals
 		const coVec3& normalB = faceNormals[edgeB.faceIdx];
 		if (coAbs(coDot(normalA, normalB) - 1.0f) < tolerance)
 		{
+			coAbsorbFace(mesh, edgeAIdx, edgeB.faceIdx);
+			/*
 			// Merge faces
 			{
 				// Set face A on the B loop
@@ -49,6 +52,7 @@ void coMergePlanarFaces(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals
 				edgeB.prev = edgeBIdx;
 				edgeB.next = edgeBIdx;
 			}
+			*/
 		}
 	}
 }
