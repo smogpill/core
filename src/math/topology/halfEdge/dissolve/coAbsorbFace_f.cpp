@@ -101,16 +101,15 @@ coBool coAbsorbFace(coHalfEdgeMesh& mesh, coUint32 anyEdgeIdx, coUint32 faceToAb
 		a.next = bIdx;
 		b.prev = aIdx;
 	}
-	if (aLastRelatedToBIdx != aFirstRelatedToBIdx)
 	{
 		coHalfEdge& edge = edges[aLastRelatedToBIdx];
-		const coUint32 aIdx = edge.prev;
+		const coUint32 aIdx = edge.next;
 		coHalfEdge& a = edges[aIdx];
 		coHalfEdge& radial = edges[edge.nextRadial];
-		const coUint32 bIdx = radial.next;
+		const coUint32 bIdx = radial.prev;
 		coHalfEdge& b = edges[bIdx];
-		a.next = bIdx;
-		b.prev = aIdx;
+		a.prev = bIdx;
+		b.next = aIdx;
 	}
 
 	// Disable any intermediate edges in the chain
@@ -120,8 +119,11 @@ coBool coAbsorbFace(coHalfEdgeMesh& mesh, coUint32 anyEdgeIdx, coUint32 faceToAb
 		{
 			coHalfEdge& edge = edges[idx];
 			const coUint32 nextIdx = edge.next;
+			coHalfEdge& radialEdge = edges[edge.nextRadial];
 			edge.next = idx;
 			edge.prev = idx;
+			radialEdge.next = edge.nextRadial;
+			radialEdge.prev = edge.nextRadial;
 			if (idx == aLastRelatedToBIdx)
 				break;
 			idx = nextIdx;
