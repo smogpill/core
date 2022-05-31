@@ -122,10 +122,15 @@ coBool coAbsorbFace(coHalfEdgeMesh& mesh, coUint32 anyEdgeIdx, coUint32 faceToAb
 			coHalfEdge& edge = edges[idx];
 			const coUint32 nextIdx = edge.next;
 			coHalfEdge& radialEdge = edges[edge.nextRadial];
+			const coUint32 radialIdx = edge.nextRadial;
 			edge.next = idx;
 			edge.prev = idx;
-			radialEdge.next = edge.nextRadial;
-			radialEdge.prev = edge.nextRadial;
+			edge.nextRadial = idx;
+			edge.prevRadial = idx;
+			radialEdge.next = radialIdx;
+			radialEdge.prev = radialIdx;
+			radialEdge.nextRadial = radialIdx;
+			radialEdge.prevRadial = radialIdx;
 			if (idx == aLastRelatedToBIdx)
 				break;
 			idx = nextIdx;
