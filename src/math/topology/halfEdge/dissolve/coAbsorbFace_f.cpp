@@ -7,6 +7,8 @@
 coBool coAbsorbFace(coHalfEdgeMesh& mesh, coUint32 anyEdgeIdx, coUint32 faceToAbsorb)
 {
 	auto& edges = mesh.halfEdges;
+	if (edges[anyEdgeIdx].faceIdx == faceToAbsorb)
+		return false;
 	coUint32 aAnyRelatedToBIdx = coUint32(-1);
 	coUint32 bAnyIdx = coUint32(-1);
 	{

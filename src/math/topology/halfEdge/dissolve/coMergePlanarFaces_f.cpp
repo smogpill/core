@@ -22,37 +22,6 @@ void coMergePlanarFaces(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals
 		if (coAbs(coDot(normalA, normalB) - 1.0f) < tolerance)
 		{
 			coAbsorbFace(mesh, edgeAIdx, edgeB.faceIdx);
-			/*
-			// Merge faces
-			{
-				// Set face A on the B loop
-				{
-					coUint32 edgeIdxIt = edgeBIdx;
-					do
-					{
-						coHalfEdge& edgeIt = edges[edgeIdxIt];
-						edgeIt.faceIdx = edgeA.faceIdx;
-						edgeIdxIt = edgeIt.next;
-					} while (edgeIdxIt != edgeBIdx);
-				}
-
-				// Link loops
-				coHalfEdge& edgeAPrev = edges[edgeA.prev];
-				coHalfEdge& edgeANext = edges[edgeA.next];
-				coHalfEdge& edgeBPrev = edges[edgeB.prev];
-				coHalfEdge& edgeBNext = edges[edgeB.next];
-				edgeAPrev.next = edgeB.next;
-				edgeANext.prev = edgeB.prev;
-				edgeBPrev.next = edgeA.next;
-				edgeBNext.prev = edgeA.prev;
-
-				// Disable 
-				edgeA.prev = edgeAIdx;
-				edgeA.next = edgeAIdx;
-				edgeB.prev = edgeBIdx;
-				edgeB.next = edgeBIdx;
-			}
-			*/
 		}
 	}
 }
