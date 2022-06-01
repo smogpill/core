@@ -37,8 +37,10 @@ coFORCE_INLINE coBool _coIsInsideTriangleXY(const coVec3& a, const coVec3& b, co
 
 void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>& triangleVertices, coTriangulateScratch& scratch, const coVec3& planeNormal)
 {
+	// TODO: Check Ear-clipping Based Algorithms of Generating High - quality Polygon Triangulation Gang Mei1, John C.Tipper1 and Nengxiong Xu
+
 	//coASSERT(!coIsClockwiseXY(poly));
-	coASSERT(!coContainsFlatVertices(poly));
+	coASSERT(!coContainsFlatVertices(poly)); // flat vertex -> Degenerate polygon
 	_coPrepareTriangulate(poly, triangleVertices, scratch);
 
 	const coUint32 expectedNbTriangles = poly.vertices.count - 2;
