@@ -4,15 +4,27 @@
 #include "../coHalfEdgeMesh.h"
 #include "coAbsorbFace_f.h"
 
-coBool coAbsorbFace(coHalfEdgeMesh& mesh, coUint32 anyEdgeIdx, coUint32 faceToAbsorb)
+coBool coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 {
 	auto& edges = mesh.halfEdges;
-	if (edges[anyEdgeIdx].faceIdx == faceToAbsorb)
+
+	const coHalfEdge& edgeA = edges[edgeIdx];
+	coASSERT(!edgeA.IsDegenerate());
+
+	const coHalfEdge& edgeB = edges[edgeA.nextRadial];
+	const coUint32 faceToAbsorb = edgeB.faceIdx;
+
+	// Already same face?
+	if (edgeA.faceIdx == faceToAbsorb)
 		return false;
+
+	coASSERT(mesh.IsEdgeLoopValid(edgeIdx));
+
+	// Find the first half edge touching the face to absorb
 	coUint32 aAnyRelatedToBIdx = coUint32(-1);
 	coUint32 bAnyIdx = coUint32(-1);
 	{
-		coUint32 aIdx = anyEdgeIdx;
+		coUint32 aIdx = edgeIdx;
 		do
 		{
 			coHalfEdge& a = edges[aIdx];
@@ -28,9 +40,10 @@ coBool coAbsorbFace(coHalfEdgeMesh& mesh, coUint32 anyEdgeIdx, coUint32 faceToAb
 				}
 			}
 			aIdx = a.next;
-		} while (aIdx != anyEdgeIdx);
+		} while (aIdx != edgeIdx);
 	}
 
+	// No connection found?
 	if (aAnyRelatedToBIdx == coUint32(-1))
 		return false;
 
@@ -82,7 +95,7 @@ coBool coAbsorbFace(coHalfEdgeMesh& mesh, coUint32 anyEdgeIdx, coUint32 faceToAb
 
 	// Set face A on the B loop
 	{
-		const coUint32 faceA = edges[anyEdgeIdx].faceIdx;
+		const coUint32 faceA = edgeA.faceIdx;
 		coUint32 edgeIdxIt = bAnyIdx;
 		do
 		{
@@ -97,9 +110,13 @@ coBool coAbsorbFace(coHalfEdgeMesh& mesh, coUint32 anyEdgeIdx, coUint32 faceToAb
 		coHalfEdge& edge = edges[aFirstRelatedToBIdx];
 		const coUint32 aIdx = edge.prev;
 		coHalfEdge& a = edges[aIdx];
+		coASSERT(!a.IsDegenerate());
 		coHalfEdge& radial = edges[edge.nextRadial];
+		coASSERT(!radial.IsDegenerate());
 		const coUint32 bIdx = radial.next;
 		coHalfEdge& b = edges[bIdx];
+		coASSERT(!b.IsDegenerate());
+		coASSERT(aIdx != bIdx);
 		a.next = bIdx;
 		b.prev = aIdx;
 	}
@@ -107,9 +124,13 @@ coBool coAbsorbFace(coHalfEdgeMesh& mesh, coUint32 anyEdgeIdx, coUint32 faceToAb
 		coHalfEdge& edge = edges[aLastRelatedToBIdx];
 		const coUint32 aIdx = edge.next;
 		coHalfEdge& a = edges[aIdx];
+		coASSERT(!a.IsDegenerate());
 		coHalfEdge& radial = edges[edge.nextRadial];
+		coASSERT(!radial.IsDegenerate());
 		const coUint32 bIdx = radial.prev;
 		coHalfEdge& b = edges[bIdx];
+		coASSERT(!b.IsDegenerate());
+		coASSERT(aIdx != bIdx);
 		a.prev = bIdx;
 		b.next = aIdx;
 	}
@@ -137,5 +158,6 @@ coBool coAbsorbFace(coHalfEdgeMesh& mesh, coUint32 anyEdgeIdx, coUint32 faceToAb
 		}
 	}
 
+	//coASSERT(mesh.IsEdgeLoopValid(anyEdgeIdx));
 	return true;
 }

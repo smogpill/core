@@ -40,7 +40,7 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 	// TODO: Check Ear-clipping Based Algorithms of Generating High - quality Polygon Triangulation Gang Mei1, John C.Tipper1 and Nengxiong Xu
 
 	//coASSERT(!coIsClockwiseXY(poly));
-	coASSERT(!coContainsFlatVertices(poly)); // flat vertex -> Degenerate polygon
+	//coASSERT(!coContainsFlatVertices(poly)); // flat vertex -> Degenerate polygon
 	_coPrepareTriangulate(poly, triangleVertices, scratch);
 
 	const coUint32 expectedNbTriangles = poly.vertices.count - 2;

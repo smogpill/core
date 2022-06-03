@@ -16,12 +16,17 @@ void coMergePlanarFaces(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals
 		if (edgeBIdx == edgeAIdx)
 			continue;
 
+		if (edgeA.IsDegenerate())
+			continue;
 		coHalfEdge& edgeB = edges[edgeBIdx];
+		if (edgeB.IsDegenerate())
+			continue;
+
 		const coVec3& normalA = faceNormals[edgeA.faceIdx];
 		const coVec3& normalB = faceNormals[edgeB.faceIdx];
 		if (coAbs(coDot(normalA, normalB) - 1.0f) < tolerance)
 		{
-			coAbsorbFace(mesh, edgeAIdx, edgeB.faceIdx);
+			coAbsorbNextRadialFace(mesh, edgeAIdx);
 		}
 	}
 }

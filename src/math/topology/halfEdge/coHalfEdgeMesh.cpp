@@ -127,6 +127,21 @@ void coHalfEdgeMesh::RemoveHalfEdge(coUint32 edgeIdx)
 	coRemoveUnorderedByIndex(halfEdges, edgeIdx);
 }
 
+coBool coHalfEdgeMesh::IsEdgeLoopValid(coUint32 edgeIdx) const
+{
+	if (edgeIdx >= halfEdges.count)
+		return false;
+	coUint32 itEdgeIdx = edgeIdx;
+	do
+	{
+		const coHalfEdge& itEdge = halfEdges[itEdgeIdx];
+		if (itEdge.IsDegenerate())
+			return false;
+		itEdgeIdx = itEdge.next;
+	} while (itEdgeIdx != edgeIdx);
+	return true;
+}
+
 coUint32 coHalfEdgeMesh::GetNbFaces() const
 {
 	coUint32 nb = 0;

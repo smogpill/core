@@ -6,30 +6,18 @@
 #include "math/topology/halfEdge/coHalfEdgeMesh.h"
 #include "math/topology/halfEdge/dissolve/coAbsorbFace_f.h"
 
-coTEST(coAbsorbFace, one_triangle)
+coTEST(coAbsorbNextRadialFace, one_triangle)
 {
 	coHalfEdgeMesh m(coArray<coUint32>({ 0, 1, 2 }));
-	coEXPECT(!coAbsorbFace(m, 0, 1));
+	coEXPECT(!coAbsorbNextRadialFace(m, 0));
 	coEXPECT(m.GetNbNonDegenerateFaces() == 1);
 }
 
-coTEST(coAbsorbFace, two_triangles_start_with_free_edge)
+coTEST(coAbsorbNextRadialFace, two_triangles_start)
 {
 	coHalfEdgeMesh m(coArray<coUint32>({0, 1, 2, 2, 1, 3}));
-	coEXPECT(coAbsorbFace(m, 0, 1));
+	coEXPECT(!coAbsorbNextRadialFace(m, 0));
+	coEXPECT(!coAbsorbNextRadialFace(m, 2));
+	coEXPECT(coAbsorbNextRadialFace(m, 1));
 	coEXPECT(m.GetNbNonDegenerateFaces() == 1);
-}
-
-coTEST(coAbsorbFace, two_triangles_start_with_connected_edge)
-{
-	coHalfEdgeMesh m(coArray<coUint32>({ 0, 1, 2, 2, 1, 3 }));
-	coEXPECT(coAbsorbFace(m, 1, 1));
-	coEXPECT(m.GetNbNonDegenerateFaces() == 1);
-}
-
-coTEST(coAbsorbFace, two_triangles_find_non_existing_face)
-{
-	coHalfEdgeMesh m(coArray<coUint32>({ 0, 1, 2, 2, 1, 3 }));
-	coEXPECT(!coAbsorbFace(m, 0, 7));
-	coEXPECT(m.GetNbNonDegenerateFaces() == 2);
 }

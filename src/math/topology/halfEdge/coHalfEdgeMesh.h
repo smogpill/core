@@ -11,6 +11,7 @@ public:
 	coHalfEdgeMesh(const coArray<coUint32>& indices, coUint32 nbVertices = coUint32(-1));
 
 	void RemoveHalfEdge(coUint32 edgeIdx);
+	coBool IsEdgeLoopValid(coUint32 edgeIdx) const;
 
 	coUint32 GetNbFaces() const;
 	coUint32 GetNbNonDegenerateFaces() const;
