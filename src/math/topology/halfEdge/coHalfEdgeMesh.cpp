@@ -127,19 +127,31 @@ void coHalfEdgeMesh::RemoveHalfEdge(coUint32 edgeIdx)
 	coRemoveUnorderedByIndex(halfEdges, edgeIdx);
 }
 
-coBool coHalfEdgeMesh::IsEdgeLoopValid(coUint32 edgeIdx) const
+void coHalfEdgeMesh::CheckEdgeLoop(coUint32 edgeIdx) const
 {
-	if (edgeIdx >= halfEdges.count)
-		return false;
 	coUint32 itEdgeIdx = edgeIdx;
+	const coUint32 faceIdx = halfEdges[edgeIdx].faceIdx;
 	do
 	{
 		const coHalfEdge& itEdge = halfEdges[itEdgeIdx];
-		if (itEdge.IsDegenerate())
-			return false;
+		coASSERT(!itEdge.IsDegenerate());
+		coASSERT(itEdge.faceIdx == faceIdx);
+		CheckEdge(itEdgeIdx);
 		itEdgeIdx = itEdge.next;
 	} while (itEdgeIdx != edgeIdx);
-	return true;
+}
+
+void coHalfEdgeMesh::CheckEdge(coUint32 edgeIdx) const
+{
+	const coHalfEdge& edge = halfEdges[edgeIdx];
+	const coHalfEdge& next = halfEdges[edge.next];
+	const coHalfEdge& prev = halfEdges[edge.prev];
+	const coHalfEdge& nextRadial = halfEdges[edge.nextRadial];
+	const coHalfEdge& prevRadial = halfEdges[edge.prevRadial];
+	coASSERT(next.prev == edgeIdx);
+	coASSERT(prev.next == edgeIdx);
+	coASSERT(nextRadial.prevRadial == edgeIdx);
+	coASSERT(prevRadial.nextRadial == edgeIdx);
 }
 
 coUint32 coHalfEdgeMesh::GetNbFaces() const

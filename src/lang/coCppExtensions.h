@@ -9,6 +9,12 @@ coFORCE_INLINE constexpr bool coReturnTrue() { return true; }
 
 #define coSAFE_SCOPE(_x_) do { _x_ } while (coReturnFalse())
 
+#ifdef coDEBUG
+#	define coDEBUG_CODE(_x_) _x_
+#else
+#	define coDEBUG_CODE(_x_)
+#endif
+
 template <class T, class A>
 coFORCE_INLINE constexpr const T& coBitCast(const A& _a)
 {
