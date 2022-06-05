@@ -12,10 +12,11 @@ coBool coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 	coASSERT(!edgeA.IsDegenerate());
 
 	const coHalfEdge& edgeB = edges[edgeA.nextRadial];
+	const coUint32 faceA = edgeA.faceIdx;
 	const coUint32 faceToAbsorb = edgeB.faceIdx;
 
 	// Already same face?
-	if (edgeA.faceIdx == faceToAbsorb)
+	if (faceA == faceToAbsorb)
 		return false;
 
 	coDEBUG_CODE(mesh.CheckEdgeLoop(edgeIdx));
@@ -69,7 +70,6 @@ coBool coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 
 	// Set face A on the B loop
 	{
-		const coUint32 faceA = edgeA.faceIdx;
 		coUint32 edgeIdxIt = edgeA.nextRadial;
 		do
 		{
@@ -149,6 +149,9 @@ coBool coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 			const coUint32 nextIdx = edge.next;
 			coHalfEdge& radialEdge = edges[edge.nextRadial];
 			const coUint32 radialIdx = edge.nextRadial;
+			coASSERT(edge.faceIdx == faceA);
+			coASSERT(radialEdge.faceIdx == faceA);
+
 			edge.next = idx;
 			edge.prev = idx;
 			edge.nextRadial = idx;
@@ -168,5 +171,6 @@ coBool coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 	}
 
 	coDEBUG_CODE(mesh.CheckEdgeLoop(newLoopIdx));
+	coDEBUG_CODE(mesh.Check());
 	return true;
 }
