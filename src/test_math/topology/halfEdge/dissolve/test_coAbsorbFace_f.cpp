@@ -47,7 +47,21 @@ coTEST(coAbsorbNextRadialFace, all_edges_of_face_A_are_contacts)
 	m.SetRadials(firstEdgeA + 0, firstEdgeB + 0);
 	m.SetRadials(firstEdgeA + 1, firstEdgeB + 2);
 	m.SetRadials(firstEdgeA + 2, firstEdgeB + 1);
-	coEXPECT(coAbsorbNextRadialFace(m, 0));
+	coEXPECT(coAbsorbNextRadialFace(m, firstEdgeA + 0));
 	m.Check();
 	coEXPECT(m.GetNbNonDegenerateFaces() == 1);
 }
+
+coTEST(coAbsorbNextRadialFace, all_edges_of_face_A_are_contacts_bis)
+{
+	coHalfEdgeMesh m;
+	const coUint32 firstEdgeA = m.AddFace(0, 3);
+	const coUint32 firstEdgeB = m.AddFace(1, 6);
+	m.SetRadials(firstEdgeA + 0, firstEdgeB + 0);
+	m.SetRadials(firstEdgeA + 1, firstEdgeB + 2);
+	m.SetRadials(firstEdgeA + 2, firstEdgeB + 1);
+	coEXPECT(coAbsorbNextRadialFace(m, firstEdgeB + 0));
+	m.Check();
+	coEXPECT(m.GetNbNonDegenerateFaces() == 1);
+}
+
