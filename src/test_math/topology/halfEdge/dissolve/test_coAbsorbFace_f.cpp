@@ -37,3 +37,17 @@ coTEST(coAbsorbNextRadialFace, third_triangle_in_middle_of_chain)
 	m.Check();
 	coEXPECT(m.GetNbNonDegenerateFaces() == 2);
 }
+
+
+coTEST(coAbsorbNextRadialFace, all_edges_of_face_A_are_contacts)
+{
+	coHalfEdgeMesh m;
+	const coUint32 firstEdgeA = m.AddFace(0, 3);
+	const coUint32 firstEdgeB = m.AddFace(1, 6);
+	m.SetRadials(firstEdgeA + 0, firstEdgeB + 0);
+	m.SetRadials(firstEdgeA + 1, firstEdgeB + 2);
+	m.SetRadials(firstEdgeA + 2, firstEdgeB + 1);
+	coEXPECT(coAbsorbNextRadialFace(m, 0));
+	m.Check();
+	coEXPECT(m.GetNbNonDegenerateFaces() == 1);
+}
