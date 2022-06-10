@@ -160,6 +160,19 @@ void coHalfEdgeMesh::CheckEdge(coUint32 edgeIdx) const
 	coASSERT(prevRadial.nextRadial == edgeIdx);
 }
 
+coBool coHalfEdgeMesh::IsEdgeManifold(coUint32 edgeIdx) const
+{
+	const coHalfEdge& e = halfEdges[edgeIdx];
+	return halfEdges[e.nextRadial].nextRadial == edgeIdx;
+}
+
+coBool coHalfEdgeMesh::IsEdgeContiguous(coUint32 edgeIdx) const
+{
+	const coHalfEdge& e = halfEdges[edgeIdx];
+	const coHalfEdge& radial = halfEdges[e.nextRadial];
+	return halfEdges[e.nextRadial].nextRadial == edgeIdx && (e.vertexIdx == ~coUint32(0) || radial.vertexIdx != e.vertexIdx);
+}
+
 void coHalfEdgeMesh::Check() const
 {
 	for (coUint32 idx = 0; idx < halfEdges.count; ++idx)

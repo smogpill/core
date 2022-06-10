@@ -15,8 +15,10 @@ public:
 	void RemoveHalfEdge(coUint32 edgeIdx);
 	void CheckEdgeLoop(coUint32 edgeIdx) const;
 	void CheckEdge(coUint32 edgeIdx) const;
+	coBool IsEdgeManifold(coUint32 edgeIdx) const;
+	coBool IsEdgeContiguous(coUint32 edgeIdx) const;
+	coBool IsEdgeBoundary(coUint32 edgeIdx) const { return halfEdges[edgeIdx].nextRadial == edgeIdx; }
 	void Check() const;
-
 	coUint32 GetNbFaces() const;
 	coUint32 GetNbNonDegenerateFaces() const;
 	coUint32 GetNbDegenerateFaces() const;

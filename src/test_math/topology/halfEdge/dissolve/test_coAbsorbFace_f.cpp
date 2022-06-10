@@ -24,44 +24,51 @@ coTEST(coAbsorbNextRadialFace, two_triangles_start)
 
 coTEST(coAbsorbNextRadialFace, third_triangle_in_middle_of_chain)
 {
-	coHalfEdgeMesh m;
-	const coUint32 firstEdgeA = m.AddFace(0, 3);
-	const coUint32 firstEdgeB = m.AddFace(1, 3);
-	const coUint32 firstEdgeC = m.AddFace(2, 7);
-	m.SetRadials(firstEdgeA, firstEdgeC + 6);
-	m.SetRadials(firstEdgeA + 1, firstEdgeC + 2);
-	m.SetRadials(firstEdgeB, firstEdgeC + 5);
-	m.SetRadials(firstEdgeB + 1, firstEdgeC + 4);
-	m.SetRadials(firstEdgeB + 2, firstEdgeC + 3);
-	coEXPECT(coAbsorbNextRadialFace(m, 0));
-	m.Check();
-	coEXPECT(m.GetNbNonDegenerateFaces() == 2);
-}
+	coHalfEdgeMesh mesh;
+	const coUint32 firstEdgeA = mesh.AddFace(0, 3);
+	const coUint32 firstEdgeB = mesh.AddFace(1, 3);
+	const coUint32 firstEdgeC = mesh.AddFace(2, 7);
+	const coUint32 contacts[][2] = 
+	{
+		{firstEdgeA, firstEdgeC + 6},
+		{firstEdgeA + 1, firstEdgeC + 2},
+		{firstEdgeB, firstEdgeC + 5},
+		{firstEdgeB + 1, firstEdgeC + 4},
+		{firstEdgeB + 2, firstEdgeC + 3}
+	};
+	for (const coUint32* contact : contacts)
+		mesh.SetRadials(contact[0], contact[1]);
 
+	for (const coUint32* contact : contacts)
+		for (coUint32 i = 0; i < 2; ++i)
+		{
+			coHalfEdgeMesh m = mesh;
+			coEXPECT(coAbsorbNextRadialFace(m, contact[i]));
+			m.Check();
+			coEXPECT(m.GetNbNonDegenerateFaces() == 2);
+		}
+}
 
 coTEST(coAbsorbNextRadialFace, all_edges_of_face_A_are_contacts)
 {
-	coHalfEdgeMesh m;
-	const coUint32 firstEdgeA = m.AddFace(0, 3);
-	const coUint32 firstEdgeB = m.AddFace(1, 6);
-	m.SetRadials(firstEdgeA + 0, firstEdgeB + 0);
-	m.SetRadials(firstEdgeA + 1, firstEdgeB + 2);
-	m.SetRadials(firstEdgeA + 2, firstEdgeB + 1);
-	coEXPECT(coAbsorbNextRadialFace(m, firstEdgeA + 0));
-	m.Check();
-	coEXPECT(m.GetNbNonDegenerateFaces() == 1);
-}
+	coHalfEdgeMesh mesh;
+	const coUint32 firstEdgeA = mesh.AddFace(0, 3);
+	const coUint32 firstEdgeB = mesh.AddFace(1, 6);
+	const coUint32 contacts[][2] = 
+	{ 
+		{firstEdgeA + 0, firstEdgeB + 0}, 
+		{firstEdgeA + 1, firstEdgeB + 1}, 
+		{firstEdgeA + 2, firstEdgeB + 2} 
+	};
+	for (const coUint32* contact : contacts)
+		mesh.SetRadials(contact[0], contact[1]);
 
-coTEST(coAbsorbNextRadialFace, all_edges_of_face_A_are_contacts_bis)
-{
-	coHalfEdgeMesh m;
-	const coUint32 firstEdgeA = m.AddFace(0, 3);
-	const coUint32 firstEdgeB = m.AddFace(1, 6);
-	m.SetRadials(firstEdgeA + 0, firstEdgeB + 0);
-	m.SetRadials(firstEdgeA + 1, firstEdgeB + 2);
-	m.SetRadials(firstEdgeA + 2, firstEdgeB + 1);
-	coEXPECT(coAbsorbNextRadialFace(m, firstEdgeB + 0));
-	m.Check();
-	coEXPECT(m.GetNbNonDegenerateFaces() == 1);
+	for (const coUint32* contact : contacts)
+		for (coUint32 i = 0; i < 2; ++i)
+		{
+			coHalfEdgeMesh m = mesh;
+			coEXPECT(coAbsorbNextRadialFace(m, contact[i]));
+			m.Check();
+			coEXPECT(m.GetNbNonDegenerateFaces() == 1);
+		}
 }
-
