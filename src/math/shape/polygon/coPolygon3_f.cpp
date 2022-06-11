@@ -64,9 +64,8 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 		coClear(triangleVertices);
 		return;
 	}
-
 	
-	//coASSERT(!coIsClockwiseXY(poly));
+	//coASSERT(coIsCounterClockwiseXY(poly));
 	_coPrepareTriangulate(poly, triangleVertices, scratch);
 
 	const coUint32 expectedNbTriangles = poly.vertices.count - 2;
@@ -94,7 +93,7 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 			{
 				const coVec3 v1 = prev - cur;
 				const coVec3 v2 = next - cur;
-				if (coDot(coCross(v1, v2), planeNormal).x < 0.f)
+				if (coDot(coCross(v1, v2), planeNormal).x > 0.f)
 				{
 					continue;
 				}
@@ -147,7 +146,7 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 				{
 					const coVec3 v1 = prev - cur;
 					const coVec3 v2 = next - cur;
-					if (coDot(coCross(v1, v2), planeNormal).x < 0.f)
+					if (coDot(coCross(v1, v2), planeNormal).x > 0.f)
 					{
 						continue;
 					}

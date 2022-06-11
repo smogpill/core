@@ -56,7 +56,7 @@ void coGenerateMesh(const coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& v
 		// Triangulate
 		{
 			const coVec3 faceNormal = faceNormals[edge.faceIdx];
-			coTriangulateAssumingFlat(polygon, triangleVertices, triangulateScratch, -faceNormal);
+			coTriangulateAssumingFlat(polygon, triangleVertices, triangulateScratch, faceNormal);
 			coASSERT(triangleVertices.count % 3 == 0);
 		}
 

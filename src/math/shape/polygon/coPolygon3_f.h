@@ -20,5 +20,6 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 void coTriangulateWithVaryingZ(const coPolygon3& poly, coDynamicArray<coUint32>& triangleVertices, coTriangulateScratch& scratch);
 coFloat coSignedAreaXY(const coPolygon3& poly);
 coFORCE_INLINE coBool coIsClockwiseXY(const coPolygon3& poly) { return coSignedAreaXY(poly) < 0.0f; }
+coFORCE_INLINE coBool coIsCounterClockwiseXY(const coPolygon3& poly) { return coSignedAreaXY(poly) >= 0.0f; }
 coBool coContainsFlatVertices(const coPolygon3& poly, coFloat epsilon = 1e-4f);
 void coRemoveFlatVertices(coPolygon3& poly, coFloat epsilon = 1e-4f);
