@@ -1,13 +1,16 @@
 // Copyright(c) 2022 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "math/pch.h"
-#include "../../../vector/coVec3_f.h"
-#include "../coHalfEdgeMesh.h"
-#include "coAbsorbFace_f.h"
 #include "coMergePlanarFaces_f.h"
+#include "coAbsorbFace_f.h"
+#include "../coHalfEdgeMesh.h"
+#include "../../../vector/coVec3_f.h"
+#include <debug/profiler/coProfile.h>
 
 void coMergePlanarFaces(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals, coFloat tolerance)
 {
+	coPROFILE_EVENT();
+
 	auto& edges = mesh.halfEdges;
 	for (coUint32 edgeAIdx = 0; edgeAIdx < edges.count; ++edgeAIdx)
 	{

@@ -1,12 +1,14 @@
 // Copyright(c) 2022 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "math/pch.h"
-#include "../../../vector/coVec3_f.h"
-#include "../coHalfEdgeMesh.h"
 #include "coDissolveFlatVertices_f.h"
+#include "../coHalfEdgeMesh.h"
+#include "../../../vector/coVec3_f.h"
+#include <debug/profiler/coProfile.h>
 
 void coDissolveFlatVertices(coHalfEdgeMesh& mesh, const coArray<coVec3>& vertexPositions, coFloat tolerance)
 {
+	coPROFILE_EVENT();
 	auto& edges = mesh.halfEdges;
 	for (coUint32 a1Idx = 0; a1Idx < edges.count; ++a1Idx)
 	{

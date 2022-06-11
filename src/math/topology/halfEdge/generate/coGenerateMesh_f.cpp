@@ -1,13 +1,15 @@
 // Copyright(c) 2022 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "math/pch.h"
+#include "coGenerateMesh_f.h"
+#include "../coHalfEdgeMesh.h"
 #include "../../../vector/coVec3_f.h"
 #include "../../../shape/polygon/coPolygon3_f.h"
-#include "../coHalfEdgeMesh.h"
-#include "coGenerateMesh_f.h"
+#include <debug/profiler/coProfile.h>
 
 void coGenerateMesh(const coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& vertexPositions, const coArray<coVec3>& faceNormals, coDynamicArray<coUint32>& outVertices, coDynamicArray<coUint32>& outIndices)
 {
+	coPROFILE_EVENT();
 	coClear(outVertices);
 	coClear(outIndices);
 	const auto& edges = halfEdgeMesh.halfEdges;

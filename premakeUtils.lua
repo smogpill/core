@@ -67,6 +67,8 @@ function coSetProjectDefaults(_name, _options)
 		defines {"coREFLECT_ENABLED"}
 	filter { "configurations:dev or release or prebuildRelease" }
 		optimize "On"
+	filter{"configurations:release"}
+		defines {"coRELEASE"}
 	filter {}	
 end
 

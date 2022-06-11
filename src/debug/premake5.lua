@@ -1,1 +1,2 @@
 coSetCppProjectDefaults("debug")
+coSetProjectDependencies{"optick"}

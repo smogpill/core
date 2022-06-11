@@ -14,8 +14,11 @@ coTaskWorkerThread::coTaskWorkerThread(coTaskScheduler& scheduler_, coUint index
 
 coResult coTaskWorkerThread::OnRun()
 {
+	coDynamicString workerName = "Worker_";
+	workerName << index;
+	coNullTerminate(workerName);
+	coPROFILE_THREAD(workerName.data);
 	coTRY(Super::OnRun(), nullptr);
-	coPROFILE_THREAD("Worker");
 
 	coTaskContext context;
 	context.scheduler = scheduler;

@@ -1,9 +1,10 @@
 // Copyright(c) 2022 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "math/pch.h"
+#include "coHalfEdgeMesh.h"
 #include <container/array/coDynamicArray_f.h>
 #include <container/map/coHashMap.h>
-#include "coHalfEdgeMesh.h"
+#include <debug/profiler/coProfile.h>
 
 coBool co_advancedChecks = false;
 
