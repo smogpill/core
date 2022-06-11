@@ -5,6 +5,7 @@
 class coHalfEdge
 {
 public:
+	coHalfEdge() : checked(false) {}
 	void SwapEdgeIdx(coUint32 oldIdx, coUint32 newIdx);
 	coBool IsDegenerate() const { return prev == next; }
 
@@ -13,6 +14,6 @@ public:
 	coUint32 nextRadial = coUint32(-1);
 	coUint32 prevRadial = coUint32(-1);
 	coUint32 vertexIdx = coUint32(-1);
-	coUint32 edgeIdx = coUint32(-1);
 	coUint32 faceIdx = coUint32(-1);
+	mutable coBool checked : 1;
 };

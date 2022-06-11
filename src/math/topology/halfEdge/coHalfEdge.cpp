@@ -13,6 +13,4 @@ void coHalfEdge::SwapEdgeIdx(coUint32 oldIdx, coUint32 newIdx)
 		nextRadial = newIdx;
 	if (prevRadial == oldIdx)
 		prevRadial = newIdx;
-	if (edgeIdx == oldIdx)
-		edgeIdx = newIdx;
 }

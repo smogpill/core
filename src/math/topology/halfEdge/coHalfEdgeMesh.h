@@ -24,6 +24,7 @@ public:
 	coUint32 GetNbDegenerateFaces() const;
 	template <class F>
 	void VisitFaces(F functor) const;
+	void ClearCheckedFlags() const;
 
 	coDynamicArray<coHalfEdge> halfEdges;
 };

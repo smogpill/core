@@ -123,8 +123,8 @@ coBool coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 	}
 	else if (edges[edges[aFirstRelatedToBIdx].nextRadial].next == edges[aLastRelatedToBIdx].nextRadial)
 	{
-		const coUint32 prevIdx = edges[aLastRelatedToBIdx].prev;
-		const coUint32 nextIdx = edges[aFirstRelatedToBIdx].next;
+		const coUint32 prevIdx = edges[aFirstRelatedToBIdx].prev;
+		const coUint32 nextIdx = edges[aLastRelatedToBIdx].next;
 		coHalfEdge& prev = edges[prevIdx];
 		coHalfEdge& next = edges[nextIdx];
 		coASSERT(!prev.IsDegenerate());

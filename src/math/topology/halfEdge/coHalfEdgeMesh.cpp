@@ -5,6 +5,8 @@
 #include <container/map/coHashMap.h>
 #include "coHalfEdgeMesh.h"
 
+coBool co_advancedChecks = false;
+
 coHalfEdgeMesh::coHalfEdgeMesh(const coArray<coUint32>& indices, coUint32 nbVertices)
 {
 	coASSERT(indices.count % 3 == 0);
@@ -55,7 +57,6 @@ coHalfEdgeMesh::coHalfEdgeMesh(const coArray<coUint32>& indices, coUint32 nbVert
 			pushBackVertxToHalfEdge(vertexIdx, halfEdges.count);
 			coHalfEdge& edge = coPushBack(halfEdges);
 			edge.vertexIdx = vertexIdx;
-			edge.edgeIdx = indexIdx;
 			edge.faceIdx = triangleIdx;
 			edge.prev = nodeOffset + (i + 2) % 3;
 			edge.next = nodeOffset + (i + 1) % 3;
@@ -117,7 +118,6 @@ void coHalfEdgeMesh::RemoveHalfEdge(coUint32 edgeIdx)
 	if (edgeIdx != lastEdgeIdx)
 	{
 		coHalfEdge& newEdge = halfEdges[lastEdgeIdx];
-		newEdge.edgeIdx = edgeIdx;
 		const coUint32 newPrev = newEdge.prev;
 		const coUint32 newPrevRadial = newEdge.prevRadial;
 		halfEdges[newEdge.next].prev = edgeIdx;
@@ -131,7 +131,10 @@ void coHalfEdgeMesh::RemoveHalfEdge(coUint32 edgeIdx)
 
 void coHalfEdgeMesh::CheckEdgeLoop(coUint32 edgeIdx) const
 {
+	if (!co_advancedChecks)
+		return;
 	const coHalfEdge& edge = halfEdges[edgeIdx];
+	edge.checked = true;
 	if (!edge.IsDegenerate())
 	{
 		coUint32 itEdgeIdx = edgeIdx;
@@ -149,6 +152,8 @@ void coHalfEdgeMesh::CheckEdgeLoop(coUint32 edgeIdx) const
 
 void coHalfEdgeMesh::CheckEdge(coUint32 edgeIdx) const
 {
+	if (!co_advancedChecks)
+		return;
 	const coHalfEdge& edge = halfEdges[edgeIdx];
 	const coHalfEdge& next = halfEdges[edge.next];
 	const coHalfEdge& prev = halfEdges[edge.prev];
@@ -158,6 +163,7 @@ void coHalfEdgeMesh::CheckEdge(coUint32 edgeIdx) const
 	coASSERT(prev.next == edgeIdx);
 	coASSERT(nextRadial.prevRadial == edgeIdx);
 	coASSERT(prevRadial.nextRadial == edgeIdx);
+	edge.checked = true;
 }
 
 coBool coHalfEdgeMesh::IsEdgeManifold(coUint32 edgeIdx) const
@@ -175,9 +181,14 @@ coBool coHalfEdgeMesh::IsEdgeContiguous(coUint32 edgeIdx) const
 
 void coHalfEdgeMesh::Check() const
 {
+	if (!co_advancedChecks)
+		return;
+	
+	ClearCheckedFlags();
 	for (coUint32 idx = 0; idx < halfEdges.count; ++idx)
 	{
-		CheckEdgeLoop(idx);
+		if (!halfEdges[idx].checked)
+			CheckEdgeLoop(idx);
 	}
 }
 
@@ -217,6 +228,12 @@ coUint32 coHalfEdgeMesh::GetNbDegenerateFaces() const
 	};
 	VisitFaces(functor);
 	return nb;
+}
+
+void coHalfEdgeMesh::ClearCheckedFlags() const
+{
+	for (const coHalfEdge& edge : halfEdges)
+		edge.checked = false;
 }
 
 coUint32 coHalfEdgeMesh::AddFace(coUint32 faceIdx, coUint32 nbHalfEdges)

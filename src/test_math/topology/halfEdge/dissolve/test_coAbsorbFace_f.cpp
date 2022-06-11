@@ -39,6 +39,12 @@ coTEST(coAbsorbNextRadialFace, third_triangle_in_middle_of_chain)
 	for (const coUint32* contact : contacts)
 		mesh.SetRadials(contact[0], contact[1]);
 
+	// Temp
+	{
+		coHalfEdgeMesh m = mesh;
+		coEXPECT(coAbsorbNextRadialFace(m, 11));
+	}
+
 	for (const coUint32* contact : contacts)
 		for (coUint32 i = 0; i < 2; ++i)
 		{
