@@ -10,6 +10,7 @@ void _coPrepareTriangulate(const coPolygon3& poly, coDynamicArray<coUint32>& tri
 {
 	coClear(scratch.remainingIndices);
 	coClear(scratch.sorted);
+	coClear(scratch.concaves);
 	coClear(scratch.deviations);
 	coClear(triangles);
 	const coUint32 nbPoints = poly.vertices.count;
@@ -37,12 +38,17 @@ coFORCE_INLINE coBool _coIsInsideTriangleXY(const coVec3& a, const coVec3& b, co
 
 void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>& triangleVertices, coTriangulateScratch& scratch, const coVec3& planeNormal)
 {
-	// TODO: Check Ear-clipping Based Algorithms of Generating High - quality Polygon Triangulation Gang Mei1, John C.Tipper1 and Nengxiong Xu
+	// TODO: 
+	// - Project the vertices to the plane to work directly in 2d
+	// - Use some acceleration structure to find overlaps (Blender uses a KD-tree)
+	// - Precompute convexity (don't forget to update it when an ear is removed)
+	// - To improve quality: Check Ear-clipping Based Algorithms of Generating High - quality Polygon Triangulation Gang Mei1, John C.Tipper1 and Nengxiong Xu
 
 	// References: 
 	// - FIST: Fast Industrial-Strength Triangulation of Polygons https://www.cosy.sbg.ac.at/~held/projects/triang/triang.html
 	// - Fast Polygon Triangulation Based on Seidel's Algorithm http://gamma.cs.unc.edu/SEIDEL/#:~:text=It%20is%20an%20incremental%20randomized,polygon%20into%20n%2D2%20triangles.
 	// - Blender : BLI_polyfill_calc_arena
+	// - blender/blenlib/intern/polyfill_2d.c
 
 	if (poly.vertices.count == 3)
 	{
@@ -61,7 +67,6 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 
 	
 	//coASSERT(!coIsClockwiseXY(poly));
-	//coASSERT(!coContainsFlatVertices(poly)); // flat vertex -> Degenerate polygon
 	_coPrepareTriangulate(poly, triangleVertices, scratch);
 
 	const coUint32 expectedNbTriangles = poly.vertices.count - 2;
@@ -70,7 +75,7 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 	// Remove "ear" triangles one by one.
 	while (scratch.remainingIndices.count > 3)
 	{
-		coBool found = false;
+		coUint32 earIdx = ~coUint32(0);
 
 		// Find ear vertex
 		for (coUint32 i = 0; i < scratch.remainingIndices.count; ++i)
@@ -118,20 +123,56 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 				}
 			}
 
-			found = true;
-
-			coRemoveOrderedByIndex(scratch.remainingIndices, i);
-
-			coPushBack(triangleVertices, prevIdx);
-			coPushBack(triangleVertices, curIdx);
-			coPushBack(triangleVertices, nextIdx);
+			earIdx = i;
 			break;
 		}
 
-		if (!found)
+		// No ear found? That means that the polygon is degenerate (e.g. nearly collinear)
+		// Note that the provided polygon was not necessarily degenerate at first.
+		if (earIdx == ~coUint32(0))
 		{
-			return;
+			for (coUint32 i = 0; i < scratch.remainingIndices.count; ++i)
+			{
+				const coUint32 remainingPrev = i == 0 ? (scratch.remainingIndices.count - 1) : (i - 1);
+				const coUint32 remainingCur = i;
+				const coUint32 remainingNext = i == (scratch.remainingIndices.count - 1) ? 0 : (i + 1);
+				const coUint32 prevIdx = scratch.remainingIndices[remainingPrev];
+				const coUint32 curIdx = scratch.remainingIndices[remainingCur];
+				const coUint32 nextIdx = scratch.remainingIndices[remainingNext];
+				const coVec3& prev = poly.vertices[prevIdx];
+				const coVec3& cur = poly.vertices[curIdx];
+				const coVec3& next = poly.vertices[nextIdx];
+
+				// If interior vertex, continue
+				{
+					const coVec3 v1 = prev - cur;
+					const coVec3 v2 = next - cur;
+					if (coDot(coCross(v1, v2), planeNormal).x < 0.f)
+					{
+						continue;
+					}
+				}
+
+				earIdx = i;
+				break;
+			}
+
+			// No convex found, just return the first one
+			if (earIdx == ~coUint32(0))
+			{
+				earIdx = 0;
+			}
 		}
+
+		const coUint32 remainingPrev = earIdx == 0 ? (scratch.remainingIndices.count - 1) : (earIdx - 1);
+		const coUint32 remainingCur = earIdx;
+		const coUint32 remainingNext = earIdx == (scratch.remainingIndices.count - 1) ? 0 : (earIdx + 1);
+
+		coPushBack(triangleVertices, scratch.remainingIndices[remainingPrev]);
+		coPushBack(triangleVertices, scratch.remainingIndices[remainingCur]);
+		coPushBack(triangleVertices, scratch.remainingIndices[remainingNext]);
+
+		coRemoveOrderedByIndex(scratch.remainingIndices, earIdx);
 	}
 
 	coASSERT(scratch.remainingIndices.count == 3);
@@ -139,18 +180,7 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 	coPushBack(triangleVertices, scratch.remainingIndices[1]);
 	coPushBack(triangleVertices, scratch.remainingIndices[2]);
 
-	// Some triangles can be dismissed since they can be flat/colinear.
-	// Check the issue with this case:
-	// [0]{ -17.7500000, -10.2500000, 6.42884827}
-	// [1]{ -18.5347691, -10.8032837, 6.42884064 }
-	// [2]{ -18.2500000, -9.75000000, 6.42884827 }
-	// [3]{ -17.4375000, -9.18750000, 6.42885590 }
-	// [4]{ -17.1250000, -9.37500000, 6.42885590 }
-	// [5]{ -16.9375000, -9.31250000, 6.42885590 }
-	// Can be viewed some plotting software, like desmos.com
-	//
-	// With the last triangle to be found being 2,4,5, and sadly being flat.
-	//coASSERT(nbRemainingTriangles == 0); // The algorithm did not manage to make enough triangles.
+	coASSERT(triangleVertices.count == expectedNbTriangles * 3);
 }
 
 void coTriangulateWithVaryingZ(const coPolygon3& poly, coDynamicArray<coUint32>& triangleVertices, coTriangulateScratch& scratch)

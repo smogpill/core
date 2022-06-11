@@ -11,6 +11,7 @@ class coTriangulateScratch
 public:
 	coDynamicArray<coUint32> remainingIndices;
 	coDynamicArray<coUint32> sorted;
+	coDynamicArray<coBool> concaves;
 	coDynamicArray<coFloat> deviations;
 };
 
