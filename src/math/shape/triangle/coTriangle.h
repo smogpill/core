@@ -12,3 +12,4 @@ public:
 	coVec3 b;
 	coVec3 c;
 };
+

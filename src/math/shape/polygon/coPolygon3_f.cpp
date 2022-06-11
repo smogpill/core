@@ -39,18 +39,40 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 {
 	// TODO: Check Ear-clipping Based Algorithms of Generating High - quality Polygon Triangulation Gang Mei1, John C.Tipper1 and Nengxiong Xu
 
+	// References: 
+	// - FIST: Fast Industrial-Strength Triangulation of Polygons https://www.cosy.sbg.ac.at/~held/projects/triang/triang.html
+	// - Fast Polygon Triangulation Based on Seidel's Algorithm http://gamma.cs.unc.edu/SEIDEL/#:~:text=It%20is%20an%20incremental%20randomized,polygon%20into%20n%2D2%20triangles.
+	// - Blender : BLI_polyfill_calc_arena
+
+	if (poly.vertices.count == 3)
+	{
+		coClear(triangleVertices);
+		coResize(triangleVertices, 3);
+		triangleVertices[0] = 0;
+		triangleVertices[1] = 1;
+		triangleVertices[2] = 2;
+		return;
+	}
+	else if (poly.vertices.count < 3)
+	{
+		coClear(triangleVertices);
+		return;
+	}
+
+	
 	//coASSERT(!coIsClockwiseXY(poly));
 	//coASSERT(!coContainsFlatVertices(poly)); // flat vertex -> Degenerate polygon
 	_coPrepareTriangulate(poly, triangleVertices, scratch);
 
 	const coUint32 expectedNbTriangles = poly.vertices.count - 2;
-	coUint32 nbRemainingTriangles = expectedNbTriangles;
-	coUint32 nbRemainingIterations = expectedNbTriangles;
+	coReserve(triangleVertices, expectedNbTriangles * 3);
 
 	// Remove "ear" triangles one by one.
-	while (nbRemainingIterations)
+	while (scratch.remainingIndices.count > 3)
 	{
-		// For every vertex
+		coBool found = false;
+
+		// Find ear vertex
 		for (coUint32 i = 0; i < scratch.remainingIndices.count; ++i)
 		{
 			const coUint32 remainingPrev = i == 0 ? (scratch.remainingIndices.count - 1) : (i - 1);
@@ -96,23 +118,26 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 				}
 			}
 
+			found = true;
+
+			coRemoveOrderedByIndex(scratch.remainingIndices, i);
+
 			coPushBack(triangleVertices, prevIdx);
 			coPushBack(triangleVertices, curIdx);
 			coPushBack(triangleVertices, nextIdx);
-			--nbRemainingTriangles;
-			if (!nbRemainingTriangles)
-			{
-				coASSERT(triangleVertices.count % 3 == 0);
-				coASSERT(triangleVertices.count / 3 == expectedNbTriangles);
-				return;
-			}
-
-			// Remove vertex
-			coRemoveOrderedByIndex(scratch.remainingIndices, i);
-			--i;
+			break;
 		}
-		--nbRemainingIterations;
+
+		if (!found)
+		{
+			return;
+		}
 	}
+
+	coASSERT(scratch.remainingIndices.count == 3);
+	coPushBack(triangleVertices, scratch.remainingIndices[0]);
+	coPushBack(triangleVertices, scratch.remainingIndices[1]);
+	coPushBack(triangleVertices, scratch.remainingIndices[2]);
 
 	// Some triangles can be dismissed since they can be flat/colinear.
 	// Check the issue with this case:
