@@ -16,6 +16,7 @@ void coGenerateMesh(coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& vertexP
 	coPolygon3 polygon;
 	coDynamicArray<coUint32> oldVertexToNewVertex;
 	coDynamicArray<coHalfEdge*> faceEdges;
+	coDynamicArray<coUint32> loopVertices; // temp
 	coDynamicArray<coUint32> triangleVertices;
 	coTriangulateScratch triangulateScratch;
 	coResize(oldVertexToNewVertex, vertexPositions.count, ~coUint32(0));
@@ -42,6 +43,18 @@ void coGenerateMesh(coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& vertexP
 			} while (itEdgeIdx != edgeIdx);
 		}
 
+		// temp: check that the loop does not contain the same vertex more than once
+#ifndef coRELEASE
+		{
+			coClear(loopVertices);
+			for (const coHalfEdge* faceEdge : faceEdges)
+			{
+				coASSERT(!coContains(loopVertices, faceEdge->vertexIdx));
+				coPushBack(loopVertices, faceEdge->vertexIdx);
+			}
+		}
+#endif
+
 		// Build the polygon
 		{
 			coClearAndResize(polygon.vertices, faceEdges.count);
@@ -49,6 +62,12 @@ void coGenerateMesh(coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& vertexP
 			{
 				const coHalfEdge* faceEdge = faceEdges[idx];
 				polygon.vertices[idx] = vertexPositions[faceEdge->vertexIdx];
+
+				// temp
+				if (faceEdge->vertexIdx == 12)
+				{
+					int kk = 0; ++kk;
+				}
 			}
 		}
 
@@ -58,6 +77,9 @@ void coGenerateMesh(coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& vertexP
 			coTriangulateAssumingFlat(polygon, triangleVertices, triangulateScratch, faceNormal);
 			coASSERT(triangleVertices.count % 3 == 0);
 		}
+
+		// temp
+		const coUint32 indexOffset = outIndices.count;
 
 		// Push new vertices and triangles
 		for (const coUint32 polyVertexIdx : triangleVertices)
@@ -70,6 +92,25 @@ void coGenerateMesh(coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& vertexP
 				coPushBack(outVertices, polyEdge->vertexIdx);
 			}
 			coPushBack(outIndices, newVertexIdx);
+		}
+
+		const coUint32 nbTriangles = triangleVertices.count / 3;
+		for (coUint32 triangleIdx = 0; triangleIdx < nbTriangles; ++triangleIdx)
+		{
+			const coUint32 triangleOffset = indexOffset + triangleIdx * 3;
+			for (coUint32 i = 0; i < 3; ++i)
+			{
+				const coUint32 j = (i + 1) % 3;
+				coUint32 a = outIndices[triangleOffset + i];
+				coUint32 b = outIndices[triangleOffset + j];
+				if (a > b)
+					coSwap(a, b);
+
+				if (a == 5 && b == 7)
+				{
+					int kk = 0; ++kk;
+				}
+			}
 		}
 
 		// Disable the edges of the face

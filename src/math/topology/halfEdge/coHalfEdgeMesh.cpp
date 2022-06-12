@@ -6,7 +6,7 @@
 #include <container/map/coHashMap_f.h>
 #include <debug/profiler/coProfile.h>
 
-coBool co_advancedChecks = true;
+coBool co_advancedChecks = false;
 
 coHalfEdgeMesh::coHalfEdgeMesh(const coArray<coUint32>& indices, coUint32 nbVertices)
 {

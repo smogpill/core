@@ -108,7 +108,7 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 
 					const coUint32 n = scratch.remainingIndices[j];
 					const coVec3& v = poly.vertices[n];
-					if (coOverlap(coTriangle(prev, cur, next), v))
+					if (coOverlapInfiniteExtrude(coTriangle(prev, cur, next), v))
 					{
 						ignore = true;
 						break;

@@ -14,8 +14,9 @@ coFORCE_INLINE coVec3 coGetNormal(const coTriangle& t)
 	return coNormalize(coGetRawNormal(t));
 }
 
-coFORCE_INLINE coBool32x4 coOverlap(const coTriangle& t, const coVec3& p)
+coFORCE_INLINE coBool32x4 coOverlapInfiniteExtrude(const coTriangle& t, const coVec3& p)
 {
+	// https://gdbooks.gitbooks.io/3dcollisions/content/Chapter4/point_in_triangle.html
 	const coVec3 pa = t.a - p;
 	const coVec3 pb = t.b - p;
 	const coVec3 pc = t.c - p;
