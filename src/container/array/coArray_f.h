@@ -70,6 +70,20 @@ void coClear(coArray<T>& _this)
 	_this.count = 0;
 }
 
+template <class A>
+void coClearAndResize(A& _this, coUint32 _newCount, const typename A::ValueType& _defaultValue)
+{
+	coClear(_this);
+	coResize(_this, _newCount, _defaultValue);
+}
+
+template <class A>
+void coClearAndResize(A& _this, coUint32 _newCount)
+{
+	coClear(_this);
+	coResize(_this, _newCount);
+}
+
 template <class T>
 void coFill(coArray<T>& _this, const T& _val)
 {

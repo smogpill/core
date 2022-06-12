@@ -18,7 +18,7 @@ void coGenerateMesh(coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& vertexP
 	coDynamicArray<coHalfEdge*> faceEdges;
 	coDynamicArray<coUint32> triangleVertices;
 	coTriangulateScratch triangulateScratch;
-	coResize(oldVertexToNewVertex, vertexPositions.count, coUint32(-1));
+	coResize(oldVertexToNewVertex, vertexPositions.count, ~coUint32(0));
 
 	/// Clear the 'done' flag
 	for (coHalfEdge& edge : edges)
@@ -44,10 +44,12 @@ void coGenerateMesh(coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& vertexP
 
 		// Build the polygon
 		{
-			coReserve(polygon.vertices, faceEdges.count);
-			coClear(polygon);
-			for (const coHalfEdge* faceEdge : faceEdges)
-				coPushBack(polygon.vertices, vertexPositions[faceEdge->vertexIdx]);
+			coClearAndResize(polygon.vertices, faceEdges.count);
+			for (coUint32 idx = 0; idx < faceEdges.count; ++idx)
+			{
+				const coHalfEdge* faceEdge = faceEdges[idx];
+				polygon.vertices[idx] = vertexPositions[faceEdge->vertexIdx];
+			}
 		}
 
 		// Triangulate
@@ -60,25 +62,25 @@ void coGenerateMesh(coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& vertexP
 		// Push new vertices and triangles
 		for (const coUint32 polyVertexIdx : triangleVertices)
 		{
-			const coHalfEdge* polyNode = faceEdges[polyVertexIdx];
-			coUint32& newVertexIdx = oldVertexToNewVertex[polyNode->vertexIdx];
-			if (newVertexIdx == coUint32(-1))
+			const coHalfEdge* polyEdge = faceEdges[polyVertexIdx];
+			coUint32& newVertexIdx = oldVertexToNewVertex[polyEdge->vertexIdx];
+			if (newVertexIdx == ~coUint32(0))
 			{
 				newVertexIdx = outVertices.count;
-				coPushBack(outVertices, polyNode->vertexIdx);
+				coPushBack(outVertices, polyEdge->vertexIdx);
 			}
 			coPushBack(outIndices, newVertexIdx);
 		}
 
 		// Disable the edges of the face
 		{
-			coUint32 itNodeIdx = edgeIdx;
+			coUint32 itEdgeIdx = edgeIdx;
 			do
 			{
-				coHalfEdge& itNode = edges[itNodeIdx];
-				itNode.done = true;
-				itNodeIdx = itNode.next;
-			} while (itNodeIdx != edgeIdx);
+				coHalfEdge& itEdge = edges[itEdgeIdx];
+				itEdge.done = true;
+				itEdgeIdx = itEdge.next;
+			} while (itEdgeIdx != edgeIdx);
 		}
 	}
 }

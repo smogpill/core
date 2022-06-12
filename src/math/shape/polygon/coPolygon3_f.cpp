@@ -8,7 +8,6 @@
 
 void _coPrepareTriangulate(const coPolygon3& poly, coDynamicArray<coUint32>& triangles, coTriangulateScratch& scratch)
 {
-	coClear(scratch.remainingIndices);
 	coClear(scratch.sorted);
 	coClear(scratch.concaves);
 	coClear(scratch.deviations);
@@ -17,7 +16,7 @@ void _coPrepareTriangulate(const coPolygon3& poly, coDynamicArray<coUint32>& tri
 
 	// Copy the provided points to a dynamic list to work on.
 	{
-		coResize(scratch.remainingIndices, nbPoints);
+		coClearAndResize(scratch.remainingIndices, nbPoints);
 		for (coUint32 i = 0; i < nbPoints; ++i)
 			scratch.remainingIndices[i] = i;
 	}
@@ -52,8 +51,7 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 
 	if (poly.vertices.count == 3)
 	{
-		coClear(triangleVertices);
-		coResize(triangleVertices, 3);
+		coClearAndResize(triangleVertices, 3);
 		triangleVertices[0] = 0;
 		triangleVertices[1] = 1;
 		triangleVertices[2] = 2;
