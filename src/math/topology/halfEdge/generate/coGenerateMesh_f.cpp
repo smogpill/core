@@ -7,28 +7,27 @@
 #include "../../../shape/polygon/coPolygon3_f.h"
 #include <debug/profiler/coProfile.h>
 
-void coGenerateMesh(const coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& vertexPositions, const coArray<coVec3>& faceNormals, coDynamicArray<coUint32>& outVertices, coDynamicArray<coUint32>& outIndices)
+void coGenerateMesh(coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& vertexPositions, const coArray<coVec3>& faceNormals, coDynamicArray<coUint32>& outVertices, coDynamicArray<coUint32>& outIndices)
 {
 	coPROFILE_EVENT();
 	coClear(outVertices);
 	coClear(outIndices);
-	const auto& edges = halfEdgeMesh.halfEdges;
+	auto& edges = halfEdgeMesh.halfEdges;
 	coPolygon3 polygon;
 	coDynamicArray<coUint32> oldVertexToNewVertex;
-	coDynamicArray<const coHalfEdge*> faceEdges;
+	coDynamicArray<coHalfEdge*> faceEdges;
 	coDynamicArray<coUint32> triangleVertices;
-	coDynamicArray<coBool> doneEdges;
 	coTriangulateScratch triangulateScratch;
-
 	coResize(oldVertexToNewVertex, vertexPositions.count, coUint32(-1));
-	coResize(doneEdges, edges.count, false);
+
+	/// Clear the 'done' flag
+	for (coHalfEdge& edge : edges)
+		edge.done = false;
 
 	for (coUint32 edgeIdx = 0; edgeIdx < edges.count; ++edgeIdx)
 	{
-		if (doneEdges[edgeIdx])
-			continue;
 		const coHalfEdge& edge = edges[edgeIdx];
-		if (edge.next == edgeIdx)
+		if (edge.done || edge.next == edgeIdx)
 			continue;
 
 		// Collect face edges
@@ -37,9 +36,9 @@ void coGenerateMesh(const coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& v
 			coUint32 itEdgeIdx = edgeIdx;
 			do
 			{
-				const coHalfEdge& itNode = edges[itEdgeIdx];
-				coPushBack(faceEdges, &itNode);
-				itEdgeIdx = itNode.next;
+				coHalfEdge& itEdge = edges[itEdgeIdx];
+				coPushBack(faceEdges, &itEdge);
+				itEdgeIdx = itEdge.next;
 			} while (itEdgeIdx != edgeIdx);
 		}
 
@@ -48,9 +47,7 @@ void coGenerateMesh(const coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& v
 			coReserve(polygon.vertices, faceEdges.count);
 			coClear(polygon);
 			for (const coHalfEdge* faceEdge : faceEdges)
-			{
 				coPushBack(polygon.vertices, vertexPositions[faceEdge->vertexIdx]);
-			}
 		}
 
 		// Triangulate
@@ -78,8 +75,8 @@ void coGenerateMesh(const coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& v
 			coUint32 itNodeIdx = edgeIdx;
 			do
 			{
-				const coHalfEdge& itNode = edges[itNodeIdx];
-				doneEdges[itNodeIdx] = true;
+				coHalfEdge& itNode = edges[itNodeIdx];
+				itNode.done = true;
 				itNodeIdx = itNode.next;
 			} while (itNodeIdx != edgeIdx);
 		}

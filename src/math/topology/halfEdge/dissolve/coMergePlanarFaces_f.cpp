@@ -30,6 +30,7 @@ void coMergePlanarFaces(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals
 		if (coAbs(coDot(normalA, normalB) - 1.0f) < tolerance)
 		{
 			coAbsorbNextRadialFace(mesh, edgeAIdx);
+			mesh.CheckNoMoreThan2FacesPerEdge();
 		}
 	}
 }

@@ -3,10 +3,10 @@
 #include "math/pch.h"
 #include "coHalfEdgeMesh.h"
 #include <container/array/coDynamicArray_f.h>
-#include <container/map/coHashMap.h>
+#include <container/map/coHashMap_f.h>
 #include <debug/profiler/coProfile.h>
 
-coBool co_advancedChecks = false;
+coBool co_advancedChecks = true;
 
 coHalfEdgeMesh::coHalfEdgeMesh(const coArray<coUint32>& indices, coUint32 nbVertices)
 {
@@ -165,6 +165,30 @@ void coHalfEdgeMesh::CheckEdge(coUint32 edgeIdx) const
 	coASSERT(nextRadial.prevRadial == edgeIdx);
 	coASSERT(prevRadial.nextRadial == edgeIdx);
 	edge.checked = true;
+}
+
+void coHalfEdgeMesh::CheckNoMoreThan2FacesPerEdge() const
+{
+	if (!co_advancedChecks)
+		return;
+
+	coHashMap<coUint64, coUint8, 1024> edgeToCount;
+	coReserve(edgeToCount, halfEdges.count);
+	for (coUint32 edgeIdx = 0; edgeIdx < halfEdges.count; ++edgeIdx)
+	{
+		const coHalfEdge& edge = halfEdges[edgeIdx];
+		if (edge.next == edgeIdx)
+			continue;
+		const coHalfEdge& nextEdge = halfEdges[edge.next];
+		coUint32 aIdx = edge.vertexIdx;
+		coUint32 bIdx = nextEdge.vertexIdx;
+		if (bIdx < aIdx)
+			coSwap(aIdx, bIdx);
+		const coUint64 edgeKey = coUint64(aIdx) | (coUint64(bIdx) << 32);
+		const coUint8 nb = coGet(edgeToCount, edgeKey, coUint8(0));
+		coASSERT(nb < 2);
+		coSet(edgeToCount, edgeKey, coUint8(nb + 1));
+	}
 }
 
 coBool coHalfEdgeMesh::IsEdgeManifold(coUint32 edgeIdx) const

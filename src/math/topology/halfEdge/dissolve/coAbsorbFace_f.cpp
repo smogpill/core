@@ -5,8 +5,11 @@
 #include "../coHalfEdgeMesh.h"
 #include <container/array/coDynamicArray_f.h>
 
-coBool coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
+coUint32 coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 {
+	// Refs:
+	// - bmesh_kernel_join_face_kill_edge() from https://github.com/blender/blender/blob/594f47ecd2d5367ca936cf6fc6ec8168c2b360d0/source/blender/bmesh/intern/bmesh_core.c
+
 	auto& edges = mesh.halfEdges;
 
 	const coHalfEdge& edgeA = edges[edgeIdx];
@@ -19,7 +22,7 @@ coBool coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 
 	// Already same face?
 	if (faceA == faceToAbsorb)
-		return false;
+		return ~coUint32(0);
 
 	coASSERT(mesh.IsEdgeContiguous(edgeIdx));
 
@@ -249,5 +252,5 @@ coBool coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 
 	coDEBUG_CODE(mesh.CheckEdgeLoop(newLoopIdx));
 	coDEBUG_CODE(mesh.Check());
-	return true;
+	return newLoopIdx;
 }

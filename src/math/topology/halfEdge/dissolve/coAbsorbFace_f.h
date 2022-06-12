@@ -3,5 +3,5 @@
 #pragma once
 class coHalfEdgeMesh;
 
-/// Returns false if no face was absorbed (either because it is already the same face, or it is not touching the current face
-coBool coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx);
+/// Returns an arbitrary half edge of the resulting face or ~coUint32(0) if no joining took place
+coUint32 coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx);

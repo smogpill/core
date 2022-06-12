@@ -5,7 +5,7 @@
 class coHalfEdge
 {
 public:
-	coHalfEdge() : checked(false) {}
+	coHalfEdge() : checked(false), done(false) {}
 	void SwapEdgeIdx(coUint32 oldIdx, coUint32 newIdx);
 	coBool IsDegenerate() const { return prev == next; }
 
@@ -15,5 +15,9 @@ public:
 	coUint32 prevRadial = coUint32(-1);
 	coUint32 vertexIdx = coUint32(-1);
 	coUint32 faceIdx = coUint32(-1);
+
+	/// Work attribute that can be used internally by algorithms
+	coBool done : 1;
+	/// Work attribute used by check functions
 	mutable coBool checked : 1;
 };
