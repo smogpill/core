@@ -21,6 +21,14 @@ void coGenerateMesh(coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& vertexP
 	coTriangulateScratch triangulateScratch;
 	coResize(oldVertexToNewVertex, vertexPositions.count, ~coUint32(0));
 
+	// Temp
+	struct VToH
+	{
+		coUint32 newVertexIdx;
+		coUint32 edgeIdx;
+	};
+	coDynamicArray<VToH> vtoh;
+
 	/// Clear the 'done' flag
 	for (coHalfEdge& edge : edges)
 		edge.done = false;
@@ -92,6 +100,11 @@ void coGenerateMesh(coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& vertexP
 				coPushBack(outVertices, polyEdge->vertexIdx);
 			}
 			coPushBack(outIndices, newVertexIdx);
+
+			VToH v;
+			v.edgeIdx = edges[polyEdge->next].prev;
+			v.newVertexIdx = newVertexIdx;
+			coPushBack(vtoh, v);
 		}
 
 		const coUint32 nbTriangles = triangleVertices.count / 3;

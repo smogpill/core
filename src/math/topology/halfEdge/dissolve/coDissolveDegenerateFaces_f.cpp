@@ -1,9 +1,9 @@
 // Copyright(c) 2022 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "math/pch.h"
+#include "coDissolveDegenerateFaces_f.h"
 #include <container/array/coArray_f.h>
 #include "../coHalfEdgeMesh.h"
-#include "coDissolveDegenerateFaces_f.h"
 
 void coDissolveDegenerateFaces(coHalfEdgeMesh& mesh)
 {

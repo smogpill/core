@@ -19,6 +19,7 @@ public:
 	coBool IsEdgeManifold(coUint32 edgeIdx) const;
 	coBool IsEdgeContiguous(coUint32 edgeIdx) const;
 	coBool IsEdgeBoundary(coUint32 edgeIdx) const { return halfEdges[edgeIdx].nextRadial == edgeIdx; }
+	coBool IsFaceTriangle(coUint32 edgeIdx) const;
 	void Check() const;
 	coUint32 GetNbFaces() const;
 	coUint32 GetNbNonDegenerateFaces() const;
@@ -55,4 +56,11 @@ void coHalfEdgeMesh::VisitFaces(F functor) const
 			itIdx = itEdge.next;
 		} while (itIdx != edgeIdx);
 	}
+}
+
+inline coBool coHalfEdgeMesh::IsFaceTriangle(coUint32 edgeIdx) const
+{
+	const coHalfEdge& edge = halfEdges[edgeIdx];
+	const coHalfEdge& next = halfEdges[edge.next];
+	return next.next == edge.prev;
 }
