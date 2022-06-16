@@ -44,10 +44,10 @@ void coCollapseEdge(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 	edge.prevRadial = edgeIdx;
 	edge.nextRadial = edgeIdx;
 
-	prevRadial.prev = radialIdx;
-	nextRadial.next = radialIdx;
-	prevRadial.prevRadial = radialIdx;
-	nextRadial.nextRadial = radialIdx;
+	radial.prev = radialIdx;
+	radial.next = radialIdx;
+	radial.prevRadial = radialIdx;
+	radial.nextRadial = radialIdx;
 
 	coDEBUG_CODE(mesh.CheckEdge(prevIdx));
 	coDEBUG_CODE(mesh.CheckEdge(nextIdx));
