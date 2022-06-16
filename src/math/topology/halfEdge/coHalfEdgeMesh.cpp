@@ -2,11 +2,12 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "math/pch.h"
 #include "coHalfEdgeMesh.h"
+#include "visit/coVisit_f.h"
 #include <container/array/coDynamicArray_f.h>
 #include <container/map/coHashMap_f.h>
 #include <debug/profiler/coProfile.h>
 
-coBool co_advancedChecks = false;
+coBool co_advancedChecks = true;
 
 coHalfEdgeMesh::coHalfEdgeMesh(const coArray<coUint32>& indices, coUint32 nbVertices)
 {
@@ -188,6 +189,42 @@ void coHalfEdgeMesh::CheckNoMoreThan2FacesPerEdge() const
 		const coUint8 nb = coGet(edgeToCount, edgeKey, coUint8(0));
 		coASSERT(nb < 2);
 		coSet(edgeToCount, edgeKey, coUint8(nb + 1));
+	}
+}
+
+void coHalfEdgeMesh::CheckNoVertexDuplicatesOnFaces() const
+{
+	if (!co_advancedChecks)
+		return;
+
+	for (const coHalfEdge& edge : halfEdges)
+		edge.checked = false;
+
+	coDynamicArray<coBool> touchedVertices;
+	coResize(touchedVertices, halfEdges.count, false);
+
+	
+	for (coUint32 edgeIdx = 0; edgeIdx < halfEdges.count; ++edgeIdx)
+	{
+		const coHalfEdge& edge = halfEdges[edgeIdx];
+		if (edge.checked)
+			continue;
+		if (edge.next == edgeIdx)
+			continue;
+		auto doEdge = [&](const coUint32 itEdgeidx)
+		{
+			const coHalfEdge& itEdge = halfEdges[itEdgeidx];
+			itEdge.checked = true;
+			coBool& touched = touchedVertices[itEdge.vertexIdx];
+			coASSERT(!touched);
+			touched = true;
+		};
+		coVisitAllHalfEdgesAroundFace(*this, edgeIdx, doEdge);
+		auto clearEdge = [&](const coUint32 itEdgeIdx)
+		{
+			touchedVertices[halfEdges[itEdgeIdx].vertexIdx] = false;
+		};
+		coVisitAllHalfEdgesAroundFace(*this, edgeIdx, clearEdge);
 	}
 }
 

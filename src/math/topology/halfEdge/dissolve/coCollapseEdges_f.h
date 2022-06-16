@@ -11,6 +11,6 @@ void coCollapseEdge(coHalfEdgeMesh& mesh, coUint32 halfEdgeIdx);
 /// The half edge will be dissolved.
 void coCollapseEdge(coHalfEdgeMesh& mesh, coArray<coVec3>& vertices, coUint32 halfEdgeIdx);
 
-void coCollapseEdgeIfSmallerThanSquaredDist(coHalfEdgeMesh& mesh, coArray<coVec3>& vertices, coUint32 halfEdgeIdx, coFloat squaredDist);
+coBool coCollapseEdgeIfSmallerThanSquaredDist(coHalfEdgeMesh& mesh, coArray<coVec3>& vertices, coUint32 halfEdgeIdx, coFloat squaredDist);
 
 void coCollapseEdgesSmallerThanDist(coHalfEdgeMesh& mesh, coArray<coVec3>& vertices, coFloat distance);

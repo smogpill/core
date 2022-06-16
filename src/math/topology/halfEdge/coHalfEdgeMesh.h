@@ -16,6 +16,7 @@ public:
 	void CheckEdgeLoop(coUint32 edgeIdx) const;
 	void CheckEdge(coUint32 edgeIdx) const;
 	void CheckNoMoreThan2FacesPerEdge() const;
+	void CheckNoVertexDuplicatesOnFaces() const;
 	coBool IsEdgeManifold(coUint32 edgeIdx) const;
 	coBool IsEdgeContiguous(coUint32 edgeIdx) const;
 	coBool IsEdgeBoundary(coUint32 edgeIdx) const { return halfEdges[edgeIdx].nextRadial == edgeIdx; }

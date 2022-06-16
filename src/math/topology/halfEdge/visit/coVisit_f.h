@@ -22,3 +22,16 @@ void coVisitAllHalfEdgesAroundVertex(const coHalfEdgeMesh& mesh, coUint32 halfEd
 		itEdgeIdx = prev.nextRadial;
 	} while (itEdgeIdx != halfEdgeIdx);
 }
+
+template <class Functor>
+void coVisitAllHalfEdgesAroundFace(const coHalfEdgeMesh& mesh, coUint32 anyHalfEdgeOfTheFaceIdx, Functor functor)
+{
+	coUint32 itEdgeIdx = anyHalfEdgeOfTheFaceIdx;
+	do
+	{
+		const coUint32 nextIdx = mesh.halfEdges[itEdgeIdx].next;
+		functor(itEdgeIdx);
+		itEdgeIdx = nextIdx;
+	} while (itEdgeIdx != anyHalfEdgeOfTheFaceIdx);
+
+}
