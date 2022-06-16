@@ -19,10 +19,10 @@ void coDissolveDegenerateEdge(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 	coHalfEdge& bRadial = mesh.halfEdges[bRadialIdx];
 	coASSERT(aRadial.nextRadial == aIdx);
 	coASSERT(bRadial.nextRadial == bIdx);
-	aRadial.nextRadial = bIdx;
-	aRadial.prevRadial = bIdx;
-	bRadial.nextRadial = aIdx;
-	bRadial.prevRadial = aIdx;
+	aRadial.nextRadial = bRadialIdx;
+	aRadial.prevRadial = bRadialIdx;
+	bRadial.nextRadial = aRadialIdx;
+	bRadial.prevRadial = aRadialIdx;
 	a.next = aIdx;
 	a.prev = aIdx;
 	a.nextRadial = aIdx;
