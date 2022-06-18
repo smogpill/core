@@ -53,6 +53,21 @@ coResult coPicker::Init(coRenderContext& context_)
 		coPushBack(shaderList, info.fragmentShader);
 		coTRY(info.shaderProgram->Init(shaderList), nullptr);
 	}
+
+	// Mesh
+	{
+		ModeInfo& info = modeInfos[coUint(Mode::MESH)];
+		info.vertexShader = new coShader();
+		coTRY(info.vertexShader->Init(coShader::Type::VERTEX, "shaders/render/MeshPicker"), nullptr);
+		info.fragmentShader = new coShader();
+		coTRY(info.fragmentShader->Init(coShader::Type::FRAGMENT, "shaders/render/MeshPicker"), nullptr);
+		info.shaderProgram = new coShaderProgram();
+		coDynamicArray<coShader*> shaderList;
+		coPushBack(shaderList, info.vertexShader);
+		coPushBack(shaderList, info.fragmentShader);
+		coTRY(info.shaderProgram->Init(shaderList), nullptr);
+		info.idShaderLocation = info.shaderProgram->GetUniformLocation("id");
+	}
 	
 	frameBuffer = new coFrameBuffer();
 	coTRY(frameBuffer->Init(context_.GetMainRenderView()->GetSize(), coFrameBuffer::R32UI_D24_S8), nullptr);
@@ -89,11 +104,19 @@ void coPicker::SetModelViewProj(const coMat4& mvp)
 	modeInfo.shaderProgram->SetUniform(modelViewProjLocation, mvp);
 }
 
+void coPicker::BindID(coUint32 id)
+{
+	coASSERT(started);
+	ModeInfo& modeInfo = modeInfos[coUint(currentMode)];
+	coASSERT(modeInfo.shaderProgram);
+	modeInfo.shaderProgram->SetUniform(modeInfo.idShaderLocation, id);
+}
+
 void coPicker::BindID(const coUint32x2 id)
 {
 	coASSERT(started);
 	ModeInfo& modeInfo = modeInfos[coUint(currentMode)];
-	coASSERT(modeInfo.shaderProgram);;
+	coASSERT(modeInfo.shaderProgram);
 	modeInfo.shaderProgram->SetUniform(modeInfo.idShaderLocation, id);
 }
 

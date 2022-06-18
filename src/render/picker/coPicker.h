@@ -21,6 +21,7 @@ public:
 	{
 		VERTEX,
 		TRIANGLE,
+		MESH,
 
 		END
 	};
@@ -29,6 +30,7 @@ public:
 	void Begin(Mode mode);
 	void End();
 	void SetModelViewProj(const coMat4& mvp);
+	void BindID(coUint32 id);
 	void BindID(const coUint32x2 id);
 	coColor PickColor(const coVec2& pos) const;
 	coColor PickColor(const coUint32x2& pos) const;
@@ -42,7 +44,7 @@ private:
 		coShader* vertexShader = nullptr;
 		coShader* fragmentShader = nullptr;
 		coShaderProgram* shaderProgram = nullptr;
-		coInt idShaderLocation = 0;
+		coInt idShaderLocation = -1;
 	};
 	coUint32x2 Convert(const coVec2& pos) const;
 	coUint32 PickValue(const coUint32x2& pos) const;
@@ -51,5 +53,5 @@ private:
 	ModeInfo modeInfos[Mode::END];
 	coRenderContext* context = nullptr;
 	coFrameBuffer* frameBuffer = nullptr;
-	Mode currentMode = Mode::VERTEX;
+	Mode currentMode = Mode::MESH;
 };

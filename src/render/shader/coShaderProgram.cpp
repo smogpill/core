@@ -134,6 +134,11 @@ void coShaderProgram::SetUniform(coInt location, const coVec4& value)
 	glUniform4fv(location, 1, &value.x);
 }
 
+void coShaderProgram::SetUniform(coInt location, coUint32 value)
+{
+	glUniform1ui(location, value);
+}
+
 void coShaderProgram::SetUniform(coInt location, const coUint32x2& value)
 {
 	glUniform2uiv(location, 1, &value.x);
