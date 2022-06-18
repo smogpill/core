@@ -49,6 +49,13 @@ void coCollapseEdge(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 	coHalfEdge& prevRadial = mesh.halfEdges[prevRadialIdx];
 	coHalfEdge& nextRadial = mesh.halfEdges[nextRadialIdx];
 
+	// Collapse vertices
+	{
+		coVec3& edgeVert = mesh.vertices[edge.vertexIdx];
+		const coVec3& nextVert = mesh.vertices[next.vertexIdx];
+		edgeVert = (edgeVert + nextVert) * 0.5f;
+	}
+
 	{
 		const coUint32 aIdx = edge.vertexIdx;
 		const coUint32 bIdx = next.vertexIdx;
@@ -91,46 +98,34 @@ void coCollapseEdge(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 		coDissolveDegenerateEdge(mesh, nextRadialIdx);
 	}
 
-	mesh.CheckNoVertexDuplicatesOnFaces();
+	//mesh.CheckNoVertexDuplicatesOnFaces();
 }
 
-void coCollapseEdge(coHalfEdgeMesh& mesh, coArray<coVec3>& vertices, coUint32 edgeIdx)
-{
-	const coHalfEdge& edge = mesh.halfEdges[edgeIdx];
-	const coHalfEdge& next = mesh.halfEdges[edge.next];
-	const coUint32 aIdx = edge.vertexIdx;
-	const coUint32 bIdx = next.vertexIdx;
-	coVec3& a = vertices[edge.vertexIdx];
-	const coVec3& b = vertices[next.vertexIdx];
-	a = (a + b) * 0.5f;
-	coCollapseEdge(mesh, edgeIdx);
-}
-
-coBool coCollapseEdgeIfSmallerThanSquaredDist(coHalfEdgeMesh& mesh, coArray<coVec3>& vertices, coUint32 halfEdgeIdx, coFloat squaredDist)
+coBool coCollapseEdgeIfSmallerThanSquaredDist(coHalfEdgeMesh& mesh, coUint32 halfEdgeIdx, coFloat squaredDist)
 {
 	const coHalfEdge& edge = mesh.halfEdges[halfEdgeIdx];
 	const coHalfEdge& next = mesh.halfEdges[edge.next];
 	const coUint32 aIdx = edge.vertexIdx;
 	const coUint32 bIdx = next.vertexIdx;
-	coVec3& a = vertices[edge.vertexIdx];
-	const coVec3& b = vertices[next.vertexIdx];
+	coVec3& a = mesh.vertices[edge.vertexIdx];
+	const coVec3& b = mesh.vertices[next.vertexIdx];
 	if (coSquareLength(b - a) < squaredDist)
 	{
 		a = (a + b) * 0.5f;
 		coCollapseEdge(mesh, halfEdgeIdx);
+		mesh.CheckNoMoreThan2FacesPerEdge();
 		return true;
 	}
 	return false;
 }
 
-void coCollapseEdgesSmallerThanDist(coHalfEdgeMesh& mesh, coArray<coVec3>& vertices, coFloat distance)
+void coCollapseEdgesSmallerThanDist(coHalfEdgeMesh& mesh, coFloat distance)
 {
 	mesh.CheckNoMoreThan2FacesPerEdge();
 	const coFloat squaredDist = distance * distance;
 	for (coUint32 edgeIdx = 0; edgeIdx < mesh.halfEdges.count; ++edgeIdx)
 	{
-		coCollapseEdgeIfSmallerThanSquaredDist(mesh, vertices, edgeIdx, squaredDist);
-		mesh.CheckNoMoreThan2FacesPerEdge();
+		coCollapseEdgeIfSmallerThanSquaredDist(mesh, edgeIdx, squaredDist);
 	}
 	mesh.CheckNoMoreThan2FacesPerEdge();
 }

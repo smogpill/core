@@ -2,12 +2,13 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "math/pch.h"
 #include "coGenerateMesh_f.h"
+#include "coHalfEdgeMeshGenInfo.h"
 #include "../coHalfEdgeMesh.h"
 #include "../../../vector/coVec3_f.h"
 #include "../../../shape/polygon/coPolygon3_f.h"
 #include <debug/profiler/coProfile.h>
 
-void coGenerateMesh(coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& vertexPositions, const coArray<coVec3>& faceNormals, coDynamicArray<coUint32>& outVertices, coDynamicArray<coUint32>& outIndices)
+void coGenerateMesh(coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& faceNormals, coDynamicArray<coUint32>& outVertices, coDynamicArray<coUint32>& outIndices, coHalfEdgeMeshGenInfo* info)
 {
 	coPROFILE_EVENT();
 	coClear(outVertices);
@@ -19,7 +20,14 @@ void coGenerateMesh(coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& vertexP
 	coDynamicArray<coUint32> loopVertices; // temp
 	coDynamicArray<coUint32> triangleVertices;
 	coTriangulateScratch triangulateScratch;
-	coResize(oldVertexToNewVertex, vertexPositions.count, ~coUint32(0));
+	coResize(oldVertexToNewVertex, halfEdgeMesh.vertices.count, ~coUint32(0));
+
+	if (info)
+	{
+		coClear(info->triangleToHalfEdge);
+		coReserve(info->triangleToHalfEdge, edges.count); // Arbitrary
+	}
+	//halfEdgeMesh.CheckNoVertexDuplicatesOnFaces();
 
 	// Temp
 	struct VToH
@@ -53,6 +61,7 @@ void coGenerateMesh(coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& vertexP
 
 		// temp: check that the loop does not contain the same vertex more than once
 #ifndef coRELEASE
+		if (false)
 		{
 			coClear(loopVertices);
 			for (const coHalfEdge* faceEdge : faceEdges)
@@ -69,7 +78,7 @@ void coGenerateMesh(coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& vertexP
 			for (coUint32 idx = 0; idx < faceEdges.count; ++idx)
 			{
 				const coHalfEdge* faceEdge = faceEdges[idx];
-				polygon.vertices[idx] = vertexPositions[faceEdge->vertexIdx];
+				polygon.vertices[idx] = halfEdgeMesh.vertices[faceEdge->vertexIdx];
 
 				// temp
 				if (faceEdge->vertexIdx == 12)
@@ -99,6 +108,13 @@ void coGenerateMesh(coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& vertexP
 				newVertexIdx = outVertices.count;
 				coPushBack(outVertices, polyEdge->vertexIdx);
 			}
+
+			// info
+			if (info && outIndices.count % 3 == 0)
+			{
+				coPushBack(info->triangleToHalfEdge, edges[polyEdge->next].prev);
+			}
+
 			coPushBack(outIndices, newVertexIdx);
 
 			VToH v;
@@ -107,21 +123,24 @@ void coGenerateMesh(coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& vertexP
 			coPushBack(vtoh, v);
 		}
 
-		const coUint32 nbTriangles = triangleVertices.count / 3;
-		for (coUint32 triangleIdx = 0; triangleIdx < nbTriangles; ++triangleIdx)
+		if (false)
 		{
-			const coUint32 triangleOffset = indexOffset + triangleIdx * 3;
-			for (coUint32 i = 0; i < 3; ++i)
+			const coUint32 nbTriangles = triangleVertices.count / 3;
+			for (coUint32 triangleIdx = 0; triangleIdx < nbTriangles; ++triangleIdx)
 			{
-				const coUint32 j = (i + 1) % 3;
-				coUint32 a = outIndices[triangleOffset + i];
-				coUint32 b = outIndices[triangleOffset + j];
-				if (a > b)
-					coSwap(a, b);
-
-				if (a == 5 && b == 7)
+				const coUint32 triangleOffset = indexOffset + triangleIdx * 3;
+				for (coUint32 i = 0; i < 3; ++i)
 				{
-					int kk = 0; ++kk;
+					const coUint32 j = (i + 1) % 3;
+					coUint32 a = outIndices[triangleOffset + i];
+					coUint32 b = outIndices[triangleOffset + j];
+					if (a > b)
+						coSwap(a, b);
+
+					if (a == 5 && b == 7)
+					{
+						int kk = 0; ++kk;
+					}
 				}
 			}
 		}

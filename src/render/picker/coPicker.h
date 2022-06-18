@@ -17,9 +17,16 @@ class coFrameBuffer;
 class coPicker
 {
 public:
+	enum class Mode
+	{
+		VERTEX,
+		TRIANGLE,
+
+		END
+	};
 	~coPicker();
 	coResult Init(coRenderContext& context);
-	void Begin();
+	void Begin(Mode mode);
 	void End();
 	void SetModelViewProj(const coMat4& mvp);
 	void BindID(const coUint32x2 id);
@@ -29,14 +36,20 @@ public:
 	coUint32 PickID(const coUint32x2& pos) const;
 
 private:
+	class ModeInfo
+	{
+	public:
+		coShader* vertexShader = nullptr;
+		coShader* fragmentShader = nullptr;
+		coShaderProgram* shaderProgram = nullptr;
+		coInt idShaderLocation = 0;
+	};
 	coUint32x2 Convert(const coVec2& pos) const;
 	coUint32 PickValue(const coUint32x2& pos) const;
 	coRenderView* GetView() const;
 	coBool started = false;
+	ModeInfo modeInfos[Mode::END];
 	coRenderContext* context = nullptr;
-	coShader* vertexShader = nullptr;
-	coShader* fragmentShader = nullptr;
-	coShaderProgram* shaderProgram = nullptr;
 	coFrameBuffer* frameBuffer = nullptr;
-	coInt idShaderLocation = 0;
+	Mode currentMode = Mode::VERTEX;
 };

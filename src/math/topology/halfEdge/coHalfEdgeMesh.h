@@ -3,11 +3,13 @@
 #pragma once
 #include <container/array/coDynamicArray.h>
 #include "coHalfEdge.h"
+#include <math/vector/coVec3.h>
 
 class coHalfEdgeMesh
 {
 public:
 	coHalfEdgeMesh() {}
+	coHalfEdgeMesh(const coArray<coUint32>& indices, const coArray<coVec3>& vertices);
 	coHalfEdgeMesh(const coArray<coUint32>& indices, coUint32 nbVertices = coUint32(-1));
 
 	coUint32 AddFace(coUint32 faceIdx, coUint32 nbHalfEdges);
@@ -29,6 +31,7 @@ public:
 	void VisitFaces(F functor) const;
 	void ClearCheckedFlags() const;
 
+	coDynamicArray<coVec3> vertices;
 	coDynamicArray<coHalfEdge> halfEdges;
 };
 

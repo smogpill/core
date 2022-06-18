@@ -5,12 +5,10 @@
 #include <container/array/coArray.h>
 class coHalfEdgeMesh;
 
-void coCollapseEdge(coHalfEdgeMesh& mesh, coUint32 halfEdgeIdx);
-
 /// Merge the two vertices. The vertex of the half edge will move to the center. The second vertex will just be unlinked from the half edge.
 /// The half edge will be dissolved.
-void coCollapseEdge(coHalfEdgeMesh& mesh, coArray<coVec3>& vertices, coUint32 halfEdgeIdx);
+void coCollapseEdge(coHalfEdgeMesh& mesh, coUint32 halfEdgeIdx);
 
-coBool coCollapseEdgeIfSmallerThanSquaredDist(coHalfEdgeMesh& mesh, coArray<coVec3>& vertices, coUint32 halfEdgeIdx, coFloat squaredDist);
+coBool coCollapseEdgeIfSmallerThanSquaredDist(coHalfEdgeMesh& mesh, coUint32 halfEdgeIdx, coFloat squaredDist);
 
-void coCollapseEdgesSmallerThanDist(coHalfEdgeMesh& mesh, coArray<coVec3>& vertices, coFloat distance);
+void coCollapseEdgesSmallerThanDist(coHalfEdgeMesh& mesh, coFloat distance);
