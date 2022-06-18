@@ -85,7 +85,6 @@ void coPicker::Begin(Mode mode)
 	frameBuffer->Clear();
 	started = true;
 	glPointSize(8.0f);
-	BindID(coUint32x2(0));
 }
 
 void coPicker::End()
