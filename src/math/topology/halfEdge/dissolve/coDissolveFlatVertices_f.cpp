@@ -6,10 +6,11 @@
 #include "../../../vector/coVec3_f.h"
 #include <debug/profiler/coProfile.h>
 
-void coDissolveFlatVertices(coHalfEdgeMesh& mesh, const coArray<coVec3>& vertexPositions, coFloat tolerance)
+void coDissolveFlatVertices(coHalfEdgeMesh& mesh, coFloat tolerance)
 {
 	coPROFILE_EVENT();
 	auto& edges = mesh.halfEdges;
+	const auto& vertices = mesh.vertices;
 	for (coUint32 a1Idx = 0; a1Idx < edges.count; ++a1Idx)
 	{
 		coHalfEdge& a1 = edges[a1Idx];
@@ -19,9 +20,9 @@ void coDissolveFlatVertices(coHalfEdgeMesh& mesh, const coArray<coVec3>& vertexP
 		{
 			coHalfEdge& a0 = edges[a0Idx];
 			coHalfEdge& a2 = edges[a2Idx];
-			const coVec3& a0Pos = vertexPositions[a0.vertexIdx];
-			const coVec3& a1Pos = vertexPositions[a1.vertexIdx];
-			const coVec3& a2Pos = vertexPositions[a2.vertexIdx];
+			const coVec3& a0Pos = vertices[a0.vertexIdx];
+			const coVec3& a1Pos = vertices[a1.vertexIdx];
+			const coVec3& a2Pos = vertices[a2.vertexIdx];
 			const coVec3 dirA01 = coNormalize(a1Pos - a0Pos);
 			const coVec3 dirA12 = coNormalize(a2Pos - a1Pos);
 			if (coAbs(coDot(dirA01, dirA12) - 1.0f) > tolerance)

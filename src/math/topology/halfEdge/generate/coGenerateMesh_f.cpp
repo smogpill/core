@@ -8,19 +8,16 @@
 #include "../../../shape/polygon/coPolygon3_f.h"
 #include <debug/profiler/coProfile.h>
 
-void coGenerateMesh(coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& faceNormals, coDynamicArray<coUint32>& outVertices, coDynamicArray<coUint32>& outIndices, coHalfEdgeMeshGenInfo* info)
+void coGenerateMesh(coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& faceNormals, coDynamicArray<coUint32>& outIndices, coHalfEdgeMeshGenInfo* info)
 {
 	coPROFILE_EVENT();
-	coClear(outVertices);
 	coClear(outIndices);
 	auto& edges = halfEdgeMesh.halfEdges;
 	coPolygon3 polygon;
-	coDynamicArray<coUint32> oldVertexToNewVertex;
 	coDynamicArray<coHalfEdge*> faceEdges;
 	coDynamicArray<coUint32> loopVertices; // temp
 	coDynamicArray<coUint32> triangleVertices;
 	coTriangulateScratch triangulateScratch;
-	coResize(oldVertexToNewVertex, halfEdgeMesh.vertices.count, ~coUint32(0));
 
 	if (info)
 	{
@@ -102,12 +99,6 @@ void coGenerateMesh(coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& faceNor
 		for (const coUint32 polyVertexIdx : triangleVertices)
 		{
 			const coHalfEdge* polyEdge = faceEdges[polyVertexIdx];
-			coUint32& newVertexIdx = oldVertexToNewVertex[polyEdge->vertexIdx];
-			if (newVertexIdx == ~coUint32(0))
-			{
-				newVertexIdx = outVertices.count;
-				coPushBack(outVertices, polyEdge->vertexIdx);
-			}
 
 			// info
 			if (info && outIndices.count % 3 == 0)
@@ -115,11 +106,11 @@ void coGenerateMesh(coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& faceNor
 				coPushBack(info->triangleToHalfEdge, edges[polyEdge->next].prev);
 			}
 
-			coPushBack(outIndices, newVertexIdx);
+			coPushBack(outIndices, polyEdge->vertexIdx);
 
 			VToH v;
 			v.edgeIdx = edges[polyEdge->next].prev;
-			v.newVertexIdx = newVertexIdx;
+			v.newVertexIdx = polyEdge->vertexIdx;
 			coPushBack(vtoh, v);
 		}
 

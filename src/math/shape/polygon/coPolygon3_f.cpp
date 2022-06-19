@@ -88,26 +88,23 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 			const coVec3& next = poly.vertices[nextIdx];
 
 			// If interior vertex, continue
+			if (coDot(coCross(cur - prev, next - prev), planeNormal).x < 0.f)
 			{
-				const coVec3 v1 = prev - cur;
-				const coVec3 v2 = next - cur;
-				if (coDot(coCross(v1, v2), planeNormal).x > 0.f)
-				{
-					continue;
-				}
+				continue;
 			}
 
 			// If any other point is inside the triangle, continue
 			{
 				coBool ignore = false;
-				for (coUint32 j = 0; j < scratch.remainingIndices.count; ++j)
+				for (coUint32 j = 0; j < poly.vertices.count; ++j)
 				{
 					// Skip the current triangle
-					if (j == remainingPrev || j == remainingCur || j == remainingNext)
-						continue;
+					//if (j == prevIdx || j == curIdx || j == nextIdx)
+					//	continue;
 
-					const coUint32 n = scratch.remainingIndices[j];
-					const coVec3& v = poly.vertices[n];
+					const coVec3& v = poly.vertices[j];
+					if (v == prev || v == cur || v == next)
+						continue;
 					if (coOverlapInfiniteExtrude(coTriangle(prev, cur, next), v))
 					{
 						ignore = true;
@@ -141,13 +138,9 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 				const coVec3& next = poly.vertices[nextIdx];
 
 				// If interior vertex, continue
+				if (coDot(coCross(cur - prev, next - prev), planeNormal).x < 0.f)
 				{
-					const coVec3 v1 = prev - cur;
-					const coVec3 v2 = next - cur;
-					if (coDot(coCross(v1, v2), planeNormal).x > 0.f)
-					{
-						continue;
-					}
+					continue;
 				}
 
 				earIdx = i;

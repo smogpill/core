@@ -6,4 +6,4 @@
 class coHalfEdgeMesh;
 class coHalfEdgeMeshGenInfo;
 
-void coGenerateMesh(coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& faceNormals, coDynamicArray<coUint32>& outVertices, coDynamicArray<coUint32>& outIndices, coHalfEdgeMeshGenInfo* info = nullptr);
+void coGenerateMesh(coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& faceNormals, coDynamicArray<coUint32>& outIndices, coHalfEdgeMeshGenInfo* info = nullptr);
