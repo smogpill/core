@@ -2,6 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "math/pch.h"
 #include <container/array/coDynamicArray_f.h>
+#include "../../shape/triangle/coTriangle_f.h"
 #include "../../vector/coVec3_f.h"
 #include "coMesh_f.h"
 
@@ -16,6 +17,6 @@ void coComputeTriangleNormals(const coArray<coVec3>& vertices, const coArray<coU
 		const coVec3& a = vertices[indices[index++]];
 		const coVec3& b = vertices[indices[index++]];
 		const coVec3& c = vertices[indices[index++]];
-		outNormals[triangleIdx] = coNormalize(coCross(b - a, c - b));
+		outNormals[triangleIdx] = coGetNormal(a, b, c);
 	}
 }

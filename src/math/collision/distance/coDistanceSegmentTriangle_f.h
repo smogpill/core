@@ -30,7 +30,7 @@ inline coFloat coSquareDistanceSegmentTriangle(const coVec3& vOrigin, const coVe
 
 	// Set up for a relative error test on the angle between ray direction
 	// and triangle normal to determine parallel/nonparallel status.
-	const coVec3 vNormal = coCross(vTriEdge0, vTriEdge1);
+	const coVec3 vNormal = coCross(vTriEdge1, vTriEdge0);
 	const coFloat fDot = coDot(vNormal, vSegment).x;
 	if (fDot * fDot >= 1e-6f * coSquareLength(vSegment) * coSquareLength(vNormal))
 	{

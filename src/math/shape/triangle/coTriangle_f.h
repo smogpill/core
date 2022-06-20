@@ -4,14 +4,26 @@
 #include "coTriangle.h"
 #include "math/vector/coVec3_f.h"
 
+/// Assumes Left-handed + CCW
 coFORCE_INLINE coVec3 coGetRawNormal(const coTriangle& t)
 {
-	return coCross(t.b - t.a, t.c - t.a);
+	return coCross(t.c - t.a, t.b - t.a);
+}
+
+/// Assumes Left-handed + CCW
+coFORCE_INLINE coVec3 coGetRawNormal(const coVec3& a, const coVec3& b, const coVec3& c)
+{
+	return coCross(c - a, b - a);
 }
 
 coFORCE_INLINE coVec3 coGetNormal(const coTriangle& t)
 {
 	return coNormalize(coGetRawNormal(t));
+}
+
+coFORCE_INLINE coVec3 coGetNormal(const coVec3& a, const coVec3& b, const coVec3& c)
+{
+	return coNormalize(coGetRawNormal(a, b, c));
 }
 
 coFORCE_INLINE coBool32x4 coOverlapInfiniteExtrude(const coTriangle& t, const coVec3& p)

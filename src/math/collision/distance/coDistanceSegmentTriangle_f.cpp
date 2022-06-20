@@ -62,7 +62,7 @@ coFloatx4 coDistanceSegmentTriangleSquared(const coVec3 p, const coVec3 q,
 
 	const coFloatx4 bdenom = FSel(tDenom > zero, coInvert(tDenom), zero);
 
-	const coVec3 n = coNormalize(coCross(ab, ac)); // normalize vector
+	const coVec3 n = coNormalize(coCross(ac, ab)); // normalize vector
 
 	//compute the closest point of p and triangle plane abc
 	const coFloatx4 dist3 = coDot(ap, n);

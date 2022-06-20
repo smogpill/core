@@ -24,7 +24,7 @@ void _coPrepareTriangulate(const coPolygon3& poly, coDynamicArray<coUint32>& tri
 
 coFORCE_INLINE coBool _coIsCornerConvexXY(const coVec3& a, const coVec3& b, const coVec3& c)
 {
-	return !coAreAllFalse(coBroadcastZ(coCross(a - b, c - b)) >= coFloatx3(0.0f));
+	return !coAreAllFalse(coBroadcastZ(coGetRawNormal(a, b, c)) >= coFloatx3(0.0f));
 }
 coFORCE_INLINE coBool _coIsInsideTriangleXY(const coVec3& a, const coVec3& b, const coVec3& c, const coVec3& p)
 {
@@ -88,7 +88,7 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 			const coVec3& next = poly.vertices[nextIdx];
 
 			// If interior vertex, continue
-			if (coDot(coCross(cur - prev, next - prev), planeNormal).x < 0.f)
+			if (coDot(coGetRawNormal(prev, cur, next), planeNormal).x < 0.f)
 			{
 				continue;
 			}
@@ -138,7 +138,7 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 				const coVec3& next = poly.vertices[nextIdx];
 
 				// If interior vertex, continue
-				if (coDot(coCross(cur - prev, next - prev), planeNormal).x < 0.f)
+				if (coDot(coGetRawNormal(prev, cur, next), planeNormal).x < 0.f)
 				{
 					continue;
 				}
@@ -250,7 +250,7 @@ void coTriangulateWithVaryingZ(const coPolygon3& poly, coDynamicArray<coUint32>&
 			{
 				const coVec3 v1 = prev - cur;
 				const coVec3 v2 = next - cur;
-				const coVec3 cross = coCross(v1, v2);
+				const coVec3 cross = coGetRawNormal(prev, cur, next);
 				if (cross[1] <= 0.f)
 				{
 					continue;
