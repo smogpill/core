@@ -10,17 +10,26 @@ void coRemoveUnusedVertices(coHalfEdgeMesh& mesh)
 	coDynamicArray<coVec3> newVertices;
 	const coArray<coVec3>& oldVertices = mesh.vertices;
 	coDynamicArray<coUint32> oldVertexToNew;
+	auto& halfEdges = mesh.halfEdges;
 	coReserve(newVertices, oldVertices.count);
 	coResize(oldVertexToNew, oldVertices.count, ~coUint32(0));
-	for (coHalfEdge& halfEdge : mesh.halfEdges)
+	for (coUint32 halfEdgeIdx = 0; halfEdgeIdx < halfEdges.count; ++halfEdgeIdx)
 	{
-		coUint32& newIdx = oldVertexToNew[halfEdge.vertexIdx];
-		if (newIdx == ~coUint32(0))
+		coHalfEdge& halfEdge = halfEdges[halfEdgeIdx];
+		if (halfEdge.next == halfEdgeIdx)
 		{
-			newIdx = newVertices.count;
-			coPushBack(newVertices, oldVertices[halfEdge.vertexIdx]);
+			halfEdge.vertexIdx = ~coUint32(0);
 		}
-		halfEdge.vertexIdx = newIdx;
+		else
+		{
+			coUint32& newIdx = oldVertexToNew[halfEdge.vertexIdx];
+			if (newIdx == ~coUint32(0))
+			{
+				newIdx = newVertices.count;
+				coPushBack(newVertices, oldVertices[halfEdge.vertexIdx]);
+			}
+			halfEdge.vertexIdx = newIdx;
+		}
 	}
 	mesh.vertices = std::move(newVertices);
 }
