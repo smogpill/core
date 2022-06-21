@@ -96,13 +96,13 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 			// If any other point is inside the triangle, continue
 			{
 				coBool ignore = false;
-				for (coUint32 j = 0; j < poly.vertices.count; ++j)
+				for (coUint32 j = 0; j < scratch.remainingIndices.count; ++j)
 				{
 					// Skip the current triangle
 					//if (j == prevIdx || j == curIdx || j == nextIdx)
 					//	continue;
 
-					const coVec3& v = poly.vertices[j];
+					const coVec3& v = poly.vertices[scratch.remainingIndices[j]];
 					if (v == prev || v == cur || v == next)
 						continue;
 					if (coOverlapInfiniteExtrude(coTriangle(prev, cur, next), v))
