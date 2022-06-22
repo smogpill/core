@@ -87,22 +87,38 @@ void coSplitHardEdges(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals, 
 		coUint32 startEdgeIdx = ~coUint32(0);
 		{
 			// Find border
-			coUint32 itEdgeIdx = edgeIdx;
-			do
 			{
-				const coHalfEdge& itEdge = edges[itEdgeIdx];
-				if (itEdge.nextRadial == itEdgeIdx)
+				coUint32 itEdgeIdx = edgeIdx;
+				do
 				{
-					startEdgeIdx = itEdgeIdx;
-					break;
-				}
-				itEdgeIdx = itEdge.prev;
-			} while (itEdgeIdx != edgeIdx);
+					const coHalfEdge& itEdge = edges[itEdgeIdx];
+					coASSERT(itEdge.vertexIdx == vertexIdx);
+					const coHalfEdge& prev = edges[itEdge.prev];
+					if (prev.nextRadial == itEdge.prev)
+					{
+						startEdgeIdx = itEdgeIdx;
+						break;
+					}
+					itEdgeIdx = prev.nextRadial;
+				} while (itEdgeIdx != edgeIdx);
+			}
 
 			// No border found -> Find a sharp edge
 			if (startEdgeIdx == ~coUint32(0))
 			{
-
+				coUint32 itEdgeIdx = edgeIdx;
+				do
+				{
+					const coHalfEdge& itEdge = edges[itEdgeIdx];
+					coASSERT(itEdge.vertexIdx == vertexIdx);
+					if (IsSharp(itEdgeIdx))
+					{
+						startEdgeIdx = itEdgeIdx;
+						break;
+					}
+					const coHalfEdge& prev = edges[itEdge.prev];
+					itEdgeIdx = prev.nextRadial;
+				} while (itEdgeIdx != edgeIdx);
 			}
 
 			// No border && no sharp edge -> ignore.
