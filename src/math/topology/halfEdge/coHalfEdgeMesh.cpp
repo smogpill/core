@@ -224,11 +224,13 @@ void coHalfEdgeMesh::CheckNoVertexDuplicatesOnFaces() const
 			coBool& touched = touchedVertices[itEdge.vertexIdx];
 			coASSERT(!touched);
 			touched = true;
+			return true;
 		};
 		coVisitAllHalfEdgesAroundFace(*this, edgeIdx, doEdge);
 		auto clearEdge = [&](const coUint32 itEdgeIdx)
 		{
 			touchedVertices[halfEdges[itEdgeIdx].vertexIdx] = false;
+			return true;
 		};
 		coVisitAllHalfEdgesAroundFace(*this, edgeIdx, clearEdge);
 	}

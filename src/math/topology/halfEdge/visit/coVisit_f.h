@@ -5,8 +5,9 @@
 
 /// Does not work if the vertex is non-manifold (joined by two or more surfaces).
 /// The direction of the rotation is the same as the edge (CCW if the edge was CCW).
+/// Returns true if looped
 template <class Functor>
-void coVisitAllHalfEdgesAroundVertex(const coHalfEdgeMesh& mesh, coUint32 halfEdgeIdx, Functor functor)
+coBool coVisitAllHalfEdgesAroundVertex(const coHalfEdgeMesh& mesh, coUint32 halfEdgeIdx, Functor functor)
 {
 	coDEBUG_CODE(const coUint32 vertexIdx = mesh.halfEdges[halfEdgeIdx].vertexIdx);
 	coUint32 itEdgeIdx = halfEdgeIdx;
@@ -15,12 +16,15 @@ void coVisitAllHalfEdgesAroundVertex(const coHalfEdgeMesh& mesh, coUint32 halfEd
 		coASSERT(mesh.halfEdges[itEdgeIdx].vertexIdx == vertexIdx);
 		const coHalfEdge& edge = mesh.halfEdges[itEdgeIdx];
 		const coUint32 prevIdx = edge.prev;
-		functor(itEdgeIdx);
+		if (!functor(itEdgeIdx))
+			return false;
 		const coHalfEdge& prev = mesh.halfEdges[prevIdx];
-		if (prev.nextRadial == itEdgeIdx)
-			break;
+		if (prev.nextRadial == prevIdx)
+			return false;
 		itEdgeIdx = prev.nextRadial;
 	} while (itEdgeIdx != halfEdgeIdx);
+
+	return true;
 }
 
 template <class Functor>
@@ -30,8 +34,8 @@ void coVisitAllHalfEdgesAroundFace(const coHalfEdgeMesh& mesh, coUint32 anyHalfE
 	do
 	{
 		const coUint32 nextIdx = mesh.halfEdges[itEdgeIdx].next;
-		functor(itEdgeIdx);
+		if (!functor(itEdgeIdx))
+			return;
 		itEdgeIdx = nextIdx;
 	} while (itEdgeIdx != anyHalfEdgeOfTheFaceIdx);
-
 }

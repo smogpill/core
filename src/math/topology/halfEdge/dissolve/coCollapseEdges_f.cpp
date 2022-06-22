@@ -63,6 +63,7 @@ void coCollapseEdge(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 		{
 			coASSERT(mesh.halfEdges[e].vertexIdx == bIdx);
 			mesh.halfEdges[e].vertexIdx = aIdx;
+			return true;
 		};
 		coVisitAllHalfEdgesAroundVertex(mesh, edge.next, changeVertex);
 	}
