@@ -4,10 +4,55 @@
 #include "coSplitHardEdges_f.h"
 #include "../visit/coVisit_f.h"
 #include "../../../scalar/coFloat_f.h"
+#include "../../../vector/coFloatx4_f.h"
+#include "../../../vector/coVec3_f.h"
 
-void coSplitHardEdges(coHalfEdgeMesh& mesh, coFloat angle)
+void coComputeFaceNormals(const coHalfEdgeMesh& mesh, coDynamicArray<coVec3>& outNormals)
 {
-	/*
+	const auto& edges = mesh.halfEdges;
+	const auto& vertices = mesh.vertices;
+
+	coInt32 maxFaceIndex = -1;
+	for (const coHalfEdge& edge : edges)
+	{
+		if (coInt32(edge.faceIdx) > maxFaceIndex)
+			maxFaceIndex = edge.faceIdx;
+	}
+
+	coDynamicArray<coVec3> faceNormals;
+	coResize(faceNormals, maxFaceIndex+1);
+
+	for (const coHalfEdge& edge : edges)
+		edge.done = false;
+
+	for (coUint32 edgeIdx = 0; edgeIdx < edges.count; ++edgeIdx)
+	{
+		const coHalfEdge& edge = edges[edgeIdx];
+		if (edge.done)
+			continue;
+
+		coVec3 normalSum = coVec3(0.0f);
+		coUint32 itEdgeIdx = edgeIdx;
+		do
+		{
+			const coHalfEdge& itEdge = edges[itEdgeIdx];
+			itEdge.done = true;
+			const coHalfEdge& next = edges[itEdge.next];
+			const coVec3& itVert = vertices[itEdge.vertexIdx];
+			const coVec3& nextVert = vertices[next.vertexIdx];
+
+			// Using generalization: https://iquilezles.org/articles/areas/
+			normalSum += coCross(nextVert, itVert);
+
+			itEdgeIdx = itEdge.next;
+		} while (itEdgeIdx != edgeIdx);
+
+		faceNormals[edge.faceIdx] = coNormalize(normalSum);
+	}
+}
+
+void coSplitHardEdges(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals, coFloat angle)
+{
 	const coFloatx4 cosAngle = coCos(angle);
 	auto& edges = mesh.halfEdges;
 	auto& vertices = mesh.vertices;
@@ -19,15 +64,19 @@ void coSplitHardEdges(coHalfEdgeMesh& mesh, coFloat angle)
 	coDynamicArray<coBool> doneVertices;
 	coResize(doneVertices, vertices.count, false);
 
-	auto& IsSharp = [&](const coUint32 eIdx)
+	auto IsSharp = [&](const coUint32 eIdx)
 	{
-
+		const coHalfEdge& edgeA = edges[eIdx];
+		const coHalfEdge& edgeB = edges[edgeA.nextRadial];
+		const coVec3& normalA = faceNormals[edgeA.faceIdx];
+		const coVec3& normalB = faceNormals[edgeB.faceIdx];
+		return coAreAllTrue(coDot(normalA, normalB) <= cosAngle);
 	};
 
 	for (coUint32 edgeIdx = 0; edgeIdx < nbEdges; ++edgeIdx)
 	{
 		coHalfEdge& edge = edges[edgeIdx];
-		if (edge.done)
+		if (edge.done || edge.IsDegenerate())
 			continue;
 
 		edge.done = true;
@@ -81,17 +130,16 @@ void coSplitHardEdges(coHalfEdgeMesh& mesh, coFloat angle)
 				edges[itEdgeIdx].vertexIdx = curVertexIdx;
 				itEdge.done = true;
 
-				const coHalfEdge& prev = edges[itEdge.prev];
-				if (prev.nextRadial == itEdge.prev)
+				const coUint32 prevIdx = itEdge.prev;
+				const coHalfEdge& prev = edges[prevIdx];
+				if (prev.nextRadial == prevIdx)
 					break;
 
 				itEdgeIdx = prev.nextRadial;
 				
 			} while (itEdgeIdx != startEdgeIdx);
 		}
-		
 	}
-	*/
 }
 
 /*

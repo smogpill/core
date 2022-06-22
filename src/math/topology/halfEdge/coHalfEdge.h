@@ -17,7 +17,7 @@ public:
 	coUint32 faceIdx = coUint32(-1);
 
 	/// Work attribute that can be used internally by algorithms
-	coBool done : 1;
+	mutable coBool done : 1;
 	/// Work attribute used by check functions
 	mutable coBool checked : 1;
 };
