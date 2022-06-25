@@ -33,9 +33,9 @@ void coDissolveFlatVertices(coHalfEdgeMesh& mesh, coFloat tolerance)
 		if (coAbs(coDot(dirA01, dirA12) - 1.0f) > tolerance)
 			continue;
 
-		if (a0.nextRadial == a0Idx)
+		if (a0.twin == a0Idx)
 		{
-			if (a1.nextRadial == a1Idx)
+			if (a1.twin == a1Idx)
 			{
 				// Link 0 & 2
 				a0.next = a2Idx;
@@ -49,12 +49,12 @@ void coDissolveFlatVertices(coHalfEdgeMesh& mesh, coFloat tolerance)
 					coDissolveDegenerateFace(mesh, a0Idx);
 			}
 		}
-		else if (a1.nextRadial != a1Idx)
+		else if (a1.twin != a1Idx)
 		{
-			const coUint32 b1Idx = a0.nextRadial;
+			const coUint32 b1Idx = a0.twin;
 			coHalfEdge& b1 = edges[b1Idx];
 			const coUint32 b0Idx = b1.prev;
-			if (b0Idx != a1.nextRadial)
+			if (b0Idx != a1.twin)
 				continue;
 
 			coHalfEdge& b0 = edges[b0Idx];
@@ -66,12 +66,10 @@ void coDissolveFlatVertices(coHalfEdgeMesh& mesh, coFloat tolerance)
 
 			// Link 0 & 2
 			a0.next = a2Idx;
-			a0.nextRadial = b0Idx;
-			a0.prevRadial = b0Idx;
+			a0.twin = b0Idx;
 			a2.prev = a0Idx;
 			b0.next = b2Idx;
-			b0.nextRadial = a0Idx;
-			b0.prevRadial = a0Idx;
+			b0.twin = a0Idx;
 			b2.prev = b0Idx;
 
 			mesh.CheckEdgeNotReferencedByOthers(a1Idx);
@@ -79,12 +77,10 @@ void coDissolveFlatVertices(coHalfEdgeMesh& mesh, coFloat tolerance)
 			// Remove 1
 			a1.prev = a1Idx;
 			a1.next = a1Idx;
-			a1.nextRadial = a1Idx;
-			a1.prevRadial = a1Idx;
+			a1.twin = a1Idx;
 			b1.prev = b1Idx;
 			b1.next = b1Idx;
-			b1.nextRadial = b1Idx;
-			b1.prevRadial = b1Idx;
+			b1.twin = b1Idx;
 
 			if (a0.IsDegenerate())
 				coDissolveDegenerateFace(mesh, a0Idx);

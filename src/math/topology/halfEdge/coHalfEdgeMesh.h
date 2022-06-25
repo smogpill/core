@@ -13,7 +13,7 @@ public:
 	coHalfEdgeMesh(const coArray<coUint32>& indices, coUint32 nbVertices = coUint32(-1));
 
 	coUint32 AddFace(coUint32 faceIdx, coUint32 nbHalfEdges);
-	void SetRadials(coUint32 edgeA, coUint32 edgeB);
+	void SetTwins(coUint32 edgeA, coUint32 edgeB);
 	void RemoveHalfEdge(coUint32 edgeIdx);
 	void CheckEdgeLoop(coUint32 edgeIdx) const;
 	void CheckEdge(coUint32 edgeIdx) const;
@@ -23,7 +23,7 @@ public:
 	coBool IsEdgeAlive(coUint32 edgeIdx) const { return halfEdges[edgeIdx].next != edgeIdx; }
 	coBool IsEdgeManifold(coUint32 edgeIdx) const;
 	coBool IsEdgeContiguous(coUint32 edgeIdx) const;
-	coBool IsEdgeBoundary(coUint32 edgeIdx) const { return halfEdges[edgeIdx].nextRadial == edgeIdx; }
+	coBool IsEdgeBoundary(coUint32 edgeIdx) const { return halfEdges[edgeIdx].twin == edgeIdx; }
 	coBool IsFaceTriangle(coUint32 edgeIdx) const;
 	void Check() const;
 	coUint32 GetNbFaces() const;

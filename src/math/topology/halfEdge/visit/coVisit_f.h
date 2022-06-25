@@ -19,9 +19,9 @@ coBool coVisitAllHalfEdgesAroundVertex(const coHalfEdgeMesh& mesh, coUint32 half
 		if (!functor(itEdgeIdx))
 			return false;
 		const coHalfEdge& prev = mesh.halfEdges[prevIdx];
-		if (prev.nextRadial == prevIdx)
+		if (prev.twin == prevIdx)
 			return false;
-		itEdgeIdx = prev.nextRadial;
+		itEdgeIdx = prev.twin;
 	} while (itEdgeIdx != halfEdgeIdx);
 
 	return true;

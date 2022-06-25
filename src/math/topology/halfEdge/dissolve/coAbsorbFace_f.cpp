@@ -16,7 +16,7 @@ coUint32 coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 	coASSERT(!edgeA.IsDegenerate());
 	coASSERT(mesh.IsEdgeManifold(edgeIdx));
 
-	const coHalfEdge& edgeB = edges[edgeA.nextRadial];
+	const coHalfEdge& edgeB = edges[edgeA.twin];
 	const coUint32 faceA = edgeA.faceIdx;
 	const coUint32 faceToAbsorb = edgeB.faceIdx;
 
@@ -27,7 +27,7 @@ coUint32 coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 	coASSERT(mesh.IsEdgeContiguous(edgeIdx));
 
 	coDEBUG_CODE(mesh.CheckEdgeLoop(edgeIdx));
-	coDEBUG_CODE(mesh.CheckEdgeLoop(edgeA.nextRadial));
+	coDEBUG_CODE(mesh.CheckEdgeLoop(edgeA.twin));
 
 	// Find first in the chain
 	coUint32 aFirstRelatedToBIdx = edgeIdx;
@@ -40,9 +40,9 @@ coUint32 coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 				break;
 
 			const coHalfEdge& prev = edges[prevIdx];
-			const coUint32 bIdx = prev.nextRadial;
+			const coUint32 bIdx = prev.twin;
 			coHalfEdge& b = edges[bIdx];
-			if (b.prev != a->nextRadial)
+			if (b.prev != a->twin)
 				break;
 			aFirstRelatedToBIdx = prevIdx;
 			a = &prev;
@@ -60,9 +60,9 @@ coUint32 coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 				break;
 
 			const coHalfEdge& next = edges[nextIdx];
-			const coUint32 bIdx = next.nextRadial;
+			const coUint32 bIdx = next.twin;
 			const coHalfEdge& b = edges[bIdx];
-			if (b.next != a->nextRadial)
+			if (b.next != a->twin)
 				break;
 			aLastRelatedToBIdx = nextIdx;
 			a = &next;
@@ -71,13 +71,13 @@ coUint32 coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 
 	// Set face A on the B loop
 	{
-		coUint32 edgeIdxIt = edgeA.nextRadial;
+		coUint32 edgeIdxIt = edgeA.twin;
 		do
 		{
 			coHalfEdge& edgeIt = edges[edgeIdxIt];
 			edgeIt.faceIdx = faceA;
 			edgeIdxIt = edgeIt.next;
-		} while (edgeIdxIt != edgeA.nextRadial);
+		} while (edgeIdxIt != edgeA.twin);
 	}
 
 	coUint32 newLoopIdx;
@@ -112,8 +112,8 @@ coUint32 coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 	// Link loops
 	if (edges[aLastRelatedToBIdx].next == aFirstRelatedToBIdx)
 	{
-		const coUint32 prevIdx = edges[edges[aLastRelatedToBIdx].nextRadial].prev;
-		const coUint32 nextIdx = edges[edges[aFirstRelatedToBIdx].nextRadial].next;
+		const coUint32 prevIdx = edges[edges[aLastRelatedToBIdx].twin].prev;
+		const coUint32 nextIdx = edges[edges[aFirstRelatedToBIdx].twin].next;
 		coHalfEdge& prev = edges[prevIdx];
 		coHalfEdge& next = edges[nextIdx];
 		coASSERT(!prev.IsDegenerate());
@@ -124,7 +124,7 @@ coUint32 coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 		coDEBUG_CODE(mesh.CheckEdge(nextIdx));
 		newLoopIdx = nextIdx;
 	}
-	else if (edges[edges[aFirstRelatedToBIdx].nextRadial].next == edges[aLastRelatedToBIdx].nextRadial)
+	else if (edges[edges[aFirstRelatedToBIdx].twin].next == edges[aLastRelatedToBIdx].twin)
 	{
 		const coUint32 prevIdx = edges[aFirstRelatedToBIdx].prev;
 		const coUint32 nextIdx = edges[aLastRelatedToBIdx].next;
@@ -146,7 +146,7 @@ coUint32 coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 			newLoopIdx = aIdx;
 			coHalfEdge& a = edges[aIdx];
 			coASSERT(!a.IsDegenerate());
-			coHalfEdge& radial = edges[edge.nextRadial];
+			coHalfEdge& radial = edges[edge.twin];
 			coASSERT(!radial.IsDegenerate());
 			const coUint32 bIdx = radial.next;
 			coHalfEdge& b = edges[bIdx];
@@ -168,7 +168,7 @@ coUint32 coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 			const coUint32 aIdx = edge.next;
 			coHalfEdge& a = edges[aIdx];
 			coASSERT(!a.IsDegenerate());
-			coHalfEdge& radial = edges[edge.nextRadial];
+			coHalfEdge& radial = edges[edge.twin];
 			coASSERT(!radial.IsDegenerate());
 			const coUint32 bIdx = radial.prev;
 			coHalfEdge& b = edges[bIdx];
@@ -196,19 +196,17 @@ coUint32 coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 			for (const coUint32 idx : edgesToDisable)
 			{
 				coHalfEdge& edge = edges[idx];
-				const coUint32 radialIdx = edge.nextRadial;
+				const coUint32 radialIdx = edge.twin;
 				coHalfEdge& radialEdge = edges[radialIdx];
 				coASSERT(edge.faceIdx == faceA);
 				coASSERT(radialEdge.faceIdx == faceA);
 
 				edge.next = idx;
 				edge.prev = idx;
-				edge.nextRadial = idx;
-				edge.prevRadial = idx;
+				edge.twin = idx;
 				radialEdge.next = radialIdx;
 				radialEdge.prev = radialIdx;
-				radialEdge.nextRadial = radialIdx;
-				radialEdge.prevRadial = radialIdx;
+				radialEdge.twin = radialIdx;
 
 				coDEBUG_CODE(mesh.CheckEdge(idx));
 				coDEBUG_CODE(mesh.CheckEdge(radialIdx));
@@ -224,22 +222,20 @@ coUint32 coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 				coHalfEdge& edge = edges[idx];
 				const coUint32 nextIdx = edge.next;
 				coASSERT(nextIdx != idx);
-				const coUint32 radialIdx = edge.nextRadial;
-				coHalfEdge& radialEdge = edges[radialIdx];
+				const coUint32 twinIdx = edge.twin;
+				coHalfEdge& twinEdge = edges[twinIdx];
 				coASSERT(edge.faceIdx == faceA);
-				coASSERT(radialEdge.faceIdx == faceA);
+				coASSERT(twinEdge.faceIdx == faceA);
 
 				edge.next = idx;
 				edge.prev = idx;
-				edge.nextRadial = idx;
-				edge.prevRadial = idx;
-				radialEdge.next = radialIdx;
-				radialEdge.prev = radialIdx;
-				radialEdge.nextRadial = radialIdx;
-				radialEdge.prevRadial = radialIdx;
+				edge.twin = idx;
+				twinEdge.next = twinIdx;
+				twinEdge.prev = twinIdx;
+				twinEdge.twin = twinIdx;
 
 				coDEBUG_CODE(mesh.CheckEdge(idx));
-				coDEBUG_CODE(mesh.CheckEdge(radialIdx));
+				coDEBUG_CODE(mesh.CheckEdge(twinIdx));
 
 				if (idx == aLastRelatedToBIdx)
 					break;

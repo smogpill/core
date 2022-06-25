@@ -67,7 +67,7 @@ void coSplitHardEdges(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals, 
 	auto IsSharp = [&](const coUint32 eIdx)
 	{
 		const coHalfEdge& edgeA = edges[eIdx];
-		const coHalfEdge& edgeB = edges[edgeA.nextRadial];
+		const coHalfEdge& edgeB = edges[edgeA.twin];
 		const coVec3& normalA = faceNormals[edgeA.faceIdx];
 		const coVec3& normalB = faceNormals[edgeB.faceIdx];
 		return coAreAllTrue(coDot(normalA, normalB) <= cosAngle);
@@ -94,12 +94,12 @@ void coSplitHardEdges(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals, 
 					const coHalfEdge& itEdge = edges[itEdgeIdx];
 					coASSERT(itEdge.vertexIdx == vertexIdx);
 					const coHalfEdge& prev = edges[itEdge.prev];
-					if (prev.nextRadial == itEdge.prev)
+					if (prev.twin == itEdge.prev)
 					{
 						startEdgeIdx = itEdgeIdx;
 						break;
 					}
-					itEdgeIdx = prev.nextRadial;
+					itEdgeIdx = prev.twin;
 				} while (itEdgeIdx != edgeIdx);
 			}
 
@@ -117,7 +117,7 @@ void coSplitHardEdges(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals, 
 						break;
 					}
 					const coHalfEdge& prev = edges[itEdge.prev];
-					itEdgeIdx = prev.nextRadial;
+					itEdgeIdx = prev.twin;
 				} while (itEdgeIdx != edgeIdx);
 			}
 
@@ -141,10 +141,8 @@ void coSplitHardEdges(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals, 
 					const coVec3 pos = vertices[curVertexIdx];
 					curVertexIdx = vertices.count;
 					coPushBack(vertices, pos);
-					edges[itEdge.nextRadial].nextRadial = itEdge.nextRadial;
-					edges[itEdge.nextRadial].prevRadial = itEdge.nextRadial;
-					itEdge.nextRadial = itEdgeIdx;
-					itEdge.prevRadial = itEdgeIdx;
+					edges[itEdge.twin].twin = itEdge.twin;
+					itEdge.twin = itEdgeIdx;
 				}
 
 				// Replace vertex in edge
@@ -153,10 +151,10 @@ void coSplitHardEdges(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals, 
 
 				const coUint32 prevIdx = itEdge.prev;
 				const coHalfEdge& prev = edges[prevIdx];
-				if (prev.nextRadial == prevIdx)
+				if (prev.twin == prevIdx)
 					break;
 
-				itEdgeIdx = prev.nextRadial;
+				itEdgeIdx = prev.twin;
 				
 			} while (itEdgeIdx != startEdgeIdx);
 		}

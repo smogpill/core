@@ -15,7 +15,7 @@ void coMergePlanarFaces(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals
 	for (coUint32 edgeAIdx = 0; edgeAIdx < edges.count; ++edgeAIdx)
 	{
 		coHalfEdge& edgeA = edges[edgeAIdx];
-		const coUint32 edgeBIdx = edgeA.nextRadial;
+		const coUint32 edgeBIdx = edgeA.twin;
 		if (edgeBIdx == edgeAIdx)
 			continue;
 

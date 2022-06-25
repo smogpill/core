@@ -68,8 +68,7 @@ coHalfEdgeMesh::coHalfEdgeMesh(const coArray<coUint32>& indices, coUint32 nbVert
 			edge.faceIdx = triangleIdx;
 			edge.prev = nodeOffset + (i + 2) % 3;
 			edge.next = nodeOffset + (i + 1) % 3;
-			edge.prevRadial = edgeIdx;
-			edge.nextRadial = edgeIdx;
+			edge.twin = edgeIdx;
 		}
 	}
 
@@ -90,13 +89,13 @@ coHalfEdgeMesh::coHalfEdgeMesh(const coArray<coUint32>& indices, coUint32 nbVert
 				do
 				{
 					VertexToHalfEdge& entry = vertexToHalfEdge[itIdx];
-					const coHalfEdge& itHalfEdge = halfEdges[entry.halfEdge];
+					coHalfEdge& itHalfEdge = halfEdges[entry.halfEdge];
 					const coHalfEdge& nextHalfEdge = halfEdges[itHalfEdge.next];
 					if (nextHalfEdge.vertexIdx == vertexIdx)
 					{
-						coHalfEdge& nextRadial = halfEdges[halfEdge.nextRadial];
-						nextRadial.prevRadial = entry.halfEdge;
-						halfEdge.nextRadial = entry.halfEdge;
+						itHalfEdge.twin = indexIdx;
+						halfEdge.twin = entry.halfEdge;
+						break;
 					}
 					itIdx = entry.next;
 				} while (vertexToHalfEdge[itIdx].halfEdge != coUint32(-1));
@@ -113,25 +112,19 @@ void coHalfEdgeMesh::RemoveHalfEdge(coUint32 edgeIdx)
 	coHalfEdge& edge = halfEdges[edgeIdx];
 
 	// Unlink
-	const coUint32 prev = edge.prev;
-	const coUint32 prevRadial = edge.prevRadial;
 	halfEdges[edge.next].prev = edge.prev;
-	halfEdges[prev].next = edge.next;
-	halfEdges[edge.nextRadial].prevRadial = edge.prevRadial;
-	halfEdges[prevRadial].nextRadial = edge.nextRadial;
-
-	const coUint32 lastEdgeIdx = halfEdges.count - 1;
+	halfEdges[edge.prev].next = edge.next;
+	halfEdges[edge.twin].twin = edge.twin;
 
 	// Update edge indices of the last halfEdge of the list
+	const coUint32 lastEdgeIdx = halfEdges.count - 1;
 	if (edgeIdx != lastEdgeIdx)
 	{
 		coHalfEdge& newEdge = halfEdges[lastEdgeIdx];
-		const coUint32 newPrev = newEdge.prev;
-		const coUint32 newPrevRadial = newEdge.prevRadial;
+		const coUint32 newEdgePrev = newEdge.prev; // It can be changed during the upgrade if the face is degenerate
 		halfEdges[newEdge.next].prev = edgeIdx;
-		halfEdges[newPrev].next = edgeIdx;
-		halfEdges[newEdge.nextRadial].prevRadial = edgeIdx;
-		halfEdges[newPrevRadial].nextRadial = edgeIdx;
+		halfEdges[newEdgePrev].next = edgeIdx;
+		halfEdges[newEdge.twin].twin = edgeIdx;
 	}
 
 	coRemoveUnorderedByIndex(halfEdges, edgeIdx);
@@ -165,12 +158,10 @@ void coHalfEdgeMesh::CheckEdge(coUint32 edgeIdx) const
 	const coHalfEdge& edge = halfEdges[edgeIdx];
 	const coHalfEdge& next = halfEdges[edge.next];
 	const coHalfEdge& prev = halfEdges[edge.prev];
-	const coHalfEdge& nextRadial = halfEdges[edge.nextRadial];
-	const coHalfEdge& prevRadial = halfEdges[edge.prevRadial];
+	const coHalfEdge& twin = halfEdges[edge.twin];
 	coASSERT(next.prev == edgeIdx);
 	coASSERT(prev.next == edgeIdx);
-	coASSERT(nextRadial.prevRadial == edgeIdx);
-	coASSERT(prevRadial.nextRadial == edgeIdx);
+	coASSERT(twin.twin == edgeIdx);
 	edge.checked = true;
 }
 
@@ -186,8 +177,7 @@ void coHalfEdgeMesh::CheckEdgeNotReferencedByOthers(coUint32 edgeIdx) const
 		const coHalfEdge& edge = halfEdges[itEdgeIdx];
 		coASSERT(edge.next != edgeIdx);
 		coASSERT(edge.prev != edgeIdx);
-		coASSERT(edge.nextRadial != edgeIdx);
-		coASSERT(edge.prevRadial != edgeIdx);
+		coASSERT(edge.twin != edgeIdx);
 	}
 }
 
@@ -255,14 +245,14 @@ void coHalfEdgeMesh::CheckNoVertexDuplicatesOnFaces() const
 coBool coHalfEdgeMesh::IsEdgeManifold(coUint32 edgeIdx) const
 {
 	const coHalfEdge& e = halfEdges[edgeIdx];
-	return halfEdges[e.nextRadial].nextRadial == edgeIdx;
+	return halfEdges[e.twin].twin == edgeIdx;
 }
 
 coBool coHalfEdgeMesh::IsEdgeContiguous(coUint32 edgeIdx) const
 {
 	const coHalfEdge& e = halfEdges[edgeIdx];
-	const coHalfEdge& radial = halfEdges[e.nextRadial];
-	return halfEdges[e.nextRadial].nextRadial == edgeIdx && (e.vertexIdx == ~coUint32(0) || radial.vertexIdx != e.vertexIdx);
+	const coHalfEdge& radial = halfEdges[e.twin];
+	return halfEdges[e.twin].twin == edgeIdx && (e.vertexIdx == ~coUint32(0) || radial.vertexIdx != e.vertexIdx);
 }
 
 void coHalfEdgeMesh::Check() const
@@ -333,22 +323,19 @@ coUint32 coHalfEdgeMesh::AddFace(coUint32 faceIdx, coUint32 nbHalfEdges)
 		coHalfEdge e;
 		e.prev = offset + (idx == 0 ? (nbHalfEdges - 1) : (idx - 1));
 		e.next = offset + ((idx + 1) % nbHalfEdges);
-		e.nextRadial = edgeIdx;
-		e.prevRadial = edgeIdx;
+		e.twin = edgeIdx;
 		e.faceIdx = faceIdx;
 		coPushBack(halfEdges, e);
 	}
 	return offset;
 }
 
-void coHalfEdgeMesh::SetRadials(coUint32 edgeAIdx, coUint32 edgeBIdx)
+void coHalfEdgeMesh::SetTwins(coUint32 edgeAIdx, coUint32 edgeBIdx)
 {
 	coHalfEdge& edgeA = halfEdges[edgeAIdx];
 	coHalfEdge& edgeB = halfEdges[edgeBIdx];
-	coASSERT(edgeA.nextRadial == edgeAIdx);
-	coASSERT(edgeB.nextRadial == edgeBIdx);
-	edgeA.nextRadial = edgeBIdx;
-	edgeA.prevRadial = edgeBIdx;
-	edgeB.nextRadial = edgeAIdx;
-	edgeB.prevRadial = edgeAIdx;
+	coASSERT(edgeA.twin == edgeAIdx);
+	coASSERT(edgeB.twin == edgeBIdx);
+	edgeA.twin = edgeBIdx;
+	edgeB.twin = edgeAIdx;
 }

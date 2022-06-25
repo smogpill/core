@@ -11,8 +11,7 @@ public:
 
 	coUint32 next = coUint32(-1);
 	coUint32 prev = coUint32(-1);
-	coUint32 nextRadial = coUint32(-1);
-	coUint32 prevRadial = coUint32(-1);
+	coUint32 twin = coUint32(-1);
 	coUint32 vertexIdx = coUint32(-1);
 	coUint32 faceIdx = coUint32(-1);
 

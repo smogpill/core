@@ -13,18 +13,16 @@ void coDissolveDegenerateFace(coHalfEdgeMesh& mesh, coUint32 anyHalfEdgeIdx)
 	const coUint32 nextIdx = edge.next;
 	coHalfEdge& next = halfEdges[nextIdx];
 
-	halfEdges[edge.nextRadial].nextRadial = next.nextRadial;
-	halfEdges[next.nextRadial].nextRadial = edge.nextRadial;
+	halfEdges[edge.twin].twin = next.twin;
+	halfEdges[next.twin].twin = edge.twin;
 
 	edge.next = anyHalfEdgeIdx;
 	edge.prev = anyHalfEdgeIdx;
-	edge.nextRadial = anyHalfEdgeIdx;
-	edge.prevRadial = anyHalfEdgeIdx;
+	edge.twin = anyHalfEdgeIdx;
 
 	next.next = nextIdx;
 	next.prev = nextIdx;
-	next.nextRadial = nextIdx;
-	next.prevRadial = nextIdx;
+	next.twin = nextIdx;
 }
 
 void coRemoveDegenerateFaces(coHalfEdgeMesh& mesh)

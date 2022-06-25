@@ -9,8 +9,6 @@ void coHalfEdge::SwapEdgeIdx(coUint32 oldIdx, coUint32 newIdx)
 		next = newIdx;
 	if (prev == oldIdx)
 		prev = newIdx;
-	if (nextRadial == oldIdx)
-		nextRadial = newIdx;
-	if (prevRadial == oldIdx)
-		prevRadial = newIdx;
+	if (twin == oldIdx)
+		twin = newIdx;
 }

@@ -13,24 +13,20 @@ void coDissolveDegenerateEdge(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 	coASSERT(a.IsDegenerate());
 	const coUint32 bIdx = a.next;
 	coHalfEdge& b = mesh.halfEdges[bIdx];
-	const coUint32 aRadialIdx = a.nextRadial;
-	const coUint32 bRadialIdx = b.nextRadial;
+	const coUint32 aRadialIdx = a.twin;
+	const coUint32 bRadialIdx = b.twin;
 	coHalfEdge& aRadial = mesh.halfEdges[aRadialIdx];
 	coHalfEdge& bRadial = mesh.halfEdges[bRadialIdx];
-	coASSERT(aRadial.nextRadial == aIdx);
-	coASSERT(bRadial.nextRadial == bIdx);
-	aRadial.nextRadial = bRadialIdx;
-	aRadial.prevRadial = bRadialIdx;
-	bRadial.nextRadial = aRadialIdx;
-	bRadial.prevRadial = aRadialIdx;
+	coASSERT(aRadial.twin == aIdx);
+	coASSERT(bRadial.twin == bIdx);
+	aRadial.twin = bRadialIdx;
+	bRadial.twin = aRadialIdx;
 	a.next = aIdx;
 	a.prev = aIdx;
-	a.nextRadial = aIdx;
-	a.prevRadial = aIdx;
+	a.twin = aIdx;
 	b.next = bIdx;
 	b.prev = bIdx;
-	b.nextRadial = bIdx;
-	b.prevRadial = bIdx;
+	b.twin = bIdx;
 }
 
 void coCollapseEdge(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
@@ -38,7 +34,7 @@ void coCollapseEdge(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 	coHalfEdge& edge = mesh.halfEdges[edgeIdx];
 	if (edge.next == edgeIdx)
 		return;
-	const coUint32 radialIdx = edge.nextRadial;
+	const coUint32 radialIdx = edge.twin;
 	coHalfEdge& radial = mesh.halfEdges[radialIdx];
 	const coUint32 prevIdx = edge.prev;
 	const coUint32 nextIdx = edge.next;
@@ -76,13 +72,11 @@ void coCollapseEdge(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 
 	edge.prev = edgeIdx;
 	edge.next = edgeIdx;
-	edge.prevRadial = edgeIdx;
-	edge.nextRadial = edgeIdx;
+	edge.twin = edgeIdx;
 
 	radial.prev = radialIdx;
 	radial.next = radialIdx;
-	radial.prevRadial = radialIdx;
-	radial.nextRadial = radialIdx;
+	radial.twin = radialIdx;
 
 	coDEBUG_CODE(mesh.CheckEdge(prevIdx));
 	coDEBUG_CODE(mesh.CheckEdge(nextIdx));
