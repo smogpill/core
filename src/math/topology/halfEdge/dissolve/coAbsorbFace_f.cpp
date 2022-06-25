@@ -251,8 +251,8 @@ coUint32 coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 	}
 
 	coDEBUG_CODE(mesh.CheckEdgeLoop(newLoopIdx));
-	coDEBUG_CODE(mesh.Check());
+	//coDEBUG_CODE(mesh.Check());
 	//coDEBUG_CODE(mesh.CheckNoVertexDuplicatesOnFaces());
-	coDEBUG_CODE(mesh.CheckNoMoreThan2FacesPerEdge());
+	//coDEBUG_CODE(mesh.CheckNoMoreThan2FacesPerEdge());
 	return newLoopIdx;
 }
