@@ -132,6 +132,8 @@ void coSplitHardEdges(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals, 
 			coUint32 itEdgeIdx = startEdgeIdx;
 			do
 			{
+				coHalfEdge& itEdge = edges[itEdgeIdx];
+
 				// Sharp?
 				if (IsSharp(itEdgeIdx))
 				{
@@ -139,10 +141,13 @@ void coSplitHardEdges(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals, 
 					const coVec3 pos = vertices[curVertexIdx];
 					curVertexIdx = vertices.count;
 					coPushBack(vertices, pos);
+					edges[itEdge.nextRadial].nextRadial = itEdge.nextRadial;
+					edges[itEdge.nextRadial].prevRadial = itEdge.nextRadial;
+					itEdge.nextRadial = itEdgeIdx;
+					itEdge.prevRadial = itEdgeIdx;
 				}
 
 				// Replace vertex in edge
-				coHalfEdge& itEdge = edges[itEdgeIdx];
 				edges[itEdgeIdx].vertexIdx = curVertexIdx;
 				itEdge.done = true;
 
