@@ -2,6 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "math/pch.h"
 #include "coDissolveFlatVertices_f.h"
+#include "coDissolveDegenerateFaces_f.h"
 #include "../coHalfEdgeMesh.h"
 #include "../../../vector/coVec3_f.h"
 #include <debug/profiler/coProfile.h>
@@ -21,6 +22,9 @@ void coDissolveFlatVertices(coHalfEdgeMesh& mesh, coFloat tolerance)
 			
 		coHalfEdge& a0 = edges[a0Idx];
 		coHalfEdge& a2 = edges[a2Idx];
+		coASSERT(!a0.IsDegenerate());
+		coASSERT(!a1.IsDegenerate());
+		coASSERT(!a2.IsDegenerate());
 		const coVec3& a0Pos = vertices[a0.vertexIdx];
 		const coVec3& a1Pos = vertices[a1.vertexIdx];
 		const coVec3& a2Pos = vertices[a2.vertexIdx];
@@ -40,6 +44,9 @@ void coDissolveFlatVertices(coHalfEdgeMesh& mesh, coFloat tolerance)
 				// Remove 1
 				a1.prev = a1Idx;
 				a1.next = a1Idx;
+
+				if (a0.IsDegenerate())
+					coDissolveDegenerateFace(mesh, a0Idx);
 			}
 		}
 		else if (a1.nextRadial != a1Idx)
@@ -67,6 +74,8 @@ void coDissolveFlatVertices(coHalfEdgeMesh& mesh, coFloat tolerance)
 			b0.prevRadial = a0Idx;
 			b2.prev = b0Idx;
 
+			mesh.CheckEdgeNotReferencedByOthers(a1Idx);
+
 			// Remove 1
 			a1.prev = a1Idx;
 			a1.next = a1Idx;
@@ -76,6 +85,11 @@ void coDissolveFlatVertices(coHalfEdgeMesh& mesh, coFloat tolerance)
 			b1.next = b1Idx;
 			b1.nextRadial = b1Idx;
 			b1.prevRadial = b1Idx;
+
+			if (a0.IsDegenerate())
+				coDissolveDegenerateFace(mesh, a0Idx);
+			if (b0.IsDegenerate())
+				coDissolveDegenerateFace(mesh, b0Idx);
 		}
 	}
 }

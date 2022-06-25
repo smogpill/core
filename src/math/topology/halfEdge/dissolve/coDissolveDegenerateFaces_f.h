@@ -3,4 +3,5 @@
 #pragma once
 class coHalfEdgeMesh;
 
-void coDissolveDegenerateFaces(coHalfEdgeMesh&);
+void coDissolveDegenerateFace(coHalfEdgeMesh&, coUint32 anyHalfEdgeIdx);
+void coRemoveDegenerateFaces(coHalfEdgeMesh&);

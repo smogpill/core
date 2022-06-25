@@ -7,7 +7,7 @@
 #include <container/map/coHashMap_f.h>
 #include <debug/profiler/coProfile.h>
 
-coBool co_advancedChecks = false;
+coBool co_advancedChecks = true;
 
 coHalfEdgeMesh::coHalfEdgeMesh(const coArray<coUint32>& indices, const coArray<coVec3>& vertices_)
 	: coHalfEdgeMesh(indices, vertices_.count)
@@ -174,6 +174,23 @@ void coHalfEdgeMesh::CheckEdge(coUint32 edgeIdx) const
 	edge.checked = true;
 }
 
+void coHalfEdgeMesh::CheckEdgeNotReferencedByOthers(coUint32 edgeIdx) const
+{
+	if (!co_advancedChecks)
+		return;
+	for (coUint32 itEdgeIdx = 0; itEdgeIdx < halfEdges.count; ++itEdgeIdx)
+	{
+		if (coUNLIKELY(itEdgeIdx == edgeIdx))
+			continue;
+
+		const coHalfEdge& edge = halfEdges[itEdgeIdx];
+		coASSERT(edge.next != edgeIdx);
+		coASSERT(edge.prev != edgeIdx);
+		coASSERT(edge.nextRadial != edgeIdx);
+		coASSERT(edge.prevRadial != edgeIdx);
+	}
+}
+
 void coHalfEdgeMesh::CheckNoMoreThan2FacesPerEdge() const
 {
 	if (!co_advancedChecks)
@@ -208,7 +225,6 @@ void coHalfEdgeMesh::CheckNoVertexDuplicatesOnFaces() const
 
 	coDynamicArray<coBool> touchedVertices;
 	coResize(touchedVertices, halfEdges.count, false);
-
 	
 	for (coUint32 edgeIdx = 0; edgeIdx < halfEdges.count; ++edgeIdx)
 	{

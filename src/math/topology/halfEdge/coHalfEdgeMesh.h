@@ -17,6 +17,7 @@ public:
 	void RemoveHalfEdge(coUint32 edgeIdx);
 	void CheckEdgeLoop(coUint32 edgeIdx) const;
 	void CheckEdge(coUint32 edgeIdx) const;
+	void CheckEdgeNotReferencedByOthers(coUint32 edgeIdx) const;
 	void CheckNoMoreThan2FacesPerEdge() const;
 	void CheckNoVertexDuplicatesOnFaces() const;
 	coBool IsEdgeAlive(coUint32 edgeIdx) const { return halfEdges[edgeIdx].next != edgeIdx; }
