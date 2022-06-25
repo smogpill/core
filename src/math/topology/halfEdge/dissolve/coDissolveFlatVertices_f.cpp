@@ -16,7 +16,7 @@ void coDissolveFlatVertices(coHalfEdgeMesh& mesh, coFloat tolerance)
 		coHalfEdge& a1 = edges[a1Idx];
 		const coUint32 a0Idx = a1.prev;
 		const coUint32 a2Idx = a1.next;
-		if (a0Idx == a1Idx || a1Idx == a2Idx)
+		if (a0Idx == a2Idx || a1Idx == a2Idx)
 			continue;
 			
 		coHalfEdge& a0 = edges[a0Idx];
