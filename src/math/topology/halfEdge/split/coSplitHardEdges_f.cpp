@@ -138,9 +138,58 @@ void coSplitHardEdges(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals, 
 				if (IsSharp(itEdgeIdx))
 				{
 					// Create a new vertex
-					const coVec3 pos = vertices[curVertexIdx];
-					curVertexIdx = vertices.count;
-					coPushBack(vertices, pos);
+					{
+						const coVec3 pos = vertices[curVertexIdx];
+						curVertexIdx = vertices.count;
+						coPushBack(vertices, pos);
+					}
+
+					// Separate the twin vertex if necessary to avoid forming a non-manifold twin vertex
+					// (having two surfaces instead of one)
+					if (true)
+					{
+						// Circle around the other vertex to find it there is a full circle (meaning the vertex is 100% surrounded by a surface)
+						const coUint32 itEdgeTwinIdx = itEdge.twin;
+						coASSERT(itEdgeTwinIdx != itEdgeIdx);
+						coUint32 itEdge2Idx = itEdgeTwinIdx;
+						do
+						{
+							const coHalfEdge& itEdge2 = edges[itEdge2Idx];
+							const coUint32 prev2Idx = itEdge2.prev;
+							const coHalfEdge& prev2 = edges[prev2Idx];
+							if (prev2.twin == prev2Idx)
+								break;
+
+							itEdge2Idx = prev2.twin;
+						} while (itEdge2Idx != itEdgeTwinIdx);
+
+						// Circle not full?
+						if (itEdge2Idx != itEdgeTwinIdx)
+						{
+							// Create a new twin vertex
+							const coUint32 vertex2Idx = vertices.count;
+							{
+								const coHalfEdge& itEdgeTwin = edges[itEdgeTwinIdx];
+								const coVec3 pos = vertices[itEdgeTwin.vertexIdx];
+								coPushBack(vertices, pos);
+							}
+
+							// Change the vertex of half of the circle
+							itEdge2Idx = itEdgeTwinIdx;
+							for (;;)
+							{
+								coHalfEdge& itEdge2 = edges[itEdge2Idx];
+								itEdge2.vertexIdx = vertex2Idx;
+								const coUint32 prev2Idx = itEdge2.prev;
+								const coHalfEdge& prev2 = edges[prev2Idx];
+								if (prev2.twin == prev2Idx)
+									break;
+								itEdge2Idx = prev2.twin;
+							}
+						}
+					}
+
+					// Separate the half edges
 					edges[itEdge.twin].twin = itEdge.twin;
 					itEdge.twin = itEdgeIdx;
 				}
@@ -160,97 +209,3 @@ void coSplitHardEdges(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals, 
 		}
 	}
 }
-
-/*
-	coDynamicArray<Change> changes;
-	coReserve(changes, 1024);
-
-	for (coUint vertIndex = 0; vertIndex < nbInitialVertices; ++vertIndex)
-	{
-		// Find first edge
-		FaceEdge firstEdge = emptyEdge;
-		{
-			// Find border
-			{
-				VertexToFaceEdge* itFaceEdge = &vertexToFaceEdges[vertIndex];
-				while (itFaceEdge->faceEdge != coUint32(-1))
-				{
-					const FaceEdge& edge = faceNeighbors[itFaceEdge->faceEdge];
-					if (IsBorder(edge))
-					{
-						firstEdge = edge;
-						break;
-					}
-					if (itFaceEdge->next == coUint32(-1))
-						break;
-					itFaceEdge = &vertexToFaceEdges[itFaceEdge->next];
-				}
-			}
-
-			// No border found -> Find a sharp edge
-			if (firstEdge == emptyEdge)
-			{
-				VertexToFaceEdge* itFaceEdge = &vertexToFaceEdges[vertIndex];
-				while (itFaceEdge->faceEdge != coUint32(-1))
-				{
-					const FaceEdge& edge = faceNeighbors[itFaceEdge->faceEdge];
-					if (IsSharp(edge))
-					{
-						firstEdge = edge;
-						break;
-					}
-					if (itFaceEdge->next == coUint32(-1))
-						break;
-					itFaceEdge = &vertexToFaceEdges[itFaceEdge->next];
-				}
-			}
-		}
-
-		if (firstEdge == emptyEdge)
-			continue;
-
-		// TEMP TEMP TEMP TEMP
-		if (nbInitialVertices == 88001 && nbTriangles == 174531 && vertIndex == 62709)
-		{
-			int x = 0; ++x;
-		}
-		// TEMP TEMP TEMP TEMP
-
-		// Rotate around the vertex from the first edge
-		coUint32 curVertex = vertIndex;
-		FaceEdge edge = firstEdge;
-		do
-		{
-			// Sharp?
-			if (IsSharp(edge))
-			{
-				// Create a new vertex
-				const coVec3 pos = positions[curVertex];
-				curVertex = positions.count;
-				coPushBack(positions) = pos;
-			}
-
-			// Replace vertex in face
-			const coUint ind = edge.adjacentFace * 3 + ((edge.edgeInAdjacentFace + 1) % 3);
-			if (indices[ind] != curVertex)
-			{
-				Change change;
-				change.index = ind;
-				change.vertex = curVertex;
-				coPushBack(changes, change);
-			}
-
-			// Rotate to the next edge
-			edge = GetNextEdge(vertIndex, edge);
-
-			if (edge == emptyEdge)
-			{
-				break;
-			}
-		} while (edge != firstEdge);
-	}
-
-	for (const Change change : changes)
-	{
-		indices[change.index] = change.vertex;
-	}*/
