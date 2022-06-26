@@ -53,6 +53,7 @@ void coComputeFaceNormals(const coHalfEdgeMesh& mesh, coDynamicArray<coVec3>& ou
 
 void coSplitHardEdges(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals, coFloat angle)
 {
+	coDEBUG_CODE(mesh.CheckManifoldExceptHoles());
 	const coFloatx4 cosAngle = coCos(angle);
 	auto& edges = mesh.halfEdges;
 	auto& vertices = mesh.vertices;
@@ -214,4 +215,5 @@ void coSplitHardEdges(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals, 
 			} while (itEdgeIdx != startEdgeIdx);
 		}
 	}
+	coDEBUG_CODE(mesh.CheckManifoldExceptHoles());
 }

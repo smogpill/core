@@ -130,6 +130,48 @@ void coHalfEdgeMesh::RemoveHalfEdge(coUint32 edgeIdx)
 	coRemoveUnorderedByIndex(halfEdges, edgeIdx);
 }
 
+/// Tests:
+/// - At most one surface per vertex
+/// - Circling edges share the same vertex
+/// - Edges are contiguous
+void coHalfEdgeMesh::CheckManifoldExceptHoles() const
+{
+	if (!co_advancedChecks)
+		return;
+	coDynamicArray<coBool> touchedVertices;
+	coResize(touchedVertices, vertices.count, false);
+
+	for (const coHalfEdge& edge : halfEdges)
+		edge.checked = false;
+
+	for (coUint32 edgeIdx = 0; edgeIdx < halfEdges.count; ++edgeIdx)
+	{
+		const coHalfEdge& edge = halfEdges[edgeIdx];
+		if (!IsEdgeAlive(edgeIdx))
+			continue;
+
+		coASSERT(edge.twin == edgeIdx || IsEdgeContiguous(edgeIdx));
+
+		if (edge.checked)
+			continue;
+
+		const coUint32 vertexIdx = edge.vertexIdx;
+		coASSERT(!touchedVertices[vertexIdx]); // More than one surface for that vertex
+		touchedVertices[vertexIdx] = true;
+
+		// Check and mark the surface circling around that vertex
+		auto func = [&](const coUint32 edgeIdx)
+		{
+			const coHalfEdge& itEdge = halfEdges[edgeIdx];
+			coASSERT(!itEdge.checked);
+			coASSERT(itEdge.vertexIdx == vertexIdx);
+			itEdge.checked = true;
+			return true;
+		};
+		coVisitAllHalfEdgesAroundVertex(*this, edgeIdx, func);
+	}
+}
+
 void coHalfEdgeMesh::CheckEdgeLoop(coUint32 edgeIdx) const
 {
 	if (!co_advancedChecks)
@@ -251,8 +293,8 @@ coBool coHalfEdgeMesh::IsEdgeManifold(coUint32 edgeIdx) const
 coBool coHalfEdgeMesh::IsEdgeContiguous(coUint32 edgeIdx) const
 {
 	const coHalfEdge& e = halfEdges[edgeIdx];
-	const coHalfEdge& radial = halfEdges[e.twin];
-	return halfEdges[e.twin].twin == edgeIdx && (e.vertexIdx == ~coUint32(0) || radial.vertexIdx != e.vertexIdx);
+	const coHalfEdge& twin = halfEdges[e.twin];
+	return halfEdges[e.twin].twin == edgeIdx && (e.vertexIdx == ~coUint32(0) || twin.vertexIdx != e.vertexIdx);
 }
 
 void coHalfEdgeMesh::Check() const
