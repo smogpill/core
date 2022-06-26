@@ -64,6 +64,12 @@ void coSplitHardEdges(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals, 
 	coDynamicArray<coBool> doneVertices;
 	coResize(doneVertices, vertices.count, false);
 
+	auto IsBorder = [&](const coUint32 eIdx)
+	{
+		const coHalfEdge& edge = edges[eIdx];
+		return edge.twin == eIdx;
+	};
+
 	auto IsSharp = [&](const coUint32 eIdx)
 	{
 		const coHalfEdge& edgeA = edges[eIdx];
@@ -135,7 +141,7 @@ void coSplitHardEdges(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals, 
 				coHalfEdge& itEdge = edges[itEdgeIdx];
 
 				// Sharp?
-				if (IsSharp(itEdgeIdx))
+				if (!IsBorder(itEdgeIdx) && IsSharp(itEdgeIdx))
 				{
 					// Create a new vertex
 					{
