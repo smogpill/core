@@ -95,19 +95,26 @@ void coSplitHardEdges(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals, 
 		{
 			// Find border
 			{
-				coUint32 itEdgeIdx = edgeIdx;
-				do
+				if (edge.twin == edgeIdx)
 				{
-					const coHalfEdge& itEdge = edges[itEdgeIdx];
-					coASSERT(itEdge.vertexIdx == vertexIdx);
-					const coHalfEdge& prev = edges[itEdge.prev];
-					if (prev.twin == itEdge.prev)
+					startEdgeIdx = edgeIdx;
+				}
+				else
+				{
+					coUint32 itEdgeIdx = edgeIdx;
+					do
 					{
-						startEdgeIdx = itEdgeIdx;
-						break;
-					}
-					itEdgeIdx = prev.twin;
-				} while (itEdgeIdx != edgeIdx);
+						const coHalfEdge& itEdge = edges[itEdgeIdx];
+						coASSERT(itEdge.vertexIdx == vertexIdx);
+						const coHalfEdge& prev = edges[itEdge.prev];
+						if (prev.twin == itEdge.prev)
+						{
+							startEdgeIdx = itEdgeIdx;
+							break;
+						}
+						itEdgeIdx = prev.twin;
+					} while (itEdgeIdx != edgeIdx);
+				}
 			}
 
 			// No border found -> Find a sharp edge
@@ -165,35 +172,32 @@ void coSplitHardEdges(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals, 
 							const coUint32 prev2Idx = itEdge2.prev;
 							const coHalfEdge& prev2 = edges[prev2Idx];
 							if (prev2.twin == prev2Idx)
+							{
+								// Create a new twin vertex
+								const coUint32 vertex2Idx = vertices.count;
+								{
+									const coHalfEdge& itEdgeTwin = edges[itEdgeTwinIdx];
+									const coVec3 pos = vertices[itEdgeTwin.vertexIdx];
+									coPushBack(vertices, pos);
+								}
+
+								// Change the vertex of half of the circle
+								coUint32 itEdge3Idx = itEdgeTwinIdx;
+								for (;;)
+								{
+									coHalfEdge& itEdge3 = edges[itEdge3Idx];
+									itEdge3.vertexIdx = vertex2Idx;
+									const coUint32 prev3Idx = itEdge3.prev;
+									const coHalfEdge& prev3 = edges[prev3Idx];
+									if (prev3.twin == prev3Idx)
+										break;
+									itEdge3Idx = prev3.twin;
+								}
 								break;
+							}
 
 							itEdge2Idx = prev2.twin;
 						} while (itEdge2Idx != itEdgeTwinIdx);
-
-						// Circle not full?
-						if (itEdge2Idx != itEdgeTwinIdx)
-						{
-							// Create a new twin vertex
-							const coUint32 vertex2Idx = vertices.count;
-							{
-								const coHalfEdge& itEdgeTwin = edges[itEdgeTwinIdx];
-								const coVec3 pos = vertices[itEdgeTwin.vertexIdx];
-								coPushBack(vertices, pos);
-							}
-
-							// Change the vertex of half of the circle
-							itEdge2Idx = itEdgeTwinIdx;
-							for (;;)
-							{
-								coHalfEdge& itEdge2 = edges[itEdge2Idx];
-								itEdge2.vertexIdx = vertex2Idx;
-								const coUint32 prev2Idx = itEdge2.prev;
-								const coHalfEdge& prev2 = edges[prev2Idx];
-								if (prev2.twin == prev2Idx)
-									break;
-								itEdge2Idx = prev2.twin;
-							}
-						}
 					}
 
 					// Separate the half edges
@@ -214,6 +218,8 @@ void coSplitHardEdges(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals, 
 				
 			} while (itEdgeIdx != startEdgeIdx);
 		}
+
+		coDEBUG_CODE(mesh.CheckManifoldExceptHoles());
 	}
 	coDEBUG_CODE(mesh.CheckManifoldExceptHoles());
 }
