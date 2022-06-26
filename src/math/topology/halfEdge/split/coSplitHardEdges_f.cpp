@@ -95,26 +95,21 @@ void coSplitHardEdges(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals, 
 		{
 			// Find border
 			{
-				if (edge.twin == edgeIdx)
+				coUint32 itEdgeIdx = edgeIdx;
+				do
 				{
-					startEdgeIdx = edgeIdx;
-				}
-				else
-				{
-					coUint32 itEdgeIdx = edgeIdx;
-					do
+					const coHalfEdge& itEdge = edges[itEdgeIdx];
+					coASSERT(itEdge.vertexIdx == vertexIdx);
+					const coUint32 twinIdx = itEdge.twin;
+					if (twinIdx == itEdgeIdx)
 					{
-						const coHalfEdge& itEdge = edges[itEdgeIdx];
-						coASSERT(itEdge.vertexIdx == vertexIdx);
-						const coHalfEdge& prev = edges[itEdge.prev];
-						if (prev.twin == itEdge.prev)
-						{
-							startEdgeIdx = itEdgeIdx;
-							break;
-						}
-						itEdgeIdx = prev.twin;
-					} while (itEdgeIdx != edgeIdx);
-				}
+						startEdgeIdx = itEdgeIdx;
+						break;
+					}
+						
+					const coHalfEdge& twin = edges[twinIdx];
+					itEdgeIdx = twin.next;
+				} while (itEdgeIdx != edgeIdx);
 			}
 
 			// No border found -> Find a sharp edge
