@@ -135,16 +135,33 @@ void coSplitHardEdges(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals, 
 				continue;
 		}
 
-		// Rotate around the vertex from the first edge
+		coUint32 itEdgeIdx = startEdgeIdx;
+
+		// We keep the first edge as it was
+		{
+			coHalfEdge& itEdge = edges[itEdgeIdx];
+			itEdge.done = true;
+
+			const coUint32 prevIdx = itEdge.prev;
+			const coHalfEdge& prev = edges[prevIdx];
+			if (prev.twin == prevIdx)
+			{
+				// We hit another border, no work required
+				continue;
+			}
+
+			itEdgeIdx = prev.twin;
+		}
+
+		// Rotate around the vertex with the following edges
 		{
 			coUint32 curVertexIdx = vertexIdx;
-			coUint32 itEdgeIdx = startEdgeIdx;
 			do
 			{
 				coHalfEdge& itEdge = edges[itEdgeIdx];
 
 				// Sharp?
-				if (!IsBorder(itEdgeIdx) && IsSharp(itEdgeIdx))
+				if (IsSharp(itEdgeIdx))
 				{
 					// Create a new vertex
 					{
