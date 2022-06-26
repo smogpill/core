@@ -3,4 +3,4 @@
 #pragma once
 #include "../coHalfEdgeMesh.h"
 
-void coSplitHardEdges(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals, coFloat angle = 3.14159265f / 5.0f);
+void coSplitSharpEdges(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals, coFloat angle = 3.14159265f / 5.0f);

@@ -1,7 +1,7 @@
 // Copyright(c) 2022 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "math/pch.h"
-#include "coSplitHardEdges_f.h"
+#include "coSplitSharpEdges_f.h"
 #include "../visit/coVisit_f.h"
 #include "../../../scalar/coFloat_f.h"
 #include "../../../vector/coFloatx4_f.h"
@@ -51,7 +51,7 @@ void coComputeFaceNormals(const coHalfEdgeMesh& mesh, coDynamicArray<coVec3>& ou
 	}
 }
 
-void coSplitHardEdges(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals, coFloat angle)
+void coSplitSharpEdges(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals, coFloat angle)
 {
 	coDEBUG_CODE(mesh.CheckManifoldExceptHoles());
 	const coFloatx4 cosAngle = coCos(angle);
