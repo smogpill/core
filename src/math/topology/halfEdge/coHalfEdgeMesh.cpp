@@ -40,7 +40,7 @@ coHalfEdgeMesh::coHalfEdgeMesh(const coArray<coUint32>& indices, coUint32 nbVert
 	coDynamicArray<VertexToHalfEdge> vertexToHalfEdge;
 	coResize(vertexToHalfEdge, nbVertices);
 
-	auto pushBackVertxToHalfEdge = [&](const coUint32 vertex, const coUint32 halfEdge)
+	auto pushBackVertexToHalfEdge = [&](const coUint32 vertex, const coUint32 halfEdge)
 	{
 		coUint32 index = vertex;
 		while (vertexToHalfEdge[index].halfEdge != coUint32(-1))
@@ -62,7 +62,7 @@ coHalfEdgeMesh::coHalfEdgeMesh(const coArray<coUint32>& indices, coUint32 nbVert
 			const coUint32 edgeIdx = halfEdges.count;
 			const coUint32 indexIdx = triangleIdx * 3 + i;
 			const coUint32 vertexIdx = indices[indexIdx];
-			pushBackVertxToHalfEdge(vertexIdx, halfEdges.count);
+			pushBackVertexToHalfEdge(vertexIdx, halfEdges.count);
 			coHalfEdge& edge = coPushBack(halfEdges);
 			edge.vertexIdx = vertexIdx;
 			edge.faceIdx = triangleIdx;
@@ -105,6 +105,12 @@ coHalfEdgeMesh::coHalfEdgeMesh(const coArray<coUint32>& indices, coUint32 nbVert
 	}
 
 	coDEBUG_CODE(Check());
+}
+
+void coHalfEdgeMesh::Clear()
+{
+	coClear(vertices);
+	coClear(halfEdges);
 }
 
 void coHalfEdgeMesh::RemoveHalfEdge(coUint32 edgeIdx)
