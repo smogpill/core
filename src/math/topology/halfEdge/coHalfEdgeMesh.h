@@ -5,6 +5,7 @@
 #include "coHalfEdge.h"
 #include <math/vector/coVec3.h>
 
+/// Warning: Not all vertices/faceNormals are used.
 class coHalfEdgeMesh
 {
 public:
@@ -36,6 +37,7 @@ public:
 	void ClearCheckedFlags() const;
 
 	coDynamicArray<coVec3> vertices;
+	coDynamicArray<coVec3> faceNormals;
 	coDynamicArray<coHalfEdge> halfEdges;
 };
 
