@@ -234,7 +234,7 @@ void coHalfEdgeMesh::CheckNoMoreThan2FacesPerEdge() const
 	if (!co_advancedChecks)
 		return;
 
-	coHashMap<coUint64, coUint8, 1024> edgeToCount;
+	coHashMap<coUint64, coUint32, 1024> edgeToCount;
 	coReserve(edgeToCount, halfEdges.count);
 	for (coUint32 edgeIdx = 0; edgeIdx < halfEdges.count; ++edgeIdx)
 	{
@@ -247,9 +247,9 @@ void coHalfEdgeMesh::CheckNoMoreThan2FacesPerEdge() const
 		if (bIdx < aIdx)
 			coSwap(aIdx, bIdx);
 		const coUint64 edgeKey = coUint64(aIdx) | (coUint64(bIdx) << 32);
-		const coUint8 nb = coGet(edgeToCount, edgeKey, coUint8(0));
-		coASSERT(nb < 2);
-		coSet(edgeToCount, edgeKey, coUint8(nb + 1));
+		const coUint32 foundHalfEdgeIdx = coGet(edgeToCount, edgeKey, ~coUint32(0));
+		coASSERT(foundHalfEdgeIdx == ~coUint32(0) || edge.twin == foundHalfEdgeIdx);
+		coSet(edgeToCount, edgeKey, edgeIdx);
 	}
 }
 

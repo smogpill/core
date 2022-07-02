@@ -120,6 +120,13 @@ void coCollapseEdgesSmallerThanDist(coHalfEdgeMesh& mesh, coFloat distance)
 	const coFloat squaredDist = distance * distance;
 	for (coUint32 edgeIdx = 0; edgeIdx < mesh.halfEdges.count; ++edgeIdx)
 	{
+		// Temp
+		if (edgeIdx == 88568)
+		{
+			coINFO("jid");
+		}
+		// Temp
+
 		coCollapseEdgeIfSmallerThanSquaredDist(mesh, edgeIdx, squaredDist);
 	}
 	mesh.CheckNoMoreThan2FacesPerEdge();
