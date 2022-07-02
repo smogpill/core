@@ -12,3 +12,8 @@ void coCollapseEdge(coHalfEdgeMesh& mesh, coUint32 halfEdgeIdx);
 coBool coCollapseEdgeIfSmallerThanSquaredDist(coHalfEdgeMesh& mesh, coUint32 halfEdgeIdx, coFloat squaredDist);
 
 void coCollapseEdgesSmallerThanDist(coHalfEdgeMesh& mesh, coFloat distance);
+
+/// Not collapsible means:
+/// - Dead half edge (pointing to itself)
+/// - That would not preserve the manifold status of the mesh after collapse.
+coBool coIsCollapsible(const coHalfEdgeMesh& mesh, coUint32 halfEdgeIdx);

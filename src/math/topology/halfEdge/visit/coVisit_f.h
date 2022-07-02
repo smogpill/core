@@ -5,7 +5,7 @@
 
 /// Does not work if the vertex is non-manifold (joined by two or more surfaces).
 /// There is no specific order, it can be visit in one order, then change halfway.
-/// Returns true if looped
+/// Returns true if all edges were visited
 template <class Functor>
 coBool coVisitAllHalfEdgesAroundVertex(const coHalfEdgeMesh& mesh, coUint32 halfEdgeIdx, Functor functor)
 {
@@ -50,7 +50,7 @@ coBool coVisitAllHalfEdgesAroundVertex(const coHalfEdgeMesh& mesh, coUint32 half
 		}
 	}
 
-	return false;
+	return true;
 }
 
 template <class Functor>

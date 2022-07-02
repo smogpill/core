@@ -31,6 +31,7 @@ void coDissolveDegenerateEdge(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 
 void coCollapseEdge(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 {
+	coASSERT(coIsCollapsible(mesh, edgeIdx));
 	coHalfEdge& edge = mesh.halfEdges[edgeIdx];
 	if (edge.next == edgeIdx)
 		return;
@@ -127,7 +128,40 @@ void coCollapseEdgesSmallerThanDist(coHalfEdgeMesh& mesh, coFloat distance)
 		}
 		// Temp
 
-		coCollapseEdgeIfSmallerThanSquaredDist(mesh, edgeIdx, squaredDist);
+		if (coIsCollapsible(mesh, edgeIdx))
+			coCollapseEdgeIfSmallerThanSquaredDist(mesh, edgeIdx, squaredDist);
 	}
 	mesh.CheckNoMoreThan2FacesPerEdge();
+}
+
+coBool coIsCollapsible(const coHalfEdgeMesh& mesh, coUint32 halfEdgeIdx)
+{
+	const auto& edges = mesh.halfEdges;
+	const coHalfEdge& edge = edges[halfEdgeIdx];
+	if (edge.next == halfEdgeIdx)
+		return false;
+
+	coDynamicArray<coUint32> verticesFromA;
+	coReserve(verticesFromA, 16);
+
+	auto gatherNextVertices = [&](const coUint32 circleEdgeIdx)
+	{
+		const coHalfEdge& circleEdge = edges[circleEdgeIdx];
+		const coHalfEdge& nextCircleEdge = edges[circleEdge.next];
+		const coUint32 circleVertex = nextCircleEdge.vertexIdx;
+		coPushBack(verticesFromA, circleVertex);
+		return true;
+	};
+	coVisitAllHalfEdgesAroundVertex(mesh, halfEdgeIdx, gatherNextVertices);
+
+	auto compareWithOtherVertices = [&](const coUint32 circleEdgeIdx)
+	{
+		const coHalfEdge& circleEdge = edges[circleEdgeIdx];
+		const coHalfEdge& nextCircleEdge = edges[circleEdge.next];
+		const coUint32 circleVertex = nextCircleEdge.vertexIdx;
+		if (coContains(verticesFromA, circleVertex))
+			return false;
+		return true;
+	};
+	return coVisitAllHalfEdgesAroundVertex(mesh, edge.next, compareWithOtherVertices);
 }
