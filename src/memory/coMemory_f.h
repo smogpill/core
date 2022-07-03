@@ -4,7 +4,7 @@
 
 #include "lang/coCppExtensions.h"
 
-void coFillAsDeleted(void* _ptr, coUint _size8);
+void coFillAsDeleted(void* _ptr, coUint64 _size8);
 
 coFORCE_INLINE constexpr coBool coIsAligned(const void* _ptr, coUint _alignment8)
 {
@@ -21,11 +21,11 @@ coFORCE_INLINE constexpr coUint64 coAlignSize(const coUint64 _size8, const coUin
 	return _size8 % _alignment ? (_size8 & ~_alignment + _alignment) : _size8;
 }
 
-coFORCE_INLINE void coMemCopy(void* _dest, const void* _src, coUint _size8)
+coFORCE_INLINE void coMemCopy(void* _dest, const void* _src, coUint64 _size8)
 {
 	::memcpy(_dest, _src, _size8);
 }
-coFORCE_INLINE void coMemMove(void* _dest, const void* _src, coUint _size8)
+coFORCE_INLINE void coMemMove(void* _dest, const void* _src, coUint64 _size8)
 {
 	::memmove(_dest, _src, _size8);
 }

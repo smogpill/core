@@ -7,8 +7,8 @@ class coAllocator
 public:
 	virtual ~coAllocator() {}
 
-	virtual void* Allocate(coUint32 _size8) = 0;
-	virtual void* AllocateAligned(coUint32 _size8, coUint _alignment) = 0;
+	virtual void* Allocate(coUint64 _size8) = 0;
+	virtual void* AllocateAligned(coUint64 _size8, coUint _alignment) = 0;
 	virtual void Free(void* _p) = 0;
 	virtual void FreeAligned(void* _p) = 0;
 	static coAllocator* GetHeap();

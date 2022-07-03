@@ -6,5 +6,7 @@
 
 coUint32 _coComputeBestArrayCapacity(coUint32 _capacity)
 {
-	return _capacity >= 16u ? coNextPowerOf2(_capacity) : 16u;
+	const coUint32 newCapacity = _capacity >= 16u ? coNextPowerOf2(_capacity) : 16u;
+	coASSERT(newCapacity >= _capacity);
+	return newCapacity;
 }

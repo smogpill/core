@@ -5,10 +5,8 @@
 #include "debug/log/coAssert.h"
 #include "debug/log/coLog.h"
 
-coLocalAllocator::coLocalAllocator(coUint32 _maxStackAlloc)
-	: stackBuffer(nullptr)
-	, allocatedStackSize8(0)
-	, maxStackAlloc(_maxStackAlloc)
+coLocalAllocator::coLocalAllocator(coUint64 _maxStackAlloc)
+	: maxStackAlloc(_maxStackAlloc)
 {
 	coASSERT(maxStackAlloc < 16 * 1024); // safety
 	coAllocator* stackAllocator = coAllocator::GetStack();
@@ -25,9 +23,9 @@ coLocalAllocator::~coLocalAllocator()
 	stackAllocator->Free(stackBuffer);
 }
 
-void* coLocalAllocator::Allocate(coUint32 _size8)
+void* coLocalAllocator::Allocate(coUint64 _size8)
 {
-	const coUint32 newStackAllocated = allocatedStackSize8 + _size8;
+	const coUint64 newStackAllocated = allocatedStackSize8 + _size8;
 	if (newStackAllocated <= maxStackAlloc)
 	{
 		void* p = stackBuffer + allocatedStackSize8;
@@ -42,9 +40,9 @@ void* coLocalAllocator::Allocate(coUint32 _size8)
 	}
 }
 
-void* coLocalAllocator::AllocateAligned(coUint32 _size8, coUint _alignment)
+void* coLocalAllocator::AllocateAligned(coUint64 _size8, coUint _alignment)
 {
-	const coUint32 newStackAllocated = allocatedStackSize8 + _size8 + _alignment;
+	const coUint64 newStackAllocated = allocatedStackSize8 + _size8 + _alignment;
 	if (newStackAllocated <= maxStackAlloc)
 	{
 		void* buffer = stackBuffer + allocatedStackSize8;

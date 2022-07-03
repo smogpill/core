@@ -20,10 +20,11 @@ void coReserve(coHashMap<K, T, NB_BUCKETS, Hash>& _this, coUint32 _desiredCapaci
 	{
 		const coUint32 roundedCapacity = coNextPowerOf2(_desiredCapacity);
 		const coUint32 newCapacity = coMax(16u, roundedCapacity);
-		Entry* newEntryBuffer = static_cast<Entry*>(_this.allocator->Allocate(newCapacity * sizeof(Entry)));
+		coASSERT(newCapacity >= _desiredCapacity);
+		Entry* newEntryBuffer = static_cast<Entry*>(_this.allocator->Allocate(coUint64(newCapacity) * sizeof(Entry)));
 		if (_this.entries)
 		{
-			coMemCopy(newEntryBuffer, _this.entries, _this.count * sizeof(Entry));
+			coMemCopy(newEntryBuffer, _this.entries, coUint64(_this.count) * sizeof(Entry));
 			_this.allocator->Free(_this.entries);
 		}
 		_this.capacity = newCapacity;

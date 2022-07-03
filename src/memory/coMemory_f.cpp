@@ -4,7 +4,7 @@
 #include "memory/pch.h"
 #include "memory/coMemory_f.h"
 
-void coFillAsDeleted(void* _ptr, coUint _size8)
+void coFillAsDeleted(void* _ptr, coUint64 _size8)
 {
 	coByte* ptr = static_cast<coByte*>(_ptr);
 	while (_size8 >= 4)

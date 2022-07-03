@@ -3,12 +3,12 @@
 #include "memory/pch.h"
 #include "memory/allocator/coStackAllocator.h"
 
-void* coStackAllocator::Allocate(coUint32 _size8)
+void* coStackAllocator::Allocate(coUint64 _size8)
 {
 	return coAllocator::GetHeap()->Allocate(_size8);
 }
 
-void* coStackAllocator::AllocateAligned(coUint32 _size8, coUint _alignment)
+void* coStackAllocator::AllocateAligned(coUint64 _size8, coUint _alignment)
 {
 	return coAllocator::GetHeap()->AllocateAligned(_size8, _alignment);
 }

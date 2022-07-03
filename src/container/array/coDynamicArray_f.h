@@ -22,7 +22,7 @@ coDynamicArray<T>::coDynamicArray(std::initializer_list<T> _l)
 	: coDynamicArray()
 {
 	coResize(*this, static_cast<coUint32>(_l.size()));
-	coMemCopy(this->data, _l.begin(), static_cast<coUint>(_l.size() * sizeof(T)));
+	coMemCopy(this->data, _l.begin(), _l.size() * sizeof(T));
 }
 
 coUint32 _coComputeBestArrayCapacity(coUint32 _capacity);
@@ -37,11 +37,10 @@ void coReserve(coDynamicArray<T>& _this, coUint32 _desiredCount)
 		// - For simplicity. For example for working using SIMD on a float array.
 		// - Seems faster on Intel architectures https://software.intel.com/en-us/articles/data-alignment-when-migrating-to-64-bit-intel-architecture).
 		const coUint alignment = alignof(T) > 16 ? alignof(T) : 16;
-		coASSERT(coUint64(bestCapacity) * sizeof(T) & 0xffffffff);
-		T* newBuffer = static_cast<T*>(coAllocator::GetHeap()->AllocateAligned(bestCapacity * sizeof(T), alignment));
+		T* newBuffer = static_cast<T*>(coAllocator::GetHeap()->AllocateAligned(coUint64(bestCapacity) * sizeof(T), alignment));
 		if (_this.data)
 		{
-			coMemCopy(newBuffer, _this.data, _this.count * sizeof(T));
+			coMemCopy(newBuffer, _this.data, coUint64(_this.count) * sizeof(T));
 			coAllocator::GetHeap()->FreeAligned(_this.data);
 		}
 		_this.data = newBuffer;
@@ -53,6 +52,7 @@ template <class T>
 T& coPushBack(coDynamicArray<T>& _this)
 {
 	const coUint32 newCount = _this.count + 1;
+	coASSERT(newCount); // Check that we didn't reach the max count
 	coReserve(_this, newCount);
 	T& e = _this.data[_this.count];
 	_this.count = newCount;
@@ -64,6 +64,7 @@ T& coPushBack(coDynamicArray<T>& _this, const U& _val)
 {
 	coASSERT(!coContainsPointer(_this, &_val));
 	const coUint32 newCount = _this.count + 1;
+	coASSERT(newCount); // Check that we didn't reach the max count
 	coReserve(_this, newCount);
 	T& e = _this.data[_this.count];
 	e = _val;
@@ -75,10 +76,11 @@ template <class T>
 void coPushBackArray(coDynamicArray<T>& _this, const coArray<const T>& _other)
 {
 	//static_assert(std::is_base_of<coArray<T>, A>::value, "_this should be an array");
+	coASSERT(~decltype(_this.count)(0) - _this.count >= _other.count);
 	const coUint32 desiredCount = _this.count + _other.count;
 	if (desiredCount > _this.capacity)
 		coReserve(_this, desiredCount);
-	coMemCopy(&_this.data[_this.count], _other.data, _other.count * sizeof(T));
+	coMemCopy(&_this.data[_this.count], _other.data, coUint64(_other.count) * sizeof(T));
 	_this.count = desiredCount;
 	
 }
@@ -142,7 +144,7 @@ template <class T>
 coDynamicArray<T>& coDynamicArray<T>::operator=(const coArray<const T>& _other)
 {
 	coReserve(*this, _other.count);
-	coMemCopy(this->data, _other.data, _other.count * sizeof(T));
+	coMemCopy(this->data, _other.data, coUint64(_other.count) * sizeof(T));
 	this->count = _other.count;
 	return *this;
 }

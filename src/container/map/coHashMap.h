@@ -51,7 +51,7 @@ coHashMap<K, T, NB_BUCKETS, Hash>::coHashMap(coAllocator& _allocator)
 	: allocator(&_allocator)
 {
 	//coHACK("coHashMap bucket allocation.");
-	buckets = static_cast<decltype(buckets)>(allocator->Allocate(NB_BUCKETS * sizeof(*buckets)));
+	buckets = static_cast<decltype(buckets)>(allocator->Allocate(coUint64(NB_BUCKETS) * sizeof(*buckets)));
 	coFill(buckets, NB_BUCKETS, invalidIndex);
 }
 

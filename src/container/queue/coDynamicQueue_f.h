@@ -16,20 +16,20 @@ void coReserve(coDynamicQueue<T>& q, coUint32 nbDesired)
 		// - For simplicity. For example for working using SIMD on a float array.
 		// - Seems faster on Intel architectures https://software.intel.com/en-us/articles/data-alignment-when-migrating-to-64-bit-intel-architecture).
 		const coUint alignment = alignof(T) > 16 ? alignof(T) : 16;
-		T* newBuffer = static_cast<T*>(coAllocator::GetHeap()->AllocateAligned(bestCapacity * sizeof(T), alignment));
+		T* newBuffer = static_cast<T*>(coAllocator::GetHeap()->AllocateAligned(coUint64(bestCapacity) * sizeof(T), alignment));
 		if (q.data)
 		{
 			const coUint32 end = q.begin + q.count;
 			if (end <= q.capacity)
 			{
-				coMemCopy(newBuffer, &q.data[q.begin], q.count * sizeof(T));
+				coMemCopy(newBuffer, &q.data[q.begin], coUint64(q.count) * sizeof(T));
 			}
 			else
 			{
 				const coUint32 nbFirst = q.capacity - q.begin;
-				coMemCopy(newBuffer, &q.data[q.begin], nbFirst * sizeof(T));
+				coMemCopy(newBuffer, &q.data[q.begin], coUint64(nbFirst) * sizeof(T));
 				coASSERT(q.count - nbFirst);
-				coMemCopy(&newBuffer[nbFirst], q.data, (q.count - nbFirst) * sizeof(T));
+				coMemCopy(&newBuffer[nbFirst], q.data, coUint64(q.count - nbFirst) * sizeof(T));
 			}
 			q.begin = 0;
 			coAllocator::GetHeap()->FreeAligned(q.data);

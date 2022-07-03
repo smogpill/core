@@ -65,7 +65,7 @@ template <class T>
 void coClear(coArray<T>& _this)
 {
 #ifdef coDEBUG
-	coFillAsDeleted(_this.data, _this.count * sizeof(T));
+	coFillAsDeleted(_this.data, coUint64(_this.count) * sizeof(T));
 #endif
 	_this.count = 0;
 }
