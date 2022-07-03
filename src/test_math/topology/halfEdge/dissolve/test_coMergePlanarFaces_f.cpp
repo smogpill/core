@@ -22,7 +22,8 @@ coTEST(coMergePlanarFaces, simple)
 	coHalfEdgeMesh m(indices);
 	coDynamicArray<coVec3> normals;
 	coComputeTriangleNormals(positions, indices, normals);
-	coMergePlanarFaces(m, normals, 1e-4f);
+	m.faceNormals = normals;
+	coMergePlanarFaces(m, 1e-4f);
 	coRemoveDegenerateFaces(m);
 	coEXPECT(m.GetNbNonDegenerateFaces() == 1);
 }
@@ -42,7 +43,8 @@ coTEST(coMergePlanarFaces, same_plane_but_not_connected)
 	coHalfEdgeMesh m(indices);
 	coDynamicArray<coVec3> normals;
 	coComputeTriangleNormals(positions, indices, normals);
-	coMergePlanarFaces(m, normals, 1e-4f);
+	m.faceNormals = normals;
+	coMergePlanarFaces(m, 1e-4f);
 	coRemoveDegenerateFaces(m);
 	coEXPECT(m.GetNbNonDegenerateFaces() == 2);
 }
@@ -61,7 +63,8 @@ coTEST(coMergePlanarFaces, two_triangles_but_with_flat_vertex)
 	coHalfEdgeMesh m(indices);
 	coDynamicArray<coVec3> normals;
 	coComputeTriangleNormals(positions, indices, normals);
-	coMergePlanarFaces(m, normals, 1e-4f);
+	m.faceNormals = normals;
+	coMergePlanarFaces(m, 1e-4f);
 	coRemoveDegenerateFaces(m);
 	coEXPECT(m.GetNbNonDegenerateFaces() == 1);
 }
@@ -86,7 +89,8 @@ coTEST(coMergePlanarFaces, triangle_hole_in_larger_triangle)
 	coHalfEdgeMesh m(indices);
 	coDynamicArray<coVec3> normals;
 	coComputeTriangleNormals(positions, indices, normals);
-	coMergePlanarFaces(m, normals, 1e-4f);
+	m.faceNormals = normals;
+	coMergePlanarFaces(m, 1e-4f);
 	coRemoveDegenerateFaces(m);
 	coEXPECT(m.GetNbNonDegenerateFaces() == 1);
 }

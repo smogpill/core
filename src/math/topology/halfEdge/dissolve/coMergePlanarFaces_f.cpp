@@ -7,11 +7,12 @@
 #include "../../../vector/coVec3_f.h"
 #include <debug/profiler/coProfile.h>
 
-void coMergePlanarFaces(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals, coFloat tolerance)
+void coMergePlanarFaces(coHalfEdgeMesh& mesh, coFloat tolerance)
 {
 	coPROFILE_EVENT();
 
 	auto& edges = mesh.halfEdges;
+	const auto& faceNormals = mesh.faceNormals;
 	for (coUint32 edgeAIdx = 0; edgeAIdx < edges.count; ++edgeAIdx)
 	{
 		coHalfEdge& edgeA = edges[edgeAIdx];

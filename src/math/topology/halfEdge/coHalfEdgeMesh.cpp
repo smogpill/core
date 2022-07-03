@@ -110,7 +110,15 @@ coHalfEdgeMesh::coHalfEdgeMesh(const coArray<coUint32>& indices, coUint32 nbVert
 void coHalfEdgeMesh::Clear()
 {
 	coClear(vertices);
+	coClear(faceNormals);
 	coClear(halfEdges);
+}
+
+void coHalfEdgeMesh::ShrinkToFit()
+{
+	coShrinkToFit(vertices);
+	coShrinkToFit(faceNormals);
+	coShrinkToFit(halfEdges);
 }
 
 void coHalfEdgeMesh::RemoveHalfEdge(coUint32 edgeIdx)

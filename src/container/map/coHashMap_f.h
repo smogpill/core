@@ -12,24 +12,41 @@ template <class K, class T, coUint NB_BUCKETS, class Hash> coFORCE_INLINE const 
 template <class K, class T, coUint NB_BUCKETS, class Hash> coFORCE_INLINE coHashMapEntry<K, T>* coEnd(coHashMap<K, T, NB_BUCKETS, Hash>& _this) { return _this.entries + _this.count; }
 template <class K, class T, coUint NB_BUCKETS, class Hash> coFORCE_INLINE const coHashMapEntry<K, T>* coEnd(const coHashMap<K, T, NB_BUCKETS, Hash>& _this) { return _this.entries + _this.count; }
 
+inline coUint32 _coComputeBestHashMapCapacity(coUint32 wantedCapacity)
+{
+	const coUint32 roundedCapacity = coNextPowerOf2(wantedCapacity);
+	const coUint32 capacity = coMax(16u, roundedCapacity);
+	coASSERT(capacity >= wantedCapacity);
+	return capacity;
+}
+
 template <class K, class T, coUint NB_BUCKETS, class Hash>
-void coReserve(coHashMap<K, T, NB_BUCKETS, Hash>& _this, coUint32 _desiredCapacity)
+void _coSetCapacity(coHashMap<K, T, NB_BUCKETS, Hash>& hm, coUint32 capacity)
 {
 	typedef coHashMapEntry<K, T> Entry;
-	if (_desiredCapacity > _this.capacity)
+	Entry* newEntryBuffer = static_cast<Entry*>(hm.allocator->Allocate(coUint64(capacity) * sizeof(Entry)));
+	if (hm.entries)
 	{
-		const coUint32 roundedCapacity = coNextPowerOf2(_desiredCapacity);
-		const coUint32 newCapacity = coMax(16u, roundedCapacity);
-		coASSERT(newCapacity >= _desiredCapacity);
-		Entry* newEntryBuffer = static_cast<Entry*>(_this.allocator->Allocate(coUint64(newCapacity) * sizeof(Entry)));
-		if (_this.entries)
-		{
-			coMemCopy(newEntryBuffer, _this.entries, coUint64(_this.count) * sizeof(Entry));
-			_this.allocator->Free(_this.entries);
-		}
-		_this.capacity = newCapacity;
-		_this.entries = newEntryBuffer;
+		coMemCopy(newEntryBuffer, hm.entries, coUint64(hm.count) * sizeof(Entry));
+		hm.allocator->Free(hm.entries);
 	}
+	hm.capacity = capacity;
+	hm.entries = newEntryBuffer;
+}
+
+template <class K, class T, coUint NB_BUCKETS, class Hash>
+void coReserve(coHashMap<K, T, NB_BUCKETS, Hash>& hm, coUint32 _desiredCapacity)
+{
+	if (_desiredCapacity > hm.capacity)
+		_coSetCapacity(hm, _coComputeBestHashMapCapacity(_desiredCapacity));
+}
+
+template <class K, class T, coUint NB_BUCKETS, class Hash>
+void coShrinkToFit(coHashMap<K, T, NB_BUCKETS, Hash>& hm)
+{
+	const coUint32 newCapacity = _coComputeBestHashMapCapacity(hm.count);
+	if (hm.capacity > newCapacity)
+		_coSetCapacity(hm, _coComputeBestHashMapCapacity(newCapacity));
 }
 
 template <class K, class T, coUint NB_BUCKETS, class Hash>

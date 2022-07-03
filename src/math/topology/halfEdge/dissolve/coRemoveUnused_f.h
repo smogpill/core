@@ -4,3 +4,6 @@
 class coHalfEdgeMesh;
 
 void coRemoveUnusedVertices(coHalfEdgeMesh& mesh);
+void coRemoveUnusedHalfEdges(coHalfEdgeMesh& mesh);
+void coRemoveUnusedFaces(coHalfEdgeMesh& mesh);
+void coRemoveUnused(coHalfEdgeMesh& mesh);

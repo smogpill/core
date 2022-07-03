@@ -27,25 +27,42 @@ coDynamicArray<T>::coDynamicArray(std::initializer_list<T> _l)
 
 coUint32 _coComputeBestArrayCapacity(coUint32 _capacity);
 
+
 template <class T>
-void coReserve(coDynamicArray<T>& _this, coUint32 _desiredCount)
+void _coSetCapacity(coDynamicArray<T>& a, coUint32 capacity)
 {
-	if (_desiredCount > _this.capacity)
+	if (a.capacity != capacity)
 	{
-		const coUint32 bestCapacity = _coComputeBestArrayCapacity(_desiredCount);
+		coASSERT(capacity > a.count);
+
 		// Aligned to min 16 bytes:
 		// - For simplicity. For example for working using SIMD on a float array.
 		// - Seems faster on Intel architectures https://software.intel.com/en-us/articles/data-alignment-when-migrating-to-64-bit-intel-architecture).
 		const coUint alignment = alignof(T) > 16 ? alignof(T) : 16;
-		T* newBuffer = static_cast<T*>(coAllocator::GetHeap()->AllocateAligned(coUint64(bestCapacity) * sizeof(T), alignment));
-		if (_this.data)
+		T* newBuffer = static_cast<T*>(coAllocator::GetHeap()->AllocateAligned(coUint64(capacity) * sizeof(T), alignment));
+		if (a.data)
 		{
-			coMemCopy(newBuffer, _this.data, coUint64(_this.count) * sizeof(T));
-			coAllocator::GetHeap()->FreeAligned(_this.data);
+			coMemCopy(newBuffer, a.data, coUint64(a.count) * sizeof(T));
+			coAllocator::GetHeap()->FreeAligned(a.data);
 		}
-		_this.data = newBuffer;
-		_this.capacity = bestCapacity;
+		a.data = newBuffer;
+		a.capacity = capacity;
 	}
+}
+
+template <class T>
+void coReserve(coDynamicArray<T>& a, coUint32 desiredCount)
+{
+	if (desiredCount > a.capacity)
+		_coSetCapacity(a, _coComputeBestArrayCapacity(desiredCount));
+}
+
+template <class T>
+void coShrinkToFit(coDynamicArray<T>& a)
+{
+	const coUint32 bestCapacity = _coComputeBestArrayCapacity(a.count);
+	if (a.capacity > bestCapacity)
+		_coSetCapacity(a, bestCapacity);
 }
 
 template <class T>

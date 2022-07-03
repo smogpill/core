@@ -14,6 +14,7 @@ public:
 	coHalfEdgeMesh(const coArray<coUint32>& indices, coUint32 nbVertices = coUint32(-1));
 
 	void Clear();
+	void ShrinkToFit();
 	coUint32 AddFace(coUint32 faceIdx, coUint32 nbHalfEdges);
 	void SetTwins(coUint32 edgeA, coUint32 edgeB);
 	void RemoveHalfEdge(coUint32 edgeIdx);
