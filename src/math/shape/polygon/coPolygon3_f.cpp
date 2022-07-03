@@ -76,15 +76,37 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 	// Call is consistent/robust
 	auto getSide = [&](const coUint32 a, const coUint32 b, const coUint32 c)
 	{
-		const coUint32 orderedA = a;
-		const coUint32 orderedB = b;
-		const coUint32 orderedC = c;
+		// We reorder from increasing indices, for consistency.
+		coUint32 orderedA = a;
+		coUint32 orderedB = b;
+		coUint32 orderedC = c;
+
+		coBool reversed = false;
+		if (orderedA > orderedC)
+		{
+			coSwap(orderedA, orderedC);
+			reversed = !reversed;
+		}
+		if (orderedA > orderedB)
+		{
+			coSwap(orderedA, orderedB);
+			reversed = !reversed;
+		}
+		if (orderedB > orderedC)
+		{
+			coSwap(orderedB, orderedC);
+			reversed = !reversed;
+		}
+
+		// If we changed the winding, we reverse the result
+		const coInt positive = reversed ? -1 : 1;
+
 		const coVec3& vertA = vertices[orderedA];
 		const coVec3& vertB = vertices[orderedB];
 		const coVec3& vertC = vertices[orderedC];
 		const coFloat val = coDot(coGetRawNormal(vertA, vertB, vertC), planeNormal).x;
 		if (coAbs(val) > epsilon)
-			return val > 0.0f ? 1 : -1;
+			return val > 0.0f ? positive : -positive;
 		else
 			return 0;
 	};
