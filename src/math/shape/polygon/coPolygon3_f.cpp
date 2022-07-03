@@ -54,6 +54,8 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 	// - Blender : BLI_polyfill_calc_arena
 	// - blender/blenlib/intern/polyfill_2d.c
 
+	const coFloat epsilon = 1e-4f;
+
 	const auto& vertices = poly.vertices;
 	auto& remainingVertices = scratch.remainingVertices;
 
@@ -70,6 +72,27 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 		coClear(triangleVertices);
 		return;
 	}
+
+	// Call is consistent/robust
+	auto getSide = [&](const coUint32 a, const coUint32 b, const coUint32 c)
+	{
+		const coUint32 orderedA = a;
+		const coUint32 orderedB = b;
+		const coUint32 orderedC = c;
+		const coVec3& vertA = vertices[orderedA];
+		const coVec3& vertB = vertices[orderedB];
+		const coVec3& vertC = vertices[orderedC];
+		const coFloat val = coDot(coGetRawNormal(vertA, vertB, vertC), planeNormal).x;
+		if (coAbs(val) > epsilon)
+			return val > 0.0f ? 1 : -1;
+		else
+			return 0;
+	};
+
+	auto isConcave = [&](const coUint32 a, const coUint32 b, const coUint32 c)
+	{
+		return getSide(a, b, c) <= 0;
+	};
 	
 	//coASSERT(coIsCounterClockwiseXY(poly));
 	_coPrepareTriangulate(poly, triangleVertices, scratch);
@@ -96,7 +119,7 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 			const coVec3& next = vertices[nextIdx];
 
 			// Concave vertex?
-			if (_coIsConcave(prev, cur, next, planeNormal))
+			if (isConcave(prevIdx, curIdx, nextIdx))
 			{
 				continue;
 			}
@@ -110,13 +133,17 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 					//if (j == prevIdx || j == curIdx || j == nextIdx)
 					//	continue;
 
-					const coVec3& v = vertices[remainingVertices[j]];
+					const coUint32 jIdx = remainingVertices[j];
+					const coVec3& v = vertices[jIdx];
 					if (v == prev || v == cur || v == next)
 						continue;
 
-					const coVec3& vPrev = vertices[remainingVertices[j == 0 ? (remainingVertices.count - 1) : (j - 1)]];
-					const coVec3& vNext = vertices[remainingVertices[j == (remainingVertices.count - 1) ? 0 : (j + 1)]];
-					if (!_coIsConcave(vPrev, v, vNext, planeNormal))
+					const coUint32 jPrevIdx = remainingVertices[j == 0 ? (remainingVertices.count - 1) : (j - 1)];
+					const coUint32 jNextIdx = remainingVertices[j == (remainingVertices.count - 1) ? 0 : (j + 1)];
+
+					const coVec3& vPrev = vertices[jPrevIdx];
+					const coVec3& vNext = vertices[jNextIdx];
+					if (!isConcave(jPrevIdx, jIdx, jNextIdx))
 						continue;
 					if (coOverlapInfiniteExtrude(coTriangle(prev, cur, next), v))
 					{
@@ -146,12 +173,9 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 				const coUint32 prevIdx = remainingVertices[remainingPrev];
 				const coUint32 curIdx = remainingVertices[remainingCur];
 				const coUint32 nextIdx = remainingVertices[remainingNext];
-				const coVec3& prev = poly.vertices[prevIdx];
-				const coVec3& cur = poly.vertices[curIdx];
-				const coVec3& next = poly.vertices[nextIdx];
 
 				// Concave vertex?
-				if (_coIsConcave(prev, cur, next, planeNormal))
+				if (isConcave(prevIdx, curIdx, nextIdx))
 				{
 					continue;
 				}
