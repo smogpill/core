@@ -14,6 +14,30 @@ coUint32 coHash32(const void* data, coUint len);
 coUint64 coHash64(const void* data, coUint len);
 coUint64 coHash64(coUint32 val);
 coUint64 coHash64(coUint64 val);
-coFORCE_INLINE coUint32 coFastHash32(coUint32 val) { /*coASSERT(val < 0x7fffffff);*/ return val * 48271; }
-coFORCE_INLINE coUint32 coFastHash32(coUint64 val) { return static_cast<coUint32>(coFastHash32(coUint32(val)) ^ coFastHash32(coUint32(val >> 32))); }
-coFORCE_INLINE coUint64 coFastHash64(coUint64 val) { /*coASSERT(val < 0x7fffffff);*/ return val * 48271; }
+
+/// 0 returns 0
+/// Still experimental
+coFORCE_INLINE coUint32 coFastHash32(coUint32 val)
+{
+	// https://cplusplus.com/reference/random/minstd_rand/
+	// https://en.wikipedia.org/wiki/Lehmer_random_number_generator
+	/*coASSERT(val < 0x7fffffff);*/ return coUint32(coUint64(val) * 48271);
+}
+
+/// 0 returns 0
+/// Still experimental
+coFORCE_INLINE coUint32 coFastHash32(coUint64 val)
+{
+	// Fibonacci hash
+	// https://probablydance.com/2018/06/16/fibonacci-hashing-the-optimization-that-the-world-forgot-or-a-better-alternative-to-integer-modulo/
+	return (val * 11400714819323198485llu) >> 32;
+}
+
+/// 0 returns 0
+/// Still experimental
+coFORCE_INLINE coUint64 coFastHash64(coUint64 val)
+{
+	// https://cplusplus.com/reference/random/minstd_rand/
+	// https://en.wikipedia.org/wiki/Lehmer_random_number_generator
+	/*coASSERT(val < 0x7fffffff);*/ return val * 48271;
+}
