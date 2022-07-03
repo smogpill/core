@@ -35,6 +35,11 @@ coFORCE_INLINE coBool _coIsInsideTriangleXY(const coVec3& a, const coVec3& b, co
 	return (b1 == b2) & (b2 == b3);
 }
 
+coFORCE_INLINE coBool _coIsConcave(const coVec3& a, const coVec3& b, const coVec3& c, const coVec3& normal)
+{
+	return coDot(coGetRawNormal(a, b, c), normal).x < 0.f;
+}
+
 void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>& triangleVertices, coTriangulateScratch& scratch, const coVec3& planeNormal)
 {
 	// TODO: 
@@ -87,8 +92,8 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 			const coVec3& cur = poly.vertices[curIdx];
 			const coVec3& next = poly.vertices[nextIdx];
 
-			// If interior vertex, continue
-			if (coDot(coGetRawNormal(prev, cur, next), planeNormal).x < 0.f)
+			// Concave vertex?
+			if (_coIsConcave(prev, cur, next, planeNormal))
 			{
 				continue;
 			}
@@ -104,6 +109,11 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 
 					const coVec3& v = poly.vertices[scratch.remainingIndices[j]];
 					if (v == prev || v == cur || v == next)
+						continue;
+
+					const coVec3& vPrev = poly.vertices[scratch.remainingIndices[j == 0 ? (scratch.remainingIndices.count - 1) : (j - 1)]];
+					const coVec3& vNext = poly.vertices[scratch.remainingIndices[j == (scratch.remainingIndices.count - 1) ? 0 : (j + 1)]];
+					if (!_coIsConcave(vPrev, v, vNext, planeNormal))
 						continue;
 					if (coOverlapInfiniteExtrude(coTriangle(prev, cur, next), v))
 					{
@@ -137,8 +147,8 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 				const coVec3& cur = poly.vertices[curIdx];
 				const coVec3& next = poly.vertices[nextIdx];
 
-				// If interior vertex, continue
-				if (coDot(coGetRawNormal(prev, cur, next), planeNormal).x < 0.f)
+				// Concave vertex?
+				if (_coIsConcave(prev, cur, next, planeNormal))
 				{
 					continue;
 				}

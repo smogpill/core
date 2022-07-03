@@ -119,6 +119,7 @@ void coCollapseEdgesSmallerThanDist(coHalfEdgeMesh& mesh, coFloat distance)
 {
 	mesh.CheckNoMoreThan2FacesPerEdge();
 	const coFloat squaredDist = distance * distance;
+	coDynamicArray<coUint32> scratch;
 	for (coUint32 edgeIdx = 0; edgeIdx < mesh.halfEdges.count; ++edgeIdx)
 	{
 		// Temp
@@ -128,7 +129,7 @@ void coCollapseEdgesSmallerThanDist(coHalfEdgeMesh& mesh, coFloat distance)
 		}
 		// Temp
 
-		if (coIsCollapsible(mesh, edgeIdx))
+		if (coIsCollapsible(mesh, edgeIdx, scratch))
 			coCollapseEdgeIfSmallerThanSquaredDist(mesh, edgeIdx, squaredDist);
 	}
 	mesh.CheckNoMoreThan2FacesPerEdge();
@@ -136,20 +137,24 @@ void coCollapseEdgesSmallerThanDist(coHalfEdgeMesh& mesh, coFloat distance)
 
 coBool coIsCollapsible(const coHalfEdgeMesh& mesh, coUint32 halfEdgeIdx)
 {
+	coDynamicArray<coUint32> scratch;
+	return coIsCollapsible(mesh, halfEdgeIdx, scratch);
+}
+
+coBool coIsCollapsible(const coHalfEdgeMesh& mesh, coUint32 halfEdgeIdx, coDynamicArray<coUint32>& scratch)
+{
 	const auto& edges = mesh.halfEdges;
 	const coHalfEdge& edge = edges[halfEdgeIdx];
 	if (edge.next == halfEdgeIdx)
 		return false;
 
-	coDynamicArray<coUint32> verticesFromA;
-	coReserve(verticesFromA, 16);
-
+	coClear(scratch);
 	auto gatherNextVertices = [&](const coUint32 circleEdgeIdx)
 	{
 		const coHalfEdge& circleEdge = edges[circleEdgeIdx];
 		const coHalfEdge& nextCircleEdge = edges[circleEdge.next];
 		const coUint32 circleVertex = nextCircleEdge.vertexIdx;
-		coPushBack(verticesFromA, circleVertex);
+		coPushBack(scratch, circleVertex);
 		return true;
 	};
 	coVisitAllHalfEdgesAroundVertex(mesh, halfEdgeIdx, gatherNextVertices);
@@ -159,7 +164,7 @@ coBool coIsCollapsible(const coHalfEdgeMesh& mesh, coUint32 halfEdgeIdx)
 		const coHalfEdge& circleEdge = edges[circleEdgeIdx];
 		const coHalfEdge& nextCircleEdge = edges[circleEdge.next];
 		const coUint32 circleVertex = nextCircleEdge.vertexIdx;
-		if (coContains(verticesFromA, circleVertex))
+		if (coContains(scratch, circleVertex))
 			return false;
 		return true;
 	};

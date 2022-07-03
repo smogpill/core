@@ -3,6 +3,7 @@
 #pragma once
 #include "../../../vector/coVec3.h"
 #include <container/array/coArray.h>
+#include <container/array/coDynamicArray.h>
 class coHalfEdgeMesh;
 
 /// Merge the two vertices. The vertex of the half edge will move to the center. The second vertex will just be unlinked from the half edge.
@@ -17,3 +18,4 @@ void coCollapseEdgesSmallerThanDist(coHalfEdgeMesh& mesh, coFloat distance);
 /// - Dead half edge (pointing to itself)
 /// - That would not preserve the manifold status of the mesh after collapse.
 coBool coIsCollapsible(const coHalfEdgeMesh& mesh, coUint32 halfEdgeIdx);
+coBool coIsCollapsible(const coHalfEdgeMesh& mesh, coUint32 halfEdgeIdx, coDynamicArray<coUint32>& scratch);
