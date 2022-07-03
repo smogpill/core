@@ -115,6 +115,12 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 	{
 		return getSide(a, b, c) <= 0;
 	};
+
+	auto isInsideTriangle = [&](const coUint32 a, const coUint32 b, const coUint32 c, const coUint32 p)
+	{
+		// Very important: we need to use getSide to keep overall consistency.
+		return getSide(a, b, p) >= 0 && getSide(b, c, p) >= 0 && getSide(c, a, p) >= 0;
+	};
 	
 	//coASSERT(coIsCounterClockwiseXY(poly));
 	_coPrepareTriangulate(poly, triangleVertices, scratch);
@@ -162,7 +168,7 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 						continue;
 
 					const coVec3& v = vertices[jIdx];
-					if (coOverlapInfiniteExtrude(coTriangle(prev, cur, next), v))
+					if (isInsideTriangle(prevIdx, curIdx, nextIdx, jIdx))
 					{
 						ignore = true;
 						break;
