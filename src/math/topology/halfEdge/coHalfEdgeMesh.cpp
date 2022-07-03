@@ -137,7 +137,7 @@ void coHalfEdgeMesh::RemoveHalfEdge(coUint32 edgeIdx)
 }
 
 /// Tests:
-/// - At most one surface per vertex
+/// - At most one face fan per vertex
 /// - Circling edges share the same vertex
 /// - Edges are contiguous
 void coHalfEdgeMesh::CheckManifoldExceptHoles() const
@@ -162,10 +162,10 @@ void coHalfEdgeMesh::CheckManifoldExceptHoles() const
 			continue;
 
 		const coUint32 vertexIdx = edge.vertexIdx;
-		coASSERT(!touchedVertices[vertexIdx]); // More than one surface for that vertex
+		coASSERT(!touchedVertices[vertexIdx]); // More than one face fan for that vertex
 		touchedVertices[vertexIdx] = true;
 
-		// Check and mark the surface circling around that vertex
+		// Check and mark the face fan circling around that vertex
 		auto func = [&](const coUint32 edgeIdx)
 		{
 			const coHalfEdge& itEdge = halfEdges[edgeIdx];

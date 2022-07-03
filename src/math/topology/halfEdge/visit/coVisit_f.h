@@ -3,7 +3,7 @@
 #pragma once
 #include "../coHalfEdgeMesh.h"
 
-/// Does not work if the vertex is non-manifold (joined by two or more surfaces).
+/// Does not work if the vertex is non-manifold (joined by two or more face fans).
 /// There is no specific order, it can be visit in one order, then change halfway.
 /// Returns true if all edges were visited
 template <class Functor>

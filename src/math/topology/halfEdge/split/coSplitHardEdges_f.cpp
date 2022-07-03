@@ -154,10 +154,10 @@ void coSplitHardEdges(coHalfEdgeMesh& mesh, const coArray<coVec3>& faceNormals, 
 					}
 
 					// Separate the twin vertex if necessary to avoid forming a non-manifold twin vertex
-					// (having two surfaces instead of one)
+					// (having two face fans instead of one)
 					if (true)
 					{
-						// Circle around the other vertex to find it there is a full circle (meaning the vertex is 100% surrounded by a surface)
+						// Circle around the other vertex to find it there is a full circle (meaning the vertex is 100% surrounded by a face fan)
 						const coUint32 itEdgeTwinIdx = itEdge.twin;
 						coASSERT(itEdgeTwinIdx != itEdgeIdx);
 						coUint32 itEdge2Idx = itEdgeTwinIdx;
