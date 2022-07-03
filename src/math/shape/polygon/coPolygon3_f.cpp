@@ -16,9 +16,9 @@ void _coPrepareTriangulate(const coPolygon3& poly, coDynamicArray<coUint32>& tri
 
 	// Copy the provided points to a dynamic list to work on.
 	{
-		coClearAndResize(scratch.remainingIndices, nbPoints);
+		coClearAndResize(scratch.remainingVertices, nbPoints);
 		for (coUint32 i = 0; i < nbPoints; ++i)
-			scratch.remainingIndices[i] = i;
+			scratch.remainingVertices[i] = i;
 	}
 }
 
@@ -54,7 +54,10 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 	// - Blender : BLI_polyfill_calc_arena
 	// - blender/blenlib/intern/polyfill_2d.c
 
-	if (poly.vertices.count == 3)
+	const auto& vertices = poly.vertices;
+	auto& remainingVertices = scratch.remainingVertices;
+
+	if (vertices.count == 3)
 	{
 		coClearAndResize(triangleVertices, 3);
 		triangleVertices[0] = 0;
@@ -62,7 +65,7 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 		triangleVertices[2] = 2;
 		return;
 	}
-	else if (poly.vertices.count < 3)
+	else if (vertices.count < 3)
 	{
 		coClear(triangleVertices);
 		return;
@@ -71,26 +74,26 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 	//coASSERT(coIsCounterClockwiseXY(poly));
 	_coPrepareTriangulate(poly, triangleVertices, scratch);
 
-	const coUint32 expectedNbTriangles = poly.vertices.count - 2;
+	const coUint32 expectedNbTriangles = vertices.count - 2;
 	coReserve(triangleVertices, expectedNbTriangles * 3);
 
 	// Remove "ear" triangles one by one.
-	while (scratch.remainingIndices.count > 3)
+	while (remainingVertices.count > 3)
 	{
 		coUint32 earIdx = ~coUint32(0);
 
 		// Find ear vertex
-		for (coUint32 i = 0; i < scratch.remainingIndices.count; ++i)
+		for (coUint32 i = 0; i < remainingVertices.count; ++i)
 		{
-			const coUint32 remainingPrev = i == 0 ? (scratch.remainingIndices.count - 1) : (i - 1);
+			const coUint32 remainingPrev = i == 0 ? (remainingVertices.count - 1) : (i - 1);
 			const coUint32 remainingCur = i;
-			const coUint32 remainingNext = i == (scratch.remainingIndices.count - 1) ? 0 : (i + 1);
-			const coUint32 prevIdx = scratch.remainingIndices[remainingPrev];
-			const coUint32 curIdx = scratch.remainingIndices[remainingCur];
-			const coUint32 nextIdx = scratch.remainingIndices[remainingNext];
-			const coVec3& prev = poly.vertices[prevIdx];
-			const coVec3& cur = poly.vertices[curIdx];
-			const coVec3& next = poly.vertices[nextIdx];
+			const coUint32 remainingNext = i == (remainingVertices.count - 1) ? 0 : (i + 1);
+			const coUint32 prevIdx = remainingVertices[remainingPrev];
+			const coUint32 curIdx = remainingVertices[remainingCur];
+			const coUint32 nextIdx = remainingVertices[remainingNext];
+			const coVec3& prev = vertices[prevIdx];
+			const coVec3& cur = vertices[curIdx];
+			const coVec3& next = vertices[nextIdx];
 
 			// Concave vertex?
 			if (_coIsConcave(prev, cur, next, planeNormal))
@@ -101,18 +104,18 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 			// If any other point is inside the triangle, continue
 			{
 				coBool ignore = false;
-				for (coUint32 j = 0; j < scratch.remainingIndices.count; ++j)
+				for (coUint32 j = 0; j < remainingVertices.count; ++j)
 				{
 					// Skip the current triangle
 					//if (j == prevIdx || j == curIdx || j == nextIdx)
 					//	continue;
 
-					const coVec3& v = poly.vertices[scratch.remainingIndices[j]];
+					const coVec3& v = vertices[remainingVertices[j]];
 					if (v == prev || v == cur || v == next)
 						continue;
 
-					const coVec3& vPrev = poly.vertices[scratch.remainingIndices[j == 0 ? (scratch.remainingIndices.count - 1) : (j - 1)]];
-					const coVec3& vNext = poly.vertices[scratch.remainingIndices[j == (scratch.remainingIndices.count - 1) ? 0 : (j + 1)]];
+					const coVec3& vPrev = vertices[remainingVertices[j == 0 ? (remainingVertices.count - 1) : (j - 1)]];
+					const coVec3& vNext = vertices[remainingVertices[j == (remainingVertices.count - 1) ? 0 : (j + 1)]];
 					if (!_coIsConcave(vPrev, v, vNext, planeNormal))
 						continue;
 					if (coOverlapInfiniteExtrude(coTriangle(prev, cur, next), v))
@@ -135,14 +138,14 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 		// Note that the provided polygon was not necessarily degenerate at first.
 		if (earIdx == ~coUint32(0))
 		{
-			for (coUint32 i = 0; i < scratch.remainingIndices.count; ++i)
+			for (coUint32 i = 0; i < remainingVertices.count; ++i)
 			{
-				const coUint32 remainingPrev = i == 0 ? (scratch.remainingIndices.count - 1) : (i - 1);
+				const coUint32 remainingPrev = i == 0 ? (remainingVertices.count - 1) : (i - 1);
 				const coUint32 remainingCur = i;
-				const coUint32 remainingNext = i == (scratch.remainingIndices.count - 1) ? 0 : (i + 1);
-				const coUint32 prevIdx = scratch.remainingIndices[remainingPrev];
-				const coUint32 curIdx = scratch.remainingIndices[remainingCur];
-				const coUint32 nextIdx = scratch.remainingIndices[remainingNext];
+				const coUint32 remainingNext = i == (remainingVertices.count - 1) ? 0 : (i + 1);
+				const coUint32 prevIdx = remainingVertices[remainingPrev];
+				const coUint32 curIdx = remainingVertices[remainingCur];
+				const coUint32 nextIdx = remainingVertices[remainingNext];
 				const coVec3& prev = poly.vertices[prevIdx];
 				const coVec3& cur = poly.vertices[curIdx];
 				const coVec3& next = poly.vertices[nextIdx];
@@ -158,27 +161,28 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 			}
 
 			// No convex found, just return the first one
+			// Note: we don't care anymore if it's concave
 			if (earIdx == ~coUint32(0))
 			{
 				earIdx = 0;
 			}
 		}
 
-		const coUint32 remainingPrev = earIdx == 0 ? (scratch.remainingIndices.count - 1) : (earIdx - 1);
+		const coUint32 remainingPrev = earIdx == 0 ? (remainingVertices.count - 1) : (earIdx - 1);
 		const coUint32 remainingCur = earIdx;
-		const coUint32 remainingNext = earIdx == (scratch.remainingIndices.count - 1) ? 0 : (earIdx + 1);
+		const coUint32 remainingNext = earIdx == (remainingVertices.count - 1) ? 0 : (earIdx + 1);
 
-		coPushBack(triangleVertices, scratch.remainingIndices[remainingPrev]);
-		coPushBack(triangleVertices, scratch.remainingIndices[remainingCur]);
-		coPushBack(triangleVertices, scratch.remainingIndices[remainingNext]);
+		coPushBack(triangleVertices, remainingVertices[remainingPrev]);
+		coPushBack(triangleVertices, remainingVertices[remainingCur]);
+		coPushBack(triangleVertices, remainingVertices[remainingNext]);
 
-		coRemoveOrderedByIndex(scratch.remainingIndices, earIdx);
+		coRemoveOrderedByIndex(remainingVertices, earIdx);
 	}
 
-	coASSERT(scratch.remainingIndices.count == 3);
-	coPushBack(triangleVertices, scratch.remainingIndices[0]);
-	coPushBack(triangleVertices, scratch.remainingIndices[1]);
-	coPushBack(triangleVertices, scratch.remainingIndices[2]);
+	coASSERT(remainingVertices.count == 3);
+	coPushBack(triangleVertices, remainingVertices[0]);
+	coPushBack(triangleVertices, remainingVertices[1]);
+	coPushBack(triangleVertices, remainingVertices[2]);
 
 	coASSERT(triangleVertices.count == expectedNbTriangles * 3);
 }
@@ -196,7 +200,7 @@ void coTriangulateWithVaryingZ(const coPolygon3& poly, coDynamicArray<coUint32>&
 
 		// Modify the sort order
 		{
-			const coUint32 nbRemainingVertices = scratch.remainingIndices.count;
+			const coUint32 nbRemainingVertices = scratch.remainingVertices.count;
 			coClear(scratch.sorted);
 			coResize(scratch.sorted, nbRemainingVertices);
 			for (coUint32 i = 0; i < nbRemainingVertices; ++i)
@@ -211,9 +215,9 @@ void coTriangulateWithVaryingZ(const coPolygon3& poly, coDynamicArray<coUint32>&
 				{
 					const coUint32 prevIdx = vertIdx == 0 ? (nbRemainingVertices - 1) : (vertIdx - 1);
 					const coUint32 nextIdx = vertIdx == (nbRemainingVertices - 1) ? 0 : (vertIdx + 1);
-					const coVec3& prev = poly.vertices[scratch.remainingIndices[prevIdx]];
-					const coVec3& cur = poly.vertices[scratch.remainingIndices[vertIdx]];
-					const coVec3& next = poly.vertices[scratch.remainingIndices[nextIdx]];
+					const coVec3& prev = poly.vertices[scratch.remainingVertices[prevIdx]];
+					const coVec3& cur = poly.vertices[scratch.remainingVertices[vertIdx]];
+					const coVec3& next = poly.vertices[scratch.remainingVertices[nextIdx]];
 
 					// Heuristic
 					{
@@ -246,12 +250,12 @@ void coTriangulateWithVaryingZ(const coPolygon3& poly, coDynamicArray<coUint32>&
 		for (coUint32 sortedIdx = 0; sortedIdx < scratch.sorted.count; ++sortedIdx)
 		{
 			const coUint32 i = scratch.sorted[sortedIdx];
-			const coUint32 remainingPrevIdx = i == 0 ? (scratch.remainingIndices.count - 1) : (i - 1);
+			const coUint32 remainingPrevIdx = i == 0 ? (scratch.remainingVertices.count - 1) : (i - 1);
 			const coUint32 remainingCurIdx = i;
-			const coUint32 remainingNextIdx = i == (scratch.remainingIndices.count - 1) ? 0 : (i + 1);
-			const coUint32 prevIdx = scratch.remainingIndices[remainingPrevIdx];
-			const coUint32 curIdx = scratch.remainingIndices[remainingCurIdx];
-			const coUint32 nextIdx = scratch.remainingIndices[remainingNextIdx];
+			const coUint32 remainingNextIdx = i == (scratch.remainingVertices.count - 1) ? 0 : (i + 1);
+			const coUint32 prevIdx = scratch.remainingVertices[remainingPrevIdx];
+			const coUint32 curIdx = scratch.remainingVertices[remainingCurIdx];
+			const coUint32 nextIdx = scratch.remainingVertices[remainingNextIdx];
 			const coVec3& prev = poly.vertices[prevIdx];
 			const coVec3& cur = poly.vertices[curIdx];
 			const coVec3& next = poly.vertices[nextIdx];
@@ -270,13 +274,13 @@ void coTriangulateWithVaryingZ(const coPolygon3& poly, coDynamicArray<coUint32>&
 			// If any other point is inside the triangle, continue
 			{
 				coBool ignore = false;
-				for (coUint32 j = 0; j < scratch.remainingIndices.count; ++j)
+				for (coUint32 j = 0; j < scratch.remainingVertices.count; ++j)
 				{
 					// Skip the current triangle
 					if (j == remainingPrevIdx || j == remainingCurIdx || j == remainingNextIdx)
 						continue;
 
-					const coUint32 n = scratch.remainingIndices[j];
+					const coUint32 n = scratch.remainingVertices[j];
 					const coVec3& v = poly.vertices[n];
 					if (_coIsInsideTriangleXY(prev, cur, next, v))
 					{
@@ -298,7 +302,7 @@ void coTriangulateWithVaryingZ(const coPolygon3& poly, coDynamicArray<coUint32>&
 			coPushBack(triangleVertices, nextIdx);
 
 			// Remove vertex
-			coRemoveOrderedByIndex(scratch.remainingIndices, i);
+			coRemoveOrderedByIndex(scratch.remainingVertices, i);
 			break;
 		}
 	}
