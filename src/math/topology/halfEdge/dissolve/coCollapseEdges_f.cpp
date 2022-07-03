@@ -62,7 +62,7 @@ void coCollapseEdge(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 			mesh.halfEdges[e].vertexIdx = aIdx;
 			return true;
 		};
-		coVisitAllHalfEdgesAroundVertex(mesh, edge.next, changeVertex);
+		coVisitHalfEdgeFanAroundVertex(mesh, edge.next, changeVertex);
 	}
 
 	// Link
@@ -157,7 +157,7 @@ coBool coIsCollapsible(const coHalfEdgeMesh& mesh, coUint32 halfEdgeIdx, coDynam
 		coPushBack(scratch, circleVertex);
 		return true;
 	};
-	coVisitAllHalfEdgesAroundVertex(mesh, halfEdgeIdx, gatherNextVertices);
+	coVisitHalfEdgeFanAroundVertex(mesh, halfEdgeIdx, gatherNextVertices);
 
 	auto compareWithOtherVertices = [&](const coUint32 circleEdgeIdx)
 	{
@@ -168,5 +168,5 @@ coBool coIsCollapsible(const coHalfEdgeMesh& mesh, coUint32 halfEdgeIdx, coDynam
 			return false;
 		return true;
 	};
-	return coVisitAllHalfEdgesAroundVertex(mesh, edge.next, compareWithOtherVertices);
+	return coVisitHalfEdgeFanAroundVertex(mesh, edge.next, compareWithOtherVertices);
 }

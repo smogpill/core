@@ -22,7 +22,6 @@ void coSplitVerticesLinkedToManyFaceFans(coHalfEdgeMesh& mesh)
 		const coHalfEdge& edge = edges[edgeIdx];
 		if (edge.done)
 			continue;
-		edge.done = true;
 
 		// Vertex already has a fan?
 		if (touchedVertices[edge.vertexIdx])
@@ -40,7 +39,7 @@ void coSplitVerticesLinkedToManyFaceFans(coHalfEdgeMesh& mesh)
 				itEdge.done = true;
 				return true;
 			};
-			coVisitAllHalfEdgesAroundVertex(mesh, edgeIdx, modifyEdge);
+			coVisitHalfEdgeFanAroundVertex(mesh, edgeIdx, modifyEdge);
 		}
 		else
 		{
@@ -50,7 +49,7 @@ void coSplitVerticesLinkedToManyFaceFans(coHalfEdgeMesh& mesh)
 				itEdge.done = true;
 				return true;
 			};
-			coVisitAllHalfEdgesAroundVertex(mesh, edgeIdx, markEdgeAsDone);
+			coVisitHalfEdgeFanAroundVertex(mesh, edgeIdx, markEdgeAsDone);
 			touchedVertices[edge.vertexIdx] = true;
 		}
 	}

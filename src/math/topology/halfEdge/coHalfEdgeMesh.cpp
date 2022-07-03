@@ -174,7 +174,7 @@ void coHalfEdgeMesh::CheckManifoldExceptHoles() const
 			itEdge.checked = true;
 			return true;
 		};
-		coVisitAllHalfEdgesAroundVertex(*this, edgeIdx, func);
+		coVisitHalfEdgeFanAroundVertex(*this, edgeIdx, func);
 	}
 }
 
