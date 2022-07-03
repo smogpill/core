@@ -140,33 +140,28 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 			const coVec3& cur = vertices[curIdx];
 			const coVec3& next = vertices[nextIdx];
 
-			// Concave vertex?
+			// Skip concave vertices
 			if (isConcave(prevIdx, curIdx, nextIdx))
-			{
 				continue;
-			}
 
 			// If any other point is inside the triangle, continue
 			{
 				coBool ignore = false;
 				for (coUint32 j = 0; j < remainingVertices.count; ++j)
 				{
-					// Skip the current triangle
-					//if (j == prevIdx || j == curIdx || j == nextIdx)
-					//	continue;
-
-					const coUint32 jIdx = remainingVertices[j];
-					const coVec3& v = vertices[jIdx];
-					if (v == prev || v == cur || v == next)
+					// Skip vertices of the current triangle
+					if (j == remainingPrev || j == remainingCur || j == remainingNext)
 						continue;
 
 					const coUint32 jPrevIdx = remainingVertices[j == 0 ? (remainingVertices.count - 1) : (j - 1)];
+					const coUint32 jIdx = remainingVertices[j];
 					const coUint32 jNextIdx = remainingVertices[j == (remainingVertices.count - 1) ? 0 : (j + 1)];
 
-					const coVec3& vPrev = vertices[jPrevIdx];
-					const coVec3& vNext = vertices[jNextIdx];
+					// Skip convex vertices
 					if (!isConcave(jPrevIdx, jIdx, jNextIdx))
 						continue;
+
+					const coVec3& v = vertices[jIdx];
 					if (coOverlapInfiniteExtrude(coTriangle(prev, cur, next), v))
 					{
 						ignore = true;
