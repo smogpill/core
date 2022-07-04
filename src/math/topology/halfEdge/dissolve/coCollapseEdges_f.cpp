@@ -13,14 +13,14 @@ void coDissolveDegenerateEdge(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 	coASSERT(a.IsDegenerate());
 	const coUint32 bIdx = a.next;
 	coHalfEdge& b = mesh.halfEdges[bIdx];
-	const coUint32 aRadialIdx = a.twin;
-	const coUint32 bRadialIdx = b.twin;
-	coHalfEdge& aRadial = mesh.halfEdges[aRadialIdx];
-	coHalfEdge& bRadial = mesh.halfEdges[bRadialIdx];
-	coASSERT(aRadial.twin == aIdx);
-	coASSERT(bRadial.twin == bIdx);
-	aRadial.twin = bRadialIdx;
-	bRadial.twin = aRadialIdx;
+	const coUint32 aTwinIdx = a.twin;
+	const coUint32 bTwinIdx = b.twin;
+	coHalfEdge& aTwin = mesh.halfEdges[aTwinIdx];
+	coHalfEdge& bTwin = mesh.halfEdges[bTwinIdx];
+	coASSERT(aTwin.twin == aIdx);
+	coASSERT(bTwin.twin == bIdx);
+	aTwin.twin = bTwinIdx == bIdx ? aTwinIdx : bTwinIdx;
+	bTwin.twin = aTwinIdx == aIdx ? bTwinIdx : aTwinIdx;
 	a.next = aIdx;
 	a.prev = aIdx;
 	a.twin = aIdx;
@@ -35,16 +35,16 @@ void coCollapseEdge(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 	coHalfEdge& edge = mesh.halfEdges[edgeIdx];
 	if (edge.next == edgeIdx)
 		return;
-	const coUint32 radialIdx = edge.twin;
-	coHalfEdge& radial = mesh.halfEdges[radialIdx];
+	const coUint32 twinIdx = edge.twin;
+	coHalfEdge& twin = mesh.halfEdges[twinIdx];
 	const coUint32 prevIdx = edge.prev;
 	const coUint32 nextIdx = edge.next;
-	const coUint32 prevRadialIdx = radial.prev;
-	const coUint32 nextRadialIdx = radial.next;
+	const coUint32 prevTwinIdx = twin.prev;
+	const coUint32 nextTwinIdx = twin.next;
 	coHalfEdge& prev = mesh.halfEdges[prevIdx];
 	coHalfEdge& next = mesh.halfEdges[nextIdx];
-	coHalfEdge& prevRadial = mesh.halfEdges[prevRadialIdx];
-	coHalfEdge& nextRadial = mesh.halfEdges[nextRadialIdx];
+	coHalfEdge& prevTwin = mesh.halfEdges[prevTwinIdx];
+	coHalfEdge& nextTwin = mesh.halfEdges[nextTwinIdx];
 
 	// Collapse vertices
 	{
@@ -68,30 +68,30 @@ void coCollapseEdge(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 	// Link
 	prev.next = nextIdx;
 	next.prev = prevIdx;
-	prevRadial.next = nextRadialIdx;
-	nextRadial.prev = prevRadialIdx;
+	prevTwin.next = nextTwinIdx;
+	nextTwin.prev = prevTwinIdx;
 
 	edge.prev = edgeIdx;
 	edge.next = edgeIdx;
 	edge.twin = edgeIdx;
 
-	radial.prev = radialIdx;
-	radial.next = radialIdx;
-	radial.twin = radialIdx;
+	twin.prev = twinIdx;
+	twin.next = twinIdx;
+	twin.twin = twinIdx;
 
 	coDEBUG_CODE(mesh.CheckEdge(prevIdx));
 	coDEBUG_CODE(mesh.CheckEdge(nextIdx));
-	coDEBUG_CODE(mesh.CheckEdge(prevRadialIdx));
-	coDEBUG_CODE(mesh.CheckEdge(nextRadialIdx));
+	coDEBUG_CODE(mesh.CheckEdge(prevTwinIdx));
+	coDEBUG_CODE(mesh.CheckEdge(nextTwinIdx));
 
 	// Todo: dissolve degenerate faces
 	if (next.IsDegenerate())
 	{
 		coDissolveDegenerateEdge(mesh, nextIdx);
 	}
-	if (nextRadial.IsDegenerate())
+	if (nextTwin.IsDegenerate())
 	{
-		coDissolveDegenerateEdge(mesh, nextRadialIdx);
+		coDissolveDegenerateEdge(mesh, nextTwinIdx);
 	}
 
 	//mesh.CheckNoVertexDuplicatesOnFaces();

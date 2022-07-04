@@ -44,6 +44,9 @@ void coRemoveUnusedHalfEdges(coHalfEdgeMesh& mesh)
 	for (coUint32 edgeIdx = 0; edgeIdx < edges.count; ++edgeIdx)
 	{
 		const coHalfEdge& edge = edges[edgeIdx];
+		coASSERT(edge.next != ~coUint32(0));
+		coASSERT(edge.prev != ~coUint32(0));
+		coASSERT(edge.twin != ~coUint32(0));
 		if (edge.next == edgeIdx)
 		{
 			oldToNew[edgeIdx] = ~coUint32(0);

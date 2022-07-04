@@ -3,4 +3,4 @@
 #pragma once
 class coHalfEdgeMesh;
 
-void coSplitHardEdges(coHalfEdgeMesh& mesh, coFloat angle = 3.14159265f / 5.0f);
+void coCheckEdgesNotLinkedToDeadEdges(coHalfEdgeMesh& mesh);
