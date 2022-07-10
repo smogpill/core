@@ -33,7 +33,7 @@ void _coSetCapacity(coDynamicArray<T>& a, coUint32 capacity)
 {
 	if (a.capacity != capacity)
 	{
-		coASSERT(capacity > a.count);
+		coASSERT(capacity >= a.count);
 
 		// Aligned to min 16 bytes:
 		// - For simplicity. For example for working using SIMD on a float array.
