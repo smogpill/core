@@ -122,13 +122,6 @@ void coCollapseEdgesSmallerThanDist(coHalfEdgeMesh& mesh, coFloat distance)
 	coDynamicArray<coUint32> scratch;
 	for (coUint32 edgeIdx = 0; edgeIdx < mesh.halfEdges.count; ++edgeIdx)
 	{
-		// Temp
-		if (edgeIdx == 88568)
-		{
-			coINFO("jid");
-		}
-		// Temp
-
 		if (coIsCollapsible(mesh, edgeIdx, scratch))
 			coCollapseEdgeIfSmallerThanSquaredDist(mesh, edgeIdx, squaredDist);
 	}
