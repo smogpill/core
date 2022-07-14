@@ -26,7 +26,7 @@ public:
 	T* GetComponent() const { coASSERT(entity); return entity->GetComponent<T>(); }
 
 protected:
-	virtual coResult OnInit() { return true; }
+	virtual coResult OnInit(const coEntityHandle& h) { return true; }
 	virtual void OnRelease() {}
 	virtual coResult OnStart() { return true; }
 	virtual void OnStop() {}
@@ -35,5 +35,4 @@ protected:
 
 private:
 	friend class coEntity;
-	coEntity* entity = nullptr;
 };

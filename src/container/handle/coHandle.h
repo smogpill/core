@@ -2,7 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-template <class Tag, class Value, Value _invalidValue_>
+template <class Tag, class Value, Value _invalidValue_ = ~Value(0)>
 class coHandle
 {
 public:
@@ -14,6 +14,12 @@ public:
 	coBool operator==(const coHandle& h) const { return value == h.value; }
 	coBool operator!=(const coHandle& h) const { return value != h.value; }
 	UnderlyingType operator Type() const { return value; }
+	coBool isValid() const { return value != _invalidValue_; }
+
+	static const coHandle<Tag, Value, _invalidValue> invalid;
 private:
 	UnderlyingType value = _invalidValue_;
 };
+
+template <class Tag, class Value, Value _invalidValue_ = ~Value(0)>
+const coHandle<Tag, Value, _invalidValue>::invalid;

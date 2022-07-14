@@ -1,20 +1,7 @@
-// Copyright(c) 2016-2020 Jounayd Id Salah
+// Copyright(c) 2016-2022 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
-class coBinaryOutputStream;
-class coBinaryInputStream;
+#include <container/handle/coHandle.h>
 
-class coEntityHandle
-{
-public:
-	coBool operator==(const coEntityHandle other) const { return val == other.val; }
-	coBool operator!=(const coEntityHandle other) const { return val != other.val; }
-	void Write(coBinaryOutputStream& stream) const;
-	void Read(coBinaryInputStream& stream);
-	void DeepWrite(coBinaryOutputStream& stream) const;
-	void DeepRead(coBinaryInputStream& stream);
-	coBool IsNull() const { return val == 0; }
-	static const coEntityHandle empty;
-
-	coUint64 val = 0;
-};
+class coEntity;
+using coEntityHandle = coHandle<coEntity, coUint32>;

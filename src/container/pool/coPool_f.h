@@ -6,23 +6,39 @@
 #include "../array/coDynamicArray_f.h"
 
 template <class T, class IndexType>
-void coReserve(coPool<T, IndexType>& p, IndexType capacity)
+void coReserve(coPool<T, IndexType>& p, IndexType capacity_)
 {
-	coReserve(p.elements, capacity);
-	coReserve(p.freeEntries, capacity);
+	if (capacity_ > p.capacity)
+	{
+		const IndexType oldCapacity = p.capacity;
+		coReserve(p.buffer, capacity * sizeof(T));
+		coReserve(p.freeEntries, capacity);
+		for (IndexType i = oldCapacity; i < p.freeEntries.capacity; ++i)
+			coPushBack(p.freeEntries, i);
+	}
 }
 
 template <class T, class IndexType>
-coHandle<T> coCreate(coPool<T, IndexType>& p)
+T& coGet(coPool<T, IndexType>& p, const coHandle<T, IndexType>& handle)
 {
-	if (p.freeEntries.count == 0)
-		coReserve(p, p.freeEntries.capacity + 64);
-	const IndexType index = coPopBack(p.freeEntries);
-	return coHandle<T>(index);
+	coASSERT(handle < p.capacity);
+	return static_cast<T*>(p.buffer)[handle];
 }
 
 template <class T, class IndexType>
-void coDestroy(coPool<T, IndexType>& p, const coHandle<T>& handle)
+coHandle<T, IndexType> coCreate(coPool<T, IndexType>& p)
 {
-	coPushBack(p.freeEntries, handle);
+	if (p.nbFreeEntries == 0)
+		coReserve(p, p.capacity + 1);
+	const IndexType index = p.freeEntries[--p.nbFreeEntries];
+	new (static_cast<T*>(p.buffer)[index])();
+	return coHandle<T, IndexType>(index);
+}
+
+template <class T, class IndexType>
+void coDestroy(coPool<T, IndexType>& p, const coHandle<T, IndexType>& handle)
+{
+	coASSERT(handle < p.capacity);
+	static_cast<T*>(p.buffer)[handle]->~T();
+	p.freeEntries[p.nbFreeEntries++] = handle;
 }
