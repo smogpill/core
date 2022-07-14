@@ -11,19 +11,14 @@ coDEFINE_TYPE(coComponent)
 	return true;
 }
 
-coResult coComponent::Init()
+coComponent::coComponent()
 {
-	return OnInit();
+	nextComponent = this;
 }
 
-void coComponent::Release()
+coComponent::~coComponent()
 {
-	OnRelease();
-}
-
-coResult coComponent::Start()
-{
-	return OnStart();
+	coASSERT(nextComponent == this);
 }
 
 void coComponent::Write(coBinaryOutputStream& stream) const
@@ -34,17 +29,10 @@ void coComponent::Read(coBinaryInputStream& stream)
 {
 }
 
-void coComponent::Stop()
+void coComponent::LinkTo(coComponent& comp)
 {
-	OnStop();
-}
-
-const coEntityHandle& coComponent::GetEntityHandle() const
-{
-	return entity ? entity->GetHandle() : coEntityHandle::empty;
-}
-
-coComponent* coComponent::Clone() const
-{
-	return nullptr;
+	coComponent* last = &comp;
+	while (last->nextComponent != &comp)
+		last = last->nextComponent;
+	last->nextComponent = &comp;
 }

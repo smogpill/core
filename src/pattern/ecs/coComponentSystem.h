@@ -8,34 +8,16 @@
 
 class coEntityHandle;
 
-template <class T>
 class coComponentSystem
 {
 public:
-	coCompHandle<T> Create();
-	void Destroy(const coCompHandle<T>& handle);
-
 protected:
-	virtual coResult OnInit(const coEntityHandle& entityH, T& comp) {}
-	virtual coResult OnStart(T& comp) {}
-	virtual void OnStop(T& comp) {}
-	virtual void OnRelease(T& comp) {}
-	virtual void Write(T& comp, coBinaryOutputStream& stream) const {}
-	virtual void Read(T& comp, coBinaryInputStream& stream) {}
+	virtual coResult OnInit(const coEntityHandle& entityH) {}
+	virtual coResult OnStart(const coEntityHandle& entityH) {}
+	virtual void OnStop(const coEntityHandle& entityH) {}
+	virtual void OnRelease(const coEntityHandle& entityH) {}
+	virtual void OnWrite(const coEntityHandle& entityH, coBinaryOutputStream& stream) const {}
+	virtual void OnRead(const coEntityHandle& entityH, coBinaryInputStream& stream) {}
 
 private:
-	using Pool = coPool<T, coCompHandle<T>::UnderlyingType>;
-	Pool pool;
 };
-
-template<class T>
-coCompHandle<T> coComponentSystem<T>::Create()
-{
-	return coCreate(pool);
-}
-
-template<class T>
-void coComponentSystem<T>::Destroy(const coCompHandle<T>& handle)
-{
-	return coDestroy(pool, handle);
-}

@@ -13,13 +13,13 @@ public:
 	coHandle(const HandleType& value_) : value(value_) {}
 	coBool operator==(const coHandle& h) const { return value == h.value; }
 	coBool operator!=(const coHandle& h) const { return value != h.value; }
-	UnderlyingType operator Type() const { return value; }
+	operator Value() const { return value; }
 	coBool isValid() const { return value != _invalidValue_; }
 
-	static const coHandle<Tag, Value, _invalidValue> invalid;
+	static const HandleType invalid;
 private:
 	UnderlyingType value = _invalidValue_;
 };
 
 template <class Tag, class Value, Value _invalidValue_ = ~Value(0)>
-const coHandle<Tag, Value, _invalidValue>::invalid;
+inline const coHandle<Tag, Value, _invalidValue_> coHandle<Tag, Value, _invalidValue_>::invalid;

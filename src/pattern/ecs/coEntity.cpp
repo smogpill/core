@@ -9,6 +9,8 @@
 #include <lang/reflect/coTypeFactory.h>
 #include <io/stream/coBinaryInputStream.h>
 #include <io/stream/coBinaryOutputStream.h>
+#include <container/array/coFixedArray_f.h>
+#include "component/coComponentIterator.h"
 
 coEntity::coEntity()
 {
@@ -18,30 +20,32 @@ coEntity::coEntity()
 
 coEntity::coEntity(const coEntity& other)
 {
-	for (const coComponent* comp : other.components)
+	coASSERT(false);
+	/*
+	for (coComponent* comp : coLinkedComponents(&other))
 	{
 		coPushBack(components, comp->Clone());
-		//newComp->entity = this;
 	}
+	*/
 }
 
 coEntity::~coEntity()
 {
-	for (coComponent* comp : components)
+	for (coComponent* comp : coReversedLinkedComponents(this))
 		delete comp;
 }
 
-void coEntity::AddAndGiveOwnership(coComponent& comp)
+void coEntity::SetTargetState(State newTargetState)
 {
-	comp.entity = this;
-	coPushBack(components, &comp);
+	targetState = newTargetState;
 }
 
 void coEntity::Write(coBinaryOutputStream& stream) const
 {
 	stream << uuid;
-	stream << components.count;
-	for (coComponent* comp : components)
+	const coUint32 nbComponents = GetNbComponents();
+	stream << nbComponents;
+	for (coComponent* comp : coLinkedComponents(this))
 	{
 		const coType* type = comp->GetType();
 		stream << type->nameHash;
@@ -54,7 +58,8 @@ void coEntity::Read(coBinaryInputStream& stream)
 	stream >> uuid;
 	coUint32 nbComponents;
 	stream >> nbComponents;
-	coReserve(components, nbComponents);
+
+	coComponent* previous = this;
 	for (coUint i = 0; i < nbComponents; ++i)
 	{
 		coUint32 nameHash;
@@ -63,53 +68,54 @@ void coEntity::Read(coBinaryInputStream& stream)
 		coASSERT(type);
 		coComponent* comp = static_cast<coComponent*>(type->createFunc());
 		stream >> *comp;
-		AddAndGiveOwnership(*comp);
+		comp->LinkTo(*previous);
+		previous = comp;
 	}
 }
-coResult coEntity::Init()
+coResult coEntity::OnInit()
 {
-	for (coComponent* comp : components)
+	for (coComponent* comp : coLinkedComponents(this))
 	{
 		coTRY(comp->Init(), nullptr);
 	}
 	return true;
 }
 
-void coEntity::Release()
+void coEntity::OnRelease()
 {
-	for (coComponent* comp : components)
+	for (coComponent* comp : coReversedLinkedComponents(this))
 	{
 		comp->Release();
 	}
 }
 
-coResult coEntity::Start()
+coResult coEntity::OnStart()
 {
-	for (coComponent* comp : components)
+	for (coComponent* comp : coLinkedComponents(this))
 	{
 		coTRY(comp->Start(), nullptr);
 	}
 	return true;
 }
 
-void coEntity::Stop()
+void coEntity::OnStop()
 {
-	for (coComponent* comp : components)
+	for (coComponent* comp : coReversedLinkedComponents(this))
 	{
 		comp->Stop();
 	}
 }
 
-coResult coEntity::Save(coBinaryOutputStream& stream) const
+coResult coEntity::Write(coBinaryOutputStream& stream) const
 {
-	for (coComponent* comp : components)
+	for (coComponent* comp : coLinkedComponents(this))
 	{
 		comp->Write(stream);
 	}
 	return true;
 }
 
-coResult coEntity::Load(coBinaryInputStream& stream)
+coResult coEntity::Read(coBinaryInputStream& stream)
 {
 	coASSERT(false);
 	return true;
@@ -120,4 +126,12 @@ coEntity* coEntity::Clone() const
 	//coEntity* clone = new coEntity(*this);
 	coASSERT(false);
 	return nullptr;
+}
+
+coUint coEntity::GetNbComponents() const
+{
+	coUint nb = 0;
+	for (coComponent* comp : coLinkedComponents(this))
+		++nb;
+	return nb;
 }
