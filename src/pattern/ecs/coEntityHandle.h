@@ -3,5 +3,7 @@
 #pragma once
 #include <container/handle/coHandle.h>
 
+/*
 class coEntity;
 using coEntityHandle = coHandle<coEntity, coUint32>;
+*/

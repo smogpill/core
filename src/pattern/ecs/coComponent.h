@@ -7,6 +7,10 @@ class coBinaryOutputStream;
 class coBinaryInputStream;
 class coEntity;
 
+#define coDECLARE_COMPONENT(_Class_, _Super_) \
+	coDECLARE_SUPER(_Super_); \
+	coDECLARE_REFLECTED_VIRTUAL()
+
 class coComponent
 {
 	coDECLARE_REFLECTED_VIRTUAL();
@@ -14,18 +18,16 @@ public:
 	coComponent();
 	~coComponent();
 
-	virtual void Write(coBinaryOutputStream& stream) const;
-	virtual void Read(coBinaryInputStream& stream);
-	void LinkTo(coComponent& comp);
 	coComponent* GetNextComponent() const { return nextComponent; }
 	template <class T> T* GetComponent() const;
 
-	coResult Init(coEntity& entity);
-	coResult Start(coEntity& entity);
-	void Stop(coEntity& entity);
-	void Release(coEntity& entity);
+	virtual void Write(coBinaryOutputStream& stream) const {}
+	virtual void Read(coBinaryInputStream& stream) {}
 
 protected:
+	friend class coEntity;
+	
+	void SetNextComponent(coComponent* next) { nextComponent = next; }
 	virtual coResult OnInit(coEntity& entity) { return true; }
 	virtual coResult OnStart(coEntity& entity) { return true; }
 	virtual void OnStop(coEntity& entity) {}

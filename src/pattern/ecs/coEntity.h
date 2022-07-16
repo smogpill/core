@@ -24,27 +24,21 @@ public:
 	coEntity();
 	~coEntity();
 	coEntity* Clone() const;
+	void Give(coComponent& component);
 	void SetUuid(const coUuid& uuid_) { uuid = uuid_; }
 	coResult SetState(State state);
 	void Write(coBinaryOutputStream& stream) const override;
 	void Read(coBinaryInputStream& stream) override;
-
-	const coEntityHandle& GetHandle() const { return handle; }
 	const coUuid& GetUuid() const { return uuid; }
 	coUint GetNbComponents() const;
 	State GetState() const { return state; }
 
-	void _OnSetHandle(const coEntityHandle& h) { handle = h; }
-
-protected:
-	coResult OnInit(coEntity& entity) override;
-	coResult OnStart(coEntity& entity) override;
-	void OnStop(coEntity& entity) override;
-	void OnRelease(coEntity& entity) override;
-
 private:
+	coResult Init();
+	coResult Start();
+	void Stop();
+	void Release();
 	coResult TransitToNextState(State targetState);
 	coUuid uuid;
-	coEntityHandle handle;
 	State state = State::NONE;
 };

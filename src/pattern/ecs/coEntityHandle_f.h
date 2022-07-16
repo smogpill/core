@@ -3,4 +3,4 @@
 #pragma once
 #include "coEntityHandle.h"
 
-coFORCE_INLINE coBool coIsNull(const coEntityHandle& h) { return h.val == 0; }
+//coFORCE_INLINE coBool coIsNull(const coEntityHandle& h) { return h.val == 0; }

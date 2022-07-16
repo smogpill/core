@@ -9,21 +9,35 @@ class coComponentIterator
 public:
 	coComponentIterator(coComponent* comp = nullptr) : comp(comp) {}
 	void operator++() { coASSERT(comp); comp = comp->GetNextComponent(); }
-	coComponent& operator*() { coASSERT(comp); return *comp; }
+	coComponent& operator*() const { coASSERT(comp); return *comp; }
 	coBool operator==(const coComponentIterator& it) const { return it.comp == comp; }
 	coBool operator!=(const coComponentIterator& it) const { return it.comp != comp; }
 private:
 	coComponent* comp = nullptr;
 };
 
+class coComponentConstIterator
+{
+public:
+	coComponentConstIterator(const coComponent* comp = nullptr) : comp(comp) {}
+	void operator++() { coASSERT(comp); comp = comp->GetNextComponent(); }
+	const coComponent& operator*() const { coASSERT(comp); return *comp; }
+	coBool operator==(const coComponentConstIterator& it) const { return it.comp == comp; }
+	coBool operator!=(const coComponentConstIterator& it) const { return it.comp != comp; }
+private:
+	const coComponent* comp = nullptr;
+};
+
 class coLinkedComponents
 {
 public:
-	coLinkedComponents(coComponent* comp) : it(comp) {}
-	coComponentIterator begin() const { return it; }
-	coComponentIterator end() const { return it; }
+	coLinkedComponents(const coComponent* comp) : comp(comp) {}
+	coComponentIterator begin() const { return coComponentIterator(const_cast<coComponent*>(comp)); }
+	coComponentConstIterator cbegin() const { return coComponentConstIterator(comp); }
+	coComponentIterator end() const { return coComponentIterator(const_cast<coComponent*>(comp)); }
+	coComponentConstIterator cend() const { return coComponentConstIterator(comp); }
 private:
-	coComponentIterator it = nullptr;
+	const coComponent* comp = nullptr;
 };
 
 class coComponentReverseIterator

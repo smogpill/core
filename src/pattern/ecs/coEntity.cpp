@@ -20,8 +20,9 @@ coEntity::coEntity()
 
 coEntity::~coEntity()
 {
-	for (coComponent* comp : coReversedLinkedComponents(this))
-		delete comp;
+	coCHECK(SetState(State::NONE), nullptr);
+	for (coComponent& comp : coReversedLinkedComponents(this))
+		delete &comp;
 }
 
 coResult coEntity::SetState(State newState)
@@ -38,11 +39,11 @@ void coEntity::Write(coBinaryOutputStream& stream) const
 	stream << uuid;
 	const coUint32 nbComponents = GetNbComponents();
 	stream << nbComponents;
-	for (coComponent* comp : coLinkedComponents(this))
+	for (coComponent& comp : coLinkedComponents(this))
 	{
-		const coType* type = comp->GetType();
+		const coType* type = comp.GetType();
 		stream << type->nameHash;
-		stream << *comp;
+		stream << comp;
 	}
 }
 
@@ -61,7 +62,7 @@ void coEntity::Read(coBinaryInputStream& stream)
 		coASSERT(type);
 		coComponent* comp = static_cast<coComponent*>(type->createFunc());
 		stream >> *comp;
-		comp->LinkTo(*previous);
+		previous->SetNextComponent(comp);
 		previous = comp;
 	}
 }
@@ -80,7 +81,7 @@ coResult coEntity::TransitToNextState(State targetState)
 		case State::INITIALIZED:
 		case State::STARTED:
 		{
-			coTRY(OnInit(*this), nullptr);
+			coTRY(Init(), nullptr);
 			state = State::INITIALIZED;
 			break;
 		}
@@ -98,15 +99,15 @@ coResult coEntity::TransitToNextState(State targetState)
 		{
 		case State::NONE:
 		{
-			OnRelease(*this);
+			Release();
 			state = State::NONE;
 			break;
 		}
 		case State::INITIALIZED: break;
 		case State::STARTED:
 		{
-			coTRY(OnStart(*this), nullptr);
-			state = State::STARTED;
+			coTRY(Init(), nullptr);
+			state = State::INITIALIZED;
 			break;
 		}
 		default:
@@ -124,7 +125,7 @@ coResult coEntity::TransitToNextState(State targetState)
 		case State::NONE:
 		case State::INITIALIZED:
 		{
-			OnStop(*this);
+			Stop();
 			state = State::INITIALIZED;
 			break;
 		}
@@ -146,55 +147,6 @@ coResult coEntity::TransitToNextState(State targetState)
 	return true;
 }
 
-coResult coEntity::OnInit(coEntity& entity)
-{
-	for (coComponent* comp : coLinkedComponents(this))
-	{
-		coTRY(comp->OnInit(*this), nullptr);
-	}
-	return true;
-}
-
-void coEntity::OnRelease(coEntity& entity)
-{
-	for (coComponent* comp : coReversedLinkedComponents(this))
-	{
-		comp->OnRelease(*this);
-	}
-}
-
-coResult coEntity::OnStart(coEntity& entity)
-{
-	for (coComponent* comp : coLinkedComponents(this))
-	{
-		coTRY(comp->OnStart(*this), nullptr);
-	}
-	return true;
-}
-
-void coEntity::OnStop(coEntity& entity)
-{
-	for (coComponent* comp : coReversedLinkedComponents(this))
-	{
-		comp->OnStop(*this);
-	}
-}
-
-coResult coEntity::Write(coBinaryOutputStream& stream) const
-{
-	for (coComponent* comp : coLinkedComponents(this))
-	{
-		comp->Write(stream);
-	}
-	return true;
-}
-
-coResult coEntity::Read(coBinaryInputStream& stream)
-{
-	coASSERT(false);
-	return true;
-}
-
 coEntity* coEntity::Clone() const
 {
 	//coEntity* clone = new coEntity(*this);
@@ -205,7 +157,49 @@ coEntity* coEntity::Clone() const
 coUint coEntity::GetNbComponents() const
 {
 	coUint nb = 0;
-	for (coComponent* comp : coLinkedComponents(this))
+	for (coComponent& comp : coLinkedComponents(this))
 		++nb;
 	return nb;
+}
+
+coResult coEntity::Init()
+{
+	for (coComponent& comp : coLinkedComponents(this))
+	{
+		coTRY(comp.OnInit(*this), nullptr);
+	}
+	return true;
+}
+
+coResult coEntity::Start()
+{
+	for (coComponent& comp : coLinkedComponents(this))
+	{
+		coTRY(comp.OnStart(*this), nullptr);
+	}
+	return true;
+}
+
+void coEntity::Stop()
+{
+	for (coComponent& comp : coReversedLinkedComponents(this))
+	{
+		comp.OnStop(*this);
+	}
+}
+
+void coEntity::Release()
+{
+	for (coComponent& comp : coReversedLinkedComponents(this))
+	{
+		comp.OnRelease(*this);
+	}
+}
+
+void coEntity::Give(coComponent& component)
+{
+	coComponent* last = component;
+	while (last->nextComponent != &component)
+		last = last->nextComponent;
+	last->nextComponent = &component;
 }

@@ -4,32 +4,30 @@
 #include "coSystem.h"
 #include "coEntity.h"
 #include "coComponent.h"
+#include "component/coComponent_f.h"
 #include "processor/coProcessor.h"
 #include "processor/coProcessorConfig.h"
 #include <math/transform/coTransform.h>
-#include "lang/reflect/coTypeDecl_f.h"
 
 class Transform : public coComponent
 {
-	coDECLARE_SUPER(coComponent);
-	coDECLARE_REFLECTED_VIRTUAL();
+	coDECLARE_COMPONENT(Transform, coComponent);
 public:
 	coTransform transform;
 };
 
 class Collider : public coComponent
 {
-	coDECLARE_SUPER(coComponent);
-	coDECLARE_REFLECTED_VIRTUAL();
+	coDECLARE_COMPONENT(Collider, coComponent);
 public:
 };
 
-coDEFINE_TYPE(Transform)
+coDEFINE_COMPONENT(Transform)
 {
 	return true;
 }
 
-coDEFINE_TYPE(Collider)
+coDEFINE_COMPONENT(Collider)
 {
 	return true;
 }
@@ -41,6 +39,6 @@ void coTestEntities()
 	Transform* transform = new Transform();
 	transform->LinkTo(*entity);
 
-	Collider collider = new Collider();
+	Collider* collider = new Collider();
 	collider->LinkTo(*transform);
 }

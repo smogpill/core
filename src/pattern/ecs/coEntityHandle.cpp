@@ -4,6 +4,7 @@
 #include "coEntity.h"
 #include "../uuid/coUuid_f.h"
 
+/*
 const coEntityHandle coEntityHandle::empty;
 
 void coEntityHandle::Write(coBinaryOutputStream& stream) const
@@ -33,3 +34,4 @@ void coEntityHandle::DeepRead(coBinaryInputStream& stream)
 	stream >> *entity;
 	*this = coEntitySystem::instance->Give(*entity);
 }
+*/
