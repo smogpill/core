@@ -18,26 +18,19 @@ coEntity::coEntity()
 	uuid.low = ++uuidGenerator;
 }
 
-coEntity::coEntity(const coEntity& other)
-{
-	coASSERT(false);
-	/*
-	for (coComponent* comp : coLinkedComponents(&other))
-	{
-		coPushBack(components, comp->Clone());
-	}
-	*/
-}
-
 coEntity::~coEntity()
 {
 	for (coComponent* comp : coReversedLinkedComponents(this))
 		delete comp;
 }
 
-void coEntity::SetTargetState(State newTargetState)
+coResult coEntity::SetState(State newState)
 {
-	targetState = newTargetState;
+	while (state != newState)
+	{
+		coTRY(TransitToNextState(newState), nullptr);
+	}
+	return true;
 }
 
 void coEntity::Write(coBinaryOutputStream& stream) const
@@ -72,37 +65,118 @@ void coEntity::Read(coBinaryInputStream& stream)
 		previous = comp;
 	}
 }
-coResult coEntity::OnInit()
+
+coResult coEntity::TransitToNextState(State targetState)
 {
-	for (coComponent* comp : coLinkedComponents(this))
+	// Should be more generic, like using a table of transitions
+
+	switch (state)
 	{
-		coTRY(comp->Init(), nullptr);
+	case State::NONE:
+	{
+		switch (targetState)
+		{
+		case State::NONE: break;
+		case State::INITIALIZED:
+		case State::STARTED:
+		{
+			coTRY(OnInit(*this), nullptr);
+			state = State::INITIALIZED;
+			break;
+		}
+		default:
+		{
+			coASSERT(false);
+			break;
+		}
+		}
+		break;
+	}
+	case State::INITIALIZED:
+	{
+		switch (targetState)
+		{
+		case State::NONE:
+		{
+			OnRelease(*this);
+			state = State::NONE;
+			break;
+		}
+		case State::INITIALIZED: break;
+		case State::STARTED:
+		{
+			coTRY(OnStart(*this), nullptr);
+			state = State::STARTED;
+			break;
+		}
+		default:
+		{
+			coASSERT(false);
+			break;
+		}
+		}
+		break;
+	}
+	case State::STARTED:
+	{
+		switch (targetState)
+		{
+		case State::NONE:
+		case State::INITIALIZED:
+		{
+			OnStop(*this);
+			state = State::INITIALIZED;
+			break;
+		}
+		case State::STARTED: break;
+		default:
+		{
+			coASSERT(false);
+			break;
+		}
+		}
+		break;
+	}
+	default:
+	{
+		coASSERT(false);
+		break;
+	}
 	}
 	return true;
 }
 
-void coEntity::OnRelease()
-{
-	for (coComponent* comp : coReversedLinkedComponents(this))
-	{
-		comp->Release();
-	}
-}
-
-coResult coEntity::OnStart()
+coResult coEntity::OnInit(coEntity& entity)
 {
 	for (coComponent* comp : coLinkedComponents(this))
 	{
-		coTRY(comp->Start(), nullptr);
+		coTRY(comp->OnInit(*this), nullptr);
 	}
 	return true;
 }
 
-void coEntity::OnStop()
+void coEntity::OnRelease(coEntity& entity)
 {
 	for (coComponent* comp : coReversedLinkedComponents(this))
 	{
-		comp->Stop();
+		comp->OnRelease(*this);
+	}
+}
+
+coResult coEntity::OnStart(coEntity& entity)
+{
+	for (coComponent* comp : coLinkedComponents(this))
+	{
+		coTRY(comp->OnStart(*this), nullptr);
+	}
+	return true;
+}
+
+void coEntity::OnStop(coEntity& entity)
+{
+	for (coComponent* comp : coReversedLinkedComponents(this))
+	{
+		comp->OnStop(*this);
 	}
 }
 

@@ -36,8 +36,6 @@ coDEFINE_TYPE(Collider)
 
 void coTestEntities()
 {
-	coProcessorConfig config;
-
 	coEntity* entity = new coEntity();
 
 	Transform* transform = new Transform();

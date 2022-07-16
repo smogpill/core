@@ -14,18 +14,18 @@ class coBinaryInputStream;
 class coEntity : public coComponent
 {
 public:
-	enum class State
+	enum class State : coUint8
 	{
 		NONE,
 		INITIALIZED,
-		STARTED
+		STARTED,
+		END
 	};
 	coEntity();
-	coEntity(const coEntity&);
 	~coEntity();
 	coEntity* Clone() const;
 	void SetUuid(const coUuid& uuid_) { uuid = uuid_; }
-	void SetTargetState(State state);
+	coResult SetState(State state);
 	void Write(coBinaryOutputStream& stream) const override;
 	void Read(coBinaryInputStream& stream) override;
 
@@ -33,20 +33,18 @@ public:
 	const coUuid& GetUuid() const { return uuid; }
 	coUint GetNbComponents() const;
 	State GetState() const { return state; }
-	State GetTargetState() const { return targetState; }
 
 	void _OnSetHandle(const coEntityHandle& h) { handle = h; }
 
 protected:
-	coResult OnInit() override;
-	coResult OnStart() override;
-	void OnStop() override;
-	void OnRelease() override;
+	coResult OnInit(coEntity& entity) override;
+	coResult OnStart(coEntity& entity) override;
+	void OnStop(coEntity& entity) override;
+	void OnRelease(coEntity& entity) override;
 
 private:
-	const coProcessorConfig* processorConfig = nullptr;
+	coResult TransitToNextState(State targetState);
 	coUuid uuid;
 	coEntityHandle handle;
 	State state = State::NONE;
-	State targetState = State::NONE;
 };

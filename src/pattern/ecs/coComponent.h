@@ -20,6 +20,17 @@ public:
 	coComponent* GetNextComponent() const { return nextComponent; }
 	template <class T> T* GetComponent() const;
 
+	coResult Init(coEntity& entity);
+	coResult Start(coEntity& entity);
+	void Stop(coEntity& entity);
+	void Release(coEntity& entity);
+
+protected:
+	virtual coResult OnInit(coEntity& entity) { return true; }
+	virtual coResult OnStart(coEntity& entity) { return true; }
+	virtual void OnStop(coEntity& entity) {}
+	virtual void OnRelease(coEntity& entity) {}
+
 private:
 	coComponent* nextComponent = nullptr;
 };
