@@ -6,3 +6,15 @@
 
 #define coDEFINE_COMPONENT(_Class_) \
 	coDEFINE_TYPE(_Class_)
+
+template <class T>
+T* coComponent::GetComponent() const
+{
+	const coType* type = T::GetStaticType();
+	for (coComponent* comp = nextComponent; comp != this; comp = comp->nextComponent)
+	{
+		if (comp->GetType() == type)
+			return static_cast<T*>(comp);
+	}
+	return nullptr;
+}

@@ -32,6 +32,8 @@ public:
 	const coUuid& GetUuid() const { return uuid; }
 	coUint GetNbComponents() const;
 	State GetState() const { return state; }
+	template <class T>
+	T* GetComponent() const;
 
 private:
 	coResult Init();

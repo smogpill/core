@@ -11,7 +11,7 @@
 #include "math/vector/coUint32x2.h"
 #include "math/vector/coUint32x4.h"
 #include "io/path/coPath_f.h"
-#include "pattern/pointer/coUnique.h"
+#include "pattern/pointer/coUniquePtr.h"
 
 coShaderProgram::~coShaderProgram()
 {
@@ -31,36 +31,36 @@ coResult coShaderProgram::Init(const coConstString& path)
 	filePath << ".vert.spv";
 	if (coExists(filePath))
 	{
-		coUnique<coShader> shader(new coShader());
+		coUniquePtr<coShader> shader(new coShader());
 		coTRY(shader->Init(coShader::Type::VERTEX, path), nullptr);
-		coPushBack(shaders, shader.release());
+		coPushBack(shaders, shader.Release());
 	}
 
 	filePath = path;
 	filePath << ".geom.spv";
 	if (coExists(filePath))
 	{
-		coUnique<coShader> shader(new coShader());
+		coUniquePtr<coShader> shader(new coShader());
 		coTRY(shader->Init(coShader::Type::GEOMETRY, path), nullptr);
-		coPushBack(shaders, shader.release());
+		coPushBack(shaders, shader.Release());
 	}
 
 	filePath = path;
 	filePath << ".frag.spv";
 	if (coExists(filePath))
 	{
-		coUnique<coShader> shader(new coShader());
+		coUniquePtr<coShader> shader(new coShader());
 		coTRY(shader->Init(coShader::Type::FRAGMENT, path), nullptr);
-		coPushBack(shaders, shader.release());
+		coPushBack(shaders, shader.Release());
 	}
 
 	filePath = path;
 	filePath << ".comp.spv";
 	if (coExists(filePath))
 	{
-		coUnique<coShader> shader(new coShader());
+		coUniquePtr<coShader> shader(new coShader());
 		coTRY(shader->Init(coShader::Type::COMPUTE, path), nullptr);
-		coPushBack(shaders, shader.release());
+		coPushBack(shaders, shader.Release());
 	}
 
 	coTRY(Init(shaders), nullptr);

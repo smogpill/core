@@ -16,7 +16,6 @@ class coComponent
 	coDECLARE_REFLECTED_VIRTUAL();
 public:
 	coComponent();
-	~coComponent();
 
 	coComponent* GetNextComponent() const { return nextComponent; }
 	template <class T> T* GetComponent() const;
@@ -36,15 +35,3 @@ protected:
 private:
 	coComponent* nextComponent = nullptr;
 };
-
-template <class T>
-T* coComponent::GetComponent() const
-{
-	const coType* type = T::GetStaticType();
-	for (coComponent* comp = nextComponent; comp != this; comp = comp->nextComponent)
-	{
-		if (comp->GetType() == type)
-			return static_cast<T*>(comp);
-	}
-	return nullptr;
-}

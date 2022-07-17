@@ -6,7 +6,7 @@
 #include "container/string/coDynamicString16.h"
 #include "container/string/coDynamicString16_f.h"
 #include "container/string/coConstString16.h"
-#include "pattern/pointer/coUnique.h"
+#include "pattern/pointer/coUniquePtr.h"
 #include "pattern/scope/coScopeExit.h"
 #include "platform/coOs.h"
 #include "debug/log/coLog.h"
@@ -64,11 +64,11 @@ coResult _coInitCurrentDir()
 		coERROR("Failed to get the current directory path size: " << s);
 		return false;
 	}
-	coUnique<coWideChar[]> path(new coWideChar[size]);
-	coTRY(GetCurrentDirectory(size, path.get()), nullptr);
+	coUniquePtr<coWideChar> path(new coWideChar[size]);
+	coTRY(GetCurrentDirectory(size, path.Get()), nullptr);
 
 	coDynamicString& dir = _co_defaultDirs->dirs[coUint(coDefaultDir::CURRENT)];
-	coSetFromWide(dir, coConstString16(path.get(), size));
+	coSetFromWide(dir, coConstString16(path.Get(), size));
 	coNormalizePath(dir);
 	return true;
 }

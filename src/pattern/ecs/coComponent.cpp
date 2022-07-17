@@ -15,8 +15,3 @@ coComponent::coComponent()
 {
 	nextComponent = this;
 }
-
-coComponent::~coComponent()
-{
-	coASSERT(nextComponent == this);
-}
