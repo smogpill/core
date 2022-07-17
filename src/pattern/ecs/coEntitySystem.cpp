@@ -5,35 +5,21 @@
 #include "coEntityHandle.h"
 #include "coEntity.h"
 #include <container/array/coDynamicArray_f.h>
+#include <container/map/coHashMap_f.h>
 #include <lang/result/coResult_f.h>
 
 coDEFINE_SINGLETON(coEntitySystem);
 
-coEntitySystem::coEntitySystem()
+void coEntitySystem::SetUuid(const coUuid& uuid, coEntity* entity)
 {
-	/*
-	coEntity* nullEntity = new coEntity();
-	Give(*nullEntity);
-	*/
-}
-
-coEntitySystem::~coEntitySystem()
-{
-	for (coEntity* p : entities)
-		delete p;
-}
-
-void coEntitySystem::Give(coEntity& entity)
-{
-	coPushBack(entities, &entity);
-}
-
-coEntity* coEntitySystem::Get(const coUuid& uuid) const
-{
-	for (coEntity* entity : entities)
+	coASSERT(uuid.IsValid());
+	if (uuid.IsValid()) // security
 	{
-		if (entity->GetUuid() == uuid)
-			return entity;
+		coSet(uuidToEntity, uuid, entity);
 	}
-	return nullptr;
+}
+
+coEntity* coEntitySystem::GetFromUuid(const coUuid& uuid) const
+{
+	return coGet(uuidToEntity, uuid, static_cast<coEntity*>(nullptr));
 }

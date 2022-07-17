@@ -8,25 +8,24 @@
 #include "pattern/pointer/coUniquePtr.h"
 #include <math/transform/coTransform.h>
 
-class Transform : public coComponent
+class TestAComp : public coComponent
 {
-	coDECLARE_COMPONENT(Transform, coComponent);
-public:
-	coTransform transform;
-};
-
-class Collider : public coComponent
-{
-	coDECLARE_COMPONENT(Collider, coComponent);
+	coDECLARE_COMPONENT(TestAComp, coComponent);
 public:
 };
 
-coDEFINE_COMPONENT(Transform)
+class TestBComp : public coComponent
+{
+	coDECLARE_COMPONENT(TestBComp, coComponent);
+public:
+};
+
+coDEFINE_COMPONENT(TestAComp)
 {
 	return true;
 }
 
-coDEFINE_COMPONENT(Collider)
+coDEFINE_COMPONENT(TestBComp)
 {
 	return true;
 }
@@ -35,9 +34,23 @@ coTEST(ecs, SimpleEntity)
 {
 	coUniquePtr<coEntity> entity = new coEntity();
 
-	Transform* transform = new Transform();
-	entity->Give(*transform);
+	TestAComp* a = new TestAComp();
+	entity->Give(*a);
 
-	Collider* collider = new Collider();
-	entity->Give(*collider);
+	TestBComp* b = new TestBComp();
+	entity->Give(*b);
+}
+
+coTEST(ecs, Prefab)
+{
+	coUniquePtr<coEntity> prefab = new coEntity();
+	{
+		TestAComp* a = new TestAComp();
+		prefab->Give(*a);
+
+		TestBComp* b = new TestBComp();
+		prefab->Give(*b);
+	}
+
+	//coUniquePtr<coEntity> entity = prebab->Clone();
 }

@@ -164,9 +164,10 @@ coResult coEntity::TransitToNextState(State targetState)
 
 coEntity* coEntity::Clone() const
 {
-	//coEntity* clone = new coEntity(*this);
+	coASSERT(GetState() == State::NONE);
+	coEntity* entity = new coEntity();
 	coASSERT(false);
-	return nullptr;
+	return entity;
 }
 
 coUint coEntity::GetNbComponents() const

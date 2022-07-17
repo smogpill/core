@@ -22,13 +22,14 @@ public:
 		END
 	};
 	coEntity();
+	coEntity(const coEntity&) = delete;
 	~coEntity();
-	coEntity* Clone() const;
 	void Give(coComponent& component);
 	void SetUuid(const coUuid& uuid_) { uuid = uuid_; }
 	coResult SetState(State state);
 	void Write(coBinaryOutputStream& stream) const;
 	void Read(coBinaryInputStream& stream);
+	coEntity* Clone() const;
 	const coUuid& GetUuid() const { return uuid; }
 	coUint GetNbComponents() const;
 	State GetState() const { return state; }
