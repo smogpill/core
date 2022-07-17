@@ -1,20 +1,20 @@
 // Copyright(c) 2019 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "io/pch.h"
-#include "coTextPackReader.h"
-#include "../coPack_f.h"
-#include "../coPackFormat.h"
+#include "coTextArchiveReader.h"
+#include "../coArchive_f.h"
+#include "../coArchiveFormat.h"
 #include "lang/result/coResult_f.h"
 #include "container/string/coChar_f.h"
 
-coTextPackReader::coTextPackReader(coPack& pack_, const coPackFormat& format_)
+coTextArchiveReader::coTextArchiveReader(coArchive& pack_, const coArchiveFormat& format_)
 	: pack(pack_)
 	, format(format_)
 {
 
 }
 
-coResult coTextPackReader::Read(const coChar* text_)
+coResult coTextArchiveReader::Read(const coChar* text_)
 {
 	curPos = 0;
 	text = text_;
@@ -25,7 +25,7 @@ coResult coTextPackReader::Read(const coChar* text_)
 	return true;
 }
 
-coResult coTextPackReader::ReadBlock()
+coResult coTextArchiveReader::ReadBlock()
 {
 	coTRY(text[curPos++] == '{', nullptr);
 	do
@@ -53,7 +53,7 @@ coResult coTextPackReader::ReadBlock()
 	} while (true);
 }
 
-coResult coTextPackReader::ReadStatement()
+coResult coTextArchiveReader::ReadStatement()
 {
 	coTRY(ReadIdentifier(), nullptr);
 	PassWhitespace();
@@ -64,7 +64,7 @@ coResult coTextPackReader::ReadStatement()
 	return true;
 }
 
-coResult coTextPackReader::ReadExpression()
+coResult coTextArchiveReader::ReadExpression()
 {
 	const coChar c = text[curPos];
 	switch (c)
@@ -107,7 +107,7 @@ coResult coTextPackReader::ReadExpression()
 	return true;
 }
 
-coResult coTextPackReader::IgnoreFirstAndReadStringValue()
+coResult coTextArchiveReader::IgnoreFirstAndReadStringValue()
 {
 	coASSERT(text[curPos] == '"');
 	const coUint startPos = ++curPos;
@@ -131,7 +131,7 @@ coResult coTextPackReader::IgnoreFirstAndReadStringValue()
 	} while (true);
 }
 
-coResult coTextPackReader::IgnoreFirstAndReadTrueValue()
+coResult coTextArchiveReader::IgnoreFirstAndReadTrueValue()
 {
 	coASSERT(text[curPos] == 't');
 	++curPos;
@@ -143,7 +143,7 @@ coResult coTextPackReader::IgnoreFirstAndReadTrueValue()
 	return ok;
 }
 
-coResult coTextPackReader::IgnoreFirstAndReadFalseValue()
+coResult coTextArchiveReader::IgnoreFirstAndReadFalseValue()
 {
 	coASSERT(text[curPos] == 'f');
 	++curPos;
@@ -156,25 +156,25 @@ coResult coTextPackReader::IgnoreFirstAndReadFalseValue()
 	return ok;
 }
 
-void coTextPackReader::PassWhitespace()
+void coTextArchiveReader::PassWhitespace()
 {
 	while (coIsWhitespace(text[curPos]))
 		++curPos;
 }
 
-coResult coTextPackReader::ReadNumberValue()
+coResult coTextArchiveReader::ReadNumberValue()
 {
 	return true;
 }
 
-coResult coTextPackReader::IgnoreFirstAndReadNegativeNumberValue()
+coResult coTextArchiveReader::IgnoreFirstAndReadNegativeNumberValue()
 {
 	coASSERT(text[curPos] == '-');
 	++curPos;
 	return true;
 }
 
-coResult coTextPackReader::ReadIdentifier()
+coResult coTextArchiveReader::ReadIdentifier()
 {
 	coUint32 startPos = curPos;
 	if (coIsIdentifierHeadCompatible(text[curPos]))
@@ -187,7 +187,7 @@ coResult coTextPackReader::ReadIdentifier()
 		identifier.data = &text[startPos];
 		identifier.count = curPos - startPos;
 		curField = format.GetIndex(identifier);
-		return curField != coPackFormat::s_invalidFieldIndex;
+		return curField != coArchiveFormat::s_invalidFieldIndex;
 	}
 	return false;
 }

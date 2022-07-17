@@ -2,23 +2,23 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "test_io/pch.h"
 #include "test/unit/coTest.h"
-#include "io/pack/coPack.h"
-#include "io/pack/coPackFormat.h"
-#include "io/pack/text/coTextPackReader.h"
+#include "io/archive/coArchive.h"
+#include "io/archive/coArchiveFormat.h"
+#include "io/archive/text/coTextArchiveReader.h"
 
-coTEST(coTextPackReader, Empty)
+coTEST(coTextArchiveReader, Empty)
 {
-	coPack pack;
-	coPackFormat format;
-	coTextPackReader reader(pack, format);
+	coArchive archive;
+	coArchiveFormat format;
+	coTextArchiveReader reader(archive, format);
 	//coEXPECT(!reader.Read(""));
 }
 
-coTEST(coTextPackReader, EmptyBlock)
+coTEST(coTextArchiveReader, EmptyBlock)
 {
-	coPack pack;
-	coPackFormat format;
-	coTextPackReader reader(pack, format);
+	coArchive archive;
+	coArchiveFormat format;
+	coTextArchiveReader reader(archive, format);
 	coEXPECT(reader.Read("{}"));
 	coEXPECT(reader.Read(" { } "));
 	coEXPECT(reader.Read("    {     }    "));
@@ -29,21 +29,21 @@ coTEST(coTextPackReader, EmptyBlock)
 	coEXPECT(reader.Read("\n \n{\n \n}\n \n"));
 }
 
-coTEST(coTestPackReader, coBool)
+coTEST(coTestArchiveReader, coBool)
 {
-	coPack pack;
-	coPackFormat format;
+	coArchive archive;
+	coArchiveFormat format;
 	format.AddField("a", 0);
 	format.AddField("b", 1);
-	coTextPackReader reader(pack, format);
+	coTextArchiveReader reader(archive, format);
 	coEXPECT(reader.Read("{a = true;}"));
 	coEXPECT(reader.Read("{b = false;}"));
 }
 
-coTEST(coTestPackReader, Identifier)
+coTEST(coTestArchiveReader, Identifier)
 {
-	coPack pack;
-	coPackFormat format;
+	coArchive archive;
+	coArchiveFormat format;
 	format.AddField("a", 0);
 	format.AddField("ab4c", 1);
 	format.AddField("_ab2c", 2);
@@ -53,7 +53,7 @@ coTEST(coTestPackReader, Identifier)
 	format.AddField("_AbC", 6);
 	format.AddField("_A", 7);
 	format.AddField("_a_", 8);
-	coTextPackReader reader(pack, format);
+	coTextArchiveReader reader(archive, format);
 	coEXPECT(reader.Read("{a = true;}"));
 	//coEXPECT(!reader.Read("{0: false;}"));
 	coEXPECT(reader.Read("{ab4c = true;}"));

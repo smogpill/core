@@ -2,10 +2,8 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-#include <container/array/coDynamicArray.h>
-
-class coPack
+class coArchiveObject
 {
 public:
-	coDynamicArray<coByte> data;
+
 };

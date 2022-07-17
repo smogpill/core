@@ -3,13 +3,13 @@
 #pragma once
 #include "lang/result/coResult.h"
 
-class coPack;
-class coPackFormat;
+class coArchive;
+class coArchiveFormat;
 
-class coTextPackReader
+class coTextArchiveReader
 {
 public:
-	coTextPackReader(coPack& pack, const coPackFormat& format);
+	coTextArchiveReader(coArchive& pack, const coArchiveFormat& format);
 	coResult Read(const coChar* text);
 
 private:
@@ -24,8 +24,8 @@ private:
 	coResult ReadIdentifier();
 	void PassWhitespace();
 
-	const coPackFormat& format;
-	coPack& pack;
+	const coArchiveFormat& format;
+	coArchive& pack;
 	const coChar* text = nullptr;
 	coUint32 curPos = 0;
 	coUint8 curField = 0;

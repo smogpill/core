@@ -1,10 +1,10 @@
 // Copyright(c) 2019 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "io/pch.h"
-#include "coPackFormat.h"
+#include "coArchiveFormat.h"
 #include "math/hash/coHash_f.h"
 
-void coPackFormat::AddField(const coConstString& name, coUint8 index)
+void coArchiveFormat::AddField(const coConstString& name, coUint8 index)
 {
 	Reserve(nbFields + 1);
 	nameHashes[nbFields] = coHash32(name);
@@ -12,7 +12,7 @@ void coPackFormat::AddField(const coConstString& name, coUint8 index)
 	++nbFields;
 }
 
-coUint8 coPackFormat::GetIndex(const coConstString& name) const
+coUint8 coArchiveFormat::GetIndex(const coConstString& name) const
 {
 	const coUint32 hash = coHash32(name);
 	for (coUint i = 0; i < nbFields; ++i)
@@ -25,14 +25,14 @@ coUint8 coPackFormat::GetIndex(const coConstString& name) const
 	return coUint8(-1);
 }
 
-const coChar* coPackFormat::GetName(coUint8 index)
+const coChar* coArchiveFormat::GetName(coUint8 index)
 {
 	coASSERT(index < nbFields);
 	const coUint16 offset = nameOffsets[index];
 	return &names[offset];
 }
 
-void coPackFormat::Reserve(coUint16 nb)
+void coArchiveFormat::Reserve(coUint16 nb)
 {
 	if (capacity < nb)
 	{

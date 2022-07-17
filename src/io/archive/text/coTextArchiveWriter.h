@@ -3,14 +3,14 @@
 #pragma once
 #include "lang/result/coResult.h"
 
-class coPack;
-class coPackFormat;
+class coArchive;
+class coArchiveFormat;
 class coDynamicString;
 
-class coTextPackWriter
+class coTextArchiveWriter
 {
 public:
-	coTextPackWriter(const coPack& pack, const coPackFormat& format);
+	coTextArchiveWriter(const coArchive& pack, const coArchiveFormat& format);
 	coResult Write(coDynamicString& text);
 
 private:
@@ -23,7 +23,7 @@ private:
 	coResult WriteNumberValue();
 	coResult WriteIdentifier();
 
-	const coPackFormat& format;
-	const coPack& pack;
+	const coArchiveFormat& format;
+	const coArchive& pack;
 	coDynamicString* text = nullptr;
 };

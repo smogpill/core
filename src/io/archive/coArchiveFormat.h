@@ -5,7 +5,7 @@
 
 class coConstString;
 
-class coPackFormat
+class coArchiveFormat
 {
 public:
 	static const coUint8 s_invalidFieldIndex = coUint8(-1);
