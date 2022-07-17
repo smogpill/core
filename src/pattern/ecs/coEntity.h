@@ -11,7 +11,7 @@
 class coBinaryOutputStream;
 class coBinaryInputStream;
 
-class coEntity : public coComponent
+class coEntity
 {
 public:
 	enum class State : coUint8
@@ -27,8 +27,8 @@ public:
 	void Give(coComponent& component);
 	void SetUuid(const coUuid& uuid_) { uuid = uuid_; }
 	coResult SetState(State state);
-	void Write(coBinaryOutputStream& stream) const override;
-	void Read(coBinaryInputStream& stream) override;
+	void Write(coBinaryOutputStream& stream) const;
+	void Read(coBinaryInputStream& stream);
 	const coUuid& GetUuid() const { return uuid; }
 	coUint GetNbComponents() const;
 	State GetState() const { return state; }
@@ -39,6 +39,8 @@ private:
 	void Stop();
 	void Release();
 	coResult TransitToNextState(State targetState);
-	coUuid uuid;
+	coComponent* firstComponent = nullptr;
+	coComponent* lastComponent = nullptr;
 	State state = State::NONE;
+	coUuid uuid;
 };

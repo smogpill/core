@@ -61,3 +61,40 @@ public:
 private:
 	coFixedArray<coComponent*, 256> components;
 };
+
+template <class Functor>
+coBool coVisitAll(coComponent* component, Functor func)
+{
+	if (component)
+	{
+		if (!func(*component))
+			return false;
+		for (coComponent* it = component; it != component; it = component->GetNextComponent())
+			if (!func(*component))
+				return false;
+	}
+	return true;
+}
+
+template <class Functor>
+coBool coReverseVisitAll(coComponent* component, Functor func)
+{
+	if (component)
+	{
+		coFixedArray<coComponent*, 256> components;
+		auto stack = [&](coComponent& comp)
+		{
+			coPushBack(components, &comp);
+			return true;
+		};
+		coVisitAll(component, stack);
+
+		while (components.count)
+		{
+			coComponent* comp = coPopBack(components);
+			if (!func(*comp))
+				return false;
+		}
+	}
+	return true;
+}

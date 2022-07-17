@@ -37,8 +37,8 @@ void coTestEntities()
 	coEntity* entity = new coEntity();
 
 	Transform* transform = new Transform();
-	transform->LinkTo(*entity);
+	entity->Give(*transform);
 
 	Collider* collider = new Collider();
-	collider->LinkTo(*transform);
+	entity->Give(*collider);
 }

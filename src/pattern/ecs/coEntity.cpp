@@ -21,8 +21,12 @@ coEntity::coEntity()
 coEntity::~coEntity()
 {
 	coCHECK(SetState(State::NONE), nullptr);
-	for (coComponent& comp : coReversedLinkedComponents(this))
-		delete &comp;
+	auto func = [&](coComponent& comp)
+	{
+		delete& comp;
+		return true;
+	};
+	coReverseVisitAll(firstComponent, func);
 }
 
 coResult coEntity::SetState(State newState)
@@ -39,12 +43,15 @@ void coEntity::Write(coBinaryOutputStream& stream) const
 	stream << uuid;
 	const coUint32 nbComponents = GetNbComponents();
 	stream << nbComponents;
-	for (coComponent& comp : coLinkedComponents(this))
+
+	auto func = [&](coComponent& comp)
 	{
 		const coType* type = comp.GetType();
 		stream << type->nameHash;
 		stream << comp;
-	}
+		return true;
+	};
+	coVisitAll(firstComponent, func);
 }
 
 void coEntity::Read(coBinaryInputStream& stream)
@@ -53,7 +60,7 @@ void coEntity::Read(coBinaryInputStream& stream)
 	coUint32 nbComponents;
 	stream >> nbComponents;
 
-	coComponent* previous = this;
+	coComponent* previous = nullptr;
 	for (coUint i = 0; i < nbComponents; ++i)
 	{
 		coUint32 nameHash;
@@ -62,7 +69,15 @@ void coEntity::Read(coBinaryInputStream& stream)
 		coASSERT(type);
 		coComponent* comp = static_cast<coComponent*>(type->createFunc());
 		stream >> *comp;
-		previous->SetNextComponent(comp);
+		if (previous)
+		{
+			previous->SetNextComponent(comp);
+		}
+		else
+		{
+			coASSERT(firstComponent == nullptr);
+			firstComponent = comp;
+		}
 		previous = comp;
 	}
 }
@@ -157,49 +172,64 @@ coEntity* coEntity::Clone() const
 coUint coEntity::GetNbComponents() const
 {
 	coUint nb = 0;
-	for (coComponent& comp : coLinkedComponents(this))
+	auto func = [&](coComponent& comp)
+	{
 		++nb;
+		return true;
+	};
+	coVisitAll(firstComponent, func);
 	return nb;
 }
 
 coResult coEntity::Init()
 {
-	for (coComponent& comp : coLinkedComponents(this))
+	auto func = [&](coComponent& comp)
 	{
-		coTRY(comp.OnInit(*this), nullptr);
-	}
-	return true;
+		return comp.OnInit(*this);
+	};
+	return coVisitAll(firstComponent, func);
 }
 
 coResult coEntity::Start()
 {
-	for (coComponent& comp : coLinkedComponents(this))
+	auto func = [&](coComponent& comp)
 	{
-		coTRY(comp.OnStart(*this), nullptr);
-	}
-	return true;
+		return comp.OnStart(*this);
+	};
+	return coVisitAll(firstComponent, func);
 }
 
 void coEntity::Stop()
 {
-	for (coComponent& comp : coReversedLinkedComponents(this))
+	auto func = [&](coComponent& comp)
 	{
 		comp.OnStop(*this);
-	}
+		return true;
+	};
+	coReverseVisitAll(firstComponent, func);
 }
 
 void coEntity::Release()
 {
-	for (coComponent& comp : coReversedLinkedComponents(this))
+	auto func = [&](coComponent& comp)
 	{
 		comp.OnRelease(*this);
-	}
+		return true;
+	};
+	coReverseVisitAll(firstComponent, func);
 }
 
 void coEntity::Give(coComponent& component)
 {
-	coComponent* last = component;
-	while (last->nextComponent != &component)
-		last = last->nextComponent;
-	last->nextComponent = &component;
+	if (firstComponent)
+	{
+		coComponent* last = firstComponent;
+		while (last->nextComponent != firstComponent)
+			last = last->nextComponent;
+		last->nextComponent = &component;
+	}
+	else
+	{
+		firstComponent = &component;
+	}
 }
