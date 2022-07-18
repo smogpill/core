@@ -27,7 +27,6 @@ coDynamicArray<T>::coDynamicArray(std::initializer_list<T> _l)
 
 coUint32 _coComputeBestArrayCapacity(coUint32 _capacity);
 
-
 template <class T>
 void _coSetCapacity(coDynamicArray<T>& a, coUint32 capacity)
 {

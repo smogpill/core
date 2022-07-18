@@ -18,43 +18,38 @@ inline void _coPush(coArchive& this_, const T& data)
 	coPushBackArray(this_.data, coArray<const coByte>(reinterpret_cast<const coByte*>(&data), sizeof(T)));
 }
 
-inline void coPushBlock(coArchive& this_, coUint16 key)
+inline coArchiveObject coPushObject(coArchiveObject& object, coUint8 key)
 {
-	_coPush(this_, key);
-}
-
-inline void coPopBlock(coArchive& this_)
-{
-
+	_coPush(object.archive, key);
 }
 
 template <class T>
-inline void coPushValue(coArchive& this_, coUint16 key, const T& x)
+inline void coPushValue(coArchive& this_, coUint8 key, const T& x)
 {
 	_coPush(this_, key);
 	_coPush(this_, x);
 }
 
-inline void coPushValue(coArchive& this_, coUint16 key, const coConstString& s)
+inline void coPushValue(coArchive& this_, coUint8 key, const coConstString& s)
 {
 	_coPush(this_, key);
 	_coPush(this_, s.data, s.count);
 	coPushBack(this_.data, '\0');
 }
 
-inline void coPushValue(coArchive& this_, coUint16 key, coBool b)
+inline void coPushValue(coArchive& this_, coUint8 key, coBool b)
 {
 	_coPush(this_, key);
 	_coPush(this_, b);
 }
 
-inline void coPushValue(coArchive& this_, coUint16 key, coUint8 x)
+inline void coPushValue(coArchive& this_, coUint8 key, coUint8 x)
 {
 	_coPush(this_, key);
 	_coPush(this_, x);
 }
 
-inline void coPushValue(coArchive& this_, coUint16 key, coInt8 x)
+inline void coPushValue(coArchive& this_, coUint8 key, coInt8 x)
 {
 	_coPush(this_, key);
 	_coPush(this_, x);

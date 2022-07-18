@@ -9,12 +9,23 @@
 
 coTEST(coArchive, Simple)
 {
-	const coUint16 kGroup = coHash16(coConstString("group"));
-	const coUint16 kBool = coHash16(coConstString("bool"));
+	coArchiveFormat format;
+	format.AddField("a", 0);
+	format.AddField("b", 1);
+
 	coArchiveFormat format;
 
 	coArchive archive;
-	coPushBlock(archive, kGroup);
-	coPushValue(archive, kBool, true);
+	coPushBlock(archive, 0, format);
+	coPushValue(archive, 1, true);
 	coPopBlock(archive);
+}
+
+coTEST(coArchive, Format)
+{
+	coArchiveFormat format;
+	format.AddField("a", 0);
+	format.AddField("b", 1);
+
+	coArchive archive;
 }
