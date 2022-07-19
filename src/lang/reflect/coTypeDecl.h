@@ -21,9 +21,12 @@ class coType;
 #	define _coPOP_DISABLE_OVERRIDE_WARNING()
 #endif
 
-#define coDECLARE_SUPER(_super_) \
+#define coDECLARE_BASE(_Base_) \
 	private: \
-	using Super = _super_
+	using Super = _Base_; \
+	using Base = _Base_
+
+#define coDECLARE_SUPER(_Super_) coDECLARE_BASE(_Super_)
 
 #define _coDECLARE_GET_STATIC_TYPE() static const coType* GetStaticType()
 

@@ -13,6 +13,8 @@ class coType : public coSymbol
 public:
 	~coType();
 
+	void Give(coField& field);
+
 	coUint32 size8 = 0;
 	coUint32 alignment8 = 0;
 	const coType* super = nullptr;

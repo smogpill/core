@@ -13,4 +13,5 @@ public:
 	const coType* type;
 	const coType* subType;
 	coUint16 offset8;
+	coUint8 serializeID = ~coUint8(0);
 };

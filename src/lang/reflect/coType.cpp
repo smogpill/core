@@ -13,3 +13,8 @@ coType::~coType()
 	for (auto p : functions)
 		delete p;
 }
+
+void coType::Give(coField& field)
+{
+	coPushBack(fields, &field);
+}

@@ -2,20 +2,22 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include "coArchive.h"
+#include "coArchiveObject.h"
 #include "container/array/coDynamicArray_f.h"
 #include "container/string/coConstString.h"
 
 class coConstString;
 
-inline void _coPush(coArchive& this_, const void* data, coUint32 size)
+/*
+inline void _coPush(coArchive& a, const void* data, coUint32 size)
 {
-	coPushBackArray(this_.data, coArray<const coByte>(reinterpret_cast<const coByte*>(data), size));
+	coPushBackArray(a.data, coArray<const coByte>(reinterpret_cast<const coByte*>(data), size));
 }
 
 template <class T>
-inline void _coPush(coArchive& this_, const T& data)
+inline void _coPush(coArchive& a, const T& data)
 {
-	coPushBackArray(this_.data, coArray<const coByte>(reinterpret_cast<const coByte*>(&data), sizeof(T)));
+	coPushBackArray(a.data, coArray<const coByte>(reinterpret_cast<const coByte*>(&data), sizeof(T)));
 }
 
 inline coArchiveObject coPushObject(coArchiveObject& object, coUint8 key)
@@ -54,3 +56,4 @@ inline void coPushValue(coArchive& this_, coUint8 key, coInt8 x)
 	_coPush(this_, key);
 	_coPush(this_, x);
 }
+*/

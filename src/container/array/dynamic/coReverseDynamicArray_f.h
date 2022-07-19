@@ -7,7 +7,6 @@
 template <class T>
 void _coSetCapacity(coReverseDynamicArray<T>& a, coUint32 capacity)
 {
-	/*
 	if (a.capacity != capacity)
 	{
 		coASSERT(capacity >= a.count);
@@ -19,13 +18,12 @@ void _coSetCapacity(coReverseDynamicArray<T>& a, coUint32 capacity)
 		T* newData = static_cast<T*>(coAllocator::GetHeap()->AllocateAligned(coUint64(capacity) * sizeof(T), alignment));
 		if (a.data)
 		{
-			coMemCopy(newData + capacity - a.count, a.data, coUint64(a.count) * sizeof(T));
-			coAllocator::GetHeap()->FreeAligned(a.buffer);
+			coMemCopy(newData + capacity - a.count, a.data + a.capacity - a.count, coUint64(a.count) * sizeof(T));
+			coAllocator::GetHeap()->FreeAligned(a.data);
 		}
 		a.data = newData;
 		a.capacity = capacity;
 	}
-	*/
 }
 
 template <class T>
