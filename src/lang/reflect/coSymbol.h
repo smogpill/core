@@ -15,6 +15,6 @@ public:
 		static_ = 1<<4
 	};
 	coUint32 nameHash = 0;
-	coUint8 symbolFlags = 0;
+	coUint8 symbolFlags = 0u;
 	coDynamicString name;
 };

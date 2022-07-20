@@ -1,11 +1,11 @@
-// Copyright(c) 2019-2022 Jounayd Id Salah
+// Copyright(c) 2022 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
-#include <container/array/coDynamicArray.h>
+#include <container/array/dynamic/coReverseDynamicArray.h>
 
 class coType;
 
-class coArchive
+class coArchiveWriter
 {
 public:
 	void Clear();
@@ -19,11 +19,11 @@ private:
 	void Write(const T& buffer) { WriteBuffer(&buffer, sizeof(buffer)); }
 	void PushBytes(coUint size);
 
-	coDynamicArray<coByte> data;
+	coReverseDynamicArray<coByte> data;
 };
 
 template<class T>
-inline void coArchive::WriteRoot(const T& object)
+inline void coArchiveWriter::WriteRoot(const T& object)
 {
 	WriteRoot(&object, *T::GetStaticType());
 }

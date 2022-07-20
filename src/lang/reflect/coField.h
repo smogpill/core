@@ -1,17 +1,16 @@
-// Copyright(c) 2016 Jounayd Id Salah
+// Copyright(c) 2016-2022 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
-
 #include "lang/reflect/coSymbol.h"
 
 class coType;
 class coField : public coSymbol
 {
 public:
-	coField();
+	coBool IsSerializable() const { return serializeID != coUint8(-1); }
 
-	const coType* type;
-	const coType* subType;
-	coUint16 offset8;
-	coUint8 serializeID = ~coUint8(0);
+	const coType* type = nullptr;
+	const coType* subType = nullptr;
+	coUint16 offset8 = 0u;
+	coUint8 serializeID = coUint8(-1);
 };

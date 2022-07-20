@@ -1,17 +1,17 @@
-// Copyright(c) 2019-2022 Jounayd Id Salah
+// Copyright(c) 2022 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "io/pch.h"
-#include "coArchive.h"
+#include "coArchiveWriter.h"
 #include <lang/reflect/coType.h>
 #include <lang/reflect/coField.h>
-#include <container/array/coDynamicArray_f.h>
+#include <container/array/dynamic/coReverseDynamicArray_f.h>
 
-void coArchive::Clear()
+void coArchiveWriter::Clear()
 {
 	coClear(data);
 }
 
-void coArchive::WriteRoot(const void* object, const coType& type)
+void coArchiveWriter::WriteRoot(const void* object, const coType& type)
 {
 	Clear();
 
@@ -33,7 +33,7 @@ void coArchive::WriteRoot(const void* object, const coType& type)
 	}
 
 	const coUint32 inlineStart = data.count;
-	
+
 	Write(coInt32(inlineStart - vtableIndex)); // Vtable offset
 	coUint16 inlineSize = 4;
 	for (const coField* field : type.fields)
@@ -50,12 +50,12 @@ void coArchive::WriteRoot(const void* object, const coType& type)
 	*reinterpret_cast<coUint16*>(&data.data[vtableIndex + sizeof(coUint16)]) = coUint16(inlineSize);
 }
 
-void coArchive::Write(const void* buffer, coUint32 size)
+void coArchiveWriter::Write(const void* buffer, coUint32 size)
 {
 	coPushBackArray(data, coArray<const coByte>(static_cast<const coByte*>(buffer), size));
 }
 
-void coArchive::PushBytes(coUint size)
+void coArchiveWriter::PushBytes(coUint size)
 {
 	coResize(data, size);
 }

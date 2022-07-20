@@ -29,7 +29,7 @@ coDEFINE_TYPE(ArchiveTestA)
 		field->symbolFlags = 0;
 		field->type = coGetType<decltype(ArchiveTestA::u)>();
 		field->offset8 = static_cast<decltype(field->offset8)>(coGetFieldOffset<ArchiveTestA>(&ArchiveTestA::u));
-		field->serializeID(0);
+		field->serializeID = 0;
 		type->Give(*field);
 	}
 
@@ -39,8 +39,8 @@ coDEFINE_TYPE(ArchiveTestA)
 		field->nameHash = coHash32(field->name);
 		field->symbolFlags = 0;
 		field->type = coGetType<decltype(ArchiveTestA::f)>();
-		field->offset8 = static_cast<decltype(field->offset8)>(coGetFieldOffset<ArchiveTestA>(&ArchiveTestA::f));field->serializeID(0);
-		field->serializeID(1);
+		field->offset8 = static_cast<decltype(field->offset8)>(coGetFieldOffset<ArchiveTestA>(&ArchiveTestA::f));
+		field->serializeID = 1;
 		type->Give(*field);
 	}
 	return true;
@@ -51,5 +51,6 @@ coTEST(coArchive, Simple)
 	ArchiveTestA a;
 
 	coArchive archive;
+	archive.Write(a);
 	//archive.SetObject(a);
 }

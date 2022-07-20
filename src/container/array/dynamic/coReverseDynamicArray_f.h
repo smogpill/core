@@ -34,6 +34,37 @@ void coReserve(coReverseDynamicArray<T>& a, coUint32 desiredCount)
 }
 
 template <class T>
+void coResize(coReverseDynamicArray<T>& _this, coUint32 _newCount)
+{
+	//static_assert(std::is_base_of<coArray, A>::value, "_a should be an array");
+	if (_this.count != _newCount)
+	{
+		coReserve(_this, _newCount);
+		if (_newCount > _this.count)
+		{
+			::new (&_this.data[_this.count]) A::ValueType[_newCount - _this.count];
+		}
+		_this.count = _newCount;
+	}
+}
+
+template <class T>
+void coResize(coReverseDynamicArray<T>& _this, coUint32 _newCount, const typename A::ValueType& _defaultValue)
+{
+	//static_assert(std::is_base_of<coArray, A>::value, "_a should be an array");
+	if (_this.count != _newCount)
+	{
+		coReserve(_this, _newCount);
+		for (coUint i = _this.count; i < _newCount; ++i)
+		{
+			::new (&_this.data[i]) A::ValueType(_defaultValue);
+		}
+		_this.count = _newCount;
+	}
+}
+
+
+template <class T>
 void coPushBackArray(coReverseDynamicArray<T>& a, const coArray<const T>& other)
 {
 	//static_assert(std::is_base_of<coArray<T>, A>::value, "_this should be an array");
@@ -47,13 +78,16 @@ void coPushBackArray(coReverseDynamicArray<T>& a, const coArray<const T>& other)
 }
 
 template <class T>
-void coPushBackArray(coDynamicArray<T>& _this, const coArray<T>& _other)
+void coPushBackArray(coReverseDynamicArray<T>& a, const coArray<T>& _other)
 {
-	coPushBackArray(_this, static_cast<const coArray<const T>&>(_other));
+	coPushBackArray(a, static_cast<const coArray<const T>&>(_other));
 }
 
 template <class T>
 void coClear(coReverseDynamicArray<T>& a)
 {
+#ifdef coDEBUG
+	coFillAsDeleted(&a.data[a.capacity - a.count], coUint64(a.count) * sizeof(T));
+#endif
 	a.count = 0;
 }

@@ -7,6 +7,7 @@
 #include "lang/result/coResult_f.h"
 #include "container/string/coChar_f.h"
 
+/*
 coTextArchiveReader::coTextArchiveReader(coArchive& pack_, const coArchiveFormat& format_)
 	: pack(pack_)
 	, format(format_)
@@ -191,3 +192,4 @@ coResult coTextArchiveReader::ReadIdentifier()
 	}
 	return false;
 }
+*/

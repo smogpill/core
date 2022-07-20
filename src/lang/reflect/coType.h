@@ -14,6 +14,7 @@ public:
 	~coType();
 
 	void Give(coField& field);
+	coUint GetNbSerializableFields() const;
 
 	coUint32 size8 = 0;
 	coUint32 alignment8 = 0;

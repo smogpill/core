@@ -18,3 +18,11 @@ void coType::Give(coField& field)
 {
 	coPushBack(fields, &field);
 }
+
+coUint coType::GetNbSerializableFields() const
+{
+	coUint nb = 0;
+	for (const coField* f : fields)
+		nb += f->IsSerializable();
+	return nb;
+}
