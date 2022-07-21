@@ -15,6 +15,14 @@ void coArchiveWriter::WriteRoot(const void* object, const coType& type)
 {
 	Clear();
 
+	for (const coField* field : type.fields)
+	{
+		if (field->IsSerializable())
+		{
+		}
+	}
+
+
 	// Offset for the root object. The value will be written later.
 	PushBytes(sizeof(coUint32));
 
