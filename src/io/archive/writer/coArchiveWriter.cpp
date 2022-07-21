@@ -15,6 +15,8 @@ void coArchiveWriter::WriteRoot(const void* object, const coType& type)
 {
 	Clear();
 
+	/*
+
 	for (const coField* field : type.fields)
 	{
 		if (field->IsSerializable())
@@ -56,6 +58,7 @@ void coArchiveWriter::WriteRoot(const void* object, const coType& type)
 	const coUint32 inlineSize = data.count - inlineStart;
 	coASSERT(inlineSize <= coUint16(-1));
 	*reinterpret_cast<coUint16*>(&data.data[vtableIndex + sizeof(coUint16)]) = coUint16(inlineSize);
+	* */
 }
 
 void coArchiveWriter::Write(const void* buffer, coUint32 size)

@@ -6,6 +6,7 @@
 class coArchive;
 class coArchiveFormat;
 
+/*
 class coTextArchiveReader
 {
 public:
@@ -30,3 +31,4 @@ private:
 	coUint32 curPos = 0;
 	coUint8 curField = 0;
 };
+*/

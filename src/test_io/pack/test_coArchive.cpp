@@ -51,6 +51,6 @@ coTEST(coArchive, Simple)
 	ArchiveTestA a;
 
 	coArchive archive;
-	archive.Write(a);
+	archive.WriteRoot(a);
 	//archive.SetObject(a);
 }

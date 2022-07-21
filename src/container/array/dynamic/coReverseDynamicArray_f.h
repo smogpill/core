@@ -42,14 +42,14 @@ void coResize(coReverseDynamicArray<T>& _this, coUint32 _newCount)
 		coReserve(_this, _newCount);
 		if (_newCount > _this.count)
 		{
-			::new (&_this.data[_this.count]) A::ValueType[_newCount - _this.count];
+			::new (&_this.data[_this.count]) T[_newCount - _this.count];
 		}
 		_this.count = _newCount;
 	}
 }
 
 template <class T>
-void coResize(coReverseDynamicArray<T>& _this, coUint32 _newCount, const typename A::ValueType& _defaultValue)
+void coResize(coReverseDynamicArray<T>& _this, coUint32 _newCount, const T& _defaultValue)
 {
 	//static_assert(std::is_base_of<coArray, A>::value, "_a should be an array");
 	if (_this.count != _newCount)
@@ -57,7 +57,7 @@ void coResize(coReverseDynamicArray<T>& _this, coUint32 _newCount, const typenam
 		coReserve(_this, _newCount);
 		for (coUint i = _this.count; i < _newCount; ++i)
 		{
-			::new (&_this.data[i]) A::ValueType(_defaultValue);
+			::new (&_this.data[i]) T(_defaultValue);
 		}
 		_this.count = _newCount;
 	}
@@ -73,8 +73,8 @@ void coPushBackArray(coReverseDynamicArray<T>& a, const coArray<const T>& other)
 	if (desiredCount > a.capacity)
 		coReserve(a, desiredCount);
 
-	coMemCopy(&a.data[a.capacity - desiredCount], _other.data, coUint64(other.count) * sizeof(T));
-	_this.count = desiredCount;
+	coMemCopy(&a.data[a.capacity - desiredCount], other.data, coUint64(other.count) * sizeof(T));
+	a.count = desiredCount;
 }
 
 template <class T>

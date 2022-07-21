@@ -6,6 +6,8 @@
 #include "io/archive/coArchiveFormat.h"
 #include "io/archive/text/coTextArchiveReader.h"
 
+/*
+
 coTEST(coTextArchiveReader, Empty)
 {
 	coArchive archive;
@@ -65,3 +67,4 @@ coTEST(coTestArchiveReader, Identifier)
 	coEXPECT(reader.Read("{_A = true;}"));
 	coEXPECT(reader.Read("{_a_ = true;}"));
 }
+*/
