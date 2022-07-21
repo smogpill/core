@@ -50,7 +50,10 @@ void coArchive::WriteRoot(const void* object, const coType& type)
 		vtable[1] = coUint16(inlineDataSize);
 	}
 
-	// Inline data
+	// Update the root address
+	*((coUint32*)data.data) = data.count;
+
+	// Content of the object
 	{
 		const coUint16 inlineDataSize = reinterpret_cast<coUint16*>(&data.data[vtableIndex])[1];
 		const coUint32 inlineDataIdx = data.count;
