@@ -6,7 +6,7 @@
 
 class coStringOutputStream final : public coOutputStream
 {
-	coDECLARE_SUPER(coOutputStream);
+	coDECLARE_BASE(coOutputStream);
 public:
 	coStringOutputStream& operator<<(coChar);
 	coStringOutputStream& operator<<(coInt8);

@@ -7,7 +7,7 @@ class coTransform;
 
 class alignas(16) coMat4
 {
-	coDECLARE_REFLECTED_NO_VIRTUAL();
+	coDECLARE_CLASS_NO_POLYMORPHISM();
 public:
 	coFORCE_INLINE coMat4(coNullPtr) : c0(nullptr), c1(nullptr), c2(nullptr), c3(nullptr) {}
 	coFORCE_INLINE explicit coMat4(coFloat d = 1.0f)

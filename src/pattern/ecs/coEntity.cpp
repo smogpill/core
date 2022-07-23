@@ -6,7 +6,7 @@
 #include "../uuid/coUuid_f.h"
 #include "lang/result/coResult_f.h"
 #include <lang/reflect/coType.h>
-#include <lang/reflect/coTypeFactory.h>
+#include <lang/reflect/coTypeRegistry.h>
 #include <io/stream/coBinaryInputStream.h>
 #include <io/stream/coBinaryOutputStream.h>
 #include <container/array/coFixedArray_f.h>
@@ -65,7 +65,7 @@ void coEntity::Read(coBinaryInputStream& stream)
 	{
 		coUint32 nameHash;
 		stream >> nameHash;
-		const coType* type = coTypeFactory::instance->Get(nameHash);
+		const coType* type = coTypeRegistry::instance->Get(nameHash);
 		coASSERT(type);
 		coComponent* comp = static_cast<coComponent*>(type->createFunc());
 		stream >> *comp;

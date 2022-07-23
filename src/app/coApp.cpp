@@ -4,8 +4,6 @@
 #include "app/coApp.h"
 #include "debug/log/coDefaultLogHandler.h"
 #include "lang/result/coResult_f.h"
-#include "lang/reflect/coTypeFactory.h"
-#include "lang/reflect/coTypeRegistry.h"
 #include "render/manager/coRenderManager.h"
 #include "io/dir/coDirectory_f.h"
 

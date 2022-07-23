@@ -6,7 +6,7 @@
 
 class alignas(16) coSymMat3
 {
-	coDECLARE_REFLECTED_NO_VIRTUAL();
+	coDECLARE_CLASS_NO_POLYMORPHISM();
 public:
 	coFORCE_INLINE coSymMat3(coNullPtr) {}
 	coFORCE_INLINE coSymMat3(coFloat d = 1.0f)

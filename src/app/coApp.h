@@ -10,7 +10,7 @@ class coRenderManager;
 
 class coApp : public coObject
 {
-	coDECLARE_SUPER(coObject);
+	coDECLARE_BASE(coObject);
 public:
 	virtual ~coApp();
 

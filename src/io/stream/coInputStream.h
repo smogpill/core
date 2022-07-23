@@ -6,7 +6,7 @@
 
 class coInputStream : public coStream
 {
-	coDECLARE_SUPER(coStream);
+	coDECLARE_BASE(coStream);
 public:
 	coInputStream(const coArray<coByte>& buffer);
 	void Read(coByte& value);

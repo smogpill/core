@@ -8,13 +8,7 @@
 
 coDEFINE_SINGLETON(coTypeRegistry);
 
-coTypeRegistry::~coTypeRegistry()
-{
-	for (auto e : types)
-		delete e;
-}
-
-coResult coTypeRegistry::Give(coType& _type)
+coResult coTypeRegistry::Add(coType& _type)
 {
 	for (coType* e : types)
 	{
@@ -25,7 +19,7 @@ coResult coTypeRegistry::Give(coType& _type)
 	return true;
 }
 
-coType* coTypeRegistry::Get(coUint32 _hash)
+coType* coTypeRegistry::Get(coUint32 _hash) const
 {
 	coTODO("Optimize by using a hash map");
 	for (coType* e : types)

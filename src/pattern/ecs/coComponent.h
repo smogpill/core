@@ -7,13 +7,13 @@ class coBinaryOutputStream;
 class coBinaryInputStream;
 class coEntity;
 
-#define coDECLARE_COMPONENT(_Class_, _Super_) \
-	coDECLARE_SUPER(_Super_); \
-	coDECLARE_REFLECTED_VIRTUAL()
+#define coDECLARE_COMPONENT(_Class_, _Base_) \
+	coDECLARE_BASE(_Base_); \
+	coDECLARE_CLASS()
 
 class coComponent
 {
-	coDECLARE_REFLECTED_VIRTUAL();
+	coDECLARE_CLASS();
 public:
 	coComponent();
 

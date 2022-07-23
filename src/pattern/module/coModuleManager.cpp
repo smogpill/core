@@ -5,7 +5,6 @@
 #include "pattern/module/coModule.h"
 #include "pattern/module/coCoreModule.h"
 #include "container/array/coDynamicArray_f.h"
-#include <lang/reflect/coTypeFactory.h>
 #include "lang/result/coResult_f.h"
 
 coDEFINE_SINGLETON(coModuleManager);
@@ -28,9 +27,6 @@ void coModuleManager::Give(coModule& module)
 
 coResult coModuleManager::Init()
 {
-	for (coModule* module : modules)
-		coTRY(module->InitTypes(), nullptr);
-
 	for (coModule* module : modules)
 		coTRY(module->Init(), nullptr);
 	return true;

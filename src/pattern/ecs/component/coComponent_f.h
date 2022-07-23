@@ -5,7 +5,7 @@
 #include <lang/reflect/coTypeDecl_f.h>
 
 #define coDEFINE_COMPONENT(_Class_) \
-	coDEFINE_TYPE(_Class_)
+	coDEFINE_CLASS(_Class_)
 
 template <class T>
 T* coComponent::GetComponent() const

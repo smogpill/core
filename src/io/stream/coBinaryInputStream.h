@@ -5,7 +5,7 @@
 
 class coBinaryInputStream final : public coInputStream
 {
-	coDECLARE_SUPER(coInputStream);
+	coDECLARE_BASE(coInputStream);
 public:
 	coBinaryInputStream(const coArray<coByte>& buffer);
 };

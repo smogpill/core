@@ -6,7 +6,7 @@
 #include "lang/result/coResult_f.h"
 #include "lang/reflect/coTypeDecl_f.h"
 
-coDEFINE_TYPE(coComponent)
+coDEFINE_CLASS(coComponent)
 {
 	return true;
 }

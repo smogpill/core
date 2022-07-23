@@ -6,7 +6,7 @@
 
 class coAabb
 {
-	coDECLARE_REFLECTED_NO_VIRTUAL();
+	coDECLARE_CLASS_NO_POLYMORPHISM();
 public:
 	coAabb() : coAabb(empty) {}
 	coAabb(coNullPtr) : min(nullptr), max(nullptr) {}

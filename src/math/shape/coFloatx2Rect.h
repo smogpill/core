@@ -6,7 +6,7 @@
 
 class coFloatx2Rect
 {
-	coDECLARE_REFLECTED_NO_VIRTUAL();
+	coDECLARE_CLASS_NO_POLYMORPHISM();
 public:
 	coFloatx2Rect() : pos(0.0f), size(0.0f) {}
 	coFloatx2Rect(const coFloatx2& _pos, const coFloatx2& _size) : pos(_pos), size(_size) {}

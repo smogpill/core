@@ -12,6 +12,8 @@ class coType;
 #define coDEFINE_ATTRIBUTE(_attr_, ...)
 #endif*/
 
+using Base = void;
+
 #ifdef coCLANG_COMPILER
 #	define _coPUSH_DISABLE_OVERRIDE_WARNING() _Pragma("clang diagnostic push") \
 	_Pragma("clang diagnostic ignored \"-Winconsistent-missing-override\"")
@@ -26,28 +28,24 @@ class coType;
 	using Super = _Base_; \
 	using Base = _Base_
 
-#define coDECLARE_SUPER(_Super_) coDECLARE_BASE(_Super_)
-
-#define _coDECLARE_GET_STATIC_TYPE() static const coType* GetStaticType()
-
-#define _coDECLARE_REFLECTED_SHARED() \
+#define _coDECLARE_CLASS_SHARED() \
 	coDEFINE_ATTRIBUTE(Reflected); \
 	public: \
-		_coDECLARE_GET_STATIC_TYPE(); \
+		static coType* GetStaticType(); \
 	private:
 
-#define coDECLARE_REFLECTED_NO_VIRTUAL() \
+#define coDECLARE_CLASS_NO_POLYMORPHISM() \
 	private: \
-		_coDECLARE_REFLECTED_SHARED(); \
+		_coDECLARE_CLASS_SHARED(); \
 	public: \
-		const coType* GetType() const { return GetStaticType(); } \
+		coType* GetType() const { return GetStaticType(); } \
 	private:
 
-#define coDECLARE_REFLECTED_VIRTUAL() \
+#define coDECLARE_CLASS() \
 	private: \
-	_coDECLARE_REFLECTED_SHARED(); \
+	_coDECLARE_CLASS_SHARED(); \
 	public: \
 		_coPUSH_DISABLE_OVERRIDE_WARNING() \
-		virtual const coType* GetType() const { return GetStaticType(); } \
+		virtual coType* GetType() const { return GetStaticType(); } \
 		_coPOP_DISABLE_OVERRIDE_WARNING() \
 	private:

@@ -7,7 +7,7 @@
 
 class coVec3 : public coFloatx3
 {
-	coDECLARE_REFLECTED_NO_VIRTUAL();
+	coDECLARE_CLASS_NO_POLYMORPHISM();
 public:
 	coFORCE_INLINE coVec3() { coBitCast<__m128>(*this) = _mm_setzero_ps(); }
 	coFORCE_INLINE coVec3(coFloatx3 _xyz) : coFloatx3(_xyz) {}

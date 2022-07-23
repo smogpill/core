@@ -14,20 +14,20 @@
 
 class ArchiveTestA
 {
-	coDECLARE_REFLECTED_VIRTUAL();
+	coDECLARE_CLASS();
 public:
 	coUint32 u = 7;
 	coFloat f = 8.0f;
 };
 
-coDEFINE_TYPE(ArchiveTestA)
+coDEFINE_CLASS(ArchiveTestA)
 {
 	{
 		coField* field = new coField();
 		field->name = "u";
 		field->nameHash = coHash32(field->name);
 		field->symbolFlags = 0;
-		field->type = coGetType<decltype(ArchiveTestA::u)>();
+		field->type = coTypeHelper<decltype(ArchiveTestA::u)>::GetStaticType();
 		field->offset8 = static_cast<decltype(field->offset8)>(coGetFieldOffset<ArchiveTestA>(&ArchiveTestA::u));
 		field->serializeID = 0;
 		type->Give(*field);

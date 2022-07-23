@@ -12,26 +12,8 @@ class coTypeRegistry
 {
 	coDECLARE_SINGLETON(coTypeRegistry);
 public:
-	~coTypeRegistry();
-	coResult Give(coType& _type);
-	coType* Get(coUint32 _hash);
-
-// 	template <class T>
-// 	coType* GetOrCreate()
-// 	{
-// 		coType* type = Get<T>();
-// 		if (!type)
-// 		{
-// 			type = T::CreateType();
-// 			if (type)
-// 			{
-// 				coCHECK(Add(*type), nullptr);
-// 			}
-// 			return type;
-// 		}
-// 		return nullptr;
-// 	}
-
+	coResult Add(coType& _type);
+	coType* Get(coUint32 _hash) const;
 private:
 	coDynamicArray<coType*> types;
 };

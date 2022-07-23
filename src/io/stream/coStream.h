@@ -8,7 +8,7 @@ class coStreamBuffer;
 
 class coStream : public coObject
 {
-	coDECLARE_SUPER(coObject);
+	coDECLARE_BASE(coObject);
 public:
 	const coResult& GetResult() const { return result; }
 

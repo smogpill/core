@@ -7,7 +7,7 @@
 
 class coThread : public coObject
 {
-	coDECLARE_SUPER(coObject);
+	coDECLARE_BASE(coObject);
 public:
 	coThread();
 	virtual ~coThread();

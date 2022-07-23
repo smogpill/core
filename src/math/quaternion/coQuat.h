@@ -7,7 +7,7 @@
 
 class coQuat : public coFloatx4
 {
-	coDECLARE_REFLECTED_NO_VIRTUAL();
+	coDECLARE_CLASS_NO_POLYMORPHISM();
 public:
 	coFORCE_INLINE coQuat() : coFloatx4(0.0f, 0.0f, 0.0f, 1.0f) {}
 	coFORCE_INLINE coQuat(const coFloatx4& _xyzw) : coFloatx4(_xyzw) {}
