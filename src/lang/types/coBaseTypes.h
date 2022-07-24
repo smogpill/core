@@ -22,7 +22,7 @@ using coFloat64 = double;
 using coNullPtr = std::nullptr_t;
 
 // Aliases
-using coByte = unsigned char;
+using coByte = unsigned char; // TODO: std::byte
 using coChar = char;
 using coUchar = unsigned char;
 using coWideChar = wchar_t;

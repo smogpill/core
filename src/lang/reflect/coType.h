@@ -5,7 +5,6 @@
 #include "container/array/coDynamicArray.h"
 class coField;
 class coFunction;
-class coTypeBuilder;
 typedef void* (*coCreateFunc)();
 
 class coType : public coSymbol
@@ -20,8 +19,8 @@ public:
 	coUint32 size8 = 0;
 	coUint32 alignment8 = 0;
 	const coType* super = nullptr;
+	const coType* subType = nullptr;
 	coCreateFunc createFunc = nullptr;
 	coDynamicArray<coField*> fields;
 	coDynamicArray<coFunction*> functions;
-	coTypeBuilder* builder = nullptr;
 };

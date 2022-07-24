@@ -44,25 +44,46 @@ coType* coGetType()
 	type->Give(*field);
 
 #define coDEFINE_CLASS(_Class_) \
-coClassTypeAutoRegistrator<_Class_> co_##_Class_##_typeAutoRegistrator;\
-coType* _Class_::GetStaticType()\
-{\
-	static coType* type = nullptr; \
-	if (!type) \
-	{ \
-		type = new coType(); \
-		type->name = #_Class_; \
-		type->nameHash = coHash32(type->name); \
-		type->uid = type->nameHash; \
-		type->size8 = sizeof(_Class_); \
-		type->alignment8 = alignof(_Class_); \
-		type->createFunc = []() -> void* { return new _Class_(); };	\
-		type->super = coTypeHelper<Base>::GetStaticType(); \
-		OnInitType<_Class_>(type, nullptr); \
-	} \
-	return type; \
-}\
-template <class Class> void _Class_::OnInitType(coType* type, coField* field)
+	coType* _Class_::GetStaticType()\
+	{\
+		static coType* type = nullptr; \
+		if (!type) \
+		{ \
+			type = new coType(); \
+			type->name = #_Class_; \
+			type->nameHash = coHash32(type->name); \
+			type->uid = type->nameHash; \
+			type->size8 = sizeof(_Class_); \
+			type->alignment8 = alignof(_Class_); \
+			type->createFunc = []() -> void* { return new _Class_(); };	\
+			type->super = coTypeHelper<Base>::GetStaticType(); \
+			OnInitType<_Class_>(type, nullptr); \
+		} \
+		return type; \
+	}\
+	coClassTypeAutoRegistrator<_Class_> co_typeAutoRegistrator_##_Class_; \
+	template <class Class> void _Class_::OnInitType(coType* type, coField* field)
+
+#define coDEFINE_TEMPLATE_CLASS(_Class_) \
+	coType* _Class_::GetStaticType()\
+	{\
+		static coType* type = nullptr; \
+		if (!type) \
+		{ \
+			type = new coType(); \
+			type->name = #_Class_; \
+			type->nameHash = coHash32(type->name); \
+			type->uid = type->nameHash; \
+			type->size8 = sizeof(_Class_); \
+			type->alignment8 = alignof(_Class_); \
+			type->createFunc = []() -> void* { return new _Class_(); };	\
+			type->super = coTypeHelper<Base>::GetStaticType(); \
+			OnInitType<_Class_>(type, nullptr); \
+		} \
+		return type; \
+	}\
+	coClassTypeAutoRegistrator<_Class_> coCONCAT(co_typeAutoRegistrator, __COUNTER__); \
+	template <class Class> void _Class_::OnInitType(coType* type, coField* field)
 
 #define coDECLARE_FUNDAMENTAL_TYPE(_Type_) \
 	template <> \
@@ -83,7 +104,7 @@ template <class Class> void _Class_::OnInitType(coType* type, coField* field)
 			} \
 			return type; \
 		} \
-	}
+	}	
 
 coDECLARE_FUNDAMENTAL_TYPE(coBool);
 coDECLARE_FUNDAMENTAL_TYPE(coInt8);

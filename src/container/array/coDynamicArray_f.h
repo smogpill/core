@@ -143,7 +143,7 @@ coDynamicArray<T>::coDynamicArray(const coDynamicArray<T>& _this)
 
 template <class T>
 coDynamicArray<T>::coDynamicArray(coDynamicArray<T>&& _other)
-	: Super(_other)
+	: Base(_other)
 	, capacity(_other.capacity)
 {
 	_other.data = nullptr;

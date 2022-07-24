@@ -6,6 +6,7 @@
 #include <io/archive/coArchiveFormat.h>
 #include <math/hash/coHash_f.h>
 #include <container/string/coConstString.h>
+#include <container/array/coDynamicArray_f.h>
 #include <lang/reflect/coTypeDecl.h>
 #include <lang/reflect/coTypeDecl_f.h>
 #include "lang/reflect/coField.h"
@@ -23,18 +24,27 @@ public:
 	}
 	coUint32 u = 7;
 	coFloat f = 8.0f;
+	coDynamicArray<coFloat> a = coDynamicArray<coFloat>({ 2.0f, 3.0f, 4.0f });
 };
 
 coDEFINE_CLASS(ArchiveTestA)
 {
 	coDEFINE_FIELD(u)
 	{
-		field->serializeID = 0; 
+		field->SetSerializable(true);
 	}
+
 	coDEFINE_FIELD(f)
 	{
-		field->serializeID = 1;
+		field->SetSerializable(true);
 	}
+	
+	/*
+	coDEFINE_FIELD(a)
+	{
+		field->SetSerializable(true);
+	}
+	*/
 }
 
 coTEST(coArchive, Simple)

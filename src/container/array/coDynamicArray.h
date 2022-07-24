@@ -3,12 +3,16 @@
 #pragma once
 #include "container/array/coArray.h"
 #include "memory/allocator/coAllocator.h"
+//#include <lang/reflect/coTypeDecl.h>
+//#include <lang/reflect/coTypeDecl_f.h>
 class coBinaryInputStream;
 
 template <class T>
 class coDynamicArray : public coArray<T>
 {
-	typedef coArray<T> Super;
+	using Base = coArray<T>;
+	//coDECLARE_BASE(coArray<T>);
+	//coDECLARE_CLASS_NO_POLYMORPHISM();
 public:
 	coDynamicArray() = default;
 	template <coUint N>
@@ -30,3 +34,11 @@ public:
 	coDynamicArray<T>& operator=(const coDynamicArray<T>&); // Weird that we need this, the compiler does not like the coArray<> version.
 	void Read(coBinaryInputStream& stream);
 };
+
+/*
+template <class T>
+coDEFINE_TEMPLATE_CLASS(coDynamicArray<T>)
+{
+
+}
+*/

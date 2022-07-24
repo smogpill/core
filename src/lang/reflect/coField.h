@@ -7,10 +7,7 @@ class coType;
 class coField : public coSymbol
 {
 public:
-	coBool IsSerializable() const { return serializeID != coUint8(-1); }
-
 	const coType* type = nullptr;
 	const coType* subType = nullptr;
 	coUint16 offset8 = 0u;
-	coUint8 serializeID = coUint8(-1);
 };
