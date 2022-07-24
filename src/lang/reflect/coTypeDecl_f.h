@@ -34,8 +34,16 @@ coType* coGetType()
 	return coTypeHelper<std::conditional<_coReflectCheck<T>::value, T, _coNoReflectType>::type>::GetStaticType();
 }
 
+#define coDEFINE_FIELD(_name_) \
+	field = new coField(); \
+	field->name = #_name_; \
+	field->nameHash = coHash32(field->name); \
+	field->uid = field->nameHash; \
+	field->type = coTypeHelper<decltype(Class::_name_)>::GetStaticType(); \
+	field->offset8 = static_cast<decltype(field->offset8)>(coGetFieldOffset<Class>(&Class::_name_)); \
+	type->Give(*field);
+
 #define coDEFINE_CLASS(_Class_) \
-coResult _##_Class_##InitMembers(coType* type); \
 coClassTypeAutoRegistrator<_Class_> co_##_Class_##_typeAutoRegistrator;\
 coType* _Class_::GetStaticType()\
 {\
@@ -50,11 +58,11 @@ coType* _Class_::GetStaticType()\
 		type->alignment8 = alignof(_Class_); \
 		type->createFunc = []() -> void* { return new _Class_(); };	\
 		type->super = coTypeHelper<Base>::GetStaticType(); \
-		coCHECK(_##_Class_##InitMembers(type), "Failed to init class "## #_Class_); \
+		OnInitType<_Class_>(type, nullptr); \
 	} \
 	return type; \
 }\
-coResult _##_Class_##InitMembers(coType* type)
+template <class Class> void _Class_::OnInitType(coType* type, coField* field)
 
 #define coDECLARE_FUNDAMENTAL_TYPE(_Type_) \
 	template <> \

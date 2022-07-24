@@ -5,6 +5,7 @@
 #include "lang/coCppExtensions.h"
 
 class coType;
+class coField;
 
 //#ifdef coREFLECTION_PARSING
 #define coDEFINE_ATTRIBUTE(_attr_, ...) struct coMETA(__VA_ARGS__) _attribute_##_attr_ {}
@@ -30,7 +31,10 @@ using Base = void;
 
 #define _coDECLARE_CLASS_SHARED() \
 	coDEFINE_ATTRIBUTE(Reflected); \
+	private: \
+		auto GetThis() { return this; } \
 	public: \
+		template <class T> static void OnInitType(coType*, coField*); \
 		static coType* GetStaticType(); \
 	private:
 

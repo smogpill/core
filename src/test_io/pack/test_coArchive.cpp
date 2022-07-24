@@ -27,28 +27,14 @@ public:
 
 coDEFINE_CLASS(ArchiveTestA)
 {
+	coDEFINE_FIELD(u)
 	{
-		coField* field = new coField();
-		field->name = "u";
-		field->nameHash = coHash32(field->name);
-		field->symbolFlags = 0;
-		field->type = coTypeHelper<decltype(ArchiveTestA::u)>::GetStaticType();
-		field->offset8 = static_cast<decltype(field->offset8)>(coGetFieldOffset<ArchiveTestA>(&ArchiveTestA::u));
-		field->serializeID = 0;
-		type->Give(*field);
+		field->serializeID = 0; 
 	}
-
+	coDEFINE_FIELD(f)
 	{
-		coField* field = new coField();
-		field->name = "f";
-		field->nameHash = coHash32(field->name);
-		field->symbolFlags = 0;
-		field->type = coTypeHelper<decltype(ArchiveTestA::f)>::GetStaticType();
-		field->offset8 = static_cast<decltype(field->offset8)>(coGetFieldOffset<ArchiveTestA>(&ArchiveTestA::f));
 		field->serializeID = 1;
-		type->Give(*field);
 	}
-	return true;
 }
 
 coTEST(coArchive, Simple)

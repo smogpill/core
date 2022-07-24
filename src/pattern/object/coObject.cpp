@@ -8,7 +8,6 @@
 
 coDEFINE_CLASS(coObject)
 {
-	return true;
 }
 
 coObject::coObject()

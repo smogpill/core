@@ -22,12 +22,10 @@ public:
 
 coDEFINE_COMPONENT(TestAComp)
 {
-	return true;
 }
 
 coDEFINE_COMPONENT(TestBComp)
 {
-	return true;
 }
 
 coTEST(ecs, SimpleEntity)

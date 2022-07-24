@@ -8,7 +8,6 @@
 
 coDEFINE_CLASS(coComponent)
 {
-	return true;
 }
 
 coComponent::coComponent()
