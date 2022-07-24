@@ -16,16 +16,3 @@ void coTypeAutoRegistrator::AddRegistrator(coTypeAutoRegistrator& registrator)
 {
 	coPushBack(GetRegistrators(), &registrator);
 }
-
-coResult coTypeAutoRegistrator::RegisterAll()
-{
-	coTypeRegistry* typeRegistry = new coTypeRegistry();
-	coTypeRegistry::instance = typeRegistry;
-	for (coTypeAutoRegistrator* registrator : GetRegistrators())
-	{
-		coType* type = registrator->GetOrCreateType();
-		coASSERT(type);
-		coTRY(typeRegistry->Add(*type), nullptr);
-	}
-	return true;
-}

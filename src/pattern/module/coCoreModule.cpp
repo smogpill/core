@@ -23,6 +23,6 @@ coCoreModule::~coCoreModule()
 coResult coCoreModule::Init()
 {
 	coTRY(Super::Init(), nullptr);
-	coTRY(coTypeAutoRegistrator::RegisterAll(), nullptr);
+	coTypeRegistry::CreateInstanceIfMissing();
 	return true;
 }

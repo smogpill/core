@@ -12,7 +12,6 @@ class coFORCE_SYMBOL_INCLUSION_ATTRIBUTE coTypeAutoRegistrator
 public:
 	virtual coType* GetOrCreateType() = 0;
 
-	static coResult RegisterAll();
 	static coDynamicArray<coTypeAutoRegistrator*>& GetRegistrators();
 	static void AddRegistrator(coTypeAutoRegistrator&);
 };

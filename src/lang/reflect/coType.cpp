@@ -26,3 +26,16 @@ coUint coType::GetNbSerializableFields() const
 		nb += f->IsSerializable();
 	return nb;
 }
+
+coBool coType::IsCompatibleWith(const coType& type) const
+{
+	const coUint32 expectedUid = type.uid;
+	const coType* it = this;
+	do
+	{
+		if (it->uid == expectedUid)
+			return true;
+		it = it->super;
+	} while (it);
+	return false;
+}

@@ -12,11 +12,26 @@ public:
 	void WriteRoot(const void* object, const coType& type);
 	template <class T>
 	void WriteRoot(const T& object);
+	void* CreateObjects(const coType& expectedRootBaseType) const;
+	template <class T>
+	T* CreateObjects() const { return static_cast<T*>(CreateObjects(*T::GetStaticType())); }
+	void* CreateObjects(coUint32 idx, const coType& expectedBaseType) const;
+	coUint32 GetRoot() const;
+	void ReadObject(coUint32 idx, void* object, const coType& type) const;
+	template <class T>
+	void ReadObject(coUint32 idx, T& object) { ReadObject(idx, &object, *T::GetStaticType()); }
 
 private:
+	coUint32 WriteObject(const void* object, const coType& type);
 	void Write(const void* buffer, coUint32 size);
 	template <class T>
-	void Write(const T& buffer) { WriteBuffer(&buffer, sizeof(buffer)); }
+	void Write(const T& buffer) { Write(&buffer, sizeof(buffer)); }
+	
+	void Read(void* buffer, coUint32 size) const;
+	template <class T>
+	void Read(T& buffer) const { Read(&buffer, sizeof(buffer)); }
+	template <class T>
+	const T& Get(coUint32 idx) const;
 	void PushBytes(coUint size);
 
 	coDynamicArray<coByte> data;

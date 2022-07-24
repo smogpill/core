@@ -15,6 +15,7 @@ public:
 
 	void Give(coField& field);
 	coUint GetNbSerializableFields() const;
+	coBool IsCompatibleWith(const coType& type) const;
 
 	coUint32 size8 = 0;
 	coUint32 alignment8 = 0;

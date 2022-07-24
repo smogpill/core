@@ -11,11 +11,16 @@
 #include "lang/reflect/coField.h"
 #include "lang/reflect/coField_f.h"
 #include "lang/reflect/coType_f.h"
+#include "lang/reflect/coTypeRegistry.h"
 
 class ArchiveTestA
 {
 	coDECLARE_CLASS();
 public:
+	coBool operator==(const ArchiveTestA& o) const
+	{
+		return u == o.u && f == o.f;
+	}
 	coUint32 u = 7;
 	coFloat f = 8.0f;
 };
@@ -38,7 +43,7 @@ coDEFINE_CLASS(ArchiveTestA)
 		field->name = "f";
 		field->nameHash = coHash32(field->name);
 		field->symbolFlags = 0;
-		field->type = coGetType<decltype(ArchiveTestA::f)>();
+		field->type = coTypeHelper<decltype(ArchiveTestA::f)>::GetStaticType();
 		field->offset8 = static_cast<decltype(field->offset8)>(coGetFieldOffset<ArchiveTestA>(&ArchiveTestA::f));
 		field->serializeID = 1;
 		type->Give(*field);
@@ -48,9 +53,14 @@ coDEFINE_CLASS(ArchiveTestA)
 
 coTEST(coArchive, Simple)
 {
-	ArchiveTestA a;
+	coTypeRegistry::CreateInstanceIfMissing();
 
 	coArchive archive;
-	archive.WriteRoot(a);
-	//archive.SetObject(a);
+
+	ArchiveTestA in;
+	archive.WriteRoot(in);
+
+	ArchiveTestA* out = archive.CreateObjects<ArchiveTestA>();
+	coEXPECT(out);
+	coEXPECT(*out == in);
 }

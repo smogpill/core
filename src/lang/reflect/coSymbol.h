@@ -14,6 +14,7 @@ public:
 		deprecated = 1<<3,
 		static_ = 1<<4
 	};
+	coUint32 uid = 0;
 	coUint32 nameHash = 0;
 	coUint8 symbolFlags = 0u;
 	coDynamicString name;

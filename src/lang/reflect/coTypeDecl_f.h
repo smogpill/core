@@ -45,6 +45,7 @@ coType* _Class_::GetStaticType()\
 		type = new coType(); \
 		type->name = #_Class_; \
 		type->nameHash = coHash32(type->name); \
+		type->uid = type->nameHash; \
 		type->size8 = sizeof(_Class_); \
 		type->alignment8 = alignof(_Class_); \
 		type->createFunc = []() -> void* { return new _Class_(); };	\
@@ -67,6 +68,7 @@ coResult _##_Class_##InitMembers(coType* type)
 				type = new coType(); \
 				type->name = #_Type_; \
 				type->nameHash = coHash32(type->name); \
+				type->uid = type->nameHash; \
 				type->size8 = sizeof(_Type_); \
 				type->alignment8 = alignof(_Type_); \
 				type->createFunc = []() -> void* { return new _Type_(); }; \
