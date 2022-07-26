@@ -39,7 +39,8 @@ coType* coGetType()
 	field->name = #_name_; \
 	field->nameHash = coHash32(field->name); \
 	field->uid = field->nameHash; \
-	field->type = coTypeHelper<decltype(Class::_name_)>::GetStaticType(); \
+	field->pointer = std::is_pointer<decltype(Class::_name_)>::value; \
+	field->type = coTypeHelper<std::remove_pointer<decltype(Class::_name_)>::type>::GetStaticType(); \
 	field->offset8 = static_cast<decltype(field->offset8)>(coGetFieldOffset<Class>(&Class::_name_)); \
 	type->Give(*field);
 

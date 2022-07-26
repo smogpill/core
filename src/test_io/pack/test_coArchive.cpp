@@ -22,9 +22,77 @@ public:
 	{
 		return u == o.u && f == o.f;
 	}
-	coUint32 u = 7;
-	coFloat f = 8.0f;
-	coDynamicArray<coFloat> a = coDynamicArray<coFloat>({ 2.0f, 3.0f, 4.0f });
+	coBool operator!=(const ArchiveTestA& o) const { return !(*this == o); }
+	void FillWithArbitraryValues()
+	{
+		u = 3;
+		f = 7.0f;
+	}
+	coUint32 u = 0;
+	coFloat f = 0.0f;
+};
+
+class ArchiveTestB
+{
+	coDECLARE_CLASS();
+public:
+	~ArchiveTestB()
+	{
+		delete a;
+	}
+	void FillWithArbitraryValues()
+	{
+		f1 = 5.0f;
+		delete a;
+		a = new ArchiveTestA();
+		a->FillWithArbitraryValues();
+		f2 = 9.0f;
+	}
+	coBool operator==(const ArchiveTestB& o) const
+	{
+		if (f1 != o.f1 || f2 != o.f2)
+			return false;
+
+		if (a != nullptr)
+		{
+			if (o.a == nullptr)
+				return false;
+			if (*a != *o.a)
+				return false;
+		}
+		else
+		{
+			if (o.a != nullptr)
+				return false;
+		}
+		return true;
+	}
+	coFloat f1 = 0.0f;
+	ArchiveTestA* a = nullptr;
+	coFloat f2 = 0.0f;
+};
+
+class ArchiveTestC
+{
+	coDECLARE_CLASS();
+public:
+	coBool operator==(const ArchiveTestC& o) const
+	{
+		return u == o.u && f == o.f && fs == o.fs;
+	}
+	coBool operator!=(const ArchiveTestC& o) const { return !(*this == o); }
+	void FillWithArbitraryValues()
+	{
+		u = 3;
+		f = 7.0f;
+		coClear(fs);
+		coPushBack(fs, 10.0f);
+		coPushBack(fs, 11.0f);
+		coPushBack(fs, 12.0f);
+	}
+	coUint32 u = 0;
+	coFloat f = 0.0f;
+	coDynamicArray<coFloat> fs;
 };
 
 coDEFINE_CLASS(ArchiveTestA)
@@ -38,14 +106,46 @@ coDEFINE_CLASS(ArchiveTestA)
 	{
 		field->SetSerializable(true);
 	}
-	
-	/*
+}
+
+coDEFINE_CLASS(ArchiveTestB)
+{
+	coDEFINE_FIELD(f1)
+	{
+		field->SetSerializable(true);
+	}
+
 	coDEFINE_FIELD(a)
+	{
+		field->SetSerializable(true);
+	}
+
+	coDEFINE_FIELD(f2)
+	{
+		field->SetSerializable(true);
+	}
+}
+
+coDEFINE_CLASS(ArchiveTestC)
+{
+	coDEFINE_FIELD(u)
+	{
+		field->SetSerializable(true);
+	}
+
+	coDEFINE_FIELD(f)
+	{
+		field->SetSerializable(true);
+	}
+
+	/*
+	coDEFINE_FIELD(fs)
 	{
 		field->SetSerializable(true);
 	}
 	*/
 }
+
 
 coTEST(coArchive, Simple)
 {
@@ -54,9 +154,25 @@ coTEST(coArchive, Simple)
 	coArchive archive;
 
 	ArchiveTestA in;
+	in.FillWithArbitraryValues();
 	archive.WriteRoot(in);
 
 	ArchiveTestA* out = archive.CreateObjects<ArchiveTestA>();
+	coEXPECT(out);
+	coEXPECT(*out == in);
+}
+
+coTEST(coArchive, Objects)
+{
+	coTypeRegistry::CreateInstanceIfMissing();
+
+	coArchive archive;
+
+	ArchiveTestB in;
+	in.FillWithArbitraryValues();
+	archive.WriteRoot(in);
+
+	ArchiveTestB* out = archive.CreateObjects<ArchiveTestB>();
 	coEXPECT(out);
 	coEXPECT(*out == in);
 }

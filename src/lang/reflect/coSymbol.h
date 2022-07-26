@@ -12,16 +12,17 @@ public:
 		readOnly = 1<<1,
 		debugOnly = 1<<2,
 		deprecated = 1<<3,
-		static_ = 1<<4,
-		CONTAINER = 1<<5,
-		SERIALIZABLE = 1<<6,
+		static_ = 1<<4
 	};
 
-	void SetSerializable(coBool b) { if (b) symbolFlags |= SymbolFlag::SERIALIZABLE; else symbolFlags &= ~SymbolFlag::SERIALIZABLE; }
-	coBool IsSerializable() const { return (symbolFlags & SymbolFlag::SERIALIZABLE) != 0; }
+	coSymbol();
+
+	void SetSerializable(coBool b) { serializable = b; }
+	coBool IsSerializable() const { return serializable; }
 
 	coUint32 uid = 0;
 	coUint32 nameHash = 0;
+	coBool serializable : 1;
 	coUint8 symbolFlags = 0u;
 	coDynamicString name;
 };

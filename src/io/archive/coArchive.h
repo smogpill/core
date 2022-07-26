@@ -4,6 +4,7 @@
 #include <container/array/coDynamicArray.h>
 
 class coType;
+class coField;
 
 class coArchive
 {
@@ -33,6 +34,7 @@ private:
 	template <class T>
 	const T& Get(coUint32 idx) const;
 	void PushBytes(coUint size);
+	static coBool IsFieldInlinable(const coField& field);
 
 	coDynamicArray<coByte> data;
 };
