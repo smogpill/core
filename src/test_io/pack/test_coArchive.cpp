@@ -14,6 +14,49 @@
 #include "lang/reflect/coType_f.h"
 #include "lang/reflect/coTypeRegistry.h"
 
+template <class T>
+coType* coDynamicArray<T>::GetStaticType()
+{
+	static coType* type = nullptr;
+	if (!type)
+	{
+		type = new coType();
+		type->name = "coDynamicArray<T>";
+		type->nameHash = coHash32(type->name);
+		type->uid = type->nameHash;
+		type->size8 = sizeof(coDynamicArray<T>);
+		type->alignment8 = alignof(coDynamicArray<T>);
+		type->createFunc = []() -> void* { return new coDynamicArray<T>(); };
+		type->super = coTypeHelper<Base>::GetStaticType();
+		type->subType = coTypeHelper<coDynamicArray<T>::ValueType>::GetStaticType();
+		OnInitType<coDynamicArray<T>>(type, nullptr);
+	}
+	return type;
+}
+
+template <class T>
+coClassTypeAutoRegistrator<coDynamicArray<T>> coCONCAT(co_typeAutoRegistrator, __COUNTER__);
+
+template <class T>
+template <class Class> void coDynamicArray<T>::OnInitType(coType* type, coField* field)
+{
+	type->writeArchiveFunc = [](coArchive& archive, const void* obj)
+	{
+		const coDynamicArray<T>& array = *static_cast<const coDynamicArray<T>*>(obj);
+		archive.WriteBuffer(&array.count, sizeof(array.count));
+		archive.WriteBuffer(array.data, array.count * sizeof(T));
+	};
+
+	type->readArchiveFunc = [](const coArchive& archive, coUint32 idx, void* obj)
+	{
+		coDynamicArray<T>& array = *static_cast<coDynamicArray<T>*>(obj);
+		coClear(array);
+		const coUint32 count = archive.Get<coUint32>();
+		coResize(array, count);
+		archive.ReadBuffer(idx + sizeof(coUint32), array.data, count * sizeof(T));
+	};
+}
+
 class ArchiveTestA
 {
 	coDECLARE_CLASS();

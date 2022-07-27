@@ -82,7 +82,7 @@ coType* coGetType()
 			OnInitType<_Class_>(type, nullptr); \
 		} \
 		return type; \
-	}\
+	} \
 	coClassTypeAutoRegistrator<_Class_> coCONCAT(co_typeAutoRegistrator, __COUNTER__); \
 	template <class Class> void _Class_::OnInitType(coType* type, coField* field)
 

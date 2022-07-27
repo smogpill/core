@@ -5,7 +5,10 @@
 #include "container/array/coDynamicArray.h"
 class coField;
 class coFunction;
+class coArchive;
 typedef void* (*coCreateFunc)();
+typedef void (*coWriteArchiveFunc)(coArchive&, const void*);
+typedef void (*coReadArchiveFunc)(const coArchive&, coUint32, void*);
 
 class coType : public coSymbol
 {
@@ -21,6 +24,8 @@ public:
 	const coType* super = nullptr;
 	const coType* subType = nullptr;
 	coCreateFunc createFunc = nullptr;
+	coWriteArchiveFunc writeArchiveFunc = nullptr;
+	coReadArchiveFunc readArchiveFunc = nullptr;
 	coDynamicArray<coField*> fields;
 	coDynamicArray<coFunction*> functions;
 };

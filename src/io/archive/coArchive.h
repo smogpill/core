@@ -21,6 +21,12 @@ public:
 	void ReadObject(coUint32 idx, void* object, const coType& type) const;
 	template <class T>
 	void ReadObject(coUint32 idx, T& object) { ReadObject(idx, &object, *T::GetStaticType()); }
+	coDynamicArray<coByte>& GetData() { return data; }
+
+	void WriteBuffer(const void*, coUint32 size);
+	void ReadBuffer(coUint32 idx, void*, coUint32 size) const;
+	template <class T>
+	const T& Get(coUint32 idx) const;
 
 private:
 	coUint32 WriteObject(const void* object, const coType& type);
@@ -31,8 +37,6 @@ private:
 	void Read(void* buffer, coUint32 size) const;
 	template <class T>
 	void Read(T& buffer) const { Read(&buffer, sizeof(buffer)); }
-	template <class T>
-	const T& Get(coUint32 idx) const;
 	void PushBytes(coUint size);
 	static coBool IsFieldInlinable(const coField& field);
 
