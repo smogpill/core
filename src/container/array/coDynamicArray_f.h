@@ -1,12 +1,12 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
-
 #include "container/array/coDynamicArray.h"
 #include "container/array/coArray_f.h"
 #include "container/array/coConstArray_f.h"
 #include "memory/allocator/coAllocator.h"
 #include "lang/coCppExtensions.h"
+#include <lang/reflect/coTypeDecl_f.h>
 
 template <class T>
 template <coUint N>

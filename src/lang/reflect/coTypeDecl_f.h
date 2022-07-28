@@ -55,9 +55,10 @@ coType* coGetType()
 	coClassTypeAutoRegistrator<_Class_> co_typeAutoRegistrator_##_Class_; \
 	template <class Class> void _Class_::OnInitType(coType* type, coField* field)
 
-#define coDEFINE_TEMPLATE_CLASS(_Class_) \
-	coType* _Class_::GetStaticType()\
-	{\
+
+#define _coDEFINE_TEMPLATE_CLASS_1(_Class_) \
+	coType* _Class_::GetStaticType() \
+	{ \
 		static coType* type = nullptr; \
 		if (!type) \
 		{ \
@@ -67,14 +68,24 @@ coType* coGetType()
 			type->uid = type->nameHash; \
 			type->size8 = sizeof(_Class_); \
 			type->alignment8 = alignof(_Class_); \
-			type->createFunc = []() -> void* { return new _Class_(); };	\
+			type->createFunc = []() -> void* { return new _Class_(); }; \
 			type->super = coTypeHelper<Base>::GetStaticType(); \
 			OnInitType<_Class_>(type, nullptr); \
 		} \
 		return type; \
-	} \
-	coClassTypeAutoRegistrator<_Class_> coCONCAT(co_typeAutoRegistrator, __COUNTER__); \
-	template <class Class> void _Class_::OnInitType(coType* type, coField* field)
+	}
+
+#define _coDEFINE_TEMPLATE_CLASS_2(_Class_) coClassTypeAutoRegistrator<_Class_> coCONCAT(co_typeAutoRegistrator, __COUNTER__)
+
+#define _coDEFINE_TEMPLATE_CLASS_3(_Class_) template <class Class> void _Class_::OnInitType(coType* type, coField* field)
+
+#define coDEFINE_TEMPLATE_CLASS(_TemplateParams_, _Class_) \
+	template _TemplateParams_ \
+	_coDEFINE_TEMPLATE_CLASS_1(_Class_); \
+	template _TemplateParams_ \
+	_coDEFINE_TEMPLATE_CLASS_2(_Class_); \
+	template _TemplateParams_ \
+	_coDEFINE_TEMPLATE_CLASS_3(_Class_)
 
 #define coDECLARE_FUNDAMENTAL_TYPE(_Type_) \
 	template <> \
