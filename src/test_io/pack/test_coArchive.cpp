@@ -14,31 +14,35 @@
 #include "lang/reflect/coType_f.h"
 #include "lang/reflect/coTypeRegistry.h"
 
-template <class T>
-coType* coDynamicArray<T>::GetStaticType()
-{
-	static coType* type = nullptr;
-	if (!type)
-	{
-		type = new coType();
-		type->name = "coDynamicArray<T>";
-		type->nameHash = coHash32(type->name);
-		type->uid = type->nameHash;
-		type->size8 = sizeof(coDynamicArray<T>);
-		type->alignment8 = alignof(coDynamicArray<T>);
-		type->createFunc = []() -> void* { return new coDynamicArray<T>(); };
-		type->super = coTypeHelper<Base>::GetStaticType();
-		type->subType = coTypeHelper<coDynamicArray<T>::ValueType>::GetStaticType();
-		OnInitType<coDynamicArray<T>>(type, nullptr);
+#define coDEFINE_TEMPLATE_CLASS_1(_Class_) \
+	coType* _Class_::GetStaticType() \
+	{ \
+		static coType* type = nullptr; \
+		if (!type) \
+		{ \
+			type = new coType(); \
+			type->name = #_Class_; \
+			type->nameHash = coHash32(type->name); \
+			type->uid = type->nameHash; \
+			type->size8 = sizeof(_Class_); \
+			type->alignment8 = alignof(_Class_); \
+			type->createFunc = []() -> void* { return new _Class_(); }; \
+			type->super = coTypeHelper<Base>::GetStaticType(); \
+			OnInitType<_Class_>(type, nullptr); \
+		} \
+		return type; \
 	}
-	return type;
-}
+
+#define coDEFINE_TEMPLATE_CLASS_2(_Class_) coClassTypeAutoRegistrator<_Class_> coCONCAT(co_typeAutoRegistrator, __COUNTER__)
+
+#define coDEFINE_TEMPLATE_CLASS_3(_Class_) template <class Class> void _Class_::OnInitType(coType* type, coField* field)
 
 template <class T>
-coClassTypeAutoRegistrator<coDynamicArray<T>> coCONCAT(co_typeAutoRegistrator, __COUNTER__);
-
+coDEFINE_TEMPLATE_CLASS_1(coDynamicArray<T>);
 template <class T>
-template <class Class> void coDynamicArray<T>::OnInitType(coType* type, coField* field)
+coDEFINE_TEMPLATE_CLASS_2(coDynamicArray<T>);
+template <class T>
+coDEFINE_TEMPLATE_CLASS_3(coDynamicArray<T>)
 {
 	type->writeArchiveFunc = [](coArchive& archive, const void* obj)
 	{
