@@ -51,7 +51,7 @@ template <class Class> void coDynamicArray<T>::OnInitType(coType* type, coField*
 	{
 		coDynamicArray<T>& array = *static_cast<coDynamicArray<T>*>(obj);
 		coClear(array);
-		const coUint32 count = archive.Get<coUint32>();
+		const coUint32 count = archive.Get<coUint32>(idx);
 		coResize(array, count);
 		archive.ReadBuffer(idx + sizeof(coUint32), array.data, count * sizeof(T));
 	};
@@ -115,27 +115,23 @@ public:
 	coFloat f2 = 0.0f;
 };
 
-class ArchiveTestC
+class ArchiveTestDynamicArray
 {
 	coDECLARE_CLASS();
 public:
-	coBool operator==(const ArchiveTestC& o) const
+	coBool operator==(const ArchiveTestDynamicArray& o) const
 	{
-		return u == o.u && f == o.f && fs == o.fs;
+		return a == o.a;
 	}
-	coBool operator!=(const ArchiveTestC& o) const { return !(*this == o); }
+	coBool operator!=(const ArchiveTestDynamicArray& o) const { return !(*this == o); }
 	void FillWithArbitraryValues()
 	{
-		u = 3;
-		f = 7.0f;
-		coClear(fs);
-		coPushBack(fs, 10.0f);
-		coPushBack(fs, 11.0f);
-		coPushBack(fs, 12.0f);
+		coClear(a);
+		coPushBack(a, 10.0f);
+		coPushBack(a, 11.0f);
+		coPushBack(a, 12.0f);
 	}
-	coUint32 u = 0;
-	coFloat f = 0.0f;
-	coDynamicArray<coFloat> fs;
+	coDynamicArray<coFloat> a;
 };
 
 coDEFINE_CLASS(ArchiveTestA)
@@ -169,24 +165,12 @@ coDEFINE_CLASS(ArchiveTestB)
 	}
 }
 
-coDEFINE_CLASS(ArchiveTestC)
+coDEFINE_CLASS(ArchiveTestDynamicArray)
 {
-	coDEFINE_FIELD(u)
+	coDEFINE_FIELD(a)
 	{
 		field->SetSerializable(true);
 	}
-
-	coDEFINE_FIELD(f)
-	{
-		field->SetSerializable(true);
-	}
-
-	/*
-	coDEFINE_FIELD(fs)
-	{
-		field->SetSerializable(true);
-	}
-	*/
 }
 
 
@@ -216,6 +200,21 @@ coTEST(coArchive, Objects)
 	archive.WriteRoot(in);
 
 	ArchiveTestB* out = archive.CreateObjects<ArchiveTestB>();
+	coEXPECT(out);
+	coEXPECT(*out == in);
+}
+
+coTEST(coArchive, DynamicArray)
+{
+	coTypeRegistry::CreateInstanceIfMissing();
+
+	coArchive archive;
+
+	ArchiveTestDynamicArray in;
+	in.FillWithArbitraryValues();
+	archive.WriteRoot(in);
+
+	ArchiveTestDynamicArray* out = archive.CreateObjects<ArchiveTestDynamicArray>();
 	coEXPECT(out);
 	coEXPECT(*out == in);
 }

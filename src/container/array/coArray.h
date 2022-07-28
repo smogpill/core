@@ -2,12 +2,14 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include "debug/log/coAssert.h"
+#include <lang/reflect/coTypeDecl.h>
 class coBinaryOutputStream;
 
 template <class T>
 class coArray
 {
 	static_assert(std::is_trivially_copyable<T>::value, "Trivially copyable only");
+	//coDECLARE_CLASS_NO_POLYMORPHISM();
 public:
 	typedef T ValueType;
 	coArray() = default;

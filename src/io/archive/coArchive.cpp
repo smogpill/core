@@ -112,6 +112,10 @@ coUint32 coArchive::WriteObject(const void* object, const coType& type)
 						coMemCopy(&data.data[inlineItIdx], &offset, sizeof(coUint32));
 						inlineItIdx += sizeof(coUint32);
 					}
+					else if (fieldType->writeArchiveFunc)
+					{
+						fieldType->writeArchiveFunc(*this, static_cast<const coUint8*>(object) + field->offset8);
+					}
 					else
 					{
 						coASSERT(false);
@@ -174,6 +178,10 @@ void* coArchive::CreateObjects(coUint32 objectIdx, const coType& expectedBaseTyp
 					void* fieldObject = CreateObjects(fieldIdx, *fieldType);
 					coMemCopy(((coUint8*)object) + field->offset8, &fieldObject, sizeof(fieldObject));
 				}
+				else if (fieldType->readArchiveFunc)
+				{
+					fieldType->readArchiveFunc(*this, fieldIdx, ((coUint8*)object) + field->offset8);
+				}
 				else
 				{
 					coASSERT(false);
@@ -192,6 +200,7 @@ coUint32 coArchive::GetRoot() const
 
 void coArchive::ReadObject(coUint32 objectIdx, void* object, const coType& type) const
 {
+	coASSERT(false);
 	const coInt32 vtableOffset = -Get<coInt32>(objectIdx);
 	const coUint16* vtable = reinterpret_cast<const coUint16*>(&data.data[objectIdx + vtableOffset]);
 	const coUint16 vtableSize = vtable[0];
@@ -243,7 +252,7 @@ void coArchive::Read(void* buffer, coUint32 size) const
 
 void coArchive::WriteBuffer(const void* buffer, coUint32 size)
 {
-	coPushBackArray(data, coArray<coUint8>(buffer, size));
+	coPushBackArray(data, coArray<coUint8>((coUint8*)(buffer), size));
 }
 
 void coArchive::ReadBuffer(coUint32 idx, void* buffer, coUint32 size) const

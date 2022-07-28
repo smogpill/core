@@ -5,28 +5,18 @@
 #include "coTypeAutoRegistrator.h"
 #include "../result/coResult_f.h"
 
-template <class T>
+template <class T, class = void>
 struct coTypeHelper
+{
+	static coType* GetStaticType() { return nullptr; }
+};
+
+// See https://en.cppreference.com/w/cpp/types/void_t for more info on how that works
+template <class T>
+struct coTypeHelper<T, std::void_t<decltype(T::GetStaticType)>>
 {
 	static coType* GetStaticType() { return T::GetStaticType(); }
 };
-
-template <>
-struct coTypeHelper<void>
-{
-	static coType* GetStaticType() { return nullptr; }
-};
-
-struct _coNoReflectType
-{
-	static coType* GetStaticType() { return nullptr; }
-};
-
-template <class T, class = std::void_t<>>
-struct _coReflectCheck : std::false_type {};
-
-template <typename T>
-struct _coReflectCheck<T, std::void_t<typename T::_attribute_Reflected>> : std::true_type {};
 
 template <class T>
 coType* coGetType()
