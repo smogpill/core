@@ -7,6 +7,7 @@
 #include <lang/reflect/coField_f.h>
 #include <lang/reflect/coTypeRegistry.h>
 #include <container/array/coDynamicArray_f.h>
+#include <math/scalar/coUint32_f.h>
 
 void coArchive::Clear()
 {
@@ -29,6 +30,8 @@ void coArchive::WriteRoot(const void* object, const coType& type)
 
 coUint32 coArchive::WriteObject(const void* object, const coType& type)
 {
+	if (object == nullptr)
+		return 0;
 	const coUint nbSerializableFields = type.GetNbSerializableFields();
 
 	// Vtable
@@ -101,32 +104,27 @@ coUint32 coArchive::WriteObject(const void* object, const coType& type)
 				}
 				else
 				{
+					coUint32 index;
 					if (field->pointer)
 					{
 						const void* fieldObject;
 						coMemCopy(&fieldObject, static_cast<const coUint8*>(object) + field->offset8, sizeof(fieldObject));
-						if (fieldObject)
-						{
-							const coUint32 index = WriteObject(fieldObject, *fieldType);
-							coASSERT(index != coUint32(-1));
-							coASSERT(index > inlineItIdx);
-							const coUint32 offset = index - inlineItIdx;
-							coMemCopy(&data.data[inlineItIdx], &offset, sizeof(coUint32));
-						}
-						else
-						{
-							coFill(&data.data[inlineItIdx], coUint32(0));
-						}
-						inlineItIdx += sizeof(coUint32);
+						index = WriteObject(fieldObject, *fieldType);
 					}
 					else if (fieldType->writeArchiveFunc)
 					{
-						fieldType->writeArchiveFunc(*this, static_cast<const coUint8*>(object) + field->offset8);
+						index = fieldType->writeArchiveFunc(*this, static_cast<const coUint8*>(object) + field->offset8);
 					}
 					else
 					{
 						coASSERT(false);
+						index = 0;
 					}
+
+					coASSERT(index == 0 || (index >= objectIdx + inlineDataSize));
+					const coUint32 offset = index ? (index - inlineItIdx) : 0u;
+					coMemCopy(&data.data[inlineItIdx], &offset, sizeof(coUint32));
+					inlineItIdx += sizeof(coUint32);
 				}
 				++serializableFieldIdx;
 			}

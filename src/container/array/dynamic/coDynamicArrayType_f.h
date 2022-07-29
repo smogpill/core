@@ -10,11 +10,15 @@
 
 coDEFINE_TEMPLATE_CLASS(<class T>, coDynamicArray<T>)
 {
-	type->writeArchiveFunc = [](coArchive& archive, const void* obj)
+	type->writeArchiveFunc = [](coArchive& archive, const void* obj) -> coUint32
 	{
 		const coDynamicArray<T>& array = *static_cast<const coDynamicArray<T>*>(obj);
+		if (array.count == 0)
+			return 0;
+		const coUint32 index = array.count;
 		archive.WriteBuffer(&array.count, sizeof(array.count));
 		archive.WriteBuffer(array.data, array.count * sizeof(T));
+		return index;
 	};
 	type->readArchiveFunc = [](const coArchive& archive, coUint32 idx, void* obj)
 	{

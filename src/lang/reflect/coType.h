@@ -7,7 +7,7 @@ class coField;
 class coFunction;
 class coArchive;
 typedef void* (*coCreateFunc)();
-typedef void (*coWriteArchiveFunc)(coArchive&, const void*);
+typedef coUint32 (*coWriteArchiveFunc)(coArchive&, const void*);
 typedef void (*coReadArchiveFunc)(const coArchive&, coUint32, void*);
 
 class coType : public coSymbol
