@@ -6,7 +6,7 @@
 
 class alignas(16) coInt32x4
 {
-	coDECLARE_CLASS_NO_POLYMORPHISM();
+	coDECLARE_CLASS_NO_POLYMORPHISM(coInt32x4);
 public:
 	coInt32 x;
 	coInt32 y;

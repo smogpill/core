@@ -11,8 +11,10 @@ coDEFINE_SINGLETON(coTypeRegistry);
 
 coTypeRegistry::coTypeRegistry()
 {
-	for (coTypeAutoRegistrator* registrator : coTypeAutoRegistrator::GetRegistrators())
+	const coUint nbRegistrators = coTypeAutoRegistrator::GetNbRegistrators();
+	for (coUint registratorIdx = 0; registratorIdx < nbRegistrators; ++registratorIdx)
 	{
+		coTypeAutoRegistrator* registrator = coTypeAutoRegistrator::GetRegistrator(registratorIdx);
 		coType* type = registrator->GetOrCreateType();
 		coASSERT(type);
 		coCHECK(Add(*type), nullptr);

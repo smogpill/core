@@ -9,11 +9,11 @@ class coEntity;
 
 #define coDECLARE_COMPONENT(_Class_, _Base_) \
 	coDECLARE_BASE(_Base_); \
-	coDECLARE_CLASS()
+	coDECLARE_CLASS(_Class_)
 
 class coComponent
 {
-	coDECLARE_CLASS();
+	coDECLARE_CLASS(coComponent);
 public:
 	coComponent();
 

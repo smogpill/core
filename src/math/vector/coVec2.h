@@ -7,7 +7,7 @@
 
 class coVec2 : public coFloatx2
 {
-	coDECLARE_CLASS_NO_POLYMORPHISM();
+	coDECLARE_CLASS_NO_POLYMORPHISM(coFloatx2);
 public:
 	coFORCE_INLINE coVec2() { coBitCast<__m128>(*this) = _mm_setzero_ps(); }
 	coFORCE_INLINE coVec2(coFloatx2 _xy) : coFloatx2(_xy) {}

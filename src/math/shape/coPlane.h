@@ -6,7 +6,7 @@ class coVec3;
 
 class coPlane
 {
-	coDECLARE_CLASS_NO_POLYMORPHISM();
+	coDECLARE_CLASS_NO_POLYMORPHISM(coPlane);
 public:
 	coPlane(coNullPtr) {}
 	coPlane() : normalAndDistance(0.f) {}

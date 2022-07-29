@@ -11,7 +11,7 @@ class coDynamicArray : public coArray<T>
 {
 	using Base = coArray<T>;
 	//coDECLARE_BASE(coArray<T>);
-	coDECLARE_CLASS_NO_POLYMORPHISM();
+	coDECLARE_CLASS_NO_POLYMORPHISM(coDynamicArray);
 public:
 	coDynamicArray() = default;
 	template <coUint N>

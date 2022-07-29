@@ -9,7 +9,7 @@
 
 class coObject
 {
-	coDECLARE_CLASS();
+	coDECLARE_CLASS(coObject);
 public:
 	enum class ObjectState : coUint8
 	{

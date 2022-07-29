@@ -6,7 +6,7 @@ class coFloatx3;
 
 class alignas(16) coInt32x3
 {
-	coDECLARE_CLASS_NO_POLYMORPHISM();
+	coDECLARE_CLASS_NO_POLYMORPHISM(coInt32x3);
 public:
 	coFORCE_INLINE coInt32x3() {}
 	coFORCE_INLINE coInt32x3(coInt32 _xyz) : x(_xyz), y(_xyz), z(_xyz) {}

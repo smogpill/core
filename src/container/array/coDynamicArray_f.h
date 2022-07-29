@@ -6,7 +6,6 @@
 #include "container/array/coConstArray_f.h"
 #include "memory/allocator/coAllocator.h"
 #include "lang/coCppExtensions.h"
-#include <lang/reflect/coTypeDecl_f.h>
 
 template <class T>
 template <coUint N>

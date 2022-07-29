@@ -6,13 +6,19 @@
 #include <container/array/coDynamicArray_f.h>
 #include <lang/result/coResult_f.h>
 
-coDynamicArray<coTypeAutoRegistrator*>& coTypeAutoRegistrator::GetRegistrators()
-{
-	static coDynamicArray<coTypeAutoRegistrator*> registrators;
-	return registrators;
-}
+coDynamicArray<coTypeAutoRegistrator*> co_registrators;
 
 void coTypeAutoRegistrator::AddRegistrator(coTypeAutoRegistrator& registrator)
 {
-	coPushBack(GetRegistrators(), &registrator);
+	coPushBack(co_registrators, &registrator);
+}
+
+coTypeAutoRegistrator* coTypeAutoRegistrator::GetRegistrator(coUint32 idx)
+{
+	return co_registrators[idx];
+}
+
+coUint coTypeAutoRegistrator::GetNbRegistrators()
+{
+	return co_registrators.count;
 }

@@ -2,17 +2,14 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include "lang/coCppExtensions.h"
-#include "lang/result/coResult.h"
-#include <container/array/coDynamicArray.h>
-
 class coType;
 
 class coFORCE_SYMBOL_INCLUSION_ATTRIBUTE coTypeAutoRegistrator
 {
 public:
 	virtual coType* GetOrCreateType() = 0;
-
-	static coDynamicArray<coTypeAutoRegistrator*>& GetRegistrators();
+	static coTypeAutoRegistrator* GetRegistrator(coUint32 idx);
+	static coUint GetNbRegistrators();
 	static void AddRegistrator(coTypeAutoRegistrator&);
 };
 

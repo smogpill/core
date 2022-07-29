@@ -5,7 +5,7 @@
 
 class alignas(16) coBool32x2
 {
-	coDECLARE_CLASS_NO_POLYMORPHISM();
+	coDECLARE_CLASS_NO_POLYMORPHISM(coBool32x2);
 public:
 	coFORCE_INLINE operator coBool () const { return (_mm_movemask_ps(coBitCast<__m128>(*this)) & 3) == 3; }
 

@@ -7,6 +7,7 @@
 #include <math/hash/coHash_f.h>
 #include <container/string/coConstString.h>
 #include <container/array/coDynamicArray_f.h>
+#include <container/array/dynamic/coDynamicArrayType_f.h>
 #include <lang/reflect/coTypeDecl.h>
 #include <lang/reflect/coTypeDecl_f.h>
 #include "lang/reflect/coField.h"
@@ -14,28 +15,9 @@
 #include "lang/reflect/coType_f.h"
 #include "lang/reflect/coTypeRegistry.h"
 
-coDEFINE_TEMPLATE_CLASS(<class T>, coDynamicArray<T>)
-{
-	type->writeArchiveFunc = [](coArchive& archive, const void* obj)
-	{
-		const coDynamicArray<T>& array = *static_cast<const coDynamicArray<T>*>(obj);
-		archive.WriteBuffer(&array.count, sizeof(array.count));
-		archive.WriteBuffer(array.data, array.count * sizeof(T));
-	};
-
-	type->readArchiveFunc = [](const coArchive& archive, coUint32 idx, void* obj)
-	{
-		coDynamicArray<T>& array = *static_cast<coDynamicArray<T>*>(obj);
-		coClear(array);
-		const coUint32 count = archive.Get<coUint32>(idx);
-		coResize(array, count);
-		archive.ReadBuffer(idx + sizeof(coUint32), array.data, count * sizeof(T));
-	};
-}
-
 class ArchiveTestA
 {
-	coDECLARE_CLASS();
+	coDECLARE_CLASS(ArchiveTestA);
 public:
 	coBool operator==(const ArchiveTestA& o) const
 	{
@@ -53,7 +35,7 @@ public:
 
 class ArchiveTestB
 {
-	coDECLARE_CLASS();
+	coDECLARE_CLASS(ArchiveTestB);
 public:
 	~ArchiveTestB()
 	{
@@ -93,7 +75,7 @@ public:
 
 class ArchiveTestDynamicArray
 {
-	coDECLARE_CLASS();
+	coDECLARE_CLASS(ArchiveTestDynamicArray);
 public:
 	coBool operator==(const ArchiveTestDynamicArray& o) const
 	{
