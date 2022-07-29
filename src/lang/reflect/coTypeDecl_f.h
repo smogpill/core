@@ -2,6 +2,8 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include "coType.h"
+#include "coField.h"
+#include "coField_f.h"
 #include "coTypeAutoRegistrator.h"
 #include "../result/coResult_f.h"
 

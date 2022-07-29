@@ -4,6 +4,10 @@
 #include "lang/coCppExtensions.h"
 #include "coTypeAutoRegistrator.h"
 
+// TODO:
+// The _Class_ parameter of coDEFINE_CLASS(_Class_) and other related functions should be unnecessary. 
+// Keeping it a bit before we get all the functionalities together, and then will get rid of it.
+
 class coType;
 class coField;
 
@@ -31,8 +35,6 @@ using Base = void;
 
 #define _coDECLARE_CLASS_SHARED(_Class_) \
 	coDEFINE_ATTRIBUTE(Reflected); \
-	private: \
-		auto GetThis() { return this; } \
 	public: \
 		template <class T> static void OnInitType(coType*, coField*); \
 		static coType* GetStaticType(); \

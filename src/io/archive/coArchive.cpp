@@ -105,11 +105,18 @@ coUint32 coArchive::WriteObject(const void* object, const coType& type)
 					{
 						const void* fieldObject;
 						coMemCopy(&fieldObject, static_cast<const coUint8*>(object) + field->offset8, sizeof(fieldObject));
-						const coUint32 index = WriteObject(fieldObject, *fieldType);
-						coASSERT(index != coUint32(-1));
-						coASSERT(index > inlineItIdx);
-						const coUint32 offset = index - inlineItIdx;
-						coMemCopy(&data.data[inlineItIdx], &offset, sizeof(coUint32));
+						if (fieldObject)
+						{
+							const coUint32 index = WriteObject(fieldObject, *fieldType);
+							coASSERT(index != coUint32(-1));
+							coASSERT(index > inlineItIdx);
+							const coUint32 offset = index - inlineItIdx;
+							coMemCopy(&data.data[inlineItIdx], &offset, sizeof(coUint32));
+						}
+						else
+						{
+							coFill(&data.data[inlineItIdx], coUint32(0));
+						}
 						inlineItIdx += sizeof(coUint32);
 					}
 					else if (fieldType->writeArchiveFunc)
@@ -171,20 +178,23 @@ void* coArchive::CreateObjects(coUint32 objectIdx, const coType& expectedBaseTyp
 			{
 				coASSERT(objectIdx + inlineOffset + sizeof(coUint32) <= data.count);
 				const coUint32 fieldOffset = *reinterpret_cast<const coUint32*>(&data.data[objectIdx + inlineOffset]);
-				const coUint32 fieldIdx = objectIdx + inlineOffset + fieldOffset;
-				coASSERT(fieldIdx < data.count);
-				if (field->pointer)
+				if (fieldOffset)
 				{
-					void* fieldObject = CreateObjects(fieldIdx, *fieldType);
-					coMemCopy(((coUint8*)object) + field->offset8, &fieldObject, sizeof(fieldObject));
-				}
-				else if (fieldType->readArchiveFunc)
-				{
-					fieldType->readArchiveFunc(*this, fieldIdx, ((coUint8*)object) + field->offset8);
-				}
-				else
-				{
-					coASSERT(false);
+					const coUint32 fieldIdx = objectIdx + inlineOffset + fieldOffset;
+					coASSERT(fieldIdx < data.count);
+					if (field->pointer)
+					{
+						void* fieldObject = CreateObjects(fieldIdx, *fieldType);
+						coMemCopy(((coUint8*)object) + field->offset8, &fieldObject, sizeof(fieldObject));
+					}
+					else if (fieldType->readArchiveFunc)
+					{
+						fieldType->readArchiveFunc(*this, fieldIdx, ((coUint8*)object) + field->offset8);
+					}
+					else
+					{
+						coASSERT(false);
+					}
 				}
 			}
 			++serializableFieldIdx;

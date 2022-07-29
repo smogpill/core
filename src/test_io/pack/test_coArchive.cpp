@@ -147,7 +147,7 @@ coTEST(coArchive, Simple)
 	coEXPECT(*out == in);
 }
 
-coTEST(coArchive, Objects)
+coTEST(coArchive, Object)
 {
 	coTypeRegistry::CreateInstanceIfMissing();
 
@@ -155,6 +155,23 @@ coTEST(coArchive, Objects)
 
 	ArchiveTestB in;
 	in.FillWithArbitraryValues();
+	archive.WriteRoot(in);
+
+	ArchiveTestB* out = archive.CreateObjects<ArchiveTestB>();
+	coEXPECT(out);
+	coEXPECT(*out == in);
+}
+
+coTEST(coArchive, NullObject)
+{
+	coTypeRegistry::CreateInstanceIfMissing();
+
+	coArchive archive;
+
+	ArchiveTestB in;
+	in.FillWithArbitraryValues();
+	delete in.a;
+	in.a = nullptr;
 	archive.WriteRoot(in);
 
 	ArchiveTestB* out = archive.CreateObjects<ArchiveTestB>();
