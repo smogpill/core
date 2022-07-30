@@ -17,12 +17,12 @@ public:
 
 	coSymbol();
 
-	void SetSerializable(coBool b) { serializable = b; }
-	coBool IsSerializable() const { return serializable; }
+	void SetTransient(coBool b) { transient = b; }
+	coBool IsSerializable() const { return !transient; }
 
 	coUint32 uid = 0;
 	coUint32 nameHash = 0;
-	coBool serializable : 1;
+	coBool transient : 1;
 	coUint8 symbolFlags = 0u;
 	coDynamicString name;
 };

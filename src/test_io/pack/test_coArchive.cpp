@@ -94,43 +94,21 @@ public:
 
 coDEFINE_CLASS(ArchiveTestA)
 {
-	coDEFINE_FIELD(u)
-	{
-		field->SetSerializable(true);
-	}
-
-	coDEFINE_FIELD(f)
-	{
-		field->SetSerializable(true);
-	}
+	coDEFINE_FIELD(u);
+	coDEFINE_FIELD(f);
 }
 
 coDEFINE_CLASS(ArchiveTestB)
 {
-	coDEFINE_FIELD(f1)
-	{
-		field->SetSerializable(true);
-	}
-
-	coDEFINE_FIELD(a)
-	{
-		field->SetSerializable(true);
-	}
-
-	coDEFINE_FIELD(f2)
-	{
-		field->SetSerializable(true);
-	}
+	coDEFINE_FIELD(f1);
+	coDEFINE_FIELD(a);
+	coDEFINE_FIELD(f2);
 }
 
 coDEFINE_CLASS(ArchiveTestDynamicArray)
 {
-	coDEFINE_FIELD(a)
-	{
-		field->SetSerializable(true);
-	}
+	coDEFINE_FIELD(a);
 }
-
 
 coTEST(coArchive, Simple)
 {

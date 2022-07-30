@@ -5,12 +5,17 @@
 #include "coComponent.h"
 #include "../uuid/coUuid_f.h"
 #include "lang/result/coResult_f.h"
-#include <lang/reflect/coType.h>
+#include <lang/reflect/coTypeDecl_f.h>
 #include <lang/reflect/coTypeRegistry.h>
 #include <io/stream/coBinaryInputStream.h>
 #include <io/stream/coBinaryOutputStream.h>
 #include <container/array/coFixedArray_f.h>
 #include "component/coComponentIterator.h"
+
+coDEFINE_CLASS(coEntity)
+{
+	//coDEFINE_FIELD(uuid);
+}
 
 coEntity::coEntity()
 {

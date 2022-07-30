@@ -5,6 +5,7 @@
 #include "coComponent.h"
 #include <container/array/coDynamicArray.h>
 #include <lang/reflect/coType.h>
+#include <lang/reflect/coTypeDecl.h>
 #include <lang/result/coResult.h>
 #include <pattern/uuid/coUuid.h>
 
@@ -13,6 +14,7 @@ class coBinaryInputStream;
 
 class coEntity
 {
+	coDECLARE_CLASS_NO_POLYMORPHISM(coEntity);
 public:
 	enum class State : coUint8
 	{
