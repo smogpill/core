@@ -13,6 +13,7 @@ typedef void (*coReadArchiveFunc)(const coArchive&, coUint32, void*);
 class coType : public coSymbol
 {
 public:
+	coType();
 	~coType();
 
 	void Give(coField& field);
@@ -21,6 +22,7 @@ public:
 
 	coUint32 size8 = 0;
 	coUint32 alignment8 = 0;
+	coBool triviallyCopyable : 1;
 	const coType* super = nullptr;
 	const coType* subType = nullptr;
 	coCreateFunc createFunc = nullptr;

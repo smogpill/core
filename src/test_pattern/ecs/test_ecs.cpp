@@ -6,6 +6,7 @@
 #include "pattern/ecs/coComponent.h"
 #include "pattern/ecs/component/coComponent_f.h"
 #include "pattern/pointer/coUniquePtr.h"
+#include <io/archive/coArchive.h>
 #include <math/transform/coTransform.h>
 
 class TestAComp : public coComponent
@@ -51,4 +52,21 @@ coTEST(ecs, Prefab)
 	}
 
 	//coUniquePtr<coEntity> entity = prebab->Clone();
+}
+
+coTEST(ecs, Archive)
+{
+	coUniquePtr<coEntity> in = new coEntity();
+	{
+		TestAComp* a = new TestAComp();
+		in->Give(*a);
+
+		TestBComp* b = new TestBComp();
+		in->Give(*b);
+	}
+
+	coArchive archive;
+	archive.WriteRoot(*in.Get());
+
+	coUniquePtr<coEntity> out = archive.CreateObjects<coEntity>();
 }

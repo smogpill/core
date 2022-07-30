@@ -22,6 +22,7 @@ public:
 	template <class T>
 	void ReadObject(coUint32 idx, T& object) { ReadObject(idx, &object, *T::GetStaticType()); }
 	coDynamicArray<coByte>& GetData() { return data; }
+	coUint32 GetSize() const { return data.count; }
 
 	void WriteBuffer(const void*, coUint32 size);
 	void ReadBuffer(coUint32 idx, void*, coUint32 size) const;

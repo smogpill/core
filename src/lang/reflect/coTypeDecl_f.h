@@ -53,6 +53,7 @@ coType* coGetType()
 			type->alignment8 = alignof(_Class_); \
 			type->createFunc = []() -> void* { return new _Class_(); };	\
 			type->super = coTypeHelper<Base>::GetStaticType(); \
+			type->triviallyCopyable = std::is_trivially_copyable<_Class_>::value; \
 			OnInitType<_Class_>(type, nullptr); \
 		} \
 		return type; \
@@ -88,6 +89,7 @@ coType* coGetType()
 				type->size8 = sizeof(_Type_); \
 				type->alignment8 = alignof(_Type_); \
 				type->createFunc = []() -> void* { return new _Type_(); }; \
+				type->triviallyCopyable = true; \
 			} \
 			return type; \
 		} \

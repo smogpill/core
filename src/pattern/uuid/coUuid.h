@@ -2,11 +2,13 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include "container/map/coHashMapHash.h"
+#include <lang/reflect/coTypeDecl.h>
 class coBinaryOutputStream;
 class coBinaryInputStream;
 
 class coUuid
 {
+	coDECLARE_CLASS_NO_POLYMORPHISM(coUuid);
 public:
 	coUuid() = default;
 	coUuid(const coUuid& other) = default;

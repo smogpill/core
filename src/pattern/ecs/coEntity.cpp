@@ -14,7 +14,7 @@
 
 coDEFINE_CLASS(coEntity)
 {
-	//coDEFINE_FIELD(uuid);
+	coDEFINE_FIELD(uuid);
 }
 
 coEntity::coEntity()

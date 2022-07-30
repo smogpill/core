@@ -6,6 +6,11 @@
 #include "lang/reflect/coFunction.h"
 #include "container/array/coDynamicArray_f.h"
 
+coType::coType()
+	: triviallyCopyable(false)
+{
+}
+
 coType::~coType()
 {
 	for (coField* p : fields)
@@ -16,6 +21,7 @@ coType::~coType()
 
 void coType::Give(coField& field)
 {
+	coASSERT(field.type);
 	coPushBack(fields, &field);
 }
 
