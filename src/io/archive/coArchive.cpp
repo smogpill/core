@@ -104,25 +104,27 @@ coUint32 coArchive::WriteObject(const void* object, const coType& type)
 				}
 				else
 				{
-					coUint32 index;
+					coUint32 offset;
 					if (field->pointer)
 					{
 						const void* fieldObject;
 						coMemCopy(&fieldObject, static_cast<const coUint8*>(object) + field->offset8, sizeof(fieldObject));
-						index = WriteObject(fieldObject, *fieldType);
+						const coUint32 index = WriteObject(fieldObject, *fieldType);
+						coASSERT(index == 0 || (index >= objectIdx + inlineDataSize));
+						offset = index ? (index - inlineItIdx) : 0u;
 					}
 					else if (fieldType->writeArchiveFunc)
 					{
-						index = fieldType->writeArchiveFunc(*this, static_cast<const coUint8*>(object) + field->offset8);
+						const coUint32 index = fieldType->writeArchiveFunc(*this, static_cast<const coUint8*>(object) + field->offset8);
+						coASSERT(index == 0 || (index >= objectIdx + inlineDataSize));
+						offset = index ? (index - inlineItIdx) : 0u;
 					}
 					else
 					{
 						coASSERT(false);
-						index = 0;
+						offset = 0;
 					}
 
-					coASSERT(index == 0 || (index >= objectIdx + inlineDataSize));
-					const coUint32 offset = index ? (index - inlineItIdx) : 0u;
 					coMemCopy(&data.data[inlineItIdx], &offset, sizeof(coUint32));
 					inlineItIdx += sizeof(coUint32);
 				}
