@@ -260,11 +260,6 @@ void coArchive::Read(void* buffer, coUint32 size) const
 
 }
 
-void coArchive::WriteBuffer(const void* buffer, coUint32 size)
-{
-	coPushBackArray(data, coArray<coUint8>((coUint8*)(buffer), size));
-}
-
 void coArchive::ReadBuffer(coUint32 idx, void* buffer, coUint32 size) const
 {
 	coASSERT(idx + size <= data.count);

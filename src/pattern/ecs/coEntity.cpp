@@ -9,12 +9,41 @@
 #include <lang/reflect/coTypeRegistry.h>
 #include <io/stream/coBinaryInputStream.h>
 #include <io/stream/coBinaryOutputStream.h>
+#include <io/archive/coArchive.h>
 #include <container/array/coFixedArray_f.h>
 #include "component/coComponentIterator.h"
 
 coDEFINE_CLASS(coEntity)
 {
 	coDEFINE_FIELD(uuid);
+	coDEFINE_VIRTUAL_FIELD(components)
+	{
+		field->writeArchiveFunc = [](coArchive& archive, const void* obj) -> coUint32
+		{
+			const coEntity* entity = static_cast<const coEntity*>(obj);
+			const coUint32 nbComponents = entity->GetNbComponents();
+			if (nbComponents == 0)
+				return 0;
+			const coUint32 index = archive.GetSize();
+			archive.Write(nbComponents);
+			auto& data = archive.GetData();
+			const coUint32 offsetsIdx = archive.GetSize();
+			archive.PushBytes(nbComponents * sizeof(coUint32));
+			coUint32 itOffsetIdx = offsetsIdx;
+			auto func = [&](coComponent& comp)
+			{
+				const coUint32 compIdx = archive.WriteObject(&comp, *comp.GetType());
+				(coUint32&)(data[itOffsetIdx]) = compIdx - itOffsetIdx;
+				itOffsetIdx += sizeof(coUint32);
+				return true;
+			};
+			coVisitAll(entity->firstComponent, func);
+			return index;
+		};
+		field->readArchiveFunc = [](const coArchive& archive, coUint32 idx, void* obj)
+		{
+		};
+	}
 }
 
 coEntity::coEntity()

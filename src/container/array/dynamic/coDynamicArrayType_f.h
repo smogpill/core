@@ -5,8 +5,8 @@
 #include "../coDynamicArray_f.h"
 
 // TODO:
-// We use a different header than coDynamicArray_f.h because of very low level headers that include dynamic arrays 
-// (such as Log.h through coDynamicString)
+// We use a different header than coDynamicArray_f.h for these reflection macros because there are include conflicts. 
+// Basically some low level headers include coDynamicArray_f.h indirectly (such as Log.h through coDynamicString).
 
 coDEFINE_TEMPLATE_CLASS(<class T>, coDynamicArray<T>)
 {
@@ -16,8 +16,8 @@ coDEFINE_TEMPLATE_CLASS(<class T>, coDynamicArray<T>)
 		if (array.count == 0)
 			return 0;
 		const coUint32 index = archive.GetSize();
-		archive.WriteBuffer(&array.count, sizeof(array.count));
-		archive.WriteBuffer(array.data, array.count * sizeof(T));
+		archive.Write(array.count);
+		archive.Write(array.data, array.count * sizeof(T));
 		return index;
 	};
 	type->readArchiveFunc = [](const coArchive& archive, coUint32 idx, void* obj)

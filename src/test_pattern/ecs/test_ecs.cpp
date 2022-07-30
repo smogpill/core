@@ -8,6 +8,7 @@
 #include "pattern/pointer/coUniquePtr.h"
 #include <io/archive/coArchive.h>
 #include <math/transform/coTransform.h>
+#include <lang/reflect/coTypeRegistry.h>
 
 class TestAComp : public coComponent
 {
@@ -56,6 +57,8 @@ coTEST(ecs, Prefab)
 
 coTEST(ecs, Archive)
 {
+	coTypeRegistry::CreateInstanceIfMissing();
+
 	coUniquePtr<coEntity> in = new coEntity();
 	{
 		TestAComp* a = new TestAComp();
