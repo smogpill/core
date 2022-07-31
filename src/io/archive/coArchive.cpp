@@ -105,7 +105,13 @@ coUint32 coArchive::WriteObject(const void* object, const coType& type)
 				else
 				{
 					coUint32 offset;
-					if (field->pointer)
+					if (field->writeArchiveFunc)
+					{
+						const coUint32 index = field->writeArchiveFunc(*this, static_cast<const coUint8*>(object) + field->offset8);
+						coASSERT(index == 0 || (index >= objectIdx + inlineDataSize));
+						offset = index ? (index - inlineItIdx) : 0u;
+					}
+					else if (field->pointer)
 					{
 						const void* fieldObject;
 						coMemCopy(&fieldObject, static_cast<const coUint8*>(object) + field->offset8, sizeof(fieldObject));
@@ -128,6 +134,7 @@ coUint32 coArchive::WriteObject(const void* object, const coType& type)
 					coMemCopy(&data.data[inlineItIdx], &offset, sizeof(coUint32));
 					inlineItIdx += sizeof(coUint32);
 				}
+				
 				++serializableFieldIdx;
 			}
 		}
@@ -182,7 +189,11 @@ void* coArchive::CreateObjects(coUint32 objectIdx, const coType& expectedBaseTyp
 				{
 					const coUint32 fieldIdx = objectIdx + inlineOffset + fieldOffset;
 					coASSERT(fieldIdx < data.count);
-					if (field->pointer)
+					if (field->readArchiveFunc)
+					{
+						field->readArchiveFunc(*this, fieldIdx, ((coUint8*)object) + field->offset8);
+					}
+					else if (field->pointer)
 					{
 						void* fieldObject = CreateObjects(fieldIdx, *fieldType);
 						coMemCopy(((coUint8*)object) + field->offset8, &fieldObject, sizeof(fieldObject));

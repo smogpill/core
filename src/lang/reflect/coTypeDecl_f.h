@@ -36,11 +36,12 @@ coType* coGetType()
 	field->offset8 = static_cast<decltype(field->offset8)>(coGetFieldOffset<Class>(&Class::_name_)); \
 	type->Give(*field);
 
-#define coDEFINE_VIRTUAL_FIELD(_name_) \
+#define coDEFINE_VIRTUAL_FIELD(_name_, _Type_) \
 	field = new coField(); \
 	field->name = #_name_; \
 	field->nameHash = coHash32(field->name); \
 	field->uid = field->nameHash; \
+	field->type = coTypeHelper<_Type_>::GetStaticType(); \
 	type->Give(*field);
 
 #define _coDEFINE_AUTO_REGISTRATOR(_Class_) \

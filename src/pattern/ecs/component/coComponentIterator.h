@@ -67,11 +67,13 @@ coBool coVisitAll(coComponent* component, Functor func)
 {
 	if (component)
 	{
-		if (!func(*component))
-			return false;
-		for (coComponent* it = component; it != component; it = component->GetNextComponent())
-			if (!func(*component))
+		coComponent* it = component;
+		do
+		{
+			if (!func(*it))
 				return false;
+			it = it->GetNextComponent();
+		} while (it != component);
 	}
 	return true;
 }

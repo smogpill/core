@@ -34,6 +34,7 @@ public:
 	coEntity* Clone() const;
 	const coUuid& GetUuid() const { return uuid; }
 	coUint GetNbComponents() const;
+	coComponent* GetFirstComponent() const { return firstComponent; }
 	State GetState() const { return state; }
 	template <class T>
 	T* GetComponent() const;
@@ -45,7 +46,6 @@ private:
 	void Release();
 	coResult TransitToNextState(State targetState);
 	coComponent* firstComponent = nullptr;
-	coComponent* lastComponent = nullptr;
 	State state = State::NONE;
 	coUuid uuid;
 };
