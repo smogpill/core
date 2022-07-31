@@ -36,6 +36,7 @@ public:
 	coUint GetNbComponents() const;
 	coComponent* GetFirstComponent() const { return firstComponent; }
 	State GetState() const { return state; }
+	coComponent* GetComponent(const coType& type) const;
 	template <class T>
 	T* GetComponent() const;
 
@@ -49,3 +50,9 @@ private:
 	State state = State::NONE;
 	coUuid uuid;
 };
+
+template <class T>
+T* coEntity::GetComponent() const
+{
+	return static_cast<T*>(GetComponent(*T::GetStaticType()));
+}

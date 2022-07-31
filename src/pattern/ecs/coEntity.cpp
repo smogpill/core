@@ -294,3 +294,19 @@ void coEntity::Give(coComponent& component)
 		firstComponent = &component;
 	}
 }
+
+coComponent* coEntity::GetComponent(const coType& type) const
+{
+	coComponent* foundComp = nullptr;
+	auto func = [&](coComponent& comp)
+	{
+		if (comp.GetType() == &type)
+		{
+			foundComp = &comp;
+			return false;
+		}
+		return true;
+	};
+	coVisitAll(firstComponent, func);
+	return foundComp;
+}

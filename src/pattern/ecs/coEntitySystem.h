@@ -10,6 +10,7 @@
 class coEntity;
 class coBinaryOutputStream;
 class coBinaryInputStream;
+class coComponent;
 
 class coEntitySystem
 {
@@ -17,7 +18,16 @@ class coEntitySystem
 public:
 	void SetUuid(const coUuid& uuid, coEntity* entity);
 	coEntity* GetFromUuid(const coUuid& uuid) const;
+	coComponent* GetComponent(const coUuid& uuid, const coType& type) const;
+	template <class T>
+	T* GetComponent(const coUuid& uuid) const;
 
 private:
 	coHashMap<coUuid, coEntity*, 4096> uuidToEntity;
 };
+
+template <class T>
+T* coEntitySystem::GetComponent(const coUuid& uuid) const
+{
+	return static_cast<T*>(GetComponent(uuid, *T::GetStaticType()));
+}

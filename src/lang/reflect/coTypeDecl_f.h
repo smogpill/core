@@ -20,6 +20,29 @@ struct coTypeHelper<T, std::void_t<decltype(T::GetStaticType)>>
 	static coType* GetStaticType() { return T::GetStaticType(); }
 };
 
+template <class T, coBool>
+struct _coTypeFactory
+{
+};
+
+template <class T>
+struct _coTypeFactory<T, false>
+{
+	static void* Create() { return new T(); }
+};
+
+template <class T>
+struct _coTypeFactory<T, true>
+{
+	static void* Create() { return nullptr; }
+};
+
+template <class T>
+void* coCreate()
+{
+	return _coTypeFactory<T, std::is_abstract<T>::value>::Create();
+}
+
 template <class T>
 coType* coGetType()
 {
@@ -59,7 +82,7 @@ coType* coGetType()
 			type->uid = type->nameHash; \
 			type->size8 = sizeof(_Class_); \
 			type->alignment8 = alignof(_Class_); \
-			type->createFunc = []() -> void* { return new _Class_(); };	\
+			type->createFunc = &coCreate<_Class_>;	\
 			type->super = coTypeHelper<Base>::GetStaticType(); \
 			type->triviallyCopyable = std::is_trivially_copyable<_Class_>::value; \
 			OnInitType<_Class_>(type, nullptr); \
