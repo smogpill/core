@@ -27,6 +27,8 @@ public:
 	coEntity(const coEntity&) = delete;
 	~coEntity();
 	void Give(coComponent& component);
+	void SetParent(coEntity* entity);
+	void Give(coEntity& entity);
 	void SetUuid(const coUuid& uuid_) { uuid = uuid_; }
 	coResult SetState(State state);
 	void Write(coBinaryOutputStream& stream) const;
@@ -36,9 +38,14 @@ public:
 	coUint GetNbComponents() const;
 	coComponent* GetFirstComponent() const { return firstComponent; }
 	State GetState() const { return state; }
+	State GetParentStateWhenAttached() const { return parentStateWhenAttached; }
 	coComponent* GetComponent(const coType& type) const;
 	template <class T>
 	T* GetComponent() const;
+	template <class F>
+	coBool VisitChildren(F) const;
+	template <class F>
+	coBool ReverseVisitChildren(F) const;
 
 private:
 	coResult Init();
@@ -47,7 +54,12 @@ private:
 	void Release();
 	coResult TransitToNextState(State targetState);
 	coComponent* firstComponent = nullptr;
+	coEntity* firstChild = nullptr;
+	coEntity* parent = nullptr;
+	coEntity* previousSibling = nullptr;
+	coEntity* nextSibling = nullptr;
 	State state = State::NONE;
+	State parentStateWhenAttached = State::NONE;
 	coUuid uuid;
 };
 
@@ -55,4 +67,38 @@ template <class T>
 T* coEntity::GetComponent() const
 {
 	return static_cast<T*>(GetComponent(*T::GetStaticType()));
+}
+
+template <class F>
+coBool coEntity::VisitChildren(F func) const
+{
+	if (firstChild)
+	{
+		coEntity* child = firstChild;
+		do
+		{
+			coEntity* next = child->nextSibling;
+			if (!func(*child))
+				return false;
+			child = next;
+		} while (child != firstChild);
+	}
+	return true;
+}
+
+template <class F>
+coBool coEntity::ReverseVisitChildren(F func) const
+{
+	if (firstChild)
+	{
+		coEntity* child = firstChild->previousSibling;
+		do
+		{
+			coEntity* previous = child->previousSibling;
+			if (!func(*child))
+				return false;
+			child = previous;
+		} while (child != firstChild);
+	}
+	return true;
 }
