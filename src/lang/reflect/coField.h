@@ -16,6 +16,4 @@ public:
 	const coType* subType = nullptr;
 	coUint16 offset8 = 0u;
 	coBool pointer : 1;
-	coFieldWriteArchiveFunc writeArchiveFunc = nullptr;
-	coFieldReadArchiveFunc readArchiveFunc = nullptr;
 };
