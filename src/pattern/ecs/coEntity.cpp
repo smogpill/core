@@ -65,10 +65,64 @@ coDEFINE_CLASS(coEntityComponents)
 	};
 }
 
+class coEntityChildren
+{
+public:
+	coDECLARE_CLASS_NO_POLYMORPHISM(coEntityComponents);
+};
+
+coDEFINE_CLASS(coEntityChildren)
+{
+	type->triviallyCopyable = false;
+	type->writeArchiveFunc = [](coArchive& archive, const void* obj) -> coUint32
+	{
+		const coEntity* entity = static_cast<const coEntity*>(obj);
+		const coUint32 nbChildren = entity->GetNbChildren();
+		if (nbChildren == 0)
+			return 0;
+		const coUint32 index = archive.GetSize();
+		archive.Write(nbChildren);
+		auto& data = archive.GetData();
+		const coUint32 offsetsIdx = archive.GetSize();
+		archive.PushBytes(nbChildren * sizeof(coUint32));
+		coUint32 itOffsetIdx = offsetsIdx;
+		const coType* entityType = coEntity::GetStaticType();
+		auto func = [&](coEntity& child)
+		{
+			const coUint32 childIdx = archive.WriteObject(&child, *entityType);
+			(coUint32&)(data[itOffsetIdx]) = childIdx - itOffsetIdx;
+			itOffsetIdx += sizeof(coUint32);
+			return true;
+		};
+		entity->VisitChildren(func);
+		return index;
+	};
+	type->readArchiveFunc = [](const coArchive& archive, coUint32 idx, void* obj)
+	{
+		coEntity* entity = static_cast<coEntity*>(obj);
+		const coUint32 nbChildren = archive.Get<coUint32>(idx);
+		coUint32 itIdx = idx + sizeof(coUint32);
+		for (coUint32 childIdx = 0; childIdx < nbChildren; ++childIdx)
+		{
+			const coUint32 childOffsetIdx = archive.Get<coUint32>(itIdx);
+			if (childOffsetIdx)
+			{
+				coEntity* child = archive.CreateObjects<coEntity>(itIdx + childOffsetIdx);
+				if (child)
+				{
+					child->SetParent(entity);
+				}
+			}
+			itIdx += sizeof(coUint32);
+		}
+	};
+}
+
 coDEFINE_CLASS(coEntity)
 {
 	coDEFINE_FIELD(uuid);
 	coDEFINE_VIRTUAL_FIELD(components, coEntityComponents);
+	coDEFINE_VIRTUAL_FIELD(entities, coEntityChildren);
 }
 
 coEntity::coEntity()
@@ -189,7 +243,7 @@ coResult coEntity::TransitToNextState(State targetState)
 		{
 		case State::NONE:
 		{
-			Release();
+			Shutdown();
 			state = State::NONE;
 			break;
 		}
@@ -254,6 +308,18 @@ coUint coEntity::GetNbComponents() const
 		return true;
 	};
 	coVisitAll(firstComponent, func);
+	return nb;
+}
+
+coUint coEntity::GetNbChildren() const
+{
+	coUint nb = 0;
+	auto func = [&nb](coEntity& entity)
+	{
+		++nb;
+		return true;
+	};
+	VisitChildren(func);
 	return nb;
 }
 
@@ -330,13 +396,13 @@ void coEntity::Stop()
 	}
 }
 
-void coEntity::Release()
+void coEntity::Shutdown()
 {
-	// Release children
+	// Shutdown children
 	{
 		auto func = [this](coEntity& entity)
 		{
-			entity.Release();
+			entity.Shutdown();
 			if (entity.GetParentStateWhenAttached() == State::INITIALIZED)
 				delete &entity;
 			return true;
@@ -344,11 +410,11 @@ void coEntity::Release()
 		ReverseVisitChildren(func);
 	}
 
-	// Release components
+	// Shutdown components
 	{
 		auto func = [&](coComponent& comp)
 		{
-			comp.OnRelease(*this);
+			comp.OnShutdown(*this);
 			return true;
 		};
 		coReverseVisitAll(firstComponent, func);

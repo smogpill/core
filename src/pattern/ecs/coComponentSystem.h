@@ -15,7 +15,7 @@ protected:
 	virtual coResult OnInit(const coEntityHandle& entityH) {}
 	virtual coResult OnStart(const coEntityHandle& entityH) {}
 	virtual void OnStop(const coEntityHandle& entityH) {}
-	virtual void OnRelease(const coEntityHandle& entityH) {}
+	virtual void OnShutdown(const coEntityHandle& entityH) {}
 	virtual void OnWrite(const coEntityHandle& entityH, coBinaryOutputStream& stream) const {}
 	virtual void OnRead(const coEntityHandle& entityH, coBinaryInputStream& stream) {}
 

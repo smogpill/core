@@ -10,5 +10,5 @@ protected:
 	virtual coResult OnInit(coEntity& entity) { return true; }
 	virtual coResult OnStart(coEntity& entity) { return true; }
 	virtual void OnStop(coEntity& entity) {}
-	virtual void OnRelease(coEntity& entity) {}
+	virtual void OnShutdown(coEntity& entity) {}
 };

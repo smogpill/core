@@ -30,6 +30,11 @@ coDEFINE_COMPONENT(TestBComp)
 {
 }
 
+coTEST(ecs, Reflection)
+{
+	coTypeRegistry::CreateInstanceIfMissing();
+}
+
 coTEST(ecs, SimpleEntity)
 {
 	coUniquePtr<coEntity> entity = new coEntity();
@@ -57,8 +62,6 @@ coTEST(ecs, Prefab)
 
 coTEST(ecs, Archive)
 {
-	coTypeRegistry::CreateInstanceIfMissing();
-
 	coUniquePtr<coEntity> in = new coEntity();
 	{
 		TestAComp* a = new TestAComp();
@@ -72,4 +75,16 @@ coTEST(ecs, Archive)
 	archive.WriteRoot(*in.Get());
 
 	coUniquePtr<coEntity> out = archive.CreateObjects<coEntity>();
+}
+
+coTEST(ecs, Children)
+{
+	coUniquePtr<coEntity> p = new coEntity();
+
+	coEntity* a = new coEntity();
+	coEntity* b = new coEntity();
+	a->SetParent(p.Get());
+	b->SetParent(p.Get());
+
+
 }

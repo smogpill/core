@@ -9,6 +9,10 @@
 #include <lang/result/coResult.h>
 #include <pattern/uuid/coUuid.h>
 
+// TODO:
+// - Replace the entity by an ID (weak reference, 64 bits with 32 bits for generation, SOA)
+// - Create entity contexts (network, visual, etc.). So that we can easily update it independently.
+
 class coBinaryOutputStream;
 class coBinaryInputStream;
 
@@ -36,6 +40,8 @@ public:
 	coEntity* Clone() const;
 	const coUuid& GetUuid() const { return uuid; }
 	coUint GetNbComponents() const;
+	coUint GetNbChildren() const;
+	coEntity* GetFirstChild() const { return firstChild; }
 	coComponent* GetFirstComponent() const { return firstComponent; }
 	State GetState() const { return state; }
 	State GetParentStateWhenAttached() const { return parentStateWhenAttached; }
@@ -51,7 +57,7 @@ private:
 	coResult Init();
 	coResult Start();
 	void Stop();
-	void Release();
+	void Shutdown();
 	coResult TransitToNextState(State targetState);
 	coComponent* firstComponent = nullptr;
 	coEntity* firstChild = nullptr;
