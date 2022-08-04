@@ -2,7 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-template <class Tag, class Value, Value _invalidValue_ = ~Value(0)>
+template <class Tag, class Value, Value _invalidValue_ = Value(-1)>
 class coHandle
 {
 public:
