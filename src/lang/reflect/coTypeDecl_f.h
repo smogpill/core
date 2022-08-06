@@ -29,18 +29,42 @@ template <class T>
 struct _coTypeFactory<T, false>
 {
 	static void* Create() { return new T(); }
+	static void Move(const void* from, void* to) { *static_cast<T*>(to) = std::move(*static_cast<const T*>(from)); }
+	static void Construct(void* p) { coASSERT(p); new (p) T(); }
+	static void Destruct(void* p) { coASSERT(p); static_cast<T*>(p)->~T(); }
 };
 
 template <class T>
 struct _coTypeFactory<T, true>
 {
 	static void* Create() { return nullptr; }
+	static void Move(const void*, void*) {}
+	static void Construct(void* p) {}
+	static void Destruct(void* p) {}
 };
 
 template <class T>
 void* coCreate()
 {
 	return _coTypeFactory<T, std::is_abstract<T>::value>::Create();
+}
+
+template <class T>
+void coMove(const void* from, void* to)
+{
+	_coTypeFactory<T, std::is_abstract<T>::value>::Move(from, to);
+}
+
+template <class T>
+void coConstruct(void* p)
+{
+	_coTypeFactory<T, std::is_abstract<T>::value>::Construct(p);
+}
+
+template <class T>
+void coDestruct(void* p)
+{
+	_coTypeFactory<T, std::is_abstract<T>::value>::Destruct(p);
 }
 
 template <class T>
@@ -82,7 +106,10 @@ coType* coGetType()
 			type->uid = type->nameHash; \
 			type->size8 = sizeof(_Class_); \
 			type->alignment8 = alignof(_Class_); \
-			type->createFunc = &coCreate<_Class_>;	\
+			type->createFunc = &coCreate<_Class_>; \
+			type->moveFunc = &coMove<_Class_>; \
+			type->constructFunc = &coConstruct<_Class_>; \
+			type->destructFunc = &coDestruct<_Class_>; \
 			type->super = coTypeHelper<Base>::GetStaticType(); \
 			type->triviallyCopyable = std::is_trivially_copyable<_Class_>::value; \
 			OnInitType<_Class_>(type, nullptr); \
@@ -119,7 +146,10 @@ coType* coGetType()
 				type->uid = type->nameHash; \
 				type->size8 = sizeof(_Type_); \
 				type->alignment8 = alignof(_Type_); \
-				type->createFunc = []() -> void* { return new _Type_(); }; \
+				type->createFunc = &coCreate<_Type_>; \
+				type->moveFunc = &coMove<_Type_>; \
+				type->constructFunc = &coConstruct<_Type_>; \
+				type->destructFunc = &coDestruct<_Type_>; \
 				type->triviallyCopyable = true; \
 			} \
 			return type; \

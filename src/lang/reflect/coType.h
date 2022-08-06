@@ -6,9 +6,12 @@
 class coField;
 class coFunction;
 class coArchive;
-typedef void* (*coCreateFunc)();
-typedef coUint32 (*coWriteArchiveFunc)(coArchive&, const void*);
-typedef void (*coReadArchiveFunc)(const coArchive&, coUint32, void*);
+using coCreateFunc = void* (*)();
+using coMoveFunc = void (*)(const void*, void*);
+using coConstructFunc = void (*)(void*);
+using coDestructFunc = void (*)(void*);
+using coWriteArchiveFunc = coUint32 (*)(coArchive&, const void*);
+using coReadArchiveFunc = void (*)(const coArchive&, coUint32, void*);
 
 class coType : public coSymbol
 {
@@ -26,6 +29,9 @@ public:
 	const coType* super = nullptr;
 	const coType* subType = nullptr;
 	coCreateFunc createFunc = nullptr;
+	coMoveFunc moveFunc = nullptr;
+	coConstructFunc constructFunc = nullptr;
+	coDestructFunc destructFunc = nullptr;
 	coWriteArchiveFunc writeArchiveFunc = nullptr;
 	coReadArchiveFunc readArchiveFunc = nullptr;
 	coDynamicArray<coField*> fields;

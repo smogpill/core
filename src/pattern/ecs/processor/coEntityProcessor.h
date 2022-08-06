@@ -11,7 +11,7 @@ public:
 	virtual ~coEntityProcessor() {}
 
 	virtual void OnUpdate(const coEntityBatch& batch);
-	virtual void OnUpdate(const coEntityArray& array) {}
+	virtual void OnUpdate(const coEntityArray& array) = 0;
 
 protected:
 };

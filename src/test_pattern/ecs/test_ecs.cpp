@@ -30,7 +30,6 @@ class TestProcessorAB : public coEntityProcessor
 public:
 	void OnUpdate(const coEntityArray& array) override
 	{
-		Base::OnUpdate(array);
 		TestAComp* comps_a = static_cast<TestAComp*>(array.components[0]);
 		TestBComp* comps_b = static_cast<TestBComp*>(array.components[1]);
 		for (coUint entityIdx = 0; entityIdx < array.nbEntities; ++entityIdx)
