@@ -6,6 +6,7 @@
 #include "../processor/coEntityProcessor.h"
 #include "../entity/coEntityBatch.h"
 #include "container/coEntityContainer.h"
+#include "processor/coEntityWorldProcessor.h"
 
 coEntityWorld::~coEntityWorld()
 {
@@ -36,8 +37,8 @@ coEntityHandle coEntityWorld::CreateEntity(const coComponentMask& mask)
 {
     const coEntityHandle entity = CreateEntity();
     EntityInfo& info = entityInfos[entity.index];
-    info.containerIdx = GetOrCreateContainer(mask);
-    coEntityContainer* container = containers[info.containerIdx];
+    info.type = GetOrCreateEntityType(mask);
+    coEntityContainer* container = containers[info.type];
     info.indexInContainer = container->CreateEntity(entity);
     return entity;
 }
@@ -60,16 +61,33 @@ coBool coEntityWorld::IsEntityAlive(const coEntityHandle& entity) const
     return entityInfos[entity.index].generation == entity.generation;
 }
 
+void coEntityWorld::Add(coEntityProcessor& processor)
+{
+    coEntityWorldProcessor* entityWorldProcessor = new coEntityWorldProcessor();
+    entityWorldProcessor->processor = &processor;
+    coPushBack(processors, entityWorldProcessor);
+}
+
 void coEntityWorld::Update()
 {
     coEntityBatch batch;
-    for (coEntityProcessor* processor : processors)
+    for (const coEntityWorldProcessor* worldProcessor : processors)
     {
-        processor->OnUpdate(batch);
+        const auto& entityTypes = worldProcessor->entityTypes;
+        batch.nbArrays = entityTypes.count;
+        for (coUint arrayIdx = 0; arrayIdx < entityTypes.count; ++arrayIdx)
+        {
+            coEntityArray& array = batch.arrays[arrayIdx];
+            const coEntityTypeID typeID = entityTypes[arrayIdx];
+            coEntityContainer* container = containers[typeID];
+            array.entities = container->entities;
+            array.nbEntities = container->nbEntities;
+        }
+        worldProcessor->processor->OnUpdate(batch);
     }
 }
 
-coUint32 coEntityWorld::GetOrCreateContainer(const coComponentMask& mask)
+coEntityTypeID coEntityWorld::GetOrCreateEntityType(const coComponentMask& mask)
 {
     for (coUint32 containerIdx = 0; containerIdx < containers.count; ++containerIdx)
     {
@@ -80,9 +98,13 @@ coUint32 coEntityWorld::GetOrCreateContainer(const coComponentMask& mask)
         }
     }
 
-    const coUint32 containerIdx = containers.count;
+    // Create new container
+    const coEntityTypeID typeID = containers.count;
     coEntityContainer* container = new coEntityContainer();
     container->componentMask = mask;
     coPushBack(containers, container);
-    return containerIdx;
+
+
+
+    return typeID;
 }

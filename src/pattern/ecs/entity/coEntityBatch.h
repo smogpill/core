@@ -2,10 +2,12 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include <container/array/coDynamicArray.h>
-class coEntityArray;
+#include "../coECSConfig.h"
+#include "coEntityArray.h"
 
 class coEntityBatch
 {
 public:
-	coDynamicArray<coEntityArray*> arrays;
+	coEntityArray arrays[co_maxNbComponentsPerProcessor];
+	coUint32 nbArrays = 0;
 };

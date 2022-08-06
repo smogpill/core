@@ -9,12 +9,13 @@ public:
 	coBool operator==(const coComponentMask& m) const;
 	coBool operator!=(const coComponentMask& m) const { return !operator==(m); }
 
-	coUint64 masks[co_maxNbComponentsPerWorld / 64] = {};
+	static constexpr coUint nbMasks = co_maxNbComponentsPerWorld / 64;
+	coUint64 masks[nbMasks] = {};
 };
 
-coBool coComponentMask::operator==(const coComponentMask& m) const
+inline coBool coComponentMask::operator==(const coComponentMask& m) const
 {
-	for (coUint i = 0; i < coARRAY_SIZE(masks); ++i)
+	for (coUint i = 0; i < nbMasks; ++i)
 	{
 		if (masks[i] != m.masks[i])
 			return false;

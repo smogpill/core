@@ -5,4 +5,6 @@
 constexpr inline coUint16 co_maxNbComponentsPerWorld = 1024;
 static_assert(co_maxNbComponentsPerWorld % 64 == 0);
 
-constexpr inline coUint16 co_maxNbComponentsPerProcessor = 32;
+constexpr inline coUint8 co_maxNbComponentsPerProcessor = 32;
+
+using coEntityTypeID = coUint32;

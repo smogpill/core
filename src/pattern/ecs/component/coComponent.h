@@ -2,7 +2,6 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include <lang/reflect/coTypeDecl.h>
-class coEntity;
 
 #define coDECLARE_COMPONENT(_Class_, _Base_) \
 	coDECLARE_BASE(_Base_); \
