@@ -6,4 +6,3 @@
 
 #define coDEFINE_COMPONENT(_Class_) \
 	coDEFINE_CLASS(_Class_)
-

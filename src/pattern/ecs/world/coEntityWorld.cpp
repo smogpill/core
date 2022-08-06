@@ -61,7 +61,7 @@ coBool coEntityWorld::IsEntityAlive(const coEntityHandle& entity) const
     return entityInfos[entity.index].generation == entity.generation;
 }
 
-void coEntityWorld::Add(coEntityProcessor& processor)
+void coEntityWorld::AddProcessor(coEntityProcessor& processor)
 {
     coEntityWorldProcessor* entityWorldProcessor = new coEntityWorldProcessor();
     entityWorldProcessor->processor = &processor;

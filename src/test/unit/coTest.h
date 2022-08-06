@@ -36,4 +36,3 @@ public:
 #define coFIXTURE_TEST(_fixtureClassName_, _testName_) _coTEST(_fixtureClassName_, _testName_, _fixtureClassName_)
 
 #define coEXPECT(_cond_) coSAFE_SCOPE( if(!(_cond_) && coReturnTrue()){ coBREAK(); } )
-

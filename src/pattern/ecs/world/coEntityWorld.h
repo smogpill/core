@@ -17,7 +17,7 @@ public:
 	coEntityHandle CreateEntity(const coComponentMask& mask);
 	void DestroyEntity(const coEntityHandle&);
 	coBool IsEntityAlive(const coEntityHandle&) const;
-	void Add(coEntityProcessor&);
+	void AddProcessor(coEntityProcessor&);
 	void Update();
 
 private:
