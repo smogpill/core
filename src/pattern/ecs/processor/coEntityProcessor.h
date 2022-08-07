@@ -17,11 +17,13 @@ public:
 	coBool HasComponentType(const coType& type) const;
 	template <class T>
 	coBool HasComponentType() const { return HasComponentType(*T::GetStaticType()); }
+	coUint GetNbComponentTypes() const { return nbComponentTypes; }
 
 	virtual void OnUpdate(const coEntityBatch& batch);
 	virtual void OnUpdate(const coEntityArray& array) = 0;
 
 protected:
+	friend class coEntityWorld;
 	template <class T>
 	T* GetComponents(const coEntityArray& array, coUint index) const;
 

@@ -14,7 +14,7 @@ void coComponentMask::Add(const coType& type)
 	Add(registry->GetHandle(type));
 }
 
-void coComponentMask::Add(const coComponentTypeHandle& handle)
+void coComponentMask::Add(const coComponentTypeHandle handle)
 {
 	coASSERT(handle.IsValid());
 	const coUint maskIndex = handle.index / 64;
@@ -22,10 +22,18 @@ void coComponentMask::Add(const coComponentTypeHandle& handle)
 	masks[maskIndex] |= mask;
 }
 
-void coComponentMask::Remove(const coComponentTypeHandle& handle)
+void coComponentMask::Remove(const coComponentTypeHandle handle)
 {
 	coASSERT(handle.IsValid());
 	const coUint maskIndex = handle.index / 64;
 	const coUint64 mask = 1ull << (handle.index % 64);
 	masks[maskIndex] &= ~mask;
+}
+
+coBool coComponentMask::HasType(const coComponentTypeHandle handle) const
+{
+	coASSERT(handle.IsValid());
+	const coUint maskIndex = handle.index / 64;
+	const coUint64 mask = 1ull << (handle.index % 64);
+	return (masks[maskIndex] & mask) != 0;
 }

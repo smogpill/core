@@ -11,13 +11,14 @@ public:
 	void Add(const coType& type);
 	template <class T>
 	void Add() { Add(*T::GetStaticType()); }
+	coBool HasType(const coComponentTypeHandle) const;
 
 	coBool operator==(const coComponentMask& m) const;
 	coBool operator!=(const coComponentMask& m) const { return !operator==(m); }
 
 private:
-	void Add(const coComponentTypeHandle& handle);
-	void Remove(const coComponentTypeHandle& handle);
+	void Add(const coComponentTypeHandle handle);
+	void Remove(const coComponentTypeHandle handle);
 
 	static constexpr coUint nbMasks = co_maxNbComponentsPerWorld / 64;
 	coUint64 masks[nbMasks] = {};

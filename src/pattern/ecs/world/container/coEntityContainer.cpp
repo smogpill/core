@@ -20,7 +20,9 @@ void coEntityContainer::Reserve(coUint32 nb)
 
 	// Configure new buffer
 	coUint64 requiredCapacity8 = 0;
-	coUint64 componentOffsets[co_maxNbComponentsPerProcessor];
+
+	coASSERT(false); // initialize component buffers
+	coUint64* componentOffsets = nullptr;
 	for (coUint componentIdx = 0; componentIdx < nbComponents; ++componentIdx)
 	{
 		const coType* type = componentTypes[componentIdx];

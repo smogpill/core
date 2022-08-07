@@ -82,17 +82,24 @@ void coEntityWorld::Update()
     coEntityBatch batch;
     for (const coEntityWorldProcessor* worldProcessor : processors)
     {
-        const auto& entityTypes = worldProcessor->entityTypes;
-        batch.nbArrays = entityTypes.count;
-        for (coUint arrayIdx = 0; arrayIdx < entityTypes.count; ++arrayIdx)
+        coEntityProcessor* processor = worldProcessor->processor;
+        const auto& entityTypeInfos = worldProcessor->entityTypeInfos;
+        batch.nbArrays = entityTypeInfos.count;
+        for (coUint infoIdx = 0; infoIdx < entityTypeInfos.count; ++infoIdx)
         {
-            coEntityArray& array = batch.arrays[arrayIdx];
-            const coEntityTypeID typeID = entityTypes[arrayIdx];
-            coEntityContainer* container = containers[typeID];
+            const coEntityWorldProcessor::EntityTypeInfo& info = entityTypeInfos[infoIdx];
+            coEntityArray& array = batch.arrays[infoIdx];
+            coEntityContainer* container = containers[info.entityTypeID];
             array.entities = container->entities;
             array.nbEntities = container->nbEntities;
+            for (coUint componentIdx = 0; componentIdx < processor->nbComponentTypes; ++componentIdx)
+            {
+                const coUint componentIdxInEntityType = info.componentIndicesInEntityType[componentIdx];
+                coASSERT(componentIdxInEntityType < coARRAY_SIZE(container->components));
+               array.components[componentIdx] = container->components[componentIdxInEntityType];
+            }
         }
-        worldProcessor->processor->OnUpdate(batch);
+        processor->OnUpdate(batch);
     }
 }
 
@@ -107,11 +114,17 @@ coEntityTypeID coEntityWorld::GetOrCreateEntityType(const coComponentMask& mask)
         }
     }
 
-    // Create new container
+    // Create new entity type
     const coEntityTypeID typeID = containers.count;
     coEntityContainer* container = new coEntityContainer();
     container->componentMask = mask;
     coPushBack(containers, container);
+
+    // Notify processors
+    for (coEntityWorldProcessor* processor : processors)
+    {
+        processor->RegisterEntityType(typeID, mask);
+    }
 
     return typeID;
 }

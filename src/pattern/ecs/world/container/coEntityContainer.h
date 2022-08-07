@@ -23,6 +23,6 @@ private:
 	coUint8 nbComponents = 0;
 	coUint32 nbEntities = 0;
 	coUint32 nbReservedEntities = 0;
-	coType* componentTypes[co_maxNbComponentsPerProcessor];
-	coComponent* components[co_maxNbComponentsPerProcessor];
+	coType* componentTypes = nullptr;
+	coComponent* components = nullptr;
 };
