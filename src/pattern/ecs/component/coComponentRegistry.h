@@ -11,6 +11,7 @@ class coComponentRegistry
 	coDECLARE_SINGLETON(coComponentRegistry);
 public:
 	coComponentRegistry();
+	const coType* GetType(const coComponentTypeHandle handle) const { return types[handle.index]; }
 	coComponentTypeHandle GetHandle(const coType& type) const;
 	template <class T>
 	coComponentTypeHandle GetHandle() const { return GetHandle(*T::GetStaticType()); }

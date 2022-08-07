@@ -35,12 +35,12 @@ public:
 	}
 	void OnUpdate(const coEntityArray& array) override
 	{
-		TestAComp* comps_a = static_cast<TestAComp*>(array.components[0]);
-		TestBComp* comps_b = static_cast<TestBComp*>(array.components[1]);
+		auto* as = GetComponents<TestAComp>(array, 0);
+		auto* bs = GetComponents<TestBComp>(array, 1);
 		for (coUint entityIdx = 0; entityIdx < array.nbEntities; ++entityIdx)
 		{
-			TestAComp& a = comps_a[entityIdx];
-			TestBComp& b = comps_b[entityIdx];
+			TestAComp& a = as[entityIdx];
+			TestBComp& b = bs[entityIdx];
 		}
 	}
 };

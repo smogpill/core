@@ -22,6 +22,15 @@ public:
 	virtual void OnUpdate(const coEntityArray& array) = 0;
 
 protected:
+	template <class T>
+	T* GetComponents(const coEntityArray& array, coUint index) const;
+
 	coUint8 nbComponentTypes = 0;
 	coComponentTypeHandle componentTypeHandles[co_maxNbComponentsPerProcessor];
 };
+
+template <class T>
+T* coEntityProcessor::GetComponents(const coEntityArray& array, coUint index) const
+{
+	return static_cast<T*>(array.components[index]);
+}
