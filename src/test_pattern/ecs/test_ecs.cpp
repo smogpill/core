@@ -3,6 +3,7 @@
 #include "test_pattern/pch.h"
 #include "test/unit/coTest.h"
 #include "pattern/ecs/component/coComponent.h"
+#include "pattern/ecs/component/coComponentMask.h"
 #include "pattern/ecs/component/coComponent_f.h"
 #include "pattern/ecs/processor/coEntityProcessor.h"
 #include "pattern/ecs/entity/coEntityArray.h"
@@ -26,11 +27,11 @@ public:
 
 class TestProcessorAB : public coEntityProcessor
 {
-	coDECLARE_BASE(coEntityProcessor);
 public:
 	TestProcessorAB()
 	{
-
+		AddComponentType<TestAComp>();
+		AddComponentType<TestBComp>();
 	}
 	void OnUpdate(const coEntityArray& array) override
 	{
@@ -61,10 +62,12 @@ coTEST(ecs, SimpleCase)
 {
 	TestProcessorAB processorAB;
 	coEntityWorld world;
-	world.AddComponentType<TestAComp>();
-	world.AddComponentType<TestBComp>();
 	world.AddProcessor(processorAB);
-	coEntityHandle entity = world.CreateEntity();
+
+	coComponentMask mask;
+	mask.Add<TestAComp>();
+	mask.Add<TestBComp>();
+	coEntityHandle entity = world.CreateEntity(mask);
 	world.Update();
 	world.DestroyEntity(entity);
 }

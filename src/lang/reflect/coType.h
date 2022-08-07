@@ -22,9 +22,12 @@ public:
 	void Give(coField& field);
 	coUint GetNbSerializableFields() const;
 	coBool IsCompatibleWith(const coType& type) const;
+	template <class T>
+	coBool IsCompatibleWith() const { return IsCompatibleWith(*T::GetStaticType()); }
 
 	coUint32 size8 = 0;
 	coUint32 alignment8 = 0;
+	coUint32 indexInRegistry = coUint32(-1);
 	coBool triviallyCopyable : 1;
 	const coType* super = nullptr;
 	const coType* subType = nullptr;

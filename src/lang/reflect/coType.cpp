@@ -5,10 +5,13 @@
 #include "lang/reflect/coField.h"
 #include "lang/reflect/coFunction.h"
 #include "container/array/coDynamicArray_f.h"
+#include "coTypeRegistry.h"
 
 coType::coType()
 	: triviallyCopyable(false)
 {
+	coTypeRegistry::CreateInstanceIfMissing();
+	coTypeRegistry::instance->Add(*this);
 }
 
 coType::~coType()

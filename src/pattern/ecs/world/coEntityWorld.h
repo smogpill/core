@@ -3,7 +3,6 @@
 #pragma once
 #include <container/array/coDynamicArray.h>
 #include "../entity/coEntityHandle.h"
-#include "../component/coComponentTypeHandle.h"
 #include "../coECSConfig.h"
 class coEntityWorldProcessor;
 class coEntityProcessor;
@@ -14,14 +13,14 @@ class cotype;
 class coEntityWorld
 {
 public:
+	coEntityWorld();
 	~coEntityWorld();
-	void Update();
 
 	// Setup
-	coComponentTypeHandle AddComponentType(const coType& type);
-	template <class T>
-	coComponentTypeHandle AddComponentType() { AddComponentType(*T::GetStaticType()); }
 	void AddProcessor(coEntityProcessor&);
+
+	// Update
+	void Update();
 
 	// Entity
 	coEntityHandle CreateEntity();

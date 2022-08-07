@@ -5,23 +5,22 @@
 #include <container/array/coDynamicArray_f.h>
 #include "../processor/coEntityProcessor.h"
 #include "../entity/coEntityBatch.h"
+#include "../component/coComponent.h"
+#include "../component/coComponentRegistry.h"
 #include "container/coEntityContainer.h"
 #include "processor/coEntityWorldProcessor.h"
 #include "lang/reflect/coType.h"
+#include "lang/reflect/coTypeRegistry.h"
+
+coEntityWorld::coEntityWorld()
+{
+    coComponentRegistry::CreateInstanceIfMissing();
+}
 
 coEntityWorld::~coEntityWorld()
 {
     for (coEntityContainer* container : containers)
         delete container;
-}
-
-coComponentTypeHandle coEntityWorld::AddComponentType(const coType& type)
-{
-    coASSERT(!coContains(componentTypes, &type));
-    coASSERT(type.triviallyCopyable);
-    coComponentTypeHandle handle(coUint16(componentTypes.count));
-    coPushBack(componentTypes, &type);
-    return handle;
 }
 
 coEntityHandle coEntityWorld::CreateEntity()
@@ -113,8 +112,6 @@ coEntityTypeID coEntityWorld::GetOrCreateEntityType(const coComponentMask& mask)
     coEntityContainer* container = new coEntityContainer();
     container->componentMask = mask;
     coPushBack(containers, container);
-
-
 
     return typeID;
 }
