@@ -28,6 +28,10 @@ class TestProcessorAB : public coEntityProcessor
 {
 	coDECLARE_BASE(coEntityProcessor);
 public:
+	TestProcessorAB()
+	{
+
+	}
 	void OnUpdate(const coEntityArray& array) override
 	{
 		TestAComp* comps_a = static_cast<TestAComp*>(array.components[0]);
@@ -57,6 +61,8 @@ coTEST(ecs, SimpleCase)
 {
 	TestProcessorAB processorAB;
 	coEntityWorld world;
+	world.AddComponentType<TestAComp>();
+	world.AddComponentType<TestBComp>();
 	world.AddProcessor(processorAB);
 	coEntityHandle entity = world.CreateEntity();
 	world.Update();

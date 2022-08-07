@@ -7,11 +7,21 @@
 #include "../entity/coEntityBatch.h"
 #include "container/coEntityContainer.h"
 #include "processor/coEntityWorldProcessor.h"
+#include "lang/reflect/coType.h"
 
 coEntityWorld::~coEntityWorld()
 {
     for (coEntityContainer* container : containers)
         delete container;
+}
+
+coComponentTypeHandle coEntityWorld::AddComponentType(const coType& type)
+{
+    coASSERT(!coContains(componentTypes, &type));
+    coASSERT(type.triviallyCopyable);
+    coComponentTypeHandle handle(coUint16(componentTypes.count));
+    coPushBack(componentTypes, &type);
+    return handle;
 }
 
 coEntityHandle coEntityWorld::CreateEntity()

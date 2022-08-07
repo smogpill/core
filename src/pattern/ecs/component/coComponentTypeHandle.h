@@ -5,5 +5,7 @@
 class coComponentTypeHandle
 {
 public:
+	coComponentTypeHandle() = default;
+	coComponentTypeHandle(const coUint16 index) : index(index) {}
 	coUint16 index = coUint16(-1);
 };

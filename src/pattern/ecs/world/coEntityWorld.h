@@ -3,22 +3,31 @@
 #pragma once
 #include <container/array/coDynamicArray.h>
 #include "../entity/coEntityHandle.h"
+#include "../component/coComponentTypeHandle.h"
 #include "../coECSConfig.h"
 class coEntityWorldProcessor;
 class coEntityProcessor;
 class coEntityContainer;
 class coComponentMask;
+class cotype;
 
 class coEntityWorld
 {
 public:
 	~coEntityWorld();
+	void Update();
+
+	// Setup
+	coComponentTypeHandle AddComponentType(const coType& type);
+	template <class T>
+	coComponentTypeHandle AddComponentType() { AddComponentType(*T::GetStaticType()); }
+	void AddProcessor(coEntityProcessor&);
+
+	// Entity
 	coEntityHandle CreateEntity();
 	coEntityHandle CreateEntity(const coComponentMask& mask);
 	void DestroyEntity(const coEntityHandle&);
 	coBool IsEntityAlive(const coEntityHandle&) const;
-	void AddProcessor(coEntityProcessor&);
-	void Update();
 
 private:
 	coEntityTypeID GetOrCreateEntityType(const coComponentMask& mask);
@@ -30,6 +39,7 @@ private:
 		coUint32 indexInContainer = coUint32(-1);
 	};
 
+	coDynamicArray<const coType*> componentTypes;
 	coDynamicArray<coEntityWorldProcessor*> processors;
 	coDynamicArray<coEntityContainer*> containers;
 	coDynamicArray<EntityInfo> entityInfos; // TODO: Should be replaced by a direct array.
