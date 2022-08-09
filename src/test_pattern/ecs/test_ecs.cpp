@@ -25,24 +25,10 @@ class TestBComp : public coComponent
 public:
 };
 
-class TestProcessorAB : public coEntityProcessor
+class TestCComp : public coComponent
 {
+	coDECLARE_COMPONENT(TestCComp, coComponent);
 public:
-	TestProcessorAB()
-	{
-		AddComponentType<TestAComp>();
-		AddComponentType<TestBComp>();
-	}
-	void OnUpdate(const coEntityArray& array) override
-	{
-		auto* as = GetComponents<TestAComp>(array, 0);
-		auto* bs = GetComponents<TestBComp>(array, 1);
-		for (coUint entityIdx = 0; entityIdx < array.nbEntities; ++entityIdx)
-		{
-			TestAComp& a = as[entityIdx];
-			TestBComp& b = bs[entityIdx];
-		}
-	}
 };
 
 coDEFINE_COMPONENT(TestAComp)
@@ -53,6 +39,30 @@ coDEFINE_COMPONENT(TestBComp)
 {
 }
 
+coDEFINE_COMPONENT(TestCComp)
+{
+}
+
+class TestProcessorAC : public coEntityProcessor
+{
+public:
+	TestProcessorAC()
+	{
+		AddComponentType<TestAComp>();
+		AddComponentType<TestCComp>();
+	}
+	void OnUpdate(const coEntityArray& array) override
+	{
+		auto* as = GetComponents<TestAComp>(array, 0);
+		auto* cs = GetComponents<TestCComp>(array, 1);
+		for (coUint entityIdx = 0; entityIdx < array.nbEntities; ++entityIdx)
+		{
+			TestAComp& a = as[entityIdx];
+			TestCComp& c = cs[entityIdx];
+		}
+	}
+};
+
 coTEST(ecs, InitReflection)
 {
 	coTypeRegistry::CreateInstanceIfMissing();
@@ -60,9 +70,9 @@ coTEST(ecs, InitReflection)
 
 coTEST(ecs, SimpleCase)
 {
-	TestProcessorAB processorAB;
 	coEntityWorld world;
-	world.AddProcessor(processorAB);
+	TestProcessorAC processorAC;
+	world.AddProcessor(processorAC);
 
 	coComponentMask mask;
 	mask.Add<TestAComp>();

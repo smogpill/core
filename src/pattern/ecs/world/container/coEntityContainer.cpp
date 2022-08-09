@@ -3,8 +3,36 @@
 #include "pattern/pch.h"
 #include "coEntityContainer.h"
 #include "../../entity/coEntityHandle.h"
+#include "../../component/coComponentMask.h"
+#include "../../component/coComponentTypeHandle.h"
+#include "../../component/coComponentRegistry.h"
 #include <lang/reflect/coType.h>
 #include <memory/coMemory_f.h>
+
+coEntityContainer::coEntityContainer(const coComponentMask& mask_)
+	: componentMask(mask_)
+{
+	nbComponents = coUint16(mask_.GetNbComponents());
+	if (nbComponents)
+	{
+		componentTypes = new const coType* [nbComponents];
+		components = new coComponent * [nbComponents];
+
+		coComponentRegistry* componentRegistry = coComponentRegistry::instance;
+		coASSERT(componentRegistry);
+
+		coUint componentIdx = 0;
+		auto func = [&](coComponentTypeHandle h)
+		{
+			coASSERT(componentIdx < nbComponents);
+			componentTypes[componentIdx] = componentRegistry->GetType(h);
+			components[componentIdx] = nullptr;
+			++componentIdx;
+		};
+		mask_.VisitTypes(func);
+		coASSERT(componentIdx == nbComponents);
+	}
+}
 
 coEntityContainer::~coEntityContainer()
 {
@@ -19,10 +47,9 @@ void coEntityContainer::Reserve(coUint32 nb)
 		return;
 
 	// Configure new buffer
-	coUint64 requiredCapacity8 = 0;
+	coUint64 requiredCapacity8 = sizeof(coEntityHandle) * nb;
 
-	coASSERT(false); // initialize component buffers
-	coUint64* componentOffsets = nullptr;
+	coUint64 componentOffsets[co_maxNbComponentsPerWorld];
 	for (coUint componentIdx = 0; componentIdx < nbComponents; ++componentIdx)
 	{
 		const coType* type = componentTypes[componentIdx];
@@ -35,11 +62,13 @@ void coEntityContainer::Reserve(coUint32 nb)
 	coASSERT(newBuffer);
 
 	// Move entities from the old buffer
+	if (coLIKELY(nbEntities))
+		coMemCopy(newBuffer, buffer, coUint64(nbEntities) * sizeof(coEntityHandle));
 	for (coUint componentIdx = 0; componentIdx < nbComponents; ++componentIdx)
 	{
 		const coType* type = componentTypes[componentIdx];
 		void* newComponent = static_cast<coByte*>(newBuffer) + componentOffsets[componentIdx];
-		if (nbEntities)
+		if (coLIKELY(nbEntities))
 			coMemCopy(newComponent, components[componentIdx], coUint64(nbEntities) * type->size8);
 		components[componentIdx] = static_cast<coComponent*>(newComponent);
 	}
@@ -49,6 +78,7 @@ void coEntityContainer::Reserve(coUint32 nb)
 		coAllocator::GetHeap()->FreeAligned(buffer);
 
 	buffer = newBuffer;
+	entities = static_cast<coEntityHandle*>(newBuffer);
 	nbReservedEntities = nb;
 }
 
@@ -95,4 +125,19 @@ void coEntityContainer::DestroyEntity(coUint32 index)
 		}
 		entities[index] = entities[nbEntities];
 	}
+}
+
+coUint16 coEntityContainer::GetIndexOfComponent(const coComponentTypeHandle& handle) const
+{
+	coComponentRegistry* componentRegistry = coComponentRegistry::instance;
+	coASSERT(componentRegistry);
+	const coType* type = componentRegistry->GetType(handle);
+	coASSERT(type);
+	for (coUint16 componentIdx = 0; componentIdx < nbComponents; ++componentIdx)
+	{
+		if (componentTypes[componentIdx] == type)
+			return componentIdx;
+	}
+	coASSERT(false);
+	return coUint16(-1);
 }

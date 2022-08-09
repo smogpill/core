@@ -3,28 +3,27 @@
 #include "pattern/pch.h"
 #include "coEntityWorldProcessor.h"
 #include <container/array/coDynamicArray_f.h>
+#include "../container/coEntityContainer.h"
 #include "../../component/coComponentMask.h"
 #include "../../processor/coEntityProcessor.h"
 
-void coEntityWorldProcessor::RegisterEntityType(const coEntityTypeID& entityTypeID, const coComponentMask& mask)
+void coEntityWorldProcessor::RegisterEntityType(const coEntityTypeID& entityTypeID, const coEntityContainer& container, const coComponentMask& mask)
 {
 	coASSERT(processor);
 	coASSERT(!HasEntityType(entityTypeID));
 	const coUint nbComponentTypes = processor->GetNbComponentTypes();
 
-	// Check if the entity type has all the required components
-	for (coUint componentTypeIdx = 0; componentTypeIdx < nbComponentTypes; ++componentTypeIdx)
-	{
-		const coComponentTypeHandle handle = componentTypes[componentTypeIdx];
-		if (!mask.HasType(handle))
-			return;
-	}
+	if (!processor->IsCompatible(mask))
+		return;
 
 	EntityTypeInfo& info = coPushBack(entityTypeInfos);
 	info.entityTypeID = entityTypeID;
+	const coComponentTypeHandle* componentTypeHandles = processor->GetComponentTypeArray();
+	coASSERT(componentTypeHandles);
 	for (coUint componentTypeIdx = 0; componentTypeIdx < nbComponentTypes; ++componentTypeIdx)
 	{
-		const coComponentTypeHandle handle = componentTypes[componentTypeIdx];
+		const coComponentTypeHandle handle = componentTypeHandles[componentTypeIdx];
+		info.componentIndicesInEntityType[componentTypeIdx] = container.GetIndexOfComponent(handle);
 	}
 }
 

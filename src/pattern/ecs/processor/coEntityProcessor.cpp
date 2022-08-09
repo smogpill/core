@@ -5,6 +5,7 @@
 #include "lang/reflect/coType.h"
 #include "../entity/coEntityBatch.h"
 #include "../component/coComponent.h"
+#include "../component/coComponentMask.h"
 #include "../component/coComponentRegistry.h"
 
 void coEntityProcessor::AddComponentType(const coType& type)
@@ -30,10 +31,16 @@ coBool coEntityProcessor::HasComponentType(const coType& type) const
 	return false;
 }
 
+coBool coEntityProcessor::IsCompatible(const coComponentMask& mask) const
+{
+	for (coUint32 typeIdx = 0; typeIdx < nbComponentTypes; ++typeIdx)
+		if (!mask.HasType(componentTypeHandles[typeIdx]))
+			return false;
+	return true;
+}
+
 void coEntityProcessor::OnUpdate(const coEntityBatch& batch)
 {
-	for (const coEntityArray& array : batch.arrays)
-	{
-		OnUpdate(array);
-	}
+	for (coUint arrayIdx = 0; arrayIdx < batch.nbArrays; ++arrayIdx)
+		OnUpdate(batch.arrays[arrayIdx]);
 }

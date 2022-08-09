@@ -4,6 +4,7 @@
 #include "../component/coComponentTypeHandle.h"
 class coEntityBatch;
 class coEntityArray;
+class coComponentMask;
 class coType;
 
 class coEntityProcessor
@@ -18,6 +19,8 @@ public:
 	template <class T>
 	coBool HasComponentType() const { return HasComponentType(*T::GetStaticType()); }
 	coUint GetNbComponentTypes() const { return nbComponentTypes; }
+	const coComponentTypeHandle* GetComponentTypeArray() const { return componentTypeHandles; }
+	coBool IsCompatible(const coComponentMask&) const;
 
 	virtual void OnUpdate(const coEntityBatch& batch);
 	virtual void OnUpdate(const coEntityArray& array) = 0;

@@ -32,7 +32,7 @@ coEntityHandle coEntityWorld::CreateEntity()
         coResize(freeEntities, nbNew);
         coResize(entityInfos, newNbReservedEntities);
         for (coUint32 i = 0; i < nbNew; ++i)
-            freeEntities[i] = newNbReservedEntities + i;
+            freeEntities[i] = nbReservedEntities + nbNew - 1 - i;
 
         nbReservedEntities = newNbReservedEntities;
     }
@@ -95,7 +95,7 @@ void coEntityWorld::Update()
             for (coUint componentIdx = 0; componentIdx < processor->nbComponentTypes; ++componentIdx)
             {
                 const coUint componentIdxInEntityType = info.componentIndicesInEntityType[componentIdx];
-                coASSERT(componentIdxInEntityType < coARRAY_SIZE(container->components));
+                coASSERT(componentIdxInEntityType < container->nbComponents);
                array.components[componentIdx] = container->components[componentIdxInEntityType];
             }
         }
@@ -116,14 +116,14 @@ coEntityTypeID coEntityWorld::GetOrCreateEntityType(const coComponentMask& mask)
 
     // Create new entity type
     const coEntityTypeID typeID = containers.count;
-    coEntityContainer* container = new coEntityContainer();
+    coEntityContainer* container = new coEntityContainer(mask);
     container->componentMask = mask;
     coPushBack(containers, container);
 
     // Notify processors
     for (coEntityWorldProcessor* processor : processors)
     {
-        processor->RegisterEntityType(typeID, mask);
+        processor->RegisterEntityType(typeID, *container, mask);
     }
 
     return typeID;

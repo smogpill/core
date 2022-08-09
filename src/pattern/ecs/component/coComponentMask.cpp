@@ -37,3 +37,13 @@ coBool coComponentMask::HasType(const coComponentTypeHandle handle) const
 	const coUint64 mask = 1ull << (handle.index % 64);
 	return (masks[maskIndex] & mask) != 0;
 }
+
+coUint16 coComponentMask::GetNbComponents() const
+{
+	coUint16 nb = 0;
+	for (const coUint64 mask : masks)
+	{
+		nb += coUint16(coCountBits(mask));
+	}
+	return nb;
+}

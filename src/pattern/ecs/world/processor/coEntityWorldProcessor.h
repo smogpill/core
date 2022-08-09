@@ -6,12 +6,13 @@
 #include <container/array/coDynamicArray.h>
 class coEntityProcessor;
 class coEntityBatch;
+class coEntityContainer;
 class coComponentMask;
 
 class coEntityWorldProcessor
 {
 public:
-	void RegisterEntityType(const coEntityTypeID& entityTypeID, const coComponentMask& mask);
+	void RegisterEntityType(const coEntityTypeID& entityTypeID, const coEntityContainer& container, const coComponentMask& mask);
 	coBool HasEntityType(const coEntityTypeID& entityTypeID) const;
 
 	struct EntityTypeInfo
@@ -20,6 +21,5 @@ public:
 		coUint16 componentIndicesInEntityType[co_maxNbComponentsPerProcessor];
 	};
 	coEntityProcessor* processor = nullptr;
-	coComponentTypeHandle componentTypes[co_maxNbComponentsPerProcessor];
 	coDynamicArray<EntityTypeInfo> entityTypeInfos;
 };

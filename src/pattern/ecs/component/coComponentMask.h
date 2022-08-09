@@ -2,6 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include "../coECSConfig.h"
+#include <math/scalar/coUint64_f.h>
 class coType;
 class coComponentTypeHandle;
 
@@ -15,6 +16,9 @@ public:
 
 	coBool operator==(const coComponentMask& m) const;
 	coBool operator!=(const coComponentMask& m) const { return !operator==(m); }
+	coUint16 GetNbComponents() const;
+	template <class F>
+	void VisitTypes(F) const;
 
 private:
 	void Add(const coComponentTypeHandle handle);
@@ -34,3 +38,22 @@ inline coBool coComponentMask::operator==(const coComponentMask& m) const
 	return true;
 }
 
+template <class F>
+void coComponentMask::VisitTypes(F func) const
+{
+	coUint offset = 0;
+	for (const coUint64 mask : masks)
+	{
+		if (mask)
+		{
+			for (coUint i = 0; i < 64; ++i)
+			{
+				if ((mask >> i) & 1ull)
+				{
+					func(coComponentTypeHandle(offset + i));
+				}
+			}
+		}
+		offset += 64;
+	}
+}
