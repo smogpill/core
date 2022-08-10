@@ -1,0 +1,5 @@
+* [Dale Weiler. Fibers, Oh My!. 2020](https://graphitemaster.github.io/fibers/)
+* [Christian Gyrling, Naughty Dog. Parallelizing the Naughty Dog engine using fibers. 2015](https://ubm-twvideo01.s3.amazonaws.com/o1/vault/gdc2015/presentations/Gyrling_Christian_Parallelizing_The_Naughty.pdf)
+* [Roman Gershman. Introducing to Fibers in C++. 2018](https://www.romange.com/2018/12/15/introduction-to-fibers-in-c-/)
+* [Gor Nishanov. Fibers under the magnifying glass. 2018](https://www.open-std.org/JTC1/SC22/WG21/docs/papers/2018/p1364r0.pdf)
+* [JarkkoPFC. Fiber](https://github.com/JarkkoPFC/fiber)

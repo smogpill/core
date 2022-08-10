@@ -57,6 +57,8 @@ void coEntityWorld::DestroyEntity(const coEntityHandle& entity)
     coASSERT(IsEntityAlive(entity));
     coASSERT(entity.index < nbReservedEntities);
     EntityInfo& info = entityInfos[entity.index];
+    coEntityContainer* container = containers[info.type];
+    container->DestroyEntity(info.indexInContainer);
     ++info.generation;
     if (info.generation != coUint32(-1))
     {
