@@ -22,20 +22,17 @@ public:
 	const coComponentTypeHandle* GetComponentTypeArray() const { return componentTypeHandles; }
 	coBool IsCompatible(const coComponentMask&) const;
 
+
 	virtual void OnUpdate(const coEntityBatch& batch);
 	virtual void OnUpdate(const coEntityArray& array) = 0;
 
 protected:
 	friend class coEntityWorld;
 	template <class T>
-	T* GetComponents(const coEntityArray& array, coUint index) const;
+	const T* GetComponentsR(const coEntityArray& array, coUint index) const { return static_cast<const T*>(array.components[index]); }
+	template <class T>
+	T* GetComponentsRW(const coEntityArray& array, coUint index) const { return static_cast<T*>(array.components[index]); }
 
 	coUint8 nbComponentTypes = 0;
 	coComponentTypeHandle componentTypeHandles[co_maxNbComponentsPerProcessor];
 };
-
-template <class T>
-T* coEntityProcessor::GetComponents(const coEntityArray& array, coUint index) const
-{
-	return static_cast<T*>(array.components[index]);
-}

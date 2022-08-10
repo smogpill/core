@@ -53,8 +53,8 @@ public:
 	}
 	void OnUpdate(const coEntityArray& array) override
 	{
-		auto* as = GetComponents<TestAComp>(array, 0);
-		auto* cs = GetComponents<TestCComp>(array, 1);
+		auto* as = GetComponentsRW<TestAComp>(array, 0);
+		auto* cs = GetComponentsRW<TestCComp>(array, 1);
 		for (coUint entityIdx = 0; entityIdx < array.nbEntities; ++entityIdx)
 		{
 			TestAComp& a = as[entityIdx];
