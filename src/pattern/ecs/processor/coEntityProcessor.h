@@ -12,9 +12,10 @@ class coEntityProcessor
 public:
 	virtual ~coEntityProcessor() {}
 
-	void AddComponentType(const coType& type);
 	template <class T>
-	void AddComponentType() { AddComponentType(*T::GetStaticType()); }
+	void AddComponentTypeR() { AddComponentType(*T::GetStaticType()); }
+	template <class T>
+	void AddComponentTypeRW() { AddComponentTypeRW(*T::GetStaticType()); }
 	coBool HasComponentType(const coType& type) const;
 	template <class T>
 	coBool HasComponentType() const { return HasComponentType(*T::GetStaticType()); }
@@ -27,6 +28,8 @@ public:
 	virtual void OnUpdate(const coEntityArray& array) = 0;
 
 protected:
+	void AddComponentType(const coType& type);
+	void AddComponentTypeRW(const coType& type);
 	friend class coEntityWorld;
 	template <class T>
 	const T* GetComponentsR(const coEntityArray& array, coUint index) const { return static_cast<const T*>(array.components[index]); }
@@ -35,4 +38,5 @@ protected:
 
 	coUint8 nbComponentTypes = 0;
 	coComponentTypeHandle componentTypeHandles[co_maxNbComponentsPerProcessor];
+	coUint32 componentTypesWriteAccess = 0;
 };

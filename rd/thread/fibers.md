@@ -3,3 +3,4 @@
 * [Roman Gershman. Introducing to Fibers in C++. 2018](https://www.romange.com/2018/12/15/introduction-to-fibers-in-c-/)
 * [Gor Nishanov. Fibers under the magnifying glass. 2018](https://www.open-std.org/JTC1/SC22/WG21/docs/papers/2018/p1364r0.pdf)
 * [JarkkoPFC. Fiber](https://github.com/JarkkoPFC/fiber)
+* [SquidTasks](https://github.com/westquote/SquidTasks)

@@ -19,6 +19,13 @@ void coEntityProcessor::AddComponentType(const coType& type)
 	++nbComponentTypes;
 }
 
+void coEntityProcessor::AddComponentTypeRW(const coType& type)
+{
+	static_assert(co_maxNbComponentsPerProcessor <= sizeof(componentTypesWriteAccess) * 8);
+	componentTypesWriteAccess |= 1 << nbComponentTypes;
+	AddComponentType(type);
+}
+
 coBool coEntityProcessor::HasComponentType(const coType& type) const
 {
 	coASSERT(type.IsCompatibleWith<coComponent>());

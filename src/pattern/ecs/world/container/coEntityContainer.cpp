@@ -3,6 +3,7 @@
 #include "pattern/pch.h"
 #include "coEntityContainer.h"
 #include "../../entity/coEntityHandle.h"
+#include "../../component/coComponent.h"
 #include "../../component/coComponentMask.h"
 #include "../../component/coComponentTypeHandle.h"
 #include "../../component/coComponentRegistry.h"
@@ -53,8 +54,9 @@ void coEntityContainer::Reserve(coUint32 nb)
 	for (coUint componentIdx = 0; componentIdx < nbComponents; ++componentIdx)
 	{
 		const coType* type = componentTypes[componentIdx];
-		const coUint64 componentArraySize8 = coUint64(nb) * type->size8;
+		requiredCapacity8 = coAlignSize(requiredCapacity8, coUint64(type->alignment8));
 		componentOffsets[componentIdx] = requiredCapacity8;
+		const coUint64 componentArraySize8 = coUint64(nb) * type->size8;
 		requiredCapacity8 += componentArraySize8;
 	}
 
@@ -92,8 +94,7 @@ coUint32 coEntityContainer::CreateEntity(const coEntityHandle& entity)
 	for (coUint componentIdx = 0; componentIdx < nbComponents; ++componentIdx)
 	{
 		const coType* type = componentTypes[componentIdx];
-		coComponent* comp = components[index];
-		type->constructFunc(comp);
+		type->constructFunc(components[componentIdx] + index);
 	}
 	return index;
 }

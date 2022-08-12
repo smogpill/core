@@ -17,18 +17,21 @@ class TestAComp : public coComponent
 {
 	coDECLARE_COMPONENT(TestAComp, coComponent);
 public:
+	coInt a = 7;
 };
 
 class TestBComp : public coComponent
 {
 	coDECLARE_COMPONENT(TestBComp, coComponent);
 public:
+	coFloat b = 23.0f;
 };
 
 class TestCComp : public coComponent
 {
 	coDECLARE_COMPONENT(TestCComp, coComponent);
 public:
+	coUint c = 99;
 };
 
 coDEFINE_COMPONENT(TestAComp)
@@ -48,8 +51,8 @@ class TestProcessorAC : public coEntityProcessor
 public:
 	TestProcessorAC()
 	{
-		AddComponentType<TestAComp>();
-		AddComponentType<TestCComp>();
+		AddComponentTypeRW<TestAComp>();
+		AddComponentTypeRW<TestCComp>();
 	}
 	void OnUpdate(const coEntityArray& array) override
 	{
@@ -77,6 +80,7 @@ coTEST(ecs, SimpleCase)
 	coComponentMask mask;
 	mask.Add<TestAComp>();
 	mask.Add<TestBComp>();
+	mask.Add<TestCComp>();
 	coEntityHandle entity = world.CreateEntity(mask);
 	world.Update();
 	world.DestroyEntity(entity);
@@ -88,6 +92,7 @@ coTEST(ecs, Prefab)
 
 coTEST(ecs, Archive)
 {
+	coEntityWorld world;
 }
 
 coTEST(ecs, Children)
