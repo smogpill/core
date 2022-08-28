@@ -84,6 +84,25 @@ void coEntityContainer::Reserve(coUint32 nb)
 	nbReservedEntities = nb;
 }
 
+coComponent& coEntityContainer::GetComponent(coUint32 entityIdx, coUint32 componentTypeIdx) const
+{
+	coASSERT(componentTypeIdx < nbComponents);
+	coASSERT(entityIdx < nbEntities);
+	return components[componentTypeIdx][entityIdx];
+}
+
+coUint coEntityContainer::FindComponentTypeIndex(const coType& type) const
+{
+	for (coUint componentIdx = 0; componentIdx < nbComponents; ++componentIdx)
+	{
+		if (componentTypes[componentIdx] == &type)
+		{
+			return componentIdx;
+		}
+	}
+	return coUint(-1);
+}
+
 coUint32 coEntityContainer::CreateEntity(const coEntityHandle& entity)
 {
 	const coUint32 index = nbEntities;

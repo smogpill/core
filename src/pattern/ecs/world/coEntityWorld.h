@@ -8,7 +8,8 @@ class coEntityWorldProcessor;
 class coEntityProcessor;
 class coEntityContainer;
 class coComponentMask;
-class cotype;
+class coEntityType;
+class coArchive;
 
 class coEntityWorld
 {
@@ -24,24 +25,30 @@ public:
 
 	// Entity
 	coEntityHandle CreateEntity();
-	coEntityHandle CreateEntity(const coComponentMask& mask);
+	coEntityHandle CreateEntity(const coEntityType& type);
+	template <class T>
+	coEntityHandle CreateEntity() { return CreateEntity(*T::GetStaticType()); }
 	void DestroyEntity(const coEntityHandle&);
 	coBool IsEntityAlive(const coEntityHandle&) const;
+	void Save(const coEntityHandle&, coArchive& out) const;
+	coEntityHandle Load(const coArchive&);
 
 private:
-	coEntityTypeID GetOrCreateEntityType(const coComponentMask& mask);
+	friend class coEntityData;
 
 	struct EntityInfo
 	{
 		coUint32 generation = 0;
-		coEntityTypeID type = coEntityTypeID(-1);
+		const coEntityType* type = nullptr;
+		coEntityPatternID patternID = coEntityPatternID(-1);
 		coUint32 indexInContainer = coUint32(-1);
 	};
+	coEntityPatternID GetOrCreateEntityPattern(const coComponentMask& mask);
+	EntityInfo* GetEntityInfo(const coEntityHandle&) const;
 
-	coDynamicArray<const coType*> componentTypes;
 	coDynamicArray<coEntityWorldProcessor*> processors;
 	coDynamicArray<coEntityContainer*> containers;
-	coDynamicArray<EntityInfo> entityInfos; // TODO: Should be replaced by a direct array.
+	coDynamicArray<EntityInfo> entityInfos;
 	coDynamicArray<coUint32> freeEntities;
 	coUint32 nbReservedEntities = 0;
 };

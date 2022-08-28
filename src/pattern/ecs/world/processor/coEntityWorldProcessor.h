@@ -12,12 +12,12 @@ class coComponentMask;
 class coEntityWorldProcessor
 {
 public:
-	void RegisterEntityType(const coEntityTypeID& entityTypeID, const coEntityContainer& container, const coComponentMask& mask);
-	coBool HasEntityType(const coEntityTypeID& entityTypeID) const;
+	void RegisterEntityType(const coEntityPatternID& entityTypeID, const coEntityContainer& container, const coComponentMask& mask);
+	coBool HasEntityType(const coEntityPatternID& entityTypeID) const;
 
 	struct EntityTypeInfo
 	{
-		coEntityTypeID entityTypeID;
+		coEntityPatternID entityTypeID;
 		coUint16 componentIndicesInEntityType[co_maxNbComponentsPerProcessor];
 	};
 	coEntityProcessor* processor = nullptr;

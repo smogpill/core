@@ -7,6 +7,8 @@
 #include "pattern/ecs/component/coComponent_f.h"
 #include "pattern/ecs/processor/coEntityProcessor.h"
 #include "pattern/ecs/entity/coEntityArray.h"
+#include "pattern/ecs/entity/coEntityTypeDecl.h"
+#include "pattern/ecs/entity/coEntityTypeDecl_f.h"
 #include "pattern/ecs/world/coEntityWorld.h"
 #include "pattern/pointer/coUniquePtr.h"
 #include <io/archive/coArchive.h>
@@ -34,6 +36,24 @@ public:
 	coUint c = 99;
 };
 
+class TransformC : public coComponent
+{
+	coDECLARE_COMPONENT(TransformC, coComponent)
+public:
+	coTransform local;
+	coTransform world;
+	coUint32 version = 0;
+};
+
+class OwnershipC : public coComponent
+{
+	coDECLARE_COMPONENT(OwnershipC, coComponent)
+public:
+	coEntityHandle parent;
+	coEntityHandle firstChild;
+	coEntityHandle nextSibling;
+};
+
 coDEFINE_COMPONENT(TestAComp)
 {
 }
@@ -44,6 +64,15 @@ coDEFINE_COMPONENT(TestBComp)
 
 coDEFINE_COMPONENT(TestCComp)
 {
+}
+
+coDECLARE_ENTITY_TYPE(TestEntity);
+
+coDEFINE_ENTITY_TYPE(TestEntity)
+{
+	type->AddComponent<TestAComp>();
+	type->AddComponent<TestBComp>();
+	type->AddComponent<TestCComp>();
 }
 
 class TestProcessorAC : public coEntityProcessor
@@ -77,11 +106,7 @@ coTEST(ecs, SimpleCase)
 	TestProcessorAC processorAC;
 	world.AddProcessor(processorAC);
 
-	coComponentMask mask;
-	mask.Add<TestAComp>();
-	mask.Add<TestBComp>();
-	mask.Add<TestCComp>();
-	coEntityHandle entity = world.CreateEntity(mask);
+	coEntityHandle entity = world.CreateEntity<TestEntity>();
 	world.Update();
 	world.DestroyEntity(entity);
 }
@@ -93,6 +118,20 @@ coTEST(ecs, Prefab)
 coTEST(ecs, Archive)
 {
 	coEntityWorld world;
+	coArchive archive;
+
+	// Save
+	{
+		const coEntityHandle entity = world.CreateEntity<TestEntity>();
+		world.Save(entity, archive);
+		world.DestroyEntity(entity);
+	}
+	
+	// Load
+	{
+		const coEntityHandle entity = world.Load(archive);
+		coEXPECT(entity.IsValid());
+	}
 }
 
 coTEST(ecs, Children)

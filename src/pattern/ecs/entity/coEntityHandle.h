@@ -10,8 +10,10 @@ public:
 	void operator=(const coEntityHandle& h) { reinterpret_cast<coUint64&>(index) = h.GetRaw(); }
 	coBool operator==(const coEntityHandle& h) { return GetRaw() == h.GetRaw(); }
 	coBool operator!=(const coEntityHandle& h) { return GetRaw() != h.GetRaw(); }
+	coBool IsValid() const { return index != coUint32(-1); }
 	coUint64 GetRaw() const { return reinterpret_cast<const coUint64&>(index); }
 
+	static const coEntityHandle invalid;
 	coUint32 index = coUint32(-1);
 	coUint32 generation = coUint32(-1);
 };

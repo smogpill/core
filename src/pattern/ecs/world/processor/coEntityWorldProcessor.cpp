@@ -7,7 +7,7 @@
 #include "../../component/coComponentMask.h"
 #include "../../processor/coEntityProcessor.h"
 
-void coEntityWorldProcessor::RegisterEntityType(const coEntityTypeID& entityTypeID, const coEntityContainer& container, const coComponentMask& mask)
+void coEntityWorldProcessor::RegisterEntityType(const coEntityPatternID& entityTypeID, const coEntityContainer& container, const coComponentMask& mask)
 {
 	coASSERT(processor);
 	coASSERT(!HasEntityType(entityTypeID));
@@ -27,7 +27,7 @@ void coEntityWorldProcessor::RegisterEntityType(const coEntityTypeID& entityType
 	}
 }
 
-coBool coEntityWorldProcessor::HasEntityType(const coEntityTypeID& entityTypeID) const
+coBool coEntityWorldProcessor::HasEntityType(const coEntityPatternID& entityTypeID) const
 {
 	for (const EntityTypeInfo& info : entityTypeInfos)
 	{

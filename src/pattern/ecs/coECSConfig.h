@@ -7,4 +7,11 @@ static_assert(co_maxNbComponentsPerWorld % 64 == 0);
 
 constexpr inline coUint8 co_maxNbComponentsPerProcessor = 32;
 
-using coEntityTypeID = coUint32;
+using coEntityPatternID = coUint32;
+
+class coComponentMaskHandle
+{
+public:
+private:
+	coUint32 index = coUint32(-1);
+};

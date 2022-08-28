@@ -5,12 +5,15 @@
 #include <container/array/coDynamicArray_f.h>
 #include "../processor/coEntityProcessor.h"
 #include "../entity/coEntityBatch.h"
+#include "../entity/coEntityType.h"
+#include "../entity/coEntityData.h"
 #include "../component/coComponent.h"
 #include "../component/coComponentRegistry.h"
 #include "container/coEntityContainer.h"
 #include "processor/coEntityWorldProcessor.h"
 #include "lang/reflect/coType.h"
 #include "lang/reflect/coTypeRegistry.h"
+#include "io/archive/coArchive.h"
 
 coEntityWorld::coEntityWorld()
 {
@@ -42,12 +45,12 @@ coEntityHandle coEntityWorld::CreateEntity()
     return coEntityHandle(entityIdx, info.generation);
 }
 
-coEntityHandle coEntityWorld::CreateEntity(const coComponentMask& mask)
+coEntityHandle coEntityWorld::CreateEntity(const coEntityType& type)
 {
     const coEntityHandle entity = CreateEntity();
     EntityInfo& info = entityInfos[entity.index];
-    info.type = GetOrCreateEntityType(mask);
-    coEntityContainer* container = containers[info.type];
+    info.patternID = GetOrCreateEntityPattern(type.GetComponentMask());
+    coEntityContainer* container = containers[info.patternID];
     info.indexInContainer = container->CreateEntity(entity);
     return entity;
 }
@@ -57,7 +60,7 @@ void coEntityWorld::DestroyEntity(const coEntityHandle& entity)
     coASSERT(IsEntityAlive(entity));
     coASSERT(entity.index < nbReservedEntities);
     EntityInfo& info = entityInfos[entity.index];
-    coEntityContainer* container = containers[info.type];
+    coEntityContainer* container = containers[info.patternID];
     container->DestroyEntity(info.indexInContainer);
     ++info.generation;
     if (info.generation != coUint32(-1))
@@ -68,8 +71,15 @@ void coEntityWorld::DestroyEntity(const coEntityHandle& entity)
 
 coBool coEntityWorld::IsEntityAlive(const coEntityHandle& entity) const
 {
-    coASSERT(entity.index < nbReservedEntities);
-    return entityInfos[entity.index].generation == entity.generation;
+    if (entity.IsValid())
+    {
+        coASSERT(entity.index < nbReservedEntities);
+        return entityInfos[entity.index].generation == entity.generation;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 void coEntityWorld::AddProcessor(coEntityProcessor& processor)
@@ -105,7 +115,7 @@ void coEntityWorld::Update()
     }
 }
 
-coEntityTypeID coEntityWorld::GetOrCreateEntityType(const coComponentMask& mask)
+coEntityPatternID coEntityWorld::GetOrCreateEntityPattern(const coComponentMask& mask)
 {
     for (coUint32 containerIdx = 0; containerIdx < containers.count; ++containerIdx)
     {
@@ -117,7 +127,7 @@ coEntityTypeID coEntityWorld::GetOrCreateEntityType(const coComponentMask& mask)
     }
 
     // Create new entity type
-    const coEntityTypeID typeID = containers.count;
+    const coEntityPatternID typeID = containers.count;
     coEntityContainer* container = new coEntityContainer(mask);
     container->componentMask = mask;
     coPushBack(containers, container);
@@ -129,4 +139,37 @@ coEntityTypeID coEntityWorld::GetOrCreateEntityType(const coComponentMask& mask)
     }
 
     return typeID;
+}
+
+coEntityWorld::EntityInfo* coEntityWorld::GetEntityInfo(const coEntityHandle& entity) const
+{
+    if (entity.IsValid())
+    {
+        coASSERT(entity.index < nbReservedEntities);
+        const EntityInfo* entityInfo = &entityInfos[entity.index];
+        if (entityInfo->generation == entity.generation)
+        {
+            return const_cast<EntityInfo*>(entityInfo);
+        }
+    }
+    return nullptr;
+}
+
+void coEntityWorld::Save(const coEntityHandle& entity, coArchive& out) const
+{
+    const EntityInfo* info = GetEntityInfo(entity);
+    if (info)
+    {
+        coEntityData data;
+        data.handle = entity;
+        out.WriteRoot(data);
+    }
+}
+
+coEntityHandle coEntityWorld::Load(const coArchive& in)
+{
+    const coUint32 rootIdx = in.GetRoot();
+    coEntityData data;
+    in.ReadObject(rootIdx, data);
+    return data.handle;
 }
