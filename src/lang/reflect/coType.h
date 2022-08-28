@@ -20,6 +20,9 @@ public:
 	~coType();
 
 	void Give(coField& field);
+	void AddDependency(coType& type);
+	template <class T>
+	void AddDepdendency() { AddDependency(*T::GetStaticType()); }
 	coUint GetNbSerializableFields() const;
 	coBool IsCompatibleWith(const coType& type) const;
 	template <class T>
@@ -39,4 +42,5 @@ public:
 	coReadArchiveFunc readArchiveFunc = nullptr;
 	coDynamicArray<coField*> fields;
 	coDynamicArray<coFunction*> functions;
+	coDynamicArray<coType*> dependencies;
 };
