@@ -28,7 +28,7 @@ public:
 	void Read(void* buffer, coUint32 size) const;
 	template <class T>
 	void Read(T& buffer) const { Read(&buffer, sizeof(buffer)); }
-	void SetContext(void* context_) { context = context_; }
+	void SetContext(void* context_) const { context = context_; }
 	
 	coUint32 WriteObject(const void* object, const coType& type);
 	void PushBytes(coUint size);
@@ -46,11 +46,18 @@ private:
 	static coBool IsFieldInlinable(const coField& field);
 
 	coDynamicArray<coByte> data;
-	void* context = nullptr;
+	mutable void* context = nullptr;
 };
 
 template<class T>
 inline void coArchive::WriteRoot(const T& object)
 {
 	WriteRoot(&object, *T::GetStaticType());
+}
+
+template <class T>
+inline const T& coArchive::Get(coUint32 idx) const
+{
+	coASSERT(idx + sizeof(T) <= data.count);
+	return *reinterpret_cast<const T*>(&data.data[idx]);
 }

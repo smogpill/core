@@ -21,10 +21,10 @@ class coFORCE_SYMBOL_INCLUSION_ATTRIBUTE coClassEntityTypeAutoRegistrator : publ
 public:
 	coClassEntityTypeAutoRegistrator()
 	{
-		coTypeHelper<T>::GetStaticType();
+		T::GetStaticType();
 	}
 
-	coType* GetOrCreateType() override { return coTypeHelper<T>::GetStaticType(); }
+	coEntityType* GetOrCreateType() override { return T::GetStaticType(); }
 };
 
 

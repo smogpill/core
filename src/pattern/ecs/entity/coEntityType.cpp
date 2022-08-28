@@ -2,6 +2,13 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "pattern/pch.h"
 #include "coEntityType.h"
+#include "coEntityTypeRegistry.h"
+
+coEntityType::coEntityType()
+{
+	coEntityTypeRegistry::CreateInstanceIfMissing();
+	coEntityTypeRegistry::instance->Add(*this);
+}
 
 void coEntityType::AddComponent(const coType& type)
 {

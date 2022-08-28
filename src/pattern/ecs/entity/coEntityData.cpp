@@ -8,7 +8,9 @@
 #include <io/archive/coArchive.h>
 #include "../world/coEntityWorld.h"
 #include "../world/container/coEntityContainer.h"
+#include "../component/coComponent.h"
 #include "coEntityType.h"
+#include "coEntityTypeRegistry.h"
 
 coDEFINE_CLASS(coEntityData)
 {
@@ -32,11 +34,9 @@ coDEFINE_CLASS(coEntityData)
 		{
 			const coType* componentType = container->GetComponentType(componentIdx);
 			const coComponent& component = container->GetComponent(info->indexInContainer, componentIdx);
-
-			coUint32* componentTypeUIDData = reinterpret_cast<coUint32*>(&archiveData[inlineIdx + componentIdx * sizeof(coUint32) * 2]);
-			coUint32* componentIdxData = componentTypeUIDData + 1;
-			*componentTypeUIDData = componentType->uid;
-			*componentIdxData = archive.WriteObject(&component, *componentType);
+			const coUint32 dataIdx = inlineIdx + componentIdx * sizeof(coUint32) * 2;
+			*reinterpret_cast<coUint32*>(&archiveData[dataIdx]) = componentType->uid;
+			*reinterpret_cast<coUint32*>(&archiveData[dataIdx + sizeof(coUint32)]) = archive.WriteObject(&component, *componentType);
 		}
 		return index;
 	};
@@ -45,12 +45,11 @@ coDEFINE_CLASS(coEntityData)
 		const coEntityDataContext* context = static_cast<const coEntityDataContext*>(archive.GetContext());
 		coEntityWorld* world = context->world;
 
-		coEntityData* data = static_cast<coEntityData*>(obj);
 		const coUint32 entityTypeUID = archive.Get<coUint32>(idx);
 		idx += sizeof(entityTypeUID);
 		const coUint16 nbComponentsInData = archive.Get<coUint16>(idx);
 		idx += sizeof(nbComponentsInData);
-		const coEntityType* entityType = ;
+		const coEntityType* entityType = coEntityTypeRegistry::instance->Get(entityTypeUID);
 		const coEntityHandle entity = world->CreateEntity(*entityType);
 		const coEntityWorld::EntityInfo* info = world->GetEntityInfo(entity);
 		const auto& archiveData = archive.GetData();
@@ -58,7 +57,7 @@ coDEFINE_CLASS(coEntityData)
 		coEntityContainer* container = world->containers[info->patternID];
 		for (coUint16 componentDataIdx = 0; componentDataIdx < nbComponentsInData; ++componentDataIdx)
 		{
-			const coUint32* componentTypeUIDData = reinterpret_cast<coUint32*>(&archiveData[idx + componentDataIdx * sizeof(coUint32) * 2]);
+			const coUint32* componentTypeUIDData = reinterpret_cast<const coUint32*>(&archiveData[idx + componentDataIdx * sizeof(coUint32) * 2]);
 			const coUint32* componentIdxData = componentTypeUIDData + 1;
 
 			if (*componentIdxData)
@@ -70,10 +69,13 @@ coDEFINE_CLASS(coEntityData)
 					if (componentTypeIdx != coUint(-1))
 					{
 						coComponent& component = container->GetComponent(info->indexInContainer, componentTypeIdx);
-						archive.ReadObject(*componentIdxData, component);
+						archive.ReadObject(*componentIdxData, &component, *componentType);
 					}
 				}
 			}
 		}
+
+		coEntityData* data = static_cast<coEntityData*>(obj);
+		data->handle = entity;
 	};
 }

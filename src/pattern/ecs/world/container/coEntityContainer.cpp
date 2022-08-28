@@ -37,7 +37,6 @@ coEntityContainer::coEntityContainer(const coComponentMask& mask_)
 
 coEntityContainer::~coEntityContainer()
 {
-	coASSERT(nbEntities == 0);
 	if (buffer)
 		coAllocator::GetHeap()->FreeAligned(buffer);
 }

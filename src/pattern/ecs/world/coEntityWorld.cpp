@@ -50,6 +50,7 @@ coEntityHandle coEntityWorld::CreateEntity(const coEntityType& type)
     const coEntityHandle entity = CreateEntity();
     EntityInfo& info = entityInfos[entity.index];
     info.patternID = GetOrCreateEntityPattern(type.GetComponentMask());
+    info.type = &type;
     coEntityContainer* container = containers[info.patternID];
     info.indexInContainer = container->CreateEntity(entity);
     return entity;
@@ -160,6 +161,9 @@ void coEntityWorld::Save(const coEntityHandle& entity, coArchive& out) const
     const EntityInfo* info = GetEntityInfo(entity);
     if (info)
     {
+        coEntityDataContext context;
+        context.world = const_cast<coEntityWorld*>(this);
+        out.SetContext(&context);
         coEntityData data;
         data.handle = entity;
         out.WriteRoot(data);
@@ -168,6 +172,9 @@ void coEntityWorld::Save(const coEntityHandle& entity, coArchive& out) const
 
 coEntityHandle coEntityWorld::Load(const coArchive& in)
 {
+    coEntityDataContext context;
+    context.world = this;
+    in.SetContext(&context);
     const coUint32 rootIdx = in.GetRoot();
     coEntityData data;
     in.ReadObject(rootIdx, data);

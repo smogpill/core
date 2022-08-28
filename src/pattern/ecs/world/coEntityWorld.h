@@ -39,9 +39,9 @@ private:
 	struct EntityInfo
 	{
 		coUint32 generation = 0;
-		const coEntityType* type = nullptr;
 		coEntityPatternID patternID = coEntityPatternID(-1);
 		coUint32 indexInContainer = coUint32(-1);
+		const coEntityType* type = nullptr;
 	};
 	coEntityPatternID GetOrCreateEntityPattern(const coComponentMask& mask);
 	EntityInfo* GetEntityInfo(const coEntityHandle&) const;
