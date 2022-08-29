@@ -22,7 +22,9 @@ public:
 	void Give(coField& field);
 	void AddDependency(coType& type);
 	template <class T>
-	void AddDepdendency() { AddDependency(*T::GetStaticType()); }
+	void AddDependency() { AddDependency(*T::GetStaticType()); }
+
+	const coArray<coType*>& GetDependencies() const { return dependencies; }
 	coUint GetNbSerializableFields() const;
 	coBool IsCompatibleWith(const coType& type) const;
 	template <class T>

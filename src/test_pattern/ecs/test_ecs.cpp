@@ -22,12 +22,20 @@ public:
 	coInt a = 7;
 };
 
+coDEFINE_COMPONENT(TestAComp)
+{
+}
+
 class TestBComp : public coComponent
 {
 	coDECLARE_COMPONENT(TestBComp, coComponent);
 public:
 	coFloat b = 23.0f;
 };
+
+coDEFINE_COMPONENT(TestBComp)
+{
+}
 
 class TestCComp : public coComponent
 {
@@ -45,6 +53,11 @@ public:
 	coUint32 version = 0;
 };
 
+coDEFINE_COMPONENT(TestCComp)
+{
+	type->AddDependency<TestAComp>();
+}
+
 class OwnershipC : public coComponent
 {
 	coDECLARE_COMPONENT(OwnershipC, coComponent)
@@ -54,23 +67,10 @@ public:
 	coEntityHandle nextSibling;
 };
 
-coDEFINE_COMPONENT(TestAComp)
-{
-}
-
-coDEFINE_COMPONENT(TestBComp)
-{
-}
-
-coDEFINE_COMPONENT(TestCComp)
-{
-}
-
 coDECLARE_ENTITY_TYPE(TestEntity);
 
 coDEFINE_ENTITY_TYPE(TestEntity)
 {
-	type->AddComponent<TestAComp>();
 	type->AddComponent<TestBComp>();
 	type->AddComponent<TestCComp>();
 }
