@@ -46,6 +46,7 @@ private:
 	coEntityPatternID GetOrCreateEntityPattern(const coComponentMask& mask);
 	EntityInfo* GetEntityInfo(const coEntityHandle&) const;
 
+	coUint32 uid = 0;
 	coDynamicArray<coEntityWorldProcessor*> processors;
 	coDynamicArray<coEntityContainer*> containers;
 	coDynamicArray<EntityInfo> entityInfos;

@@ -6,8 +6,9 @@ class coEntityHandle
 {
 public:
 	coEntityHandle() = default;
+	coEntityHandle(const coEntityHandle&) = default;
 	coEntityHandle(coUint32 index, coUint32 generation) : index(index), generation(generation) {}
-	void operator=(const coEntityHandle& h) { reinterpret_cast<coUint64&>(index) = h.GetRaw(); }
+	coEntityHandle& operator=(const coEntityHandle& h) = default;
 	coBool operator==(const coEntityHandle& h) { return GetRaw() == h.GetRaw(); }
 	coBool operator!=(const coEntityHandle& h) { return GetRaw() != h.GetRaw(); }
 	coBool IsValid() const { return index != coUint32(-1); }

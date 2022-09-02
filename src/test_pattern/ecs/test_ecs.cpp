@@ -5,6 +5,7 @@
 #include "pattern/ecs/component/coComponent.h"
 #include "pattern/ecs/component/coComponentMask.h"
 #include "pattern/ecs/component/coComponent_f.h"
+#include "pattern/ecs/component/ownership/coOwnership.h"
 #include "pattern/ecs/processor/coEntityProcessor.h"
 #include "pattern/ecs/entity/coEntityArray.h"
 #include "pattern/ecs/entity/coEntityTypeDecl.h"
@@ -58,19 +59,11 @@ coDEFINE_COMPONENT(TestCComp)
 	type->AddDependency<TestAComp>();
 }
 
-class OwnershipC : public coComponent
-{
-	coDECLARE_COMPONENT(OwnershipC, coComponent)
-public:
-	coEntityHandle parent;
-	coEntityHandle firstChild;
-	coEntityHandle nextSibling;
-};
-
 coDECLARE_ENTITY_TYPE(TestEntity);
 
 coDEFINE_ENTITY_TYPE(TestEntity)
 {
+	type->AddComponent<coOwnership>();
 	type->AddComponent<TestBComp>();
 	type->AddComponent<TestCComp>();
 }
@@ -136,5 +129,9 @@ coTEST(ecs, Archive)
 
 coTEST(ecs, Children)
 {
+	coEntityWorld world;
 
+	const coEntityHandle parent = world.CreateEntity<TestEntity>();
+	const coEntityHandle childA = world.CreateEntity<TestEntity>();
+	const coEntityHandle childB = world.CreateEntity<TestEntity>();
 }
