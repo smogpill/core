@@ -134,4 +134,22 @@ coTEST(ecs, Children)
 	const coEntityHandle parent = world.CreateEntity<TestEntity>();
 	const coEntityHandle childA = world.CreateEntity<TestEntity>();
 	const coEntityHandle childB = world.CreateEntity<TestEntity>();
+	world.SetParent(childA, parent);
+	world.SetParent(childB, parent);
+
+	coArchive archive;
+
+	// Save
+	{
+		world.Save(parent, archive);
+		world.DestroyEntity(childA);
+		world.DestroyEntity(childB);
+		world.DestroyEntity(parent);
+	}
+
+	// Load
+	{
+		const coEntityHandle entity = world.Load(archive);
+		coEXPECT(entity.IsValid());
+	}
 }

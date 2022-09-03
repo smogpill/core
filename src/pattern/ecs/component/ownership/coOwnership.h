@@ -8,7 +8,6 @@ class coOwnership : public coComponent
 {
 	coDECLARE_COMPONENT(coOwnership, coComponent)
 public:
-	coEntityHandle parent;
-	coEntityHandle firstChild;
 	coEntityHandle nextSibling;
+	coEntityHandle firstChild;
 };

@@ -31,13 +31,16 @@ public:
 	coEntityHandle CreateEntity() { return CreateEntity(*T::GetStaticType()); }
 	void DestroyEntity(const coEntityHandle&);
 	coBool IsEntityAlive(const coEntityHandle&) const;
+	void SetParent(const coEntityHandle& child, const coEntityHandle& parent);
 	void Save(const coEntityHandle&, coArchive& out) const;
 	coEntityHandle Load(const coArchive&);
 
 	// Component
-	coComponent* FindComponent(const coEntityHandle&, const coType& type);
+	coComponent* FindComponent(const coEntityHandle&, const coType& type) const;
 	template <class T>
 	T* FindComponent(const coEntityHandle& h) const { return static_cast<T*>(FindComponent(h, *T::GetStaticType())); }
+
+	void _SetContainerIndex(const coEntityHandle& h, coUint32 index);
 
 private:
 	friend class coEntityData;

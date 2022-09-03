@@ -15,6 +15,8 @@
 
 coUint32 coEntityData::Write(coArchive& archive, const coEntityHandle& entity)
 {
+	if (!entity.IsValid())
+		return 0;
 	const coEntityDataContext* context = static_cast<const coEntityDataContext*>(archive.GetContext());
 	coEntityWorld* world = context->world;
 	const coUint32 index = archive.GetSize();
@@ -40,6 +42,8 @@ coUint32 coEntityData::Write(coArchive& archive, const coEntityHandle& entity)
 
 coEntityHandle coEntityData::Read(const coArchive& archive, coUint32 idx)
 {
+	if (!idx)
+		return coEntityHandle();
 	const coEntityDataContext* context = static_cast<const coEntityDataContext*>(archive.GetContext());
 	coEntityWorld* world = context->world;
 

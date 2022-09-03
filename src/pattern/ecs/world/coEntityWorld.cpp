@@ -9,6 +9,7 @@
 #include "../entity/coEntityData.h"
 #include "../component/coComponent.h"
 #include "../component/coComponentRegistry.h"
+#include "../component/ownership/coOwnership.h"
 #include "container/coEntityContainer.h"
 #include "processor/coEntityWorldProcessor.h"
 #include "lang/reflect/coType.h"
@@ -83,6 +84,20 @@ coBool coEntityWorld::IsEntityAlive(const coEntityHandle& entity) const
     }
 }
 
+void coEntityWorld::SetParent(const coEntityHandle& child, const coEntityHandle& parent)
+{
+    coOwnership* parentOwnership = FindComponent<coOwnership>(parent);
+    coASSERT(parentOwnership);
+    if (parentOwnership->firstChild.IsValid())
+    {
+        coOwnership* childOwnership = FindComponent<coOwnership>(child);
+        coASSERT(childOwnership);
+        coASSERT(!childOwnership->nextSibling.IsValid());
+        childOwnership->nextSibling = parentOwnership->firstChild;
+    }
+    parentOwnership->firstChild = child;
+}
+
 void coEntityWorld::AddProcessor(coEntityProcessor& processor)
 {
     coEntityWorldProcessor* entityWorldProcessor = new coEntityWorldProcessor();
@@ -129,7 +144,7 @@ coEntityPatternID coEntityWorld::GetOrCreateEntityPattern(const coComponentMask&
 
     // Create new entity type
     const coEntityPatternID typeID = containers.count;
-    coEntityContainer* container = new coEntityContainer(mask);
+    coEntityContainer* container = new coEntityContainer(*this, mask);
     container->componentMask = mask;
     coPushBack(containers, container);
 
@@ -181,11 +196,18 @@ coEntityHandle coEntityWorld::Load(const coArchive& in)
     return data.rootEntity;
 }
 
-coComponent* coEntityWorld::FindComponent(const coEntityHandle& entity, const coType& type)
+coComponent* coEntityWorld::FindComponent(const coEntityHandle& entity, const coType& type) const
 {
     const EntityInfo* entityInfo = GetEntityInfo(entity);
     if (!entityInfo)
         return nullptr;
     coEntityContainer* container = containers[entityInfo->patternID];
     return container->FindComponent(entityInfo->indexInContainer, type);
+}
+
+void coEntityWorld::_SetContainerIndex(const coEntityHandle& h, coUint32 index)
+{
+    EntityInfo* entityInfo = GetEntityInfo(h);
+    coASSERT(entityInfo);
+    entityInfo->indexInContainer = index;
 }

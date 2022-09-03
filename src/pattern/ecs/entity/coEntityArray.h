@@ -9,6 +9,6 @@ class coEntityArray
 {
 public:
 	coEntityHandle* entities = nullptr;
-	coComponent* components[co_maxNbComponentsPerProcessor];
+	void* components[co_maxNbComponentsPerProcessor];
 	coUint32 nbEntities = 0;
 };

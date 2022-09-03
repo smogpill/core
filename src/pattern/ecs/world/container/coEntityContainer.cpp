@@ -7,17 +7,19 @@
 #include "../../component/coComponentMask.h"
 #include "../../component/coComponentTypeHandle.h"
 #include "../../component/coComponentRegistry.h"
+#include "../coEntityWorld.h"
 #include <lang/reflect/coType.h>
 #include <memory/coMemory_f.h>
 
-coEntityContainer::coEntityContainer(const coComponentMask& mask_)
-	: componentMask(mask_)
+coEntityContainer::coEntityContainer(coEntityWorld& world_, const coComponentMask& mask_)
+	: world(world_)
+	, componentMask(mask_)
 {
 	nbComponents = coUint16(mask_.GetNbComponents());
 	if (nbComponents)
 	{
 		componentTypes = new const coType* [nbComponents];
-		components = new coComponent * [nbComponents];
+		components = new void*[nbComponents];
 
 		coComponentRegistry* componentRegistry = coComponentRegistry::instance;
 		coASSERT(componentRegistry);
@@ -87,7 +89,15 @@ coComponent& coEntityContainer::GetComponent(coUint32 entityIdx, coUint32 compon
 {
 	coASSERT(componentTypeIdx < nbComponents);
 	coASSERT(entityIdx < nbEntities);
-	return components[componentTypeIdx][entityIdx];
+	return *reinterpret_cast<coComponent*>(static_cast<coByte*>(components[componentTypeIdx]) + entityIdx * componentTypes[componentTypeIdx]->size8);
+}
+
+coComponent* coEntityContainer::FindComponent(coUint32 entityIdx, const coType& type) const
+{
+	const coUint index = FindComponentTypeIndex(type);
+	if (index == coUint(-1))
+		return nullptr;
+	return &GetComponent(entityIdx, index);
 }
 
 coUint coEntityContainer::FindComponentTypeIndex(const coType& type) const
@@ -112,7 +122,7 @@ coUint32 coEntityContainer::CreateEntity(const coEntityHandle& entity)
 	for (coUint componentIdx = 0; componentIdx < nbComponents; ++componentIdx)
 	{
 		const coType* type = componentTypes[componentIdx];
-		type->constructFunc(components[componentIdx] + index);
+		type->constructFunc(static_cast<coByte*>(components[componentIdx]) + index * type->size8);
 	}
 	return index;
 }
@@ -120,30 +130,33 @@ coUint32 coEntityContainer::CreateEntity(const coEntityHandle& entity)
 void coEntityContainer::DestroyEntity(coUint32 index)
 {
 	coASSERT(index < nbEntities);
-	--nbEntities;
+	const coUint32 lastEntityIdx = nbEntities - 1;
 
 	// Copy the last entity
-	if (index < nbEntities)
+	if (index < lastEntityIdx)
 	{
 		for (coUint componentIdx = 0; componentIdx < nbComponents; ++componentIdx)
 		{
 			const coType* type = componentTypes[componentIdx];
-			coComponent* comp = components[index];
-			type->destructFunc(comp);
+			void* from = components[lastEntityIdx];
+			void* to = components[index];
+			type->moveFunc(from, to);
+			type->destructFunc(from);
 		}
+		entities[index] = entities[lastEntityIdx];
+		world._SetContainerIndex(entities[index], index);
 	}
 	else
 	{
 		for (coUint componentIdx = 0; componentIdx < nbComponents; ++componentIdx)
 		{
 			const coType* type = componentTypes[componentIdx];
-			coComponent* from = components[nbEntities];
-			coComponent* to = components[index];
-			type->moveFunc(from, to);
-			type->destructFunc(from);
+			coComponent* comp = &GetComponent(index, componentIdx);
+			type->destructFunc(comp);
 		}
-		entities[index] = entities[nbEntities];
 	}
+
+	nbEntities = lastEntityIdx;
 }
 
 coUint16 coEntityContainer::GetIndexOfComponent(const coComponentTypeHandle& handle) const
