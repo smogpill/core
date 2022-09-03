@@ -33,6 +33,11 @@ public:
 	void Save(const coEntityHandle&, coArchive& out) const;
 	coEntityHandle Load(const coArchive&);
 
+	// Component
+	coComponent* FindComponent(const coEntityHandle&, const coType& type);
+	template <class T>
+	T* FindComponent(const coEntityHandle& h) const { return static_cast<T*>(FindComponent(h, *T::GetStaticType())); }
+
 private:
 	friend class coEntityData;
 

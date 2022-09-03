@@ -5,6 +5,7 @@
 #include <container/array/coDynamicArray.h>
 #include "coEntityHandle.h"
 class coEntityWorld;
+class coArchive;
 
 class coEntityPackData
 {
@@ -24,3 +25,6 @@ class coEntityDataContext
 public:
 	coEntityWorld* world = nullptr;
 };
+
+coUint32 coWriteEntityData(coArchive& archive, const coEntityHandle& entity);
+coEntityHandle coReadEntityData(const coArchive& archive, coUint32 idx);

@@ -180,3 +180,12 @@ coEntityHandle coEntityWorld::Load(const coArchive& in)
     in.ReadObject(rootIdx, data);
     return data.handle;
 }
+
+coComponent* coEntityWorld::FindComponent(const coEntityHandle& entity, const coType& type)
+{
+    const EntityInfo* entityInfo = GetEntityInfo(entity);
+    if (!entityInfo)
+        return nullptr;
+    coEntityContainer* container = containers[entityInfo->patternID];
+    return container->FindComponent(entityInfo->indexInContainer, type);
+}
