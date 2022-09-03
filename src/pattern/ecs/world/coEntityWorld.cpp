@@ -165,7 +165,7 @@ void coEntityWorld::Save(const coEntityHandle& entity, coArchive& out) const
         context.world = const_cast<coEntityWorld*>(this);
         out.SetContext(&context);
         coEntityPackData data;
-        data.AddEntityTree(entity);
+        data.rootEntity = entity;
         out.WriteRoot(data);
     }
 }
@@ -178,7 +178,7 @@ coEntityHandle coEntityWorld::Load(const coArchive& in)
     const coUint32 rootIdx = in.GetRoot();
     coEntityPackData data;
     in.ReadObject(rootIdx, data);
-    return data.handle;
+    return data.rootEntity;
 }
 
 coComponent* coEntityWorld::FindComponent(const coEntityHandle& entity, const coType& type)

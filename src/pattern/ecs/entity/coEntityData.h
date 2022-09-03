@@ -11,13 +11,15 @@ class coEntityPackData
 {
 	coDECLARE_CLASS_NO_POLYMORPHISM(coEntityPackData);
 public:
-	const coArray<coEntityHandle>& GetHandles() const { return handles; }
-	coBool IsValid() const { return handles.count == parentIndices.count; }
-
 	coUint32 worldUid = 0;
 	coEntityHandle rootEntity;
-	coDynamicArray<coEntityHandle> handles;
-	coDynamicArray<coUint32> parentIndices;
+};
+
+class coEntityData
+{
+public:
+	static coUint32 Write(coArchive& archive, const coEntityHandle& entity);
+	static coEntityHandle Read(const coArchive& archive, coUint32 idx);
 };
 
 class coEntityDataContext
@@ -25,6 +27,3 @@ class coEntityDataContext
 public:
 	coEntityWorld* world = nullptr;
 };
-
-coUint32 coWriteEntityData(coArchive& archive, const coEntityHandle& entity);
-coEntityHandle coReadEntityData(const coArchive& archive, coUint32 idx);

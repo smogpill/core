@@ -14,11 +14,12 @@ coUint32 coWriteOwnership(coArchive& archive, const void* obj)
 	auto& data = archive.GetData();
 	const coUint32 index = data.count;
 	archive.PushBytes(2 * sizeof(coUint32));
-	const coUint32 nextSiblingIdx = coWriteEntityData(ownership->nextSibling);
-	const coUint32 firstChildIdx = coWriteEntityData(ownership->firstChild);
+	const coUint32 nextSiblingIdx = coEntityData::Write(archive, ownership->nextSibling);
+	const coUint32 firstChildIdx = coEntityData::Write(archive, ownership->firstChild);
 	coUint32* inlineData = reinterpret_cast<coUint32*>(&data[index]);
 	inlineData[0] = nextSiblingIdx;
 	inlineData[1] = firstChildIdx;
+	return index;
 }
 
 void coReadOwnership(const coArchive& archive, coUint32 idx, void* obj)
@@ -27,13 +28,13 @@ void coReadOwnership(const coArchive& archive, coUint32 idx, void* obj)
 	coEntityWorld* world = context->world;
 	coOwnership* ownership = static_cast<coOwnership*>(obj);
 	const auto& data = archive.GetData();
-	const coUint32* inlineData = static_cast<const coUint32*>(&data[idx]);
+	const coUint32* inlineData = reinterpret_cast<const coUint32*>(&data[idx]);
 	const coUint32 nextSiblingIdx = inlineData[0];
 	const coUint32 firstChildIdx = inlineData[1];
 	if (nextSiblingIdx)
-		ownership->nextSibling = coReadEntityData(archive, nextSiblingIdx);
+		ownership->nextSibling = coEntityData::Read(archive, nextSiblingIdx);
 	if (firstChildIdx)
-		ownership->firstChild = coReadEntityData(archive, firstChildIdx);
+		ownership->firstChild = coEntityData::Read(archive, firstChildIdx);
 }
 
 coDEFINE_COMPONENT(coOwnership)

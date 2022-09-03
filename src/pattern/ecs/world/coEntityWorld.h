@@ -8,6 +8,7 @@ class coEntityWorldProcessor;
 class coEntityProcessor;
 class coEntityContainer;
 class coComponentMask;
+class coComponent;
 class coEntityType;
 class coArchive;
 
