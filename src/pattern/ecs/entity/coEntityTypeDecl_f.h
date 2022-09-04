@@ -3,6 +3,7 @@
 #pragma once
 #include "coEntityType.h"
 #include "lang/coCppExtensions.h"
+#include "math/hash/coHash_f.h"
 
 class coEntityType;
 
@@ -26,8 +27,6 @@ public:
 
 	coEntityType* GetOrCreateType() override { return T::GetStaticType(); }
 };
-
-
 
 #define coDEFINE_ENTITY_TYPE(_Type_) \
 	coEntityType* _Type_::GetStaticType()\
