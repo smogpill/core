@@ -43,7 +43,7 @@ coEntityHandle coEntityWorld::CreateEntity()
 
     const coUint32 entityIdx = coPopBack(freeEntities);
     const EntityInfo& info = entityInfos[entityIdx];
-    return coEntityHandle(uid, entityIdx, info.generation);
+    return coEntityHandle(entityIdx, info.generation);
 }
 
 coEntityHandle coEntityWorld::CreateEntity(const coEntityType& type)
@@ -59,7 +59,6 @@ coEntityHandle coEntityWorld::CreateEntity(const coEntityType& type)
 
 void coEntityWorld::DestroyEntity(const coEntityHandle& entity)
 {
-    coASSERT(entity.world == uid);
     coASSERT(IsEntityAlive(entity));
     coASSERT(entity.index < nbReservedEntities);
     EntityInfo& info = entityInfos[entity.index];
@@ -72,7 +71,6 @@ void coEntityWorld::DestroyEntity(const coEntityHandle& entity)
 
 coBool coEntityWorld::IsEntityAlive(const coEntityHandle& entity) const
 {
-    coASSERT(entity.world == uid);
     if (entity.IsValid())
     {
         coASSERT(entity.index < nbReservedEntities);
@@ -86,8 +84,6 @@ coBool coEntityWorld::IsEntityAlive(const coEntityHandle& entity) const
 
 void coEntityWorld::SetParent(const coEntityHandle& child, const coEntityHandle& parent)
 {
-    coASSERT(child.world == uid);
-    coASSERT(parent.world == uid);
     coOwnership* parentOwnership = FindComponent<coOwnership>(parent);
     coASSERT(parentOwnership);
     if (parentOwnership->firstChild.IsValid())
@@ -163,7 +159,6 @@ coEntityWorld::EntityInfo* coEntityWorld::GetEntityInfo(const coEntityHandle& en
 {
     if (entity.IsValid())
     {
-        coASSERT(entity.world == uid);
         coASSERT(entity.index < nbReservedEntities);
         const EntityInfo* entityInfo = &entityInfos[entity.index];
         if (entityInfo->generation == entity.generation)
