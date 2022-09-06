@@ -6,9 +6,12 @@
 class coField;
 class coFunction;
 class coArchive;
-typedef void* (*coCreateFunc)();
-typedef coUint32 (*coWriteArchiveFunc)(coArchive&, const void*);
-typedef void (*coReadArchiveFunc)(const coArchive&, coUint32, void*);
+using coCreateFunc = void* (*)();
+using coMoveFunc = void (*)(const void*, void*);
+using coConstructFunc = void (*)(void*);
+using coDestructFunc = void (*)(void*);
+using coWriteArchiveFunc = coUint32 (*)(coArchive&, const void*);
+using coReadArchiveFunc = void (*)(const coArchive&, coUint32, void*);
 
 class coType : public coSymbol
 {
@@ -17,17 +20,29 @@ public:
 	~coType();
 
 	void Give(coField& field);
+	void AddDependency(coType& type);
+	template <class T>
+	void AddDependency() { AddDependency(*T::GetStaticType()); }
+
+	const coArray<coType*>& GetDependencies() const { return dependencies; }
 	coUint GetNbSerializableFields() const;
 	coBool IsCompatibleWith(const coType& type) const;
+	template <class T>
+	coBool IsCompatibleWith() const { return IsCompatibleWith(*T::GetStaticType()); }
 
 	coUint32 size8 = 0;
 	coUint32 alignment8 = 0;
+	coUint32 indexInRegistry = coUint32(-1);
 	coBool triviallyCopyable : 1;
 	const coType* super = nullptr;
 	const coType* subType = nullptr;
 	coCreateFunc createFunc = nullptr;
+	coMoveFunc moveFunc = nullptr;
+	coConstructFunc constructFunc = nullptr;
+	coDestructFunc destructFunc = nullptr;
 	coWriteArchiveFunc writeArchiveFunc = nullptr;
 	coReadArchiveFunc readArchiveFunc = nullptr;
 	coDynamicArray<coField*> fields;
 	coDynamicArray<coFunction*> functions;
+	coDynamicArray<coType*> dependencies;
 };

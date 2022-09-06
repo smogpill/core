@@ -9,27 +9,15 @@
 
 coDEFINE_SINGLETON(coTypeRegistry);
 
-coTypeRegistry::coTypeRegistry()
-{
-	const coUint nbRegistrators = coTypeAutoRegistrator::GetNbRegistrators();
-	for (coUint registratorIdx = 0; registratorIdx < nbRegistrators; ++registratorIdx)
-	{
-		coTypeAutoRegistrator* registrator = coTypeAutoRegistrator::GetRegistrator(registratorIdx);
-		coType* type = registrator->GetOrCreateType();
-		coASSERT(type);
-		coCHECK(Add(*type), nullptr);
-	}
-}
-
-coResult coTypeRegistry::Add(coType& type)
+void coTypeRegistry::Add(coType& type)
 {
 	for (coType* e : types)
 	{
-		coTRY(e != &type, "Type already in the type registry: " << type.name);
-		coTRY(e->uid != type.uid, "There is already another type with the same uid as '" << type.name << "': " << e->name);
+		coCHECK(e != &type, "Type already in the type registry: " << type.name);
+		coCHECK(e->uid != type.uid, "There is already another type with the same uid as '" << type.name << "': " << e->name);
 	}
+	type.indexInRegistry = types.count;
 	coPushBack(types, &type);
-	return true;
 }
 
 coType* coTypeRegistry::Get(coUint32 uid) const
@@ -42,12 +30,4 @@ coType* coTypeRegistry::Get(coUint32 uid) const
 	}
 
 	return nullptr;
-}
-
-void coTypeRegistry::CreateInstanceIfMissing()
-{
-	if (instance == nullptr)
-	{
-		coTypeRegistry::instance = new coTypeRegistry();
-	}
 }

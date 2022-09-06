@@ -11,11 +11,9 @@ class coTypeRegistry
 {
 	coDECLARE_SINGLETON(coTypeRegistry);
 public:
-	static void CreateInstanceIfMissing();
-
-	coTypeRegistry();
-	coResult Add(coType& type);
+	void Add(coType& type);
 	coType* Get(coUint32 uid) const;
+	const coArray<coType*>& GetTypes() const { return types; }
 private:
 	coDynamicArray<coType*> types;
 };

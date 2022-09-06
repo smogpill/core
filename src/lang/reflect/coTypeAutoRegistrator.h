@@ -19,7 +19,7 @@ class coFORCE_SYMBOL_INCLUSION_ATTRIBUTE coClassTypeAutoRegistrator : public coT
 public:
 	coClassTypeAutoRegistrator()
 	{
-		AddRegistrator(*this);
+		coTypeHelper<T>::GetStaticType();
 	}
 
 	coType* GetOrCreateType() override { return coTypeHelper<T>::GetStaticType(); }

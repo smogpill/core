@@ -32,6 +32,12 @@ coUint32 coArchive::WriteObject(const void* object, const coType& type)
 {
 	if (object == nullptr)
 		return 0;
+
+	if (type.writeArchiveFunc)
+	{
+		return type.writeArchiveFunc(*this, object);
+	}
+
 	const coUint nbSerializableFields = type.GetNbSerializableFields();
 
 	// Vtable
@@ -113,16 +119,11 @@ coUint32 coArchive::WriteObject(const void* object, const coType& type)
 						coASSERT(index == 0 || (index >= objectIdx + inlineDataSize));
 						offset = index ? (index - inlineItIdx) : 0u;
 					}
-					else if (fieldType->writeArchiveFunc)
-					{
-						const coUint32 index = fieldType->writeArchiveFunc(*this, static_cast<const coUint8*>(object) + field->offset8);
-						coASSERT(index == 0 || (index >= objectIdx + inlineDataSize));
-						offset = index ? (index - inlineItIdx) : 0u;
-					}
 					else
 					{
-						coASSERT(false);
-						offset = 0;
+						const coUint32 index = WriteObject(static_cast<const coUint8*>(object) + field->offset8, *fieldType);
+						coASSERT(index == 0 || (index >= objectIdx + inlineDataSize));
+						offset = index ? (index - inlineItIdx) : 0u;
 					}
 
 					coMemCopy(&data.data[inlineItIdx], &offset, sizeof(coUint32));
@@ -159,10 +160,29 @@ void* coArchive::CreateObjects(coUint32 objectIdx, const coType& expectedBaseTyp
 
 	void* object = type->createFunc();
 	coASSERT(object);
+	ReadObject(objectIdx, object, *type);
+	return object;
+}
+
+coUint32 coArchive::GetRoot() const
+{
+	return data.count >= 4 ? Get<coUint32>(0) : coUint32(-1);
+}
+
+void coArchive::ReadObject(coUint32 objectIdx, void* object, const coType& type) const
+{
+	if (type.readArchiveFunc)
+	{
+		type.readArchiveFunc(*this, objectIdx, object);
+		return;
+	}
+
+	const coInt32 vtableOffset = -Get<coInt32>(objectIdx);
+	const coUint16* vtable = reinterpret_cast<const coUint16*>(&data.data[objectIdx + vtableOffset]);
 
 	const coUint16* inlineOffsets = &vtable[4];
 	coUint serializableFieldIdx = 0;
-	for (const coField* field : type->fields)
+	for (const coField* field : type.fields)
 	{
 		if (field->IsSerializable())
 		{
@@ -201,37 +221,6 @@ void* coArchive::CreateObjects(coUint32 objectIdx, const coType& expectedBaseTyp
 			++serializableFieldIdx;
 		}
 	}
-	return object;
-}
-
-coUint32 coArchive::GetRoot() const
-{
-	return data.count >= 4 ? Get<coUint32>(0) : coUint32(-1);
-}
-
-void coArchive::ReadObject(coUint32 objectIdx, void* object, const coType& type) const
-{
-	coASSERT(false);
-	const coInt32 vtableOffset = -Get<coInt32>(objectIdx);
-	const coUint16* vtable = reinterpret_cast<const coUint16*>(&data.data[objectIdx + vtableOffset]);
-	const coUint16 vtableSize = vtable[0];
-	const coUint16 inlineSize = vtable[1];
-	const coUint32 typeUID = *((const coUint32*)&vtable[2]);
-	coASSERT(typeUID == type.uid);
-	const coUint16* inlineOffsets = &vtable[4];
-
-	coUint serializableFieldIdx = 0;
-	for (const coField* field : type.fields)
-	{
-		if (field->IsSerializable())
-		{
-			const coUint16 inlineOffset = inlineOffsets[serializableFieldIdx];
-			coASSERT(objectIdx + inlineOffset + field->type->size8 <= data.count);
-			const void* fieldData = &data.data[objectIdx + inlineOffset];
-			coMemCopy(((coByte*)object) + field->offset8, fieldData, field->type->size8);
-			++serializableFieldIdx;
-		}
-	}
 }
 
 void coArchive::Write(const void* buffer, coUint32 size)
@@ -247,13 +236,6 @@ void coArchive::PushBytes(coUint size)
 coBool coArchive::IsFieldInlinable(const coField& field)
 {
 	return true;
-}
-
-template <class T>
-const T& coArchive::Get(coUint32 idx) const
-{
-	coASSERT(idx + sizeof(T) <= data.count);
-	return *reinterpret_cast<const T*>(&data.data[idx]);
 }
 
 void coArchive::Read(void* buffer, coUint32 size) const

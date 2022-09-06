@@ -6,6 +6,7 @@
 #include <math/shape/coSphere.h>
 #include <math/shape/coPlane.h>
 #include <math/shape/coSegment_f.h>
+#include <math/shape/coRay.h>
 #include <math/vector/coFloatx3_f.h>
 #include <math/vector/coFloatx4_f.h>
 #include <math/vector/coBool32x3_f.h>
@@ -19,6 +20,7 @@ coFORCE_INLINE coBool coOverlapSolid(const coAabb& aabb, const coSegment& seg)
 	// - Fast, Branchless Ray/Bounding Box Intersections, Tavian Barnes
 	// https://tavianator.com/2011/ray_box.html
 	// https://tavianator.com/2015/ray_box_nan.html
+	// Notes: For any algo, it's important that it manages axis-aligned directions which causes invDir to be inf.
 
 	const coVec3 delta = seg.p1 - seg.p0;
 	const coFloatx4 len = coLength(delta);
@@ -31,6 +33,21 @@ coFORCE_INLINE coBool coOverlapSolid(const coAabb& aabb, const coSegment& seg)
 	const coFloat tmax = coMin(len.x, coMin(tmax1).x);
 	return tmin <= tmax;
 }
+
+coFORCE_INLINE coBool coOverlapSolid(const coAabb& aabb, const coVec3& vPos, const coVec3& invDir)
+{
+	// - Another View on the Classic Ray-AABB Intersection Algorithm for BVH Traversal, Roman Wiche
+	// https://medium.com/@bromanz/another-view-on-the-classic-ray-aabb-intersection-algorithm-for-bvh-traversal-41125138b525
+	// Notes: For any algo, it's important that it manages axis-aligned directions which causes invDir to be inf.
+	const coVec3 t1 = (aabb.min - vPos) * invDir;
+	const coVec3 t2 = (aabb.max - vPos) * invDir;
+	const coVec3 tmin1 = coMin(t1, t2);
+	const coVec3 tmax1 = coMax(t1, t2);
+	const coFloatx3 tmin = coMax(0.0f, coMax(tmin1).x);
+	const coFloatx3 tmax = coMin(tmax1);
+	return coAreAllTrue(tmin <= tmax);
+}
+
 coFORCE_INLINE coBool32x4 coOverlapSolid(const coAabb& aabb, const coPlane& plane)
 {
 	const coVec3 center = coGetCenter(aabb);

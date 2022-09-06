@@ -7,7 +7,6 @@
 #include "lang/reflect/coTypeAutoRegistrator.h"
 #include "debug/log/coDefaultLogHandler.h"
 #include "io/dir/coDirectory_f.h"
-#include <pattern/ecs/coComponent.h>
 
 coCoreModule::coCoreModule()
 {
