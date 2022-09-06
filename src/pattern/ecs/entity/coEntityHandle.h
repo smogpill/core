@@ -11,6 +11,7 @@ public:
 	coEntityHandle& operator=(const coEntityHandle& h) = default;
 	coBool operator==(const coEntityHandle& h) { return GetRaw() == h.GetRaw(); }
 	coBool operator!=(const coEntityHandle& h) { return GetRaw() != h.GetRaw(); }
+	void Clear() { *this = coEntityHandle(); }
 	coBool IsValid() const { return index != coUint32(-1); }
 	coBool IsGenerationMax() const { return generation == coUint32(-1); }
 	coUint64 GetRaw() const { return reinterpret_cast<const coUint64&>(index); }
