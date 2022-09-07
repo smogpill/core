@@ -120,7 +120,6 @@ coDEFINE_CLASS(coEntityChildren)
 
 coDEFINE_CLASS(coEntity)
 {
-	coDEFINE_FIELD(uuid);
 	coDEFINE_VIRTUAL_FIELD(components, coEntityComponents);
 	coDEFINE_VIRTUAL_FIELD(entities, coEntityChildren);
 }
@@ -130,7 +129,6 @@ coEntity::coEntity()
 	previousSibling = this;
 	nextSibling = this;
 	static coUint64 uuidGenerator = 0;
-	uuid.low = ++uuidGenerator;
 }
 
 coEntity::~coEntity()
@@ -169,7 +167,6 @@ coResult coEntity::SetState(State newState)
 
 void coEntity::Write(coBinaryOutputStream& stream) const
 {
-	stream << uuid;
 	const coUint32 nbComponents = GetNbComponents();
 	stream << nbComponents;
 
@@ -185,7 +182,6 @@ void coEntity::Write(coBinaryOutputStream& stream) const
 
 void coEntity::Read(coBinaryInputStream& stream)
 {
-	stream >> uuid;
 	coUint32 nbComponents;
 	stream >> nbComponents;
 

@@ -33,12 +33,10 @@ public:
 	void Give(coComponent& component);
 	void SetParent(coEntity* entity);
 	void Give(coEntity& entity);
-	void SetUuid(const coUuid& uuid_) { uuid = uuid_; }
 	coResult SetState(State state);
 	void Write(coBinaryOutputStream& stream) const;
 	void Read(coBinaryInputStream& stream);
 	coEntity* Clone() const;
-	const coUuid& GetUuid() const { return uuid; }
 	coUint GetNbComponents() const;
 	coUint GetNbChildren() const;
 	coEntity* GetFirstChild() const { return firstChild; }
@@ -66,7 +64,6 @@ private:
 	coEntity* nextSibling = nullptr;
 	State state = State::NONE;
 	State parentStateWhenAttached = State::NONE;
-	coUuid uuid;
 };
 
 template <class T>
