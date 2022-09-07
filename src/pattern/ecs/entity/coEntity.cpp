@@ -2,8 +2,6 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "pattern/pch.h"
 #include "coEntity.h"
-#include "coComponent.h"
-#include "../uuid/coUuid_f.h"
 #include "lang/result/coResult_f.h"
 #include <lang/reflect/coTypeDecl_f.h>
 #include <lang/reflect/coTypeRegistry.h>
@@ -11,7 +9,9 @@
 #include <io/stream/coBinaryOutputStream.h>
 #include <io/archive/coArchive.h>
 #include <container/array/coFixedArray_f.h>
-#include "component/coComponentIterator.h"
+#include "../../uuid/coUuid_f.h"
+#include "../component/coComponentIterator.h"
+#include "../component/coComponent.h"
 
 class coEntityComponents
 {

@@ -1,8 +1,8 @@
 #include "pattern/pch.h"
 #include "coEntityHandle.h"
-#include "coEntitySystem.h"
+#include "../../uuid/coUuid_f.h"
+#include "../coEntitySystem.h"
 #include "coEntity.h"
-#include "../uuid/coUuid_f.h"
 
 /*
 const coEntityHandle coEntityHandle::empty;

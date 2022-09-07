@@ -1,12 +1,12 @@
 // Copyright(c) 2020-2022 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
-#include "coEntityHandle.h"
-#include "../singleton/coSingleton.h"
 #include <container/array/coDynamicArray.h>
 #include <container/map/coHashMap.h>
 #include <lang/result/coResult.h>
 #include <pattern/uuid/coUuid.h>
+#include "../singleton/coSingleton.h"
+#include "entity/coEntityHandle.h"
 class coEntity;
 class coBinaryOutputStream;
 class coBinaryInputStream;

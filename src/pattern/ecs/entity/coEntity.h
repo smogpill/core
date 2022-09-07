@@ -1,13 +1,13 @@
 // Copyright(c) 2020-2022 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
-#include "coEntityHandle.h"
-#include "coComponent.h"
 #include <container/array/coDynamicArray.h>
 #include <lang/reflect/coType.h>
 #include <lang/reflect/coTypeDecl.h>
 #include <lang/result/coResult.h>
 #include <pattern/uuid/coUuid.h>
+#include "../component/coComponent.h"
+#include "coEntityHandle.h"
 
 // TODO:
 // - Replace the entity by an ID (weak reference, 64 bits with 32 bits for generation, SOA)

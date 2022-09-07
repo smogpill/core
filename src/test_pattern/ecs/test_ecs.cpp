@@ -2,8 +2,8 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "test_pattern/pch.h"
 #include "test/unit/coTest.h"
-#include "pattern/ecs/coEntity.h"
-#include "pattern/ecs/coComponent.h"
+#include "pattern/ecs/entity/coEntity.h"
+#include "pattern/ecs/component/coComponent.h"
 #include "pattern/ecs/component/coComponent_f.h"
 #include "pattern/pointer/coUniquePtr.h"
 #include <io/archive/coArchive.h>

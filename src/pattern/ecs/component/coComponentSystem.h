@@ -2,7 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include "coComponentHandle.h"
-#include "../singleton/coSingleton.h"
+#include "../../singleton/coSingleton.h"
 #include <container/pool/coPool_f.h>
 #include <lang/result/coResult.h>
 
