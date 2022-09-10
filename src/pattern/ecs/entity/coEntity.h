@@ -34,8 +34,6 @@ public:
 	void SetParent(coEntity* entity);
 	void Give(coEntity& entity);
 	coResult SetState(State state);
-	void Write(coBinaryOutputStream& stream) const;
-	void Read(coBinaryInputStream& stream);
 	coEntity* Clone() const;
 	coUint GetNbComponents() const;
 	coUint GetNbChildren() const;

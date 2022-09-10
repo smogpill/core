@@ -5,6 +5,7 @@
 #include "pattern/ecs/entity/coEntity.h"
 #include "pattern/ecs/component/coComponent.h"
 #include "pattern/ecs/component/coComponent_f.h"
+#include "pattern/ecs/entity/coEntityType_f.h"
 #include "pattern/pointer/coUniquePtr.h"
 #include <io/archive/coArchive.h>
 #include <math/transform/coTransform.h>
@@ -14,20 +15,42 @@ class TestAComp : public coComponent
 {
 	coDECLARE_COMPONENT(TestAComp, coComponent);
 public:
-};
-
-class TestBComp : public coComponent
-{
-	coDECLARE_COMPONENT(TestBComp, coComponent);
-public:
+	coInt a = 7;
 };
 
 coDEFINE_COMPONENT(TestAComp)
 {
 }
 
+class TestBComp : public coComponent
+{
+	coDECLARE_COMPONENT(TestBComp, coComponent);
+public:
+	coFloat b = 23.0f;
+};
+
 coDEFINE_COMPONENT(TestBComp)
 {
+}
+
+class TestCComp : public coComponent
+{
+	coDECLARE_COMPONENT(TestCComp, coComponent);
+public:
+	coUint c = 99;
+};
+
+coDEFINE_COMPONENT(TestCComp)
+{
+	type->AddDependency<TestAComp>();
+}
+
+coDECLARE_ENTITY_TYPE(TestEntity);
+
+coDEFINE_ENTITY_TYPE(TestEntity)
+{
+	type->AddComponent<TestBComp>();
+	type->AddComponent<TestCComp>();
 }
 
 coTEST(ecs, Reflection)
@@ -85,6 +108,4 @@ coTEST(ecs, Children)
 	coEntity* b = new coEntity();
 	a->SetParent(p.Get());
 	b->SetParent(p.Get());
-
-
 }

@@ -165,48 +165,6 @@ coResult coEntity::SetState(State newState)
 	return true;
 }
 
-void coEntity::Write(coBinaryOutputStream& stream) const
-{
-	const coUint32 nbComponents = GetNbComponents();
-	stream << nbComponents;
-
-	auto func = [&](coComponent& comp)
-	{
-		const coType* type = comp.GetType();
-		stream << type->nameHash;
-		stream << comp;
-		return true;
-	};
-	coVisitAll(firstComponent, func);
-}
-
-void coEntity::Read(coBinaryInputStream& stream)
-{
-	coUint32 nbComponents;
-	stream >> nbComponents;
-
-	coComponent* previous = nullptr;
-	for (coUint i = 0; i < nbComponents; ++i)
-	{
-		coUint32 nameHash;
-		stream >> nameHash;
-		const coType* type = coTypeRegistry::instance->Get(nameHash);
-		coASSERT(type);
-		coComponent* comp = static_cast<coComponent*>(type->createFunc());
-		stream >> *comp;
-		if (previous)
-		{
-			previous->SetNextComponent(comp);
-		}
-		else
-		{
-			coASSERT(firstComponent == nullptr);
-			firstComponent = comp;
-		}
-		previous = comp;
-	}
-}
-
 coResult coEntity::TransitToNextState(State targetState)
 {
 	// Should be more generic, like using a table of transitions
