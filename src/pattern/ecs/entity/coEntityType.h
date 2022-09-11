@@ -11,6 +11,7 @@ public:
 	void AddComponent(const coType& type);
 	template <class T>
 	void AddComponent() { AddComponent(*T::GetStaticType()); }
+	const coArray<const coType*>& GetComponentTypes() const { return componentTypes; }
 
 private:
 	coDynamicArray<const coType*> componentTypes;

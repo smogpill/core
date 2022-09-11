@@ -2,7 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include "coComponent.h"
-#include <container/array/coFixedArray.h>
+#include <container/array/coFixedArray_f.h>
 
 class coComponentIterator
 {

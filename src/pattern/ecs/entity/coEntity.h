@@ -5,16 +5,13 @@
 #include <lang/reflect/coType.h>
 #include <lang/reflect/coTypeDecl.h>
 #include <lang/result/coResult.h>
-#include <pattern/uuid/coUuid.h>
 #include "../component/coComponent.h"
 #include "coEntityHandle.h"
+class coEntityType;
 
 // TODO:
 // - Replace the entity by an ID (weak reference, 64 bits with 32 bits for generation, SOA)
 // - Create entity contexts (network, visual, etc.). So that we can easily update it independently.
-
-class coBinaryOutputStream;
-class coBinaryInputStream;
 
 class coEntity
 {
@@ -27,79 +24,33 @@ public:
 		STARTED,
 		END
 	};
-	coEntity();
-	coEntity(const coEntity&) = delete;
-	~coEntity();
-	void Give(coComponent& component);
-	void SetParent(coEntity* entity);
-	void Give(coEntity& entity);
 	coResult SetState(State state);
-	coEntity* Clone() const;
 	coUint GetNbComponents() const;
-	coUint GetNbChildren() const;
-	coEntity* GetFirstChild() const { return firstChild; }
+	void Give(coComponent& component);
 	coComponent* GetFirstComponent() const { return firstComponent; }
 	State GetState() const { return state; }
 	State GetParentStateWhenAttached() const { return parentStateWhenAttached; }
 	coComponent* GetComponent(const coType& type) const;
 	template <class T>
 	T* GetComponent() const;
-	template <class F>
-	coBool VisitChildren(F) const;
-	template <class F>
-	coBool ReverseVisitChildren(F) const;
 
 private:
-	coResult Init();
-	coResult Start();
-	void Stop();
-	void Shutdown();
+	friend class coECS;
+
 	coResult TransitToNextState(State targetState);
-	coComponent* firstComponent = nullptr;
-	coEntity* firstChild = nullptr;
-	coEntity* parent = nullptr;
-	coEntity* previousSibling = nullptr;
-	coEntity* nextSibling = nullptr;
+	coUint32 generation = 0;
+	coUint32 firstChild = coUint32(-1);
+	coUint32 previousSibling = coUint32(-1);
+	coUint32 nextSibling = coUint32(-1);
+	coUint32 parent = coUint32(-1);
 	State state = State::NONE;
 	State parentStateWhenAttached = State::NONE;
+	coComponent* firstComponent = nullptr;
+	const coEntityType* entityType = nullptr;
 };
 
 template <class T>
 T* coEntity::GetComponent() const
 {
 	return static_cast<T*>(GetComponent(*T::GetStaticType()));
-}
-
-template <class F>
-coBool coEntity::VisitChildren(F func) const
-{
-	if (firstChild)
-	{
-		coEntity* child = firstChild;
-		do
-		{
-			coEntity* next = child->nextSibling;
-			if (!func(*child))
-				return false;
-			child = next;
-		} while (child != firstChild);
-	}
-	return true;
-}
-
-template <class F>
-coBool coEntity::ReverseVisitChildren(F func) const
-{
-	if (firstChild)
-	{
-		coEntity* child = firstChild->previousSibling;
-		do
-		{
-			coEntity* previous = child->previousSibling;
-			if (!func(*child))
-				return false;
-			child = previous;
-		} while (child != firstChild);
-	}
-	return true;
 }

@@ -124,38 +124,6 @@ coDEFINE_CLASS(coEntity)
 	coDEFINE_VIRTUAL_FIELD(entities, coEntityChildren);
 }
 
-coEntity::coEntity()
-{
-	previousSibling = this;
-	nextSibling = this;
-	static coUint64 uuidGenerator = 0;
-}
-
-coEntity::~coEntity()
-{
-	coCHECK(SetState(State::NONE), nullptr);
-
-	// Delete children
-	{
-		auto func = [&](coEntity& entity)
-		{
-			delete& entity;
-			return true;
-		};
-		ReverseVisitChildren(func);
-	}
-
-	// Delete components
-	{
-		auto func = [&](coComponent& comp)
-		{
-			delete& comp;
-			return true;
-		};
-		coReverseVisitAll(firstComponent, func);
-	}
-}
-
 coResult coEntity::SetState(State newState)
 {
 	while (state != newState)
@@ -245,14 +213,6 @@ coResult coEntity::TransitToNextState(State targetState)
 	return true;
 }
 
-coEntity* coEntity::Clone() const
-{
-	coASSERT(GetState() == State::NONE);
-	coEntity* entity = new coEntity();
-	coASSERT(false);
-	return entity;
-}
-
 coUint coEntity::GetNbComponents() const
 {
 	coUint nb = 0;
@@ -263,116 +223,6 @@ coUint coEntity::GetNbComponents() const
 	};
 	coVisitAll(firstComponent, func);
 	return nb;
-}
-
-coUint coEntity::GetNbChildren() const
-{
-	coUint nb = 0;
-	auto func = [&nb](coEntity& entity)
-	{
-		++nb;
-		return true;
-	};
-	VisitChildren(func);
-	return nb;
-}
-
-coResult coEntity::Init()
-{
-	// Init components
-	{
-		auto func = [&](coComponent& comp)
-		{
-			return comp.OnInit(*this);
-		};
-		if (!coVisitAll(firstComponent, func))
-			return false;
-	}
-
-	// Init children
-	{
-		auto func = [this](coEntity& entity)
-		{
-			return entity.Init();
-		};
-		if (!VisitChildren(func))
-			return false;
-	}
-	return true;
-}
-
-coResult coEntity::Start()
-{
-	// Start components
-	{
-		auto func = [this](coComponent& comp)
-		{
-			return comp.OnStart(*this);
-		};
-		if (!coVisitAll(firstComponent, func))
-			return false;
-	}
-
-	// Start children
-	{
-		auto func = [this](coEntity& entity)
-		{
-			return entity.Start();
-		};
-		if (!VisitChildren(func))
-			return false;
-	}
-	return true;
-}
-
-void coEntity::Stop()
-{
-	// Stop children
-	{
-		auto func = [this](coEntity& entity)
-		{
-			entity.Stop();
-			if (entity.GetParentStateWhenAttached() == State::STARTED)
-				delete &entity;
-			return true;
-		};
-		ReverseVisitChildren(func);
-	}
-
-	// Stop components
-	{
-		auto func = [&](coComponent& comp)
-		{
-			comp.OnStop(*this);
-			return true;
-		};
-		coReverseVisitAll(firstComponent, func);
-	}
-}
-
-void coEntity::Shutdown()
-{
-	// Shutdown children
-	{
-		auto func = [this](coEntity& entity)
-		{
-			entity.Shutdown();
-			if (entity.GetParentStateWhenAttached() == State::INITIALIZED)
-				delete &entity;
-			return true;
-		};
-		ReverseVisitChildren(func);
-	}
-
-	// Shutdown components
-	{
-		auto func = [&](coComponent& comp)
-		{
-			comp.OnShutdown(*this);
-			return true;
-		};
-		coReverseVisitAll(firstComponent, func);
-	}
 }
 
 void coEntity::Give(coComponent& component)
@@ -389,61 +239,6 @@ void coEntity::Give(coComponent& component)
 	{
 		firstComponent = &component;
 	}
-}
-
-void coEntity::SetParent(coEntity* newParent)
-{
-	if (parent)
-	{
-		if (parent->firstChild == this)
-		{
-			if (nextSibling == this)
-				parent->firstChild = nullptr;
-			else
-				parent->firstChild = nextSibling;
-		}
-		nextSibling->previousSibling = previousSibling;
-		previousSibling->nextSibling = nextSibling;
-		parentStateWhenAttached = State::NONE;
-	}
-	parent = newParent;
-	if (newParent)
-	{
-		coEntity* parentFirstChild = newParent->firstChild;
-		if (parentFirstChild)
-		{
-			parentFirstChild->previousSibling->nextSibling = this;
-			previousSibling = parentFirstChild->previousSibling;
-
-			parentFirstChild->previousSibling = this;
-			nextSibling = parentFirstChild;
-		}
-		else
-		{
-			newParent->firstChild = this;
-		}
-		parentStateWhenAttached = newParent->GetState();
-	}
-}
-
-void coEntity::Give(coEntity& entity)
-{
-	coASSERT(entity.parent == nullptr);
-	if (firstChild)
-	{
-		firstChild->previousSibling->nextSibling = &entity;
-		entity.previousSibling = firstChild->previousSibling;
-
-		firstChild->previousSibling = &entity;
-		entity.nextSibling = firstChild;
-	}
-	else
-	{
-		coASSERT(entity.previousSibling == nullptr);
-		coASSERT(entity.nextSibling == nullptr);
-		firstChild = &entity;
-	}
-	entity.parent = this;
 }
 
 coComponent* coEntity::GetComponent(const coType& type) const

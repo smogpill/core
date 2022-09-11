@@ -2,6 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "test_pattern/pch.h"
 #include "test/unit/coTest.h"
+#include "pattern/ecs/coECS.h"
 #include "pattern/ecs/entity/coEntity.h"
 #include "pattern/ecs/component/coComponent.h"
 #include "pattern/ecs/component/coComponent_f.h"
@@ -56,56 +57,59 @@ coDEFINE_ENTITY_TYPE(TestEntity)
 coTEST(ecs, Reflection)
 {
 	coTypeRegistry::CreateInstanceIfMissing();
+	coECS::CreateInstanceIfMissing();
 }
 
-coTEST(ecs, SimpleEntity)
+coTEST(ecs, CreateDestroyEntity)
 {
-	coUniquePtr<coEntity> entity = new coEntity();
+	coECS* ecs = coECS::instance;
+	coEntityHandle entity = ecs->CreateEntity<TestEntity>();
+	coEXPECT(entity.IsValid());
+	ecs->DestroyEntity(entity);
+}
 
-	TestAComp* a = new TestAComp();
-	entity->Give(*a);
-
-	TestBComp* b = new TestBComp();
-	entity->Give(*b);
+coTEST(ecs, ModifyEntity)
+{
+	coECS* ecs = coECS::instance;
+	coEntityHandle entity = ecs->CreateEntity<TestEntity>();
+	TestBComp* b = ecs->GetComponent<TestBComp>(entity);
+	b->b = 777.0f;
+	ecs->DestroyEntity(entity);
 }
 
 coTEST(ecs, Prefab)
 {
-	coUniquePtr<coEntity> prefab = new coEntity();
-	{
-		TestAComp* a = new TestAComp();
-		prefab->Give(*a);
-
-		TestBComp* b = new TestBComp();
-		prefab->Give(*b);
-	}
-
+	coECS* ecs = coECS::instance;
+	coEntityHandle prefab = ecs->CreateEntity<TestEntity>();
+	coEntityHandle instance = ecs->Clone(prefab);
 	//coUniquePtr<coEntity> entity = prebab->Clone();
+	ecs->DestroyEntity(instance);
+	ecs->DestroyEntity(prefab);
 }
 
 coTEST(ecs, Archive)
 {
-	coUniquePtr<coEntity> in = new coEntity();
-	{
-		TestAComp* a = new TestAComp();
-		in->Give(*a);
-
-		TestBComp* b = new TestBComp();
-		in->Give(*b);
-	}
+	coECS* ecs = coECS::instance;
+	coEntityHandle entity = coECS::instance->CreateEntity<TestEntity>();
 
 	coArchive archive;
-	archive.WriteRoot(*in.Get());
-
-	coUniquePtr<coEntity> out = archive.CreateObjects<coEntity>();
+	ecs->SaveEntity(archive, entity);
+	ecs->DestroyEntity(entity);
+	coEntityHandle loadedEntity = ecs->LoadEntity(archive);
+	ecs->DestroyEntity(loadedEntity);
 }
 
 coTEST(ecs, Children)
 {
-	coUniquePtr<coEntity> p = new coEntity();
+	coECS* ecs = coECS::instance;
+	coEntityHandle parent = ecs->CreateEntity<TestEntity>();
+	coEntityHandle a = ecs->CreateEntity<TestEntity>();
+	coEntityHandle b = ecs->CreateEntity<TestEntity>();
 
-	coEntity* a = new coEntity();
-	coEntity* b = new coEntity();
-	a->SetParent(p.Get());
-	b->SetParent(p.Get());
+	ecs->SetParent(a, parent);
+	ecs->SetParent(b, parent);
+
+	ecs->DestroyEntity(parent);
+	coEXPECT(!ecs->IsAlive(a));
+	coEXPECT(!ecs->IsAlive(b));
 }
