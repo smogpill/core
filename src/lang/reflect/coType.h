@@ -13,6 +13,11 @@ using coDestructFunc = void (*)(void*);
 using coWriteArchiveFunc = coUint32 (*)(coArchive&, const void*);
 using coReadArchiveFunc = void (*)(const coArchive&, coUint32, void*);
 
+class coCustomTypeData
+{
+public:
+};
+
 class coType : public coSymbol
 {
 public:
@@ -34,6 +39,7 @@ public:
 	coUint32 alignment8 = 0;
 	coUint32 indexInRegistry = coUint32(-1);
 	coBool triviallyCopyable : 1;
+	coCustomTypeData* customTypeData = nullptr;
 	const coType* super = nullptr;
 	const coType* subType = nullptr;
 	coCreateFunc createFunc = nullptr;

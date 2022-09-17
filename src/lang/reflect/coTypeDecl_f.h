@@ -125,6 +125,12 @@ coType* coGetType()
 	_coDEFINE_GET_STATIC_TYPE(_Class_); \
 	_coDEFINE_ON_INIT_TYPE(_Class_)
 
+#define coBEGIN_CLASS(_Class_) \
+	coDEFINE_CLASS(_Class_) \
+	{
+#define coEND_CLASS() \
+	}
+
 #define coDEFINE_TEMPLATE_CLASS(_TemplateParams_, _Class_) \
 	template _TemplateParams_ \
 	_coDEFINE_GET_STATIC_TYPE(_Class_); \

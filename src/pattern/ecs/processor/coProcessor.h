@@ -4,11 +4,21 @@
 #include <lang/result/coResult.h>
 class coEntity;
 
+class coProcessorInfo
+{
+public:
+
+};
+
 class coProcessor
 {
 protected:
-	virtual coResult OnInit(coEntity& entity) { return true; }
-	virtual coResult OnStart(coEntity& entity) { return true; }
-	virtual void OnStop(coEntity& entity) {}
-	virtual void OnShutdown(coEntity& entity) {}
+	virtual void OnInit(coProcessorInfo& info) {}
+	virtual void OnStart(coProcessorInfo& info) {}
+	virtual void OnStop(coProcessorInfo& info) {}
+	virtual void OnShutdown(coProcessorInfo& info) {}
 };
+
+#define coDECLARE_PROCESSOR(_self_, _parent_)\
+	private:\
+	coDECLARE_BASE(_parent_)

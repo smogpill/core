@@ -6,6 +6,7 @@
 #include "pattern/ecs/entity/coEntity.h"
 #include "pattern/ecs/component/coComponent.h"
 #include "pattern/ecs/component/coComponent_f.h"
+#include "pattern/ecs/processor/coProcessor.h"
 #include "pattern/ecs/entity/coEntityType_f.h"
 #include "pattern/pointer/coUniquePtr.h"
 #include <io/archive/coArchive.h>
@@ -53,6 +54,30 @@ coDEFINE_ENTITY_TYPE(TestEntity)
 	type->AddComponent<TestBComp>();
 	type->AddComponent<TestCComp>();
 }
+
+//==========================================
+class coOwnershipProcessor : public coProcessor
+{
+public:
+	void OnInit(coProcessorInfo& info) override
+	{
+
+	}
+	void OnShutdown(coProcessorInfo& info) override
+	{
+
+	}
+	void OnStart(coProcessorInfo& info) override
+	{
+
+	}
+	void OnStop(coProcessorInfo& info) override
+	{
+
+	}
+};
+
+//==========================================
 
 coTEST(ecs, Reflection)
 {

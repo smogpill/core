@@ -24,27 +24,21 @@ public:
 		STARTED,
 		END
 	};
-	coResult SetState(State state);
 	coUint GetNbComponents() const;
 	void Give(coComponent& component);
 	coComponent* GetFirstComponent() const { return firstComponent; }
 	State GetState() const { return state; }
-	State GetParentStateWhenAttached() const { return parentStateWhenAttached; }
 	coComponent* GetComponent(const coType& type) const;
 	template <class T>
 	T* GetComponent() const;
 
-private:
-	friend class coECS;
-
-	coResult TransitToNextState(State targetState);
 	coUint32 generation = 0;
 	coUint32 firstChild = coUint32(-1);
 	coUint32 previousSibling = coUint32(-1);
 	coUint32 nextSibling = coUint32(-1);
 	coUint32 parent = coUint32(-1);
 	State state = State::NONE;
-	State parentStateWhenAttached = State::NONE;
+	coBool startedRequested = false;
 	coComponent* firstComponent = nullptr;
 	const coEntityType* entityType = nullptr;
 };

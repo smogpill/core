@@ -3,6 +3,15 @@
 #pragma once
 #include "coComponent.h"
 #include <lang/reflect/coTypeDecl_f.h>
+#include "coComponentType.h"
+
+#define coBEGIN_COMPONENT(_Class_) \
+	coBEGIN_CLASS(_Class_)\
+	coComponentTypeData* component = new coComponentTypeData(); \
+	type->customTypeData = component
+
+#define coEND_COMPONENT() \
+	coEND_CLASS()
 
 #define coDEFINE_COMPONENT(_Class_) \
 	coDEFINE_CLASS(_Class_)

@@ -153,6 +153,19 @@ void coECS::SetParent(const coEntityHandle& childHandle, const coEntityHandle& p
 	}
 }
 
+void coECS::SetStarted(const coEntityHandle& handle, coBool b)
+{
+	coEntity* entity = GetEntity(handle);
+	if (entity)
+	{
+		if (entity->startedRequested == b)
+			return;
+		const coArray<const coType*>& componentTypes = entity->entityType->GetComponentTypes();
+
+		entity->startedRequested = b;
+	}
+}
+
 coBool coECS::IsAlive(const coEntityHandle& handle) const
 {
 	return GetEntity(handle) != nullptr;

@@ -23,6 +23,7 @@ public:
 	void SaveEntity(coArchive& archive, const coEntityHandle&) const;
 	coEntityHandle LoadEntity(const coArchive& archive);
 	void SetParent(const coEntityHandle& child, const coEntityHandle& parent);
+	void SetStarted(const coEntityHandle& entity, coBool);
 	void AddProcessor(coProcessor& processor);
 
 	coBool IsAlive(const coEntityHandle&) const;

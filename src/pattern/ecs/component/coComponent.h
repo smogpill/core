@@ -9,28 +9,21 @@ class coEntity;
 
 #define coDECLARE_COMPONENT(_Class_, _Base_) \
 	coDECLARE_BASE(_Base_); \
-	coDECLARE_CLASS(_Class_)
+	coDECLARE_CLASS_NO_POLYMORPHISM(_Class_)
 
 class coComponent
 {
-	coDECLARE_CLASS(coComponent);
+	coDECLARE_CLASS_NO_POLYMORPHISM(coComponent);
 public:
 	coComponent();
 
 	coComponent* GetNextComponent() const { return nextComponent; }
 	template <class T> T* GetComponent() const;
 
-	virtual void Write(coBinaryOutputStream& stream) const {}
-	virtual void Read(coBinaryInputStream& stream) {}
-
 protected:
 	friend class coEntity;
 	
 	void SetNextComponent(coComponent* next) { nextComponent = next; }
-	virtual coResult OnInit(coEntity& entity) { return true; }
-	virtual coResult OnStart(coEntity& entity) { return true; }
-	virtual void OnStop(coEntity& entity) {}
-	virtual void OnShutdown(coEntity& entity) {}
 
 private:
 	coComponent* nextComponent = nullptr;
