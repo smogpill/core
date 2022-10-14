@@ -13,8 +13,10 @@
 #define coEND_COMPONENT() \
 	coEND_CLASS()
 
-#define coDEFINE_COMPONENT(_Class_) \
-	coDEFINE_CLASS(_Class_)
+#define coDEFINE_COMPONENT_INIT() component->initFunc = [](coComponent& comp) { Init(static_cast<Class&>(comp)); }
+#define coDEFINE_COMPONENT_SHUTDOWN() component->shutdownFunc = [](coComponent& comp) { Shutdown(static_cast<Class&>(comp)); }
+#define coDEFINE_COMPONENT_START() component->startFunc = [](coComponent& comp) { Start(static_cast<Class&>(comp)); }
+#define coDEFINE_COMPONENT_STOP() component->stopFunc = [](coComponent& comp) { Stop(static_cast<Class&>(comp)); }
 
 template <class T>
 T* coComponent::GetComponent() const

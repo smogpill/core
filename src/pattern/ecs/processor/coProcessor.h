@@ -3,6 +3,7 @@
 #pragma once
 #include <lang/result/coResult.h>
 class coEntity;
+class coComponent;
 
 class coProcessorInfo
 {
@@ -13,10 +14,10 @@ public:
 class coProcessor
 {
 protected:
-	virtual void OnInit(coProcessorInfo& info) {}
-	virtual void OnStart(coProcessorInfo& info) {}
-	virtual void OnStop(coProcessorInfo& info) {}
-	virtual void OnShutdown(coProcessorInfo& info) {}
+	virtual void OnInit(coComponent& component) {}
+	virtual void OnStart(coComponent& component) {}
+	virtual void OnStop(coComponent& component) {}
+	virtual void OnShutdown(coComponent& component) {}
 };
 
 #define coDECLARE_PROCESSOR(_self_, _parent_)\

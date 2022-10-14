@@ -3,7 +3,7 @@
 #include "pattern/pch.h"
 #include "coOwnership.h"
 #include "../../component/coComponent_f.h"
+#include "pattern/ecs/processor/coProcessor.h"
 
-coDEFINE_COMPONENT(coOwnership)
-{
-}
+coBEGIN_COMPONENT(coOwnership);
+coEND_COMPONENT();

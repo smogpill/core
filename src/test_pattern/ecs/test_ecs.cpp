@@ -20,9 +20,8 @@ public:
 	coInt a = 7;
 };
 
-coDEFINE_COMPONENT(TestAComp)
-{
-}
+coBEGIN_COMPONENT(TestAComp);
+coEND_COMPONENT();
 
 class TestBComp : public coComponent
 {
@@ -31,9 +30,8 @@ public:
 	coFloat b = 23.0f;
 };
 
-coDEFINE_COMPONENT(TestBComp)
-{
-}
+coBEGIN_COMPONENT(TestBComp);
+coEND_COMPONENT();
 
 class TestCComp : public coComponent
 {
@@ -42,10 +40,9 @@ public:
 	coUint c = 99;
 };
 
-coDEFINE_COMPONENT(TestCComp)
-{
-	type->AddDependency<TestAComp>();
-}
+coBEGIN_COMPONENT(TestCComp);
+component->AddDependency<TestAComp>();
+coEND_COMPONENT();
 
 coDECLARE_ENTITY_TYPE(TestEntity);
 
@@ -54,28 +51,6 @@ coDEFINE_ENTITY_TYPE(TestEntity)
 	type->AddComponent<TestBComp>();
 	type->AddComponent<TestCComp>();
 }
-
-//==========================================
-class coOwnershipProcessor : public coProcessor
-{
-public:
-	void OnInit(coProcessorInfo& info) override
-	{
-
-	}
-	void OnShutdown(coProcessorInfo& info) override
-	{
-
-	}
-	void OnStart(coProcessorInfo& info) override
-	{
-
-	}
-	void OnStop(coProcessorInfo& info) override
-	{
-
-	}
-};
 
 //==========================================
 

@@ -12,6 +12,7 @@
 #include "../../uuid/coUuid_f.h"
 #include "../component/coComponentIterator.h"
 #include "../component/coComponent.h"
+#include "../coECS.h"
 
 class coEntityComponents
 {
@@ -77,6 +78,7 @@ coDEFINE_CLASS(coEntityChildren)
 	type->writeArchiveFunc = [](coArchive& archive, const void* obj) -> coUint32
 	{
 		const coEntity* entity = static_cast<const coEntity*>(obj);
+		coECS* ecs = coECS::instance;
 		const coUint32 nbChildren = entity->GetNbChildren();
 		if (nbChildren == 0)
 			return 0;

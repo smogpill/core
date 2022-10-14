@@ -4,7 +4,6 @@
 #include "coUuidComp.h"
 #include "../../component/coComponent_f.h"
 
-coDEFINE_COMPONENT(coUuidComp)
-{
-	coDEFINE_FIELD(uuid);
-}
+coBEGIN_COMPONENT(coUuidComp);
+coDEFINE_FIELD(uuid);
+coEND_COMPONENT();
