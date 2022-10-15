@@ -5,6 +5,7 @@
 #include <debug/log/coAssert.h>
 #include "entity/coEntityType.h"
 #include "component/coComponentIterator.h"
+#include "component/coComponentType.h"
 
 coDEFINE_SINGLETON(coECS);
 
@@ -30,11 +31,15 @@ coEntityHandle coECS::CreateEntity(const coEntityType& entityType)
 	new (&entity) coEntity();
 	entity.generation = generation;
 	entity.entityType = &entityType;
+	entity.CreateComponents();
 
 	// Create components
 	for (const coType* type : entityType.GetComponentTypes())
 	{
 		coComponent* component = static_cast<coComponent*>(type->createFunc());
+		const coComponentTypeData* componentType = static_cast<const coComponentTypeData*>(type->customTypeData);
+		if (componentType->initFunc)
+			componentType->initFunc(*component);
 		entity.Give(*component);
 	}
 
@@ -76,8 +81,15 @@ void coECS::DestroyEntity(coUint32 index)
 
 	// Delete components
 	{
+		const coEntityType* entityType = entity.entityType;
+		const auto& componentTypes = entityType->GetComponentTypes();
+		coUint32 componentIdx = componentTypes.count - 1;
 		auto func = [&](coComponent& comp)
 		{
+			const coType* componentType = componentTypes[componentIdx];
+			const coComponentTypeData* componentTypeData = static_cast<const coComponentTypeData*>(componentType->customTypeData);
+			if (componentTypeData->shutdownFunc)
+				componentTypeData->shutdownFunc(*comp);
 			delete& comp;
 			return true;
 		};
@@ -160,9 +172,9 @@ void coECS::SetStarted(const coEntityHandle& handle, coBool b)
 	{
 		if (entity->startedRequested == b)
 			return;
+		entity->startedRequested = b;
 		const coArray<const coType*>& componentTypes = entity->entityType->GetComponentTypes();
 
-		entity->startedRequested = b;
 	}
 }
 

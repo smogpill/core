@@ -25,12 +25,18 @@ public:
 		END
 	};
 	coUint GetNbComponents() const;
-	void Give(coComponent& component);
-	coComponent* GetFirstComponent() const { return firstComponent; }
+	coComponent** GetComponentBuffer() const { return componentBuffer; }
+	coArray<coComponent*> GetComponents() const { return coArray<coComponent*>(componentBuffer, GetNbComponents()); }
 	State GetState() const { return state; }
 	coComponent* GetComponent(const coType& type) const;
 	template <class T>
 	T* GetComponent() const;
+	void CreateComponents();
+	void InitComponents();
+	void ShutdownComponents();
+	void DestroyComponents();
+	void StartComponents();
+	void StopComponents();
 
 	coUint32 generation = 0;
 	coUint32 firstChild = coUint32(-1);
@@ -39,7 +45,7 @@ public:
 	coUint32 parent = coUint32(-1);
 	State state = State::NONE;
 	coBool startedRequested = false;
-	coComponent* firstComponent = nullptr;
+	coComponent** componentBuffer = nullptr;
 	const coEntityType* entityType = nullptr;
 };
 

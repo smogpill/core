@@ -12,6 +12,8 @@
 #include "../../uuid/coUuid_f.h"
 #include "../component/coComponentIterator.h"
 #include "../component/coComponent.h"
+#include "../component/coComponentType.h"
+#include "../entity/coEntityType.h"
 #include "../coECS.h"
 
 class coEntityComponents
@@ -128,44 +130,127 @@ coDEFINE_CLASS(coEntity)
 
 coUint coEntity::GetNbComponents() const
 {
-	coUint nb = 0;
-	auto func = [&](coComponent& comp)
-	{
-		++nb;
-		return true;
-	};
-	coVisitAll(firstComponent, func);
-	return nb;
-}
-
-void coEntity::Give(coComponent& component)
-{
-	if (firstComponent)
-	{
-		coComponent* last = firstComponent;
-		while (last->nextComponent != firstComponent)
-			last = last->nextComponent;
-		last->nextComponent = &component;
-		component.nextComponent = firstComponent;
-	}
-	else
-	{
-		firstComponent = &component;
-	}
+	return entityType->GetComponentTypes().count;
 }
 
 coComponent* coEntity::GetComponent(const coType& type) const
 {
-	coComponent* foundComp = nullptr;
-	auto func = [&](coComponent& comp)
+	const auto& componentTypes = entityType->GetComponentTypes();
+	for (coUint componentIdx = 0; componentIdx < componentTypes.count; ++componentIdx)
 	{
-		if (comp.GetType() == &type)
+		if (componentTypes[componentIdx] == &type)
 		{
-			foundComp = &comp;
-			return false;
+			return componentBuffer[componentIdx];
 		}
-		return true;
-	};
-	coVisitAll(firstComponent, func);
-	return foundComp;
+	}
+	return nullptr;
+}
+
+void coEntity::CreateComponents()
+{
+	coASSERT(componentBuffer == nullptr);
+	if (entityType)
+	{
+		const auto& componentTypes = entityType->GetComponentTypes();
+		if (componentTypes.count)
+		{
+			componentBuffer = new coComponent*[componentTypes.count];
+			for (coUint compIdx = 0; compIdx < componentTypes.count; ++compIdx)
+			{
+				const coType* compType = componentTypes[compIdx];
+				coComponent* comp = static_cast<coComponent*>(compType->createFunc());
+				componentBuffer[compIdx] = comp;
+			}
+		}
+	}
+}
+
+void coEntity::DestroyComponents()
+{
+	if (componentBuffer)
+	{
+		const auto& componentTypes = entityType->GetComponentTypes();
+		for (coInt compIdx = componentTypes.count - 1; compIdx >= 0; --compIdx)
+		{
+			delete componentBuffer[compIdx];
+		}
+		delete[] componentBuffer;
+		componentBuffer = nullptr;
+	}
+}
+
+void coEntity::InitComponents()
+{
+	if (componentBuffer)
+	{
+		const auto& componentTypes = entityType->GetComponentTypes();
+		for (coUint compIdx = 0; compIdx < componentTypes.count; ++compIdx)
+		{
+			const coType* compType = componentTypes[compIdx];
+			const coComponentTypeData* compTypeData = static_cast<const coComponentTypeData*>(compType->customTypeData);
+			if (compTypeData->initFunc)
+			{
+				coComponent* component = componentBuffer[compIdx];
+				coASSERT(component);
+				compTypeData->initFunc(*component);
+			}
+		}
+	}
+}
+
+void coEntity::ShutdownComponents()
+{
+	if (componentBuffer)
+	{
+		const auto& componentTypes = entityType->GetComponentTypes();
+		for (coInt compIdx = componentTypes.count-1; compIdx >= 0; --compIdx)
+		{
+			const coType* compType = componentTypes[compIdx];
+			const coComponentTypeData* compTypeData = static_cast<const coComponentTypeData*>(compType->customTypeData);
+			if (compTypeData->shutdownFunc)
+			{
+				coComponent* component = componentBuffer[compIdx];
+				coASSERT(component);
+				compTypeData->shutdownFunc(*component);
+			}
+		}
+	}
+}
+
+void coEntity::StartComponents()
+{
+	if (componentBuffer)
+	{
+		const auto& componentTypes = entityType->GetComponentTypes();
+		for (coUint compIdx = 0; compIdx < componentTypes.count; ++compIdx)
+		{
+			const coType* compType = componentTypes[compIdx];
+			const coComponentTypeData* compTypeData = static_cast<const coComponentTypeData*>(compType->customTypeData);
+			if (compTypeData->startFunc)
+			{
+				coComponent* component = componentBuffer[compIdx];
+				coASSERT(component);
+				compTypeData->startFunc(*component);
+			}
+		}
+	}
+}
+
+void coEntity::StopComponents()
+{
+	if (componentBuffer)
+	{
+		const auto& componentTypes = entityType->GetComponentTypes();
+		for (coInt compIdx = componentTypes.count - 1; compIdx >= 0; --compIdx)
+		{
+			const coType* compType = componentTypes[compIdx];
+			const coComponentTypeData* compTypeData = static_cast<const coComponentTypeData*>(compType->customTypeData);
+			if (compTypeData->stopFunc)
+			{
+				coComponent* component = componentBuffer[compIdx];
+				coASSERT(component);
+				compTypeData->stopFunc(*component);
+			}
+		}
+	}
 }
