@@ -144,14 +144,7 @@ void* coArchive::CreateObjects(const coType& expectedRootBaseType) const
 
 void* coArchive::CreateObjects(coUint32 objectIdx, const coType& expectedBaseType) const
 {
-	const coInt32 vtableOffset = -Get<coInt32>(objectIdx);
-	const coUint16* vtable = reinterpret_cast<const coUint16*>(&data.data[objectIdx + vtableOffset]);
-	const coUint16 vtableSize = vtable[0];
-	const coUint16 inlineSize = vtable[1];
-	const coUint32 typeUID = *((const coUint32*)&vtable[2]);
-	coTypeRegistry* typeRegistry = coTypeRegistry::instance;
-	coASSERT(typeRegistry);
-	const coType* type = typeRegistry->Get(typeUID);
+	const coType* type = ReadObjectType(objectIdx);
 	if (type == nullptr)
 		return nullptr;
 
@@ -162,6 +155,18 @@ void* coArchive::CreateObjects(coUint32 objectIdx, const coType& expectedBaseTyp
 	coASSERT(object);
 	ReadObject(objectIdx, object, *type);
 	return object;
+}
+
+const coType* coArchive::ReadObjectType(coUint32 objectIdx) const
+{
+	const coInt32 vtableOffset = -Get<coInt32>(objectIdx);
+	const coUint16* vtable = reinterpret_cast<const coUint16*>(&data.data[objectIdx + vtableOffset]);
+	const coUint16 vtableSize = vtable[0];
+	const coUint16 inlineSize = vtable[1];
+	const coUint32 typeUID = *((const coUint32*)&vtable[2]);
+	coTypeRegistry* typeRegistry = coTypeRegistry::instance;
+	coASSERT(typeRegistry);
+	return typeRegistry->Get(typeUID);
 }
 
 coUint32 coArchive::GetRoot() const

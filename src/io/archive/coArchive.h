@@ -19,6 +19,7 @@ public:
 	void* CreateObjects(coUint32 idx, const coType& expectedBaseType) const;
 	template <class T>
 	T* CreateObjects(coUint32 idx) const { return static_cast<T*>(CreateObjects(idx, *T::GetStaticType())); }
+	const coType* ReadObjectType(coUint32 objectIdx) const;
 	void ReadObject(coUint32 idx, void* object, const coType& type) const;
 	template <class T>
 	void ReadObject(coUint32 idx, T& object) const { ReadObject(idx, &object, *T::GetStaticType()); }

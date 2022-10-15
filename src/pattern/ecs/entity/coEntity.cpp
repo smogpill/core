@@ -28,7 +28,9 @@ coDEFINE_CLASS(coEntityComponents)
 	type->writeArchiveFunc = [](coArchive& archive, const void* obj) -> coUint32
 	{
 		const coEntity* entity = static_cast<const coEntity*>(obj);
-		const coUint32 nbComponents = entity->GetNbComponents();
+		coASSERT(entity->entityType);
+		const auto& componentTypes = entity->entityType->GetComponentTypes();
+		const coUint32 nbComponents = componentTypes.count;
 		if (nbComponents == 0)
 			return 0;
 		const coUint32 index = archive.GetSize();
@@ -37,14 +39,14 @@ coDEFINE_CLASS(coEntityComponents)
 		const coUint32 offsetsIdx = archive.GetSize();
 		archive.PushBytes(nbComponents * sizeof(coUint32));
 		coUint32 itOffsetIdx = offsetsIdx;
-		auto func = [&](coComponent& comp)
+		for (coUint32 compIdx = 0; compIdx < nbComponents; ++compIdx)
 		{
-			const coUint32 compIdx = archive.WriteObject(&comp, *comp.GetType());
-			(coUint32&)(data[itOffsetIdx]) = compIdx - itOffsetIdx;
+			const coComponent* comp = entity->componentBuffer[compIdx];
+			const coType* compType = componentTypes[compIdx];
+			const coUint32 compDataIdx = archive.WriteObject(&comp, *compType);
+			(coUint32&)(data[itOffsetIdx]) = compDataIdx - itOffsetIdx;
 			itOffsetIdx += sizeof(coUint32);
-			return true;
-		};
-		coVisitAll(entity->GetFirstComponent(), func);
+		}
 		return index;
 	};
 	type->readArchiveFunc = [](const coArchive& archive, coUint32 idx, void* obj)
@@ -57,10 +59,12 @@ coDEFINE_CLASS(coEntityComponents)
 			const coUint32 compOffsetIdx = archive.Get<coUint32>(itIdx);
 			if (compOffsetIdx)
 			{
-				coComponent* component = archive.CreateObjects<coComponent>(itIdx + compOffsetIdx);
-				if (component)
+				const coType* type = archive.ReadObjectType(itIdx + compOffsetIdx);
+				coASSERT(type);
+				coComponent* comp = entity->GetComponent(*type);
+				if (comp)
 				{
-					entity->Give(*component);
+					archive.ReadObject(itIdx + compOffsetIdx, comp, *type);
 				}
 			}
 			itIdx += sizeof(coUint32);
