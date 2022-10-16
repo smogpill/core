@@ -9,10 +9,6 @@
 #include "coEntityHandle.h"
 class coEntityType;
 
-// TODO:
-// - Replace the entity by an ID (weak reference, 64 bits with 32 bits for generation, SOA)
-// - Create entity contexts (network, visual, etc.). So that we can easily update it independently.
-
 class coEntity
 {
 	coDECLARE_CLASS_NO_POLYMORPHISM(coEntity);
@@ -24,7 +20,10 @@ public:
 		STARTED,
 		END
 	};
+	void SetState(State state);
+
 	coUint GetNbComponents() const;
+	coUint GetNbChildren() const;
 	coComponent** GetComponentBuffer() const { return componentBuffer; }
 	coArray<coComponent*> GetComponents() const { return coArray<coComponent*>(componentBuffer, GetNbComponents()); }
 	State GetState() const { return state; }
@@ -32,21 +31,29 @@ public:
 	template <class T>
 	T* GetComponent() const;
 	void CreateComponents();
-	void InitComponents();
-	void ShutdownComponents();
 	void DestroyComponents();
-	void StartComponents();
-	void StopComponents();
 
+	coUint32 index = 0; // temporary
 	coUint32 generation = 0;
 	coUint32 firstChild = coUint32(-1);
 	coUint32 previousSibling = coUint32(-1);
 	coUint32 nextSibling = coUint32(-1);
 	coUint32 parent = coUint32(-1);
 	State state = State::NONE;
-	coBool startedRequested = false;
+	State targetState = State::NONE;
 	coComponent** componentBuffer = nullptr;
 	const coEntityType* entityType = nullptr;
+private:
+	void SetTargetState(State state_) { targetState = state_; }
+	void Init();
+	void Shutdown();
+	void Start();
+	void Stop();
+	void UpdateState();
+	void InitComponents();
+	void ShutdownComponents();
+	void StartComponents();
+	void StopComponents();
 };
 
 template <class T>

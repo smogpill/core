@@ -16,6 +16,15 @@ coECS::~coECS()
 
 coEntityHandle coECS::CreateEntity(const coEntityType& entityType)
 {
+	const coEntityHandle handle = _CreateEmptyEntity();
+	coEntity& entity = entities[handle.index];
+	entity.entityType = &entityType;
+	entity.CreateComponents();
+	return handle;
+}
+
+coEntityHandle coECS::_CreateEmptyEntity()
+{
 	if (freeEntities.count == 0)
 	{
 		const coUint32 startIndex = entities.count;
@@ -27,22 +36,13 @@ coEntityHandle coECS::CreateEntity(const coEntityType& entityType)
 	}
 	const coUint32 index = coPopBack(freeEntities);
 	coEntity& entity = entities[index];
+
+	// temp
+	entity.index = index;
+
 	const coUint32 generation = entity.generation;
 	new (&entity) coEntity();
 	entity.generation = generation;
-	entity.entityType = &entityType;
-	entity.CreateComponents();
-
-	// Create components
-	for (const coType* type : entityType.GetComponentTypes())
-	{
-		coComponent* component = static_cast<coComponent*>(type->createFunc());
-		const coComponentTypeData* componentType = static_cast<const coComponentTypeData*>(type->customTypeData);
-		if (componentType->initFunc)
-			componentType->initFunc(*component);
-		entity.Give(*component);
-	}
-
 	return coEntityHandle(index, entity.generation);
 }
 
@@ -79,23 +79,7 @@ void coECS::DestroyEntity(coUint32 index)
 	};
 	ReverseVisitChildren(entity, destroyChild);
 
-	// Delete components
-	{
-		const coEntityType* entityType = entity.entityType;
-		const auto& componentTypes = entityType->GetComponentTypes();
-		coUint32 componentIdx = componentTypes.count - 1;
-		auto func = [&](coComponent& comp)
-		{
-			const coType* componentType = componentTypes[componentIdx];
-			const coComponentTypeData* componentTypeData = static_cast<const coComponentTypeData*>(componentType->customTypeData);
-			if (componentTypeData->shutdownFunc)
-				componentTypeData->shutdownFunc(*comp);
-			delete& comp;
-			return true;
-		};
-		coReverseVisitAll(entity.GetFirstComponent(), func);
-	}
-
+	entity.SetState(coEntity::State::NONE);
 	entity.~coEntity();
 	++entity.generation;
 	coPushBack(freeEntities, index);
@@ -139,10 +123,11 @@ void coECS::SetParent(const coEntityHandle& childHandle, const coEntityHandle& p
 		child->previousSibling = coUint32(-1);
 		child->nextSibling = coUint32(-1);
 	}
-	child->parent = parentHandle.index;
+	coEntity* parent = GetEntity(parentHandle);
+	child->parent = parent ? parentHandle.index : coUint32(-1);
 	if (parentHandle.IsValid())
 	{
-		coEntity* parent = GetEntity(parentHandle);
+		child->parent = parentHandle.index;
 		coASSERT(parent);
 		if (parent->firstChild == coUint32(-1))
 		{
@@ -170,11 +155,7 @@ void coECS::SetStarted(const coEntityHandle& handle, coBool b)
 	coEntity* entity = GetEntity(handle);
 	if (entity)
 	{
-		if (entity->startedRequested == b)
-			return;
-		entity->startedRequested = b;
-		const coArray<const coType*>& componentTypes = entity->entityType->GetComponentTypes();
-
+		entity->SetState(b ? coEntity::State::STARTED : coEntity::State::INITIALIZED);
 	}
 }
 

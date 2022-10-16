@@ -16,6 +16,7 @@ using coReadArchiveFunc = void (*)(const coArchive&, coUint32, void*);
 class coCustomTypeData
 {
 public:
+	coType* type = nullptr;
 };
 
 class coType : public coSymbol

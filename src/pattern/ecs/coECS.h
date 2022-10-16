@@ -4,7 +4,7 @@
 #include "../singleton/coSingleton.h"
 #include "entity/coEntityHandle.h"
 #include "entity/coEntity.h"
-class coEntityType;
+class coType;
 class coComponent;
 class coArchive;
 class coProcessor;
@@ -15,7 +15,7 @@ class coECS
 public:
 	~coECS();
 	void Reserve(coUint32 nbEntities);
-	coEntityHandle CreateEntity(const coEntityType&);
+	coEntityHandle CreateEntity(const coType&);
 	template <class T>
 	coEntityHandle CreateEntity() { return CreateEntity(*T::GetStaticType()); }
 	void DestroyEntity(const coEntityHandle&);
@@ -30,6 +30,8 @@ public:
 	coComponent* GetComponent(const coEntityHandle&, const coType& type) const;
 	template <class T>
 	T* GetComponent(const coEntityHandle& entity) const { return static_cast<T*>(GetComponent(entity, *T::GetStaticType())); }
+	coEntity& _GetEntity(coUint32 index) { return entities[index]; }
+	coEntityHandle _CreateEmptyEntity();
 private:
 	coEntity* GetEntity(const coEntityHandle& handle) const;
 	template <class F>

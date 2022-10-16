@@ -5,13 +5,6 @@
 #include <lang/reflect/coType.h>
 #include <container/array/coDynamicArray_f.h>
 #include "../component/coComponent.h"
-#include "coEntityTypeRegistry.h"
-
-coEntityType::coEntityType()
-{
-	coEntityTypeRegistry::CreateInstanceIfMissing();
-	coEntityTypeRegistry::instance->Add(*this);
-}
 
 void coEntityType::AddComponent(const coType& type)
 {

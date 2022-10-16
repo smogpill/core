@@ -16,6 +16,34 @@
 #include "../entity/coEntityType.h"
 #include "../coECS.h"
 
+class coEntityType2
+{
+public:
+	coDECLARE_CLASS_NO_POLYMORPHISM(coEntityType2);
+};
+
+coDEFINE_CLASS(coEntityType2)
+{
+	type->triviallyCopyable = false;
+	type->writeArchiveFunc = [](coArchive& archive, const void* obj) -> coUint32
+	{
+		const coEntity* entity = static_cast<const coEntity*>(obj);
+		coASSERT(entity->entityType);
+		const coUint32 index = archive.GetSize();
+		archive.Write(entity->entityType->type->uid);
+		return index;
+	};
+	type->readArchiveFunc = [](const coArchive& archive, coUint32 idx, void* obj)
+	{
+		coEntity* entity = static_cast<coEntity*>(obj);
+		const coUint32 uid = archive.Get<coUint32>(idx);
+		const coTypeRegistry* registry = coTypeRegistry::instance;
+		coASSERT(registry);
+		const coType* type = registry->Get(uid);
+		entity->entityType = type ? static_cast<const coEntityType*>(type->customTypeData) : nullptr;
+	};
+}
+
 class coEntityComponents
 {
 public:
@@ -52,6 +80,9 @@ coDEFINE_CLASS(coEntityComponents)
 	type->readArchiveFunc = [](const coArchive& archive, coUint32 idx, void* obj)
 	{
 		coEntity* entity = static_cast<coEntity*>(obj);
+		if (entity->entityType == nullptr)
+			return;
+		entity->CreateComponents();
 		const coUint32 nbComponents = archive.Get<coUint32>(idx);
 		coUint32 itIdx = idx + sizeof(coUint32);
 		for (coUint32 componentIdx = 0; componentIdx < nbComponents; ++componentIdx)
@@ -94,19 +125,21 @@ coDEFINE_CLASS(coEntityChildren)
 		const coUint32 offsetsIdx = archive.GetSize();
 		archive.PushBytes(nbChildren * sizeof(coUint32));
 		coUint32 itOffsetIdx = offsetsIdx;
-		const coType* entityType = coEntity::GetStaticType();
-		auto func = [&](coEntity& child)
+
+		coUint32 childIdx = entity->firstChild;
+		while (childIdx != coUint32(-1))
 		{
-			const coUint32 childIdx = archive.WriteObject(&child, *entityType);
+			const coEntity& child = ecs->_GetEntity(childIdx);
+			const coUint32 childDataIdx = archive.WriteObject(&child, *child.entityType->type);
 			(coUint32&)(data[itOffsetIdx]) = childIdx - itOffsetIdx;
 			itOffsetIdx += sizeof(coUint32);
-			return true;
-		};
-		entity->VisitChildren(func);
+			childIdx = child.nextSibling;
+		}
 		return index;
 	};
 	type->readArchiveFunc = [](const coArchive& archive, coUint32 idx, void* obj)
 	{
+		coECS* ecs = coECS::instance;
 		coEntity* entity = static_cast<coEntity*>(obj);
 		const coUint32 nbChildren = archive.Get<coUint32>(idx);
 		coUint32 itIdx = idx + sizeof(coUint32);
@@ -115,11 +148,10 @@ coDEFINE_CLASS(coEntityChildren)
 			const coUint32 childOffsetIdx = archive.Get<coUint32>(itIdx);
 			if (childOffsetIdx)
 			{
-				coEntity* child = archive.CreateObjects<coEntity>(itIdx + childOffsetIdx);
-				if (child)
-				{
-					child->SetParent(entity);
-				}
+				const coEntityHandle childEntityHandle = ecs->_CreateEmptyEntity();
+				coEntity& child = ecs->_GetEntity(childEntityHandle.index);
+				archive.ReadObject(itIdx + childOffsetIdx, child);
+				ecs->SetParent(childEntityHandle, coEntityHandle(entity->index, entity->generation));
 			}
 			itIdx += sizeof(coUint32);
 		}
@@ -128,13 +160,102 @@ coDEFINE_CLASS(coEntityChildren)
 
 coDEFINE_CLASS(coEntity)
 {
+	coDEFINE_VIRTUAL_FIELD(type, coEntityType2);
 	coDEFINE_VIRTUAL_FIELD(components, coEntityComponents);
 	coDEFINE_VIRTUAL_FIELD(entities, coEntityChildren);
+}
+
+void coEntity::SetState(State newState)
+{
+	SetTargetState(newState);
+	UpdateState();
 }
 
 coUint coEntity::GetNbComponents() const
 {
 	return entityType->GetComponentTypes().count;
+}
+
+coUint coEntity::GetNbChildren() const
+{
+	coECS* ecs = coECS::instance;
+	coUint nbChildren = 0;
+	coUint32 childIdx = firstChild;
+	while (childIdx != coUint32(-1))
+	{
+		++nbChildren;
+		const coEntity& child = ecs->_GetEntity(childIdx);
+		childIdx = child.nextSibling;
+	}
+	return nbChildren;
+}
+
+void coEntity::UpdateState()
+{
+	if (state == targetState)
+		return;
+	switch (state)
+	{
+	case State::NONE:
+	{
+		switch (targetState)
+		{
+		case State::INITIALIZED:
+		{
+			Init();
+			break;
+		}
+		case State::STARTED:
+		{
+			Init();
+			Start();
+			break;
+		}
+		}
+		break;
+	}
+	case State::INITIALIZED:
+	{
+		switch (targetState)
+		{
+		case State::NONE:
+		{
+			Shutdown();
+			break;
+		}
+		case State::STARTED:
+		{
+			Start();
+			break;
+		}
+		}
+		break;
+	}
+	case State::STARTED:
+	{
+		switch (targetState)
+		{
+		case State::NONE:
+		{
+			Stop();
+			Shutdown();
+			break;
+		}
+		case State::INITIALIZED:
+		{
+			Stop();
+			break;
+		}
+		}
+		break;
+	}
+	default:
+	{
+		coASSERT(false);
+		break;
+	}
+	}
+	state = targetState;
 }
 
 coComponent* coEntity::GetComponent(const coType& type) const
@@ -181,6 +302,26 @@ void coEntity::DestroyComponents()
 		delete[] componentBuffer;
 		componentBuffer = nullptr;
 	}
+}
+
+void coEntity::Init()
+{
+	InitComponents();
+}
+
+void coEntity::Shutdown()
+{
+	ShutdownComponents();
+}
+
+void coEntity::Start()
+{
+	StartComponents();
+}
+
+void coEntity::Stop()
+{
+	StopComponents();
 }
 
 void coEntity::InitComponents()
