@@ -8,7 +8,7 @@ class coComponent;
 
 using coComponentFunc = void (*)(coComponent&);
 
-class coComponentTypeData : public coCustomTypeData
+class coComponentType : public coCustomTypeData
 {
 public:
 	void AddDependency(const coType&);

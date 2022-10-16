@@ -332,7 +332,7 @@ void coEntity::InitComponents()
 		for (coUint compIdx = 0; compIdx < componentTypes.count; ++compIdx)
 		{
 			const coType* compType = componentTypes[compIdx];
-			const coComponentTypeData* compTypeData = static_cast<const coComponentTypeData*>(compType->customTypeData);
+			const coComponentType* compTypeData = static_cast<const coComponentType*>(compType->customTypeData);
 			if (compTypeData->initFunc)
 			{
 				coComponent* component = componentBuffer[compIdx];
@@ -351,7 +351,7 @@ void coEntity::ShutdownComponents()
 		for (coInt compIdx = componentTypes.count-1; compIdx >= 0; --compIdx)
 		{
 			const coType* compType = componentTypes[compIdx];
-			const coComponentTypeData* compTypeData = static_cast<const coComponentTypeData*>(compType->customTypeData);
+			const coComponentType* compTypeData = static_cast<const coComponentType*>(compType->customTypeData);
 			if (compTypeData->shutdownFunc)
 			{
 				coComponent* component = componentBuffer[compIdx];
@@ -370,7 +370,7 @@ void coEntity::StartComponents()
 		for (coUint compIdx = 0; compIdx < componentTypes.count; ++compIdx)
 		{
 			const coType* compType = componentTypes[compIdx];
-			const coComponentTypeData* compTypeData = static_cast<const coComponentTypeData*>(compType->customTypeData);
+			const coComponentType* compTypeData = static_cast<const coComponentType*>(compType->customTypeData);
 			if (compTypeData->startFunc)
 			{
 				coComponent* component = componentBuffer[compIdx];
@@ -389,7 +389,7 @@ void coEntity::StopComponents()
 		for (coInt compIdx = componentTypes.count - 1; compIdx >= 0; --compIdx)
 		{
 			const coType* compType = componentTypes[compIdx];
-			const coComponentTypeData* compTypeData = static_cast<const coComponentTypeData*>(compType->customTypeData);
+			const coComponentType* compTypeData = static_cast<const coComponentType*>(compType->customTypeData);
 			if (compTypeData->stopFunc)
 			{
 				coComponent* component = componentBuffer[compIdx];

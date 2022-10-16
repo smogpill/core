@@ -13,11 +13,11 @@ void coEntityTypeRegistry::Add(coEntityType& type)
 
 coEntityType* coEntityTypeRegistry::Get(coUint32 uid) const
 {
-	for (coEntityType* type : entityTypes)
+	for (coEntityType* entityType : entityTypes)
 	{
-		if (type->uid == uid)
+		if (entityType->type->uid == uid)
 		{
-			return type;
+			return entityType;
 		}
 	}
 	return nullptr;

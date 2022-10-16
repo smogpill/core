@@ -14,11 +14,11 @@ coECS::~coECS()
 	// TODO destroy all entities
 }
 
-coEntityHandle coECS::CreateEntity(const coEntityType& entityType)
+coEntityHandle coECS::CreateEntity(const coType& type)
 {
 	const coEntityHandle handle = _CreateEmptyEntity();
 	coEntity& entity = entities[handle.index];
-	entity.entityType = &entityType;
+	entity.entityType = static_cast<const coEntityType*>(type.customTypeData);
 	entity.CreateComponents();
 	return handle;
 }

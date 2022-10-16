@@ -7,7 +7,7 @@
 
 #define coBEGIN_COMPONENT(_Class_) \
 	coBEGIN_CLASS(_Class_)\
-	coComponentTypeData* component = new coComponentTypeData(); \
+	coComponentType* component = new coComponentType(); \
 	component->type = type; \
 	type->customTypeData = component
 

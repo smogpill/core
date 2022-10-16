@@ -6,14 +6,14 @@
 #include <container/array/coDynamicArray_f.h>
 #include "../component/coComponent.h"
 
-void coEntityType::AddComponent(const coType& type)
+void coEntityType::AddComponent(const coType& comp)
 {
-	for (coType* dependency : type.GetDependencies())
+	for (coType* dependency : comp.GetDependencies())
 	{
 		if (dependency->IsCompatibleWith<coComponent>())
 		{
 			AddComponent(*dependency);
 		}
 	}
-	coPushBack(componentTypes, &type);
+	coPushBack(componentTypes, &comp);
 }

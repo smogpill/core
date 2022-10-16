@@ -5,9 +5,9 @@
 #include "coComponent.h"
 #include <container/array/coDynamicArray_f.h>
 
-void coComponentTypeData::AddDependency(const coType& type)
+void coComponentType::AddDependency(const coType& dep)
 {
-	coASSERT(type.IsCompatibleWith<coComponent>());
-	coASSERT(!coContains(dependencies, const_cast<coType*>(&type)));
-	coPushBack(dependencies, const_cast<coType*>(&type));
+	coASSERT(dep.IsCompatibleWith<coComponent>());
+	coASSERT(!coContains(dependencies, const_cast<coType*>(&dep)));
+	coPushBack(dependencies, const_cast<coType*>(&dep));
 }
