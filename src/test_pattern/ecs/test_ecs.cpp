@@ -8,6 +8,7 @@
 #include "pattern/ecs/component/coComponent_f.h"
 #include "pattern/ecs/processor/coProcessor.h"
 #include "pattern/ecs/entity/coEntityType_f.h"
+#include "pattern/ecs/entity/coEntity_f.h"
 #include "pattern/pointer/coUniquePtr.h"
 #include <io/archive/coArchive.h>
 #include <math/transform/coTransform.h>
@@ -44,13 +45,12 @@ coBEGIN_COMPONENT(TestCComp);
 component->AddDependency<TestAComp>();
 coEND_COMPONENT();
 
-coDECLARE_ENTITY_TYPE(TestEntity);
+coDECLARE_ENTITY(TestEntity);
 
-coDEFINE_ENTITY_TYPE(TestEntity)
-{
-	type->AddComponent<TestBComp>();
-	type->AddComponent<TestCComp>();
-}
+coBEGIN_ENTITY(TestEntity);
+entity->AddComponent<TestBComp>();
+entity->AddComponent<TestCComp>();
+coEND_ENTITY();
 
 //==========================================
 

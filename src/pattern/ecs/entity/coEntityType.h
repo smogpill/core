@@ -14,3 +14,9 @@ public:
 private:
 	coDynamicArray<const coType*> componentTypes;
 };
+
+#define coDECLARE_ENTITY(_Type_) \
+	class _Type_ \
+	{ \
+		coDECLARE_CLASS_NO_POLYMORPHISM(_Type_);\
+	}
