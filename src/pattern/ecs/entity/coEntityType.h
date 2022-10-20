@@ -10,6 +10,7 @@ public:
 	template <class T>
 	void AddComponent() { AddComponent(*T::GetStaticType()); }
 	const coArray<const coType*>& GetComponentTypes() const { return componentTypes; }
+	coInt GetComponentIndexByTypeUID(coUint32 uid) const;
 
 private:
 	coDynamicArray<const coType*> componentTypes;

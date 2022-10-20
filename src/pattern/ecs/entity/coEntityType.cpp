@@ -17,3 +17,14 @@ void coEntityType::AddComponent(const coType& comp)
 	}
 	coPushBack(componentTypes, &comp);
 }
+
+coInt coEntityType::GetComponentIndexByTypeUID(coUint32 uid) const
+{
+	for (coUint idx = 0; idx < componentTypes.count; ++idx)
+	{
+		const coType* compType = componentTypes[idx];
+		if (compType->uid == uid)
+			return idx;
+	}
+	return -1;
+}
