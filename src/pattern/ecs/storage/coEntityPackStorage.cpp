@@ -4,6 +4,7 @@
 #include "coEntityPackStorage.h"
 #include <lang/reflect/coTypeDecl_f.h>
 #include <io/archive/coArchive.h>
+#include <container/array/dynamic/coDynamicArrayType_f.h>
 #include "../coECS.h"
 
 coDEFINE_CLASS(coEntityPackStorage)
