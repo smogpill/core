@@ -7,6 +7,7 @@ class coField;
 class coFunction;
 class coArchive;
 using coCreateFunc = void* (*)();
+using coCopyCreateFunc = void* (*)(const void*);
 using coMoveFunc = void (*)(const void*, void*);
 using coConstructFunc = void (*)(void*);
 using coDestructFunc = void (*)(void*);
@@ -44,6 +45,7 @@ public:
 	const coType* super = nullptr;
 	const coType* subType = nullptr;
 	coCreateFunc createFunc = nullptr;
+	coCopyCreateFunc copyCreateFunc = nullptr;
 	coMoveFunc moveFunc = nullptr;
 	coConstructFunc constructFunc = nullptr;
 	coDestructFunc destructFunc = nullptr;

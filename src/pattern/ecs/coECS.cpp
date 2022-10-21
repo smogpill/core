@@ -90,8 +90,17 @@ void coECS::DestroyEntity(coUint32 index)
 
 coEntityHandle coECS::Clone(const coEntityHandle& entityHandle)
 {
-	coASSERT(false);
-	return coEntityHandle();
+	const coEntity* source = GetEntity(entityHandle);
+	if (source == nullptr)
+		return coEntityHandle();
+
+	coASSERT(source->state == coEntity::State::NONE); // Other states not supported yet
+
+	const coEntityHandle targetHandle = _CreateEmptyEntity();
+	coEntity& target = _GetEntity(targetHandle.index);
+	target.entityType = source->entityType;
+	target.CreateComponents(*source);
+	return targetHandle;
 }
 
 void coECS::SaveEntity(coArchive& archive, const coEntityHandle& handle) const

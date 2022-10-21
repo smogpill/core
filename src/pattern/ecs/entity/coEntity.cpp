@@ -290,6 +290,29 @@ void coEntity::CreateComponents()
 	}
 }
 
+void coEntity::CreateComponents(const coEntity& source)
+{
+	coASSERT(componentBuffer == nullptr);
+	if (entityType)
+	{
+		coASSERT(source.entityType == entityType);
+		const auto& componentTypes = entityType->GetComponentTypes();
+		if (componentTypes.count)
+		{
+			coASSERT(source.componentBuffer);
+			componentBuffer = new coComponent * [componentTypes.count];
+			for (coUint compIdx = 0; compIdx < componentTypes.count; ++compIdx)
+			{
+				const coComponent* sourceComp = source.componentBuffer[compIdx];
+				coASSERT(sourceComp);
+				const coType* compType = componentTypes[compIdx];
+				coComponent* comp = static_cast<coComponent*>(compType->copyCreateFunc(sourceComp));
+				componentBuffer[compIdx] = comp;
+			}
+		}
+	}
+}
+
 void coEntity::DestroyComponents()
 {
 	if (componentBuffer)

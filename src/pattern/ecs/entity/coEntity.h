@@ -32,6 +32,7 @@ public:
 	template <class T>
 	T* GetComponent() const;
 	void CreateComponents();
+	void CreateComponents(const coEntity& source);
 	void DestroyComponents();
 
 	coUint32 index = 0; // temporary
