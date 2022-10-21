@@ -8,6 +8,7 @@ class coType;
 class coComponent;
 class coArchive;
 class coProcessor;
+class coEntityPackStorage;
 
 class coECS
 {
@@ -25,12 +26,14 @@ public:
 	void SetParent(const coEntityHandle& child, const coEntityHandle& parent);
 	void SetStarted(const coEntityHandle& entity, coBool);
 	void AddProcessor(coProcessor& processor);
+	coUint GetNbEntities(const coEntityHandle& root) const;
 
 	coBool IsAlive(const coEntityHandle&) const;
 	coComponent* GetComponent(const coEntityHandle&, const coType& type) const;
 	template <class T>
 	T* GetComponent(const coEntityHandle& entity) const { return static_cast<T*>(GetComponent(entity, *T::GetStaticType())); }
 	coEntity& _GetEntity(coUint32 index) { return entities[index]; }
+	const coEntity& _GetEntity(coUint32 index) const { return entities[index]; }
 	coEntityHandle _CreateEmptyEntity();
 private:
 	coEntity* GetEntity(const coEntityHandle& handle) const;
@@ -39,6 +42,8 @@ private:
 	template <class F>
 	coBool ReverseVisitChildren(const coEntity& entity, F func);
 	void DestroyEntity(coUint32 index);
+	coUint GetNbEntities(coUint32 entityIndex) const;
+	void SaveEntity(coEntityPackStorage& packStorage, coUint32 entityIndex, coUint32 parentEntityStorageIndex) const;
 
 	coDynamicArray<coEntity> entities;
 	coDynamicArray<coUint32> freeEntities;

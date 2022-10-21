@@ -3,7 +3,10 @@
 #include "pattern/pch.h"
 #include "coECS.h"
 #include <debug/log/coAssert.h>
+#include <container/array/coDynamicArray_f.h>
+#include <io/archive/coArchive.h>
 #include "entity/coEntityType.h"
+#include "storage/coEntityPackStorage.h"
 #include "component/coComponentIterator.h"
 #include "component/coComponentType.h"
 
@@ -91,15 +94,64 @@ coEntityHandle coECS::Clone(const coEntityHandle& entityHandle)
 	return coEntityHandle();
 }
 
-void coECS::SaveEntity(coArchive& archive, const coEntityHandle&) const
+void coECS::SaveEntity(coArchive& archive, const coEntityHandle& handle) const
 {
-	coASSERT(false);
+	if (!handle.IsValid())
+		return;
+	coASSERT(IsAlive(handle));
+	coEntityPackStorage storage;
+	const coUint nbEntities = GetNbEntities(handle);
+	coReserve(storage.entities, nbEntities);
+	SaveEntity(storage, handle.index, coUint32(-1));
+	archive.WriteRoot(storage);
+}
+
+void coECS::SaveEntity(coEntityPackStorage& packStorage, coUint32 entityIndex, coUint32 parentEntityStorageIndex) const
+{
+	const coEntity& entity = _GetEntity(entityIndex);
+	const coUint32 storageIndex = packStorage.entities.count;
+	coEntityStorage& entityStorage = coPushBack(packStorage.entities);
+	entityStorage.index = storageIndex;
+	entityStorage.parent = parentEntityStorageIndex;
+	entityStorage.typeUID = entity.entityType->type->uid;
+
+	coUint32 childIdx = entity.firstChild;
+	while (childIdx != coUint32(-1))
+	{
+		const coEntity& child = _GetEntity(childIdx);
+		SaveEntity(packStorage, childIdx, storageIndex);
+		childIdx = child.nextSibling;
+	}
 }
 
 coEntityHandle coECS::LoadEntity(const coArchive& archive)
 {
-	coASSERT(false);
-	return coEntityHandle();
+	const coEntityPackStorage* packStorage = archive.CreateObjects<coEntityPackStorage>();
+	if (packStorage == nullptr)
+		return coEntityHandle();
+
+	const auto& entityStorages = packStorage->entities;
+
+	// Attach to parents
+	for (coUint32 entityIdx = 1; entityIdx < entityStorages.count; ++entityIdx)
+	{
+		const coEntityStorage& entityStorage = entityStorages[entityIdx];
+		const coEntityStorage& parentStorage = entityStorages[entityStorage.parent];
+		const coEntity& entity = _GetEntity(entityStorage.index);
+		const coEntity& parent = _GetEntity(parentStorage.index);
+		SetParent(entity.GetHandle(), parent.GetHandle());
+	}
+
+	// Get root handle
+	coEntityHandle rootHandle;
+	if (packStorage->entities.count)
+	{
+		const coEntity& rootEntity = _GetEntity(packStorage->entities[0].index);
+		rootHandle = rootEntity.GetHandle();
+	}
+
+	delete packStorage;
+	return rootHandle;
 }
 
 void coECS::SetParent(const coEntityHandle& childHandle, const coEntityHandle& parentHandle)
@@ -186,4 +238,31 @@ void coECS::AddProcessor(coProcessor& processor)
 {
 	coASSERT(!coContains(processors, &processor));
 	coPushBack(processors, &processor);
+}
+
+coUint coECS::GetNbEntities(const coEntityHandle& root) const
+{
+	coEntity* entity = GetEntity(root);
+	if (entity)
+	{
+		return GetNbEntities(root.index);
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+coUint coECS::GetNbEntities(coUint32 entityIndex) const
+{
+	const coEntity& entity = _GetEntity(entityIndex);
+	coUint nb = 1;
+	coUint32 childIdx = entity.firstChild;
+	while (childIdx != coUint32(-1))
+	{
+		nb += GetNbEntities(childIdx);
+		const coEntity& child = _GetEntity(childIdx);
+		childIdx = child.nextSibling;
+	}
+	return nb;
 }

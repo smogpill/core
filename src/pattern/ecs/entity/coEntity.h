@@ -28,6 +28,7 @@ public:
 	coArray<coComponent*> GetComponents() const { return coArray<coComponent*>(componentBuffer, GetNbComponents()); }
 	State GetState() const { return state; }
 	coComponent* GetComponent(const coType& type) const;
+	coEntityHandle GetHandle() const { return coEntityHandle(index, generation); }
 	template <class T>
 	T* GetComponent() const;
 	void CreateComponents();
