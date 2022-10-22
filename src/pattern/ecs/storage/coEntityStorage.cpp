@@ -16,7 +16,6 @@ public:
 
 coDEFINE_CLASS(coComponentsStorage)
 {
-	type->triviallyCopyable = false;
 	type->writeArchiveFunc = [](coArchive& archive, const void* obj) -> coUint32
 	{
 		const coEntityStorage* entityStorage = static_cast<const coEntityStorage*>(obj);

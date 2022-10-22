@@ -41,6 +41,7 @@ public:
 	coUint32 alignment8 = 0;
 	coUint32 indexInRegistry = coUint32(-1);
 	coBool triviallyCopyable : 1;
+	coBool triviallySerializable : 1;
 	coCustomTypeData* customTypeData = nullptr;
 	const coType* super = nullptr;
 	const coType* subType = nullptr;

@@ -32,6 +32,8 @@ public:
 	void SetContext(void* context_) const { context = context_; }
 	
 	coUint32 WriteObject(const void* object, const coType& type);
+	coUint32 WriteObject(const void* object, const coType& type, coUint32 vtableIndex);
+	coUint32 WriteVTable(const coType& type);
 	void PushBytes(coUint size);
 	void ReadBuffer(coUint32 idx, void*, coUint32 size) const;
 

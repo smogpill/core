@@ -9,6 +9,7 @@
 
 coType::coType()
 	: triviallyCopyable(false)
+	, triviallySerializable(false)
 {
 	coTypeRegistry::CreateInstanceIfMissing();
 	coTypeRegistry::instance->Add(*this);

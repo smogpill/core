@@ -168,6 +168,7 @@ coType* coGetType()
 				type->constructFunc = &coConstruct<_Type_>; \
 				type->destructFunc = &coDestruct<_Type_>; \
 				type->triviallyCopyable = true; \
+				type->triviallySerializable = true; \
 			} \
 			return type; \
 		} \

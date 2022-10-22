@@ -24,7 +24,6 @@ public:
 
 coDEFINE_CLASS(coEntityType2)
 {
-	type->triviallyCopyable = false;
 	type->writeArchiveFunc = [](coArchive& archive, const void* obj) -> coUint32
 	{
 		const coEntity* entity = static_cast<const coEntity*>(obj);
@@ -52,7 +51,6 @@ public:
 
 coDEFINE_CLASS(coEntityComponents)
 {
-	type->triviallyCopyable = false;
 	type->writeArchiveFunc = [](coArchive& archive, const void* obj) -> coUint32
 	{
 		const coEntity* entity = static_cast<const coEntity*>(obj);
@@ -111,7 +109,6 @@ public:
 
 coDEFINE_CLASS(coEntityChildren)
 {
-	type->triviallyCopyable = false;
 	type->writeArchiveFunc = [](coArchive& archive, const void* obj) -> coUint32
 	{
 		const coEntity* entity = static_cast<const coEntity*>(obj);

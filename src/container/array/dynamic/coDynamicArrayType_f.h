@@ -17,7 +17,20 @@ coDEFINE_TEMPLATE_CLASS(<class T>, coDynamicArray<T>)
 			return 0;
 		const coUint32 index = archive.GetSize();
 		archive.Write(array.count);
-		archive.Write(array.data, array.count * sizeof(T));
+		const coType* type = coTypeHelper<T>::GetStaticType();
+		if (type && !type->triviallySerializable)
+		{
+			const coUint32 arrayIndex = archive.GetSize();
+			archive.PushBytes(array.count * sizeof(coUint32));
+			const coUint32 vtableIdx = archive.WriteVTable(*type);
+			coUint32* offsets = reinterpret_cast<coUint32*>(&archive.GetData()[arrayIndex]);
+			for (coUint32 elIdx = 0; elIdx < array.count; ++elIdx)
+				offsets[elIdx] = archive.WriteObject(&array.data[elIdx], *type, vtableIdx);
+		}
+		else
+		{
+			archive.Write(array.data, array.count * sizeof(T));
+		}
 		return index;
 	};
 	type->readArchiveFunc = [](const coArchive& archive, coUint32 idx, void* obj)
@@ -26,6 +39,16 @@ coDEFINE_TEMPLATE_CLASS(<class T>, coDynamicArray<T>)
 		coClear(array);
 		const coUint32 count = archive.Get<coUint32>(idx);
 		coResize(array, count);
-		archive.ReadBuffer(idx + sizeof(coUint32), array.data, count * sizeof(T));
+		const coType* type = coTypeHelper<T>::GetStaticType();
+		if (type && !type->triviallySerializable)
+		{
+			const coUint32* offsets = reinterpret_cast<const coUint32*>(&archive.GetData()[idx + sizeof(coUint32)]);
+			for (coUint32 elIdx = 0; elIdx < array.count; ++elIdx)
+				archive.ReadObject(offsets[elIdx], &array.data[elIdx], *type);
+		}
+		else
+		{
+			archive.ReadBuffer(idx + sizeof(coUint32), array.data, count * sizeof(T));
+		}
 	};
 }

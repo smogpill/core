@@ -38,50 +38,18 @@ coUint32 coArchive::WriteObject(const void* object, const coType& type)
 		return type.writeArchiveFunc(*this, object);
 	}
 
-	const coUint nbSerializableFields = type.GetNbSerializableFields();
+	const coUint32 vtableIndex = WriteVTable(type);
+	return WriteObject(object, type, vtableIndex);
+}
 
-	// Vtable
-	const coUint32 vtableIndex = data.count;
+coUint32 coArchive::WriteObject(const void* object, const coType& type, coUint32 vtableIndex)
+{
+	if (object == nullptr)
+		return 0;
+
+	if (type.writeArchiveFunc)
 	{
-		// Content: 
-		// - size of vtable: coUint16
-		// - size of inline data: coUint16
-		// - uid of the type: coUint32
-		// - Offsets to fields: coUint16 x nbSerializableFields
-
-		const coUint vtableSize = (4 + nbSerializableFields) * sizeof(coUint16);
-		coASSERT(vtableSize <= coUint16(-1));
-		const coUint16 vtableSize16 = coUint16(vtableSize);
-		PushBytes(vtableSize16);
-		coUint16* vtable = reinterpret_cast<coUint16*>(&data.data[vtableIndex]);
-
-		// Size of the vtable
-		vtable[0] = vtableSize16;
-
-		// Uid of the type
-		*((coUint32*)&vtable[2]) = type.uid;
-
-		// Iterate on serializable fields
-		coUint32 serializableFieldIdx = 0;
-		coUint32 inlineDataSize = 4;
-		for (const coField* field : type.fields)
-		{
-			if (field->IsSerializable())
-			{
-				coASSERT(field->type);
-
-				// Offset to the inline data
-				coASSERT(inlineDataSize <= coUint16(-1));
-				vtable[4 + serializableFieldIdx] = coUint16(inlineDataSize);
-
-				inlineDataSize += field->type->triviallyCopyable ? field->type->size8 : sizeof(coUint32);
-				++serializableFieldIdx;
-			}
-		}
-
-		// Size of the inline data
-		coASSERT(inlineDataSize <= coUint16(-1));
-		vtable[1] = coUint16(inlineDataSize);
+		return type.writeArchiveFunc(*this, object);
 	}
 
 	// Object
@@ -103,7 +71,7 @@ coUint32 coArchive::WriteObject(const void* object, const coType& type)
 				const coType* fieldType = field->type;
 				coASSERT(fieldType);
 				coASSERT(reinterpret_cast<coUint16*>(&data.data[vtableIndex])[4 + serializableFieldIdx] == inlineItIdx - objectIdx);
-				if (fieldType->triviallyCopyable)
+				if (fieldType->triviallySerializable)
 				{
 					coMemCopy(&data.data[inlineItIdx], ((coByte*)object) + field->offset8, fieldType->size8);
 					inlineItIdx += fieldType->size8;
@@ -129,12 +97,60 @@ coUint32 coArchive::WriteObject(const void* object, const coType& type)
 					coMemCopy(&data.data[inlineItIdx], &offset, sizeof(coUint32));
 					inlineItIdx += sizeof(coUint32);
 				}
-				
+
 				++serializableFieldIdx;
 			}
 		}
 	}
 	return objectIdx;
+}
+
+coUint32 coArchive::WriteVTable(const coType& type)
+{
+	const coUint32 vtableIndex = data.count;
+
+	// Content: 
+	// - size of vtable: coUint16
+	// - size of inline data: coUint16
+	// - uid of the type: coUint32
+	// - Offsets to fields: coUint16 x nbSerializableFields
+
+	const coUint nbSerializableFields = type.GetNbSerializableFields();
+	const coUint vtableSize = (4 + nbSerializableFields) * sizeof(coUint16);
+	coASSERT(vtableSize <= coUint16(-1));
+	const coUint16 vtableSize16 = coUint16(vtableSize);
+	PushBytes(vtableSize16);
+	coUint16* vtable = reinterpret_cast<coUint16*>(&data.data[vtableIndex]);
+
+	// Size of the vtable
+	vtable[0] = vtableSize16;
+
+	// Uid of the type
+	*((coUint32*)&vtable[2]) = type.uid;
+
+	// Iterate on serializable fields
+	coUint32 serializableFieldIdx = 0;
+	coUint32 inlineDataSize = 4;
+	for (const coField* field : type.fields)
+	{
+		if (field->IsSerializable())
+		{
+			coASSERT(field->type);
+
+			// Offset to the inline data
+			coASSERT(inlineDataSize <= coUint16(-1));
+			vtable[4 + serializableFieldIdx] = coUint16(inlineDataSize);
+
+			inlineDataSize += field->type->triviallySerializable ? field->type->size8 : sizeof(coUint32);
+			++serializableFieldIdx;
+		}
+	}
+
+	// Size of the inline data
+	coASSERT(inlineDataSize <= coUint16(-1));
+	vtable[1] = coUint16(inlineDataSize);
+
+	return vtableIndex;
 }
 
 void* coArchive::CreateObjects(const coType& expectedRootBaseType) const
@@ -194,7 +210,7 @@ void coArchive::ReadObject(coUint32 objectIdx, void* object, const coType& type)
 			const coType* fieldType = field->type;
 			coASSERT(fieldType);
 			const coUint16 inlineOffset = inlineOffsets[serializableFieldIdx];
-			if (fieldType->triviallyCopyable)
+			if (fieldType->triviallySerializable)
 			{
 				coASSERT(objectIdx + inlineOffset + field->type->size8 <= data.count);
 				const void* fieldData = &data.data[objectIdx + inlineOffset];
