@@ -100,6 +100,15 @@ coEntityHandle coECS::Clone(const coEntityHandle& entityHandle)
 	coEntity& target = _GetEntity(targetHandle.index);
 	target.entityType = source->entityType;
 	target.CreateComponents(*source);
+
+	coUint32 sourceChildIdx = source->firstChild;
+	while (sourceChildIdx != coUint32(-1))
+	{
+		const coEntity& sourceChild = _GetEntity(sourceChildIdx);
+		const coEntityHandle targetChild = Clone(sourceChild.GetHandle());
+		SetParent(targetChild, targetHandle);
+		sourceChildIdx = sourceChild.nextSibling;
+	}
 	return targetHandle;
 }
 

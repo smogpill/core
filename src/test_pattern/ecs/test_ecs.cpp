@@ -90,13 +90,26 @@ coTEST(ecs, Prefab)
 coTEST(ecs, Archive)
 {
 	coECS* ecs = coECS::instance;
-	coEntityHandle entity = coECS::instance->CreateEntity<TestEntity>();
 
 	coArchive archive;
-	ecs->SaveEntity(archive, entity);
-	ecs->DestroyEntity(entity);
-	coEntityHandle loadedEntity = ecs->LoadEntity(archive);
-	ecs->DestroyEntity(loadedEntity);
+
+	// Save
+	{
+		coEntityHandle entity = ecs->CreateEntity<TestEntity>();
+		TestBComp* comp = ecs->GetComponent<TestBComp>(entity);
+		comp->b = 934.0f;
+		ecs->SaveEntity(archive, entity);
+		ecs->DestroyEntity(entity);
+	}
+	
+	// Load
+	{
+		coEntityHandle loadedEntity = ecs->LoadEntity(archive);
+		coEXPECT(ecs->IsAlive(loadedEntity));
+		const TestBComp* comp = ecs->GetComponent<TestBComp>(loadedEntity);
+		coEXPECT(comp->b == 934.0f);
+		ecs->DestroyEntity(loadedEntity);
+	}
 }
 
 coTEST(ecs, Children)
