@@ -23,9 +23,11 @@ coDEFINE_TEMPLATE_CLASS(<class T>, coDynamicArray<T>)
 			const coUint32 arrayIndex = archive.GetSize();
 			archive.PushBytes(array.count * sizeof(coUint32));
 			const coUint32 vtableIdx = archive.WriteVTable(*type);
-			coUint32* offsets = reinterpret_cast<coUint32*>(&archive.GetData()[arrayIndex]);
 			for (coUint32 elIdx = 0; elIdx < array.count; ++elIdx)
+			{
+				coUint32* offsets = reinterpret_cast<coUint32*>(&archive.GetData()[arrayIndex]);
 				offsets[elIdx] = archive.WriteObject(&array.data[elIdx], *type, vtableIdx);
+			}
 		}
 		else
 		{
@@ -43,8 +45,12 @@ coDEFINE_TEMPLATE_CLASS(<class T>, coDynamicArray<T>)
 		if (type && !type->triviallySerializable)
 		{
 			const coUint32* offsets = reinterpret_cast<const coUint32*>(&archive.GetData()[idx + sizeof(coUint32)]);
-			for (coUint32 elIdx = 0; elIdx < array.count; ++elIdx)
-				archive.ReadObject(offsets[elIdx], &array.data[elIdx], *type);
+			for (coUint32 elIdx = 0; elIdx < count; ++elIdx)
+			{
+				const coUint32 objIdx = offsets[elIdx];
+				if (objIdx)
+					archive.ReadObject(objIdx, &array.data[elIdx], *type);
+			}
 		}
 		else
 		{

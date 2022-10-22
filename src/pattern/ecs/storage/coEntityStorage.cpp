@@ -27,7 +27,6 @@ coDEFINE_CLASS(coComponentsStorage)
 		if (nbComponents == 0)
 			return 0;
 		const coUint32 index = archive.GetSize();
-		archive.Write(entityType->type->uid);
 		archive.Write(nbComponents);
 		auto& data = archive.GetData();
 		const coUint32 offsetsIdx = archive.GetSize();

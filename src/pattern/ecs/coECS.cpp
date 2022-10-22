@@ -129,7 +129,7 @@ void coECS::SaveEntity(coEntityPackStorage& packStorage, coUint32 entityIndex, c
 	const coEntity& entity = _GetEntity(entityIndex);
 	const coUint32 storageIndex = packStorage.entities.count;
 	coEntityStorage& entityStorage = coPushBack(packStorage.entities);
-	entityStorage.index = storageIndex;
+	entityStorage.index = entityIndex;
 	entityStorage.parent = parentEntityStorageIndex;
 	entityStorage.typeUID = entity.entityType->type->uid;
 
