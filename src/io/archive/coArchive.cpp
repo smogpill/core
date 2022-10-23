@@ -9,6 +9,9 @@
 #include <container/array/coDynamicArray_f.h>
 #include <math/scalar/coUint32_f.h>
 
+/// Notes:
+/// - The data is often aligned to a sizeof(coUint32) during the serialization. Working on unaligned int are not an issue on x86/x64, but it seems to be slow or even crashes on some ARM platforms. 
+
 void coArchive::Clear()
 {
 	coClear(data);
@@ -26,6 +29,64 @@ void coArchive::WriteRoot(const void* object, const coType& type)
 
 	// We write the index of the root object
 	*((coUint32*)data.data) = rootIdx;
+}
+
+void coArchive::PushToAlignment32()
+{
+	const coUint remaining = data.count % sizeof(coUint32);
+	PushBytes(remaining);
+}
+
+coUint32 coArchive::WriteVTable(const coType& type)
+{
+	PushToAlignment32();
+	const coUint32 vtableIndex = data.count;
+
+	// Content: 
+	// - size of vtable: coUint16
+	// - size of inline data: coUint16
+	// - uid of the type: coUint32
+	// - Offsets to fields: coUint16 x nbSerializableFields
+
+	const coUint nbSerializableFields = type.GetNbSerializableFields();
+	const coUint vtableSize = (4 + nbSerializableFields) * sizeof(coUint16);
+	coASSERT(vtableSize <= coUint16(-1));
+	const coUint16 vtableSize16 = coUint16(vtableSize);
+	PushBytes(vtableSize16);
+	coUint16* vtable = reinterpret_cast<coUint16*>(&data.data[vtableIndex]);
+
+	// Size of the vtable
+	vtable[0] = vtableSize16;
+
+	// Uid of the type
+	*((coUint32*)&vtable[2]) = type.uid;
+
+	// Iterate on serializable fields
+	coUint32 serializableFieldIdx = 0;
+	coUint32 inlineDataSize = 4;
+	for (const coField* field : type.fields)
+	{
+		if (field->IsSerializable())
+		{
+			coASSERT(field->type);
+
+			// Offset to the inline data
+			coASSERT(inlineDataSize <= coUint16(-1));
+			vtable[4 + serializableFieldIdx] = coUint16(inlineDataSize);
+
+			inlineDataSize += field->type->triviallySerializable ? field->type->size8 : sizeof(coUint32);
+			++serializableFieldIdx;
+		}
+	}
+
+	// Alignment
+	inlineDataSize += inlineDataSize % sizeof(coUint32);
+
+	// Size of the inline data
+	coASSERT(inlineDataSize <= coUint16(-1));
+	vtable[1] = coUint16(inlineDataSize);
+
+	return vtableIndex;
 }
 
 coUint32 coArchive::WriteObject(const void* object, const coType& type)
@@ -46,6 +107,8 @@ coUint32 coArchive::WriteObject(const void* object, const coType& type, coUint32
 {
 	if (object == nullptr)
 		return 0;
+
+	PushToAlignment32();
 
 	if (type.writeArchiveFunc)
 	{
@@ -103,54 +166,6 @@ coUint32 coArchive::WriteObject(const void* object, const coType& type, coUint32
 		}
 	}
 	return objectIdx;
-}
-
-coUint32 coArchive::WriteVTable(const coType& type)
-{
-	const coUint32 vtableIndex = data.count;
-
-	// Content: 
-	// - size of vtable: coUint16
-	// - size of inline data: coUint16
-	// - uid of the type: coUint32
-	// - Offsets to fields: coUint16 x nbSerializableFields
-
-	const coUint nbSerializableFields = type.GetNbSerializableFields();
-	const coUint vtableSize = (4 + nbSerializableFields) * sizeof(coUint16);
-	coASSERT(vtableSize <= coUint16(-1));
-	const coUint16 vtableSize16 = coUint16(vtableSize);
-	PushBytes(vtableSize16);
-	coUint16* vtable = reinterpret_cast<coUint16*>(&data.data[vtableIndex]);
-
-	// Size of the vtable
-	vtable[0] = vtableSize16;
-
-	// Uid of the type
-	*((coUint32*)&vtable[2]) = type.uid;
-
-	// Iterate on serializable fields
-	coUint32 serializableFieldIdx = 0;
-	coUint32 inlineDataSize = 4;
-	for (const coField* field : type.fields)
-	{
-		if (field->IsSerializable())
-		{
-			coASSERT(field->type);
-
-			// Offset to the inline data
-			coASSERT(inlineDataSize <= coUint16(-1));
-			vtable[4 + serializableFieldIdx] = coUint16(inlineDataSize);
-
-			inlineDataSize += field->type->triviallySerializable ? field->type->size8 : sizeof(coUint32);
-			++serializableFieldIdx;
-		}
-	}
-
-	// Size of the inline data
-	coASSERT(inlineDataSize <= coUint16(-1));
-	vtable[1] = coUint16(inlineDataSize);
-
-	return vtableIndex;
 }
 
 void* coArchive::CreateObjects(const coType& expectedRootBaseType) const

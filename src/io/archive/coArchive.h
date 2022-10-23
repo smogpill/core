@@ -25,11 +25,15 @@ public:
 	void ReadObject(coUint32 idx, T& object) const { ReadObject(idx, &object, *T::GetStaticType()); }
 	void Write(const void* buffer, coUint32 size);
 	template <class T>
-	void Write(const T& buffer) { Write(&buffer, sizeof(T)); }
+	void Write(const T& obj) { Write(&obj, sizeof(T)); }
+	void SetValueAtOffset(coUint32 offset, const void* buffer, coUint32 size);
+	template <class T>
+	void SetValueAtOffset(coUint32 offset, const T& obj) { SetValueAtOffset(offset, &obj, sizeof(T)); }
 	void Read(void* buffer, coUint32 size) const;
 	template <class T>
 	void Read(T& buffer) const { Read(&buffer, sizeof(buffer)); }
 	void SetContext(void* context_) const { context = context_; }
+	void PushToAlignment32();
 	
 	coUint32 WriteObject(const void* object, const coType& type);
 	coUint32 WriteObject(const void* object, const coType& type, coUint32 vtableIndex);
@@ -51,6 +55,12 @@ private:
 	coDynamicArray<coByte> data;
 	mutable void* context = nullptr;
 };
+
+coFORCE_INLINE void coArchive::SetValueAtOffset(coUint32 offset, const void* buffer, coUint32 size)
+{
+	coASSERT(offset + size <= data.count);
+	memcpy(&data[offset], buffer, size);
+}
 
 template<class T>
 inline void coArchive::WriteRoot(const T& object)

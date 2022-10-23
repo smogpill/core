@@ -20,13 +20,14 @@ coDEFINE_TEMPLATE_CLASS(<class T>, coDynamicArray<T>)
 		const coType* type = coTypeHelper<T>::GetStaticType();
 		if (type && !type->triviallySerializable)
 		{
-			const coUint32 arrayIndex = archive.GetSize();
+			coUint32 offset = archive.GetSize();
 			archive.PushBytes(array.count * sizeof(coUint32));
 			const coUint32 vtableIdx = archive.WriteVTable(*type);
 			for (coUint32 elIdx = 0; elIdx < array.count; ++elIdx)
 			{
-				coUint32* offsets = reinterpret_cast<coUint32*>(&archive.GetData()[arrayIndex]);
-				offsets[elIdx] = archive.WriteObject(&array.data[elIdx], *type, vtableIdx);
+				const coUint32 objIdx = archive.WriteObject(&array.data[elIdx], *type, vtableIdx);
+				archive.SetValueAtOffset(offset, objIdx);
+				offset += sizeof(coUint32);
 			}
 		}
 		else
