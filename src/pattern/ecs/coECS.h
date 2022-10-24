@@ -77,6 +77,7 @@ coBool coECS::ReverseVisitChildren(const coEntity& entity, F func)
 		}
 		else
 		{
+			const coUint32 beginIdx = firstChild.previousSibling;
 			coUint32 childIdx = firstChild.previousSibling;
 			do
 			{
@@ -85,7 +86,7 @@ coBool coECS::ReverseVisitChildren(const coEntity& entity, F func)
 				if (!func(childIdx))
 					return false;
 				childIdx = previousIdx;
-			} while (childIdx != coUint32(-1));
+			} while (childIdx != firstChild.previousSibling);
 		}
 	}
 	return true;

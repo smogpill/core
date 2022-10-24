@@ -206,12 +206,16 @@ void coECS::SetParent(const coEntityHandle& childHandle, const coEntityHandle& p
 			const coUint32 lastChildIdx = firstChild.previousSibling;
 			if (lastChildIdx == coUint32(-1))
 			{
+				firstChild.previousSibling = childHandle.index;
 				firstChild.nextSibling = childHandle.index;
+				child->previousSibling = parent->firstChild;
+				child->nextSibling = parent->firstChild;
 			}
 			else
 			{
 				coEntity& lastChild = entities[lastChildIdx];
 				lastChild.nextSibling = childHandle.index;
+				child->previousSibling = lastChildIdx;
 			}
 		}
 	}
