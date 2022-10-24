@@ -35,7 +35,7 @@ public:
 	void CreateComponents(const coEntity& source);
 	void DestroyComponents();
 
-	coUint32 index = 0; // temporary
+	coUint32 index = coUint32(-1); // temporary
 	coUint32 generation = 0;
 	coUint32 firstChild = coUint32(-1);
 	coUint32 previousSibling = coUint32(-1);

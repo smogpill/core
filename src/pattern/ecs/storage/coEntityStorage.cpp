@@ -38,7 +38,7 @@ coDEFINE_CLASS(coComponentsStorage)
 			const coType* compType = componentTypes[compIdx];
 			(coUint32&)(data[itOffsetIdx]) = compType->uid;
 			itOffsetIdx += sizeof(coUint32);
-			const coUint32 compDataIdx = archive.WriteObject(&comp, *compType);
+			const coUint32 compDataIdx = archive.WriteObject(comp, *compType);
 			(coUint32&)(data[itOffsetIdx]) = compDataIdx - itOffsetIdx;
 			itOffsetIdx += sizeof(coUint32);
 		}
@@ -58,7 +58,7 @@ coDEFINE_CLASS(coComponentsStorage)
 		coEntity& entity = ecs->_GetEntity(entityHandle.index);
 		entityStorage->index = entityHandle.index;
 		const coUint32* componentsBuffer = &data[1];
-		entityType->GetComponentTypes();
+		const coArray<const coType*>& compTypes = entityType->GetComponentTypes();
 		const coArray<coComponent*>& components = entity.GetComponents();
 		for (coUint32 compIdx = 0; compIdx < nbComponents; ++compIdx)
 		{
@@ -66,10 +66,12 @@ coDEFINE_CLASS(coComponentsStorage)
 			const coInt compIndex = entityType->GetComponentIndexByTypeUID(compTypeUID);
 			if (compIndex >= 0)
 			{
+				const coType* compType = compTypes[compIndex];
 				coComponent* component = components[compIndex];
 				coASSERT(component);
-				const coUint32 compDataIdx = componentsBuffer[compIdx * 2 + 1];
-				archive.ReadObject(compDataIdx, *component);
+				const coUint32 compDataOffset = componentsBuffer[compIdx * 2 + 1];
+				const coUint32 compDataIdx = idx + (compIdx * 2 + 2) * sizeof(coUint32) + compDataOffset;
+				archive.ReadObject(compDataIdx, component, *compType);
 			}
 		}
 	};

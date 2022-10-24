@@ -39,12 +39,9 @@ coEntityHandle coECS::_CreateEmptyEntity()
 	}
 	const coUint32 index = coPopBack(freeEntities);
 	coEntity& entity = entities[index];
-
-	// temp
-	entity.index = index;
-
 	const coUint32 generation = entity.generation;
 	new (&entity) coEntity();
+	entity.index = index;
 	entity.generation = generation;
 	return coEntityHandle(index, entity.generation);
 }

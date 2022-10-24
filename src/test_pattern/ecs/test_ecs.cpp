@@ -32,6 +32,7 @@ public:
 };
 
 coBEGIN_COMPONENT(TestBComp);
+coDEFINE_FIELD(b);
 coEND_COMPONENT();
 
 class TestCComp : public coComponent
