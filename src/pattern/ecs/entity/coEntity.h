@@ -34,6 +34,8 @@ public:
 	void CreateComponents();
 	void CreateComponents(const coEntity& source);
 	void DestroyComponents();
+	template <class F>
+	coBool VisitChildren(F functor);
 
 	coUint32 index = coUint32(-1); // temporary
 	coUint32 generation = 0;

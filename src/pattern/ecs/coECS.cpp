@@ -72,12 +72,12 @@ void coECS::DestroyEntity(coUint32 index)
 	coEntity& entity = entities[index];
 
 	// Destroy children
-	auto destroyChild = [&](const coUint32 childIdx)
+	auto destroyChild = [&](const coEntity& child)
 	{
-		DestroyEntity(childIdx);
+		DestroyEntity(child.index);
 		return true;
 	};
-	ReverseVisitChildren(entity, destroyChild);
+	_ReverseVisitChildren(entity, destroyChild);
 
 	entity.SetState(coEntity::State::NONE);
 	entity.~coEntity();
@@ -98,14 +98,14 @@ coEntityHandle coECS::Clone(const coEntityHandle& entityHandle)
 	target.entityType = source->entityType;
 	target.CreateComponents(*source);
 
-	coUint32 sourceChildIdx = source->firstChild;
-	while (sourceChildIdx != coUint32(-1))
+	auto func = [&](const coEntity& sourceChild)
 	{
-		const coEntity& sourceChild = _GetEntity(sourceChildIdx);
 		const coEntityHandle targetChild = Clone(sourceChild.GetHandle());
 		SetParent(targetChild, targetHandle);
-		sourceChildIdx = sourceChild.nextSibling;
-	}
+		return true;
+	};
+	_VisitChildren(*source, func);
+	
 	return targetHandle;
 }
 
@@ -130,13 +130,12 @@ void coECS::SaveEntity(coEntityPackStorage& packStorage, coUint32 entityIndex, c
 	entityStorage.parent = parentEntityStorageIndex;
 	entityStorage.typeUID = entity.entityType->type->uid;
 
-	coUint32 childIdx = entity.firstChild;
-	while (childIdx != coUint32(-1))
+	auto func = [&](const coEntity& entity)
 	{
-		const coEntity& child = _GetEntity(childIdx);
-		SaveEntity(packStorage, childIdx, storageIndex);
-		childIdx = child.nextSibling;
-	}
+		SaveEntity(packStorage, entity.index, storageIndex);
+		return true;
+	};
+	_VisitChildren(entity, func);
 }
 
 coEntityHandle coECS::LoadEntity(const coArchive& archive)
@@ -175,18 +174,12 @@ void coECS::SetParent(const coEntityHandle& childHandle, const coEntityHandle& p
 	coASSERT(child);
 	if (child->parent != coUint32(-1))
 	{
-		if (child->previousSibling != coUint32(-1))
-		{
-			coEntity& previousSibling = entities[child->previousSibling];
-			coASSERT(previousSibling.nextSibling == childHandle.index);
-			previousSibling.nextSibling = child->nextSibling;
-		}
-		if (child->nextSibling != coUint32(-1))
-		{
-			coEntity& nextSibling = entities[child->nextSibling];
-			coASSERT(nextSibling.previousSibling == childHandle.index);
-			nextSibling.previousSibling = child->previousSibling;
-		}
+		coEntity& previousSibling = entities[child->previousSibling];
+		coASSERT(previousSibling.nextSibling == childHandle.index);
+		previousSibling.nextSibling = child->nextSibling;
+		coEntity& nextSibling = entities[child->nextSibling];
+		coASSERT(nextSibling.previousSibling == childHandle.index);
+		nextSibling.previousSibling = child->previousSibling;
 		child->previousSibling = coUint32(-1);
 		child->nextSibling = coUint32(-1);
 	}
@@ -199,24 +192,18 @@ void coECS::SetParent(const coEntityHandle& childHandle, const coEntityHandle& p
 		if (parent->firstChild == coUint32(-1))
 		{
 			parent->firstChild = childHandle.index;
+			child->nextSibling = childHandle.index;
+			child->previousSibling = childHandle.index;
 		}
 		else
 		{
 			coEntity& firstChild = entities[parent->firstChild];
 			const coUint32 lastChildIdx = firstChild.previousSibling;
-			if (lastChildIdx == coUint32(-1))
-			{
-				firstChild.previousSibling = childHandle.index;
-				firstChild.nextSibling = childHandle.index;
-				child->previousSibling = parent->firstChild;
-				child->nextSibling = parent->firstChild;
-			}
-			else
-			{
-				coEntity& lastChild = entities[lastChildIdx];
-				lastChild.nextSibling = childHandle.index;
-				child->previousSibling = lastChildIdx;
-			}
+			coEntity& lastChild = entities[lastChildIdx];
+			firstChild.previousSibling = childHandle.index;
+			lastChild.nextSibling = childHandle.index;
+			child->previousSibling = lastChildIdx;
+			child->nextSibling = parent->firstChild;
 		}
 	}
 }

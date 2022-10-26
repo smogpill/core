@@ -35,12 +35,12 @@ public:
 	coEntity& _GetEntity(coUint32 index) { return entities[index]; }
 	const coEntity& _GetEntity(coUint32 index) const { return entities[index]; }
 	coEntityHandle _CreateEmptyEntity();
+	template <class F>
+	coBool _VisitChildren(const coEntity& entity, F func) const;
+	template <class F>
+	coBool _ReverseVisitChildren(const coEntity& entity, F func);
 private:
 	coEntity* GetEntity(const coEntityHandle& handle) const;
-	template <class F>
-	coBool VisitChildren(const coEntity& entity, F func);
-	template <class F>
-	coBool ReverseVisitChildren(const coEntity& entity, F func);
 	void DestroyEntity(coUint32 index);
 	coUint GetNbEntities(coUint32 entityIndex) const;
 	void SaveEntity(coEntityPackStorage& packStorage, coUint32 entityIndex, coUint32 parentEntityStorageIndex) const;
@@ -51,43 +51,38 @@ private:
 };
 
 template <class F>
-coBool coECS::VisitChildren(const coEntity& entity, F func)
+coBool coECS::_VisitChildren(const coEntity& entity, F func) const
 {
 	coUint32 childIdx = entity.firstChild;
-	while (childIdx != coUint32(-1))
+	if (childIdx != coUint32(-1))
 	{
-		coEntity& child = entities[childIdx];
-		const coUint32 nextIdx = child.nextSibling;
-		if (!func(nextIdx))
-			return false;
-		childIdx = nextIdx;
+		do
+		{
+			coEntity& child = const_cast<coEntity&>(entities[childIdx]);
+			const coUint32 nextIdx = child.nextSibling;
+			if (!func(child))
+				return false;
+			childIdx = nextIdx;
+		} while (childIdx != entity.firstChild);
 	}
 	return true;
 }
 
 template <class F>
-coBool coECS::ReverseVisitChildren(const coEntity& entity, F func)
+coBool coECS::_ReverseVisitChildren(const coEntity& entity, F func)
 {
 	if (entity.firstChild != coUint32(-1))
 	{
 		coEntity& firstChild = entities[entity.firstChild];
-		if (firstChild.previousSibling == coUint32(-1))
+		coUint32 childIdx = firstChild.previousSibling;
+		do
 		{
-			return func(entity.firstChild);
-		}
-		else
-		{
-			const coUint32 beginIdx = firstChild.previousSibling;
-			coUint32 childIdx = firstChild.previousSibling;
-			do
-			{
-				coEntity& child = entities[childIdx];
-				const coUint32 previousIdx = child.previousSibling;
-				if (!func(childIdx))
-					return false;
-				childIdx = previousIdx;
-			} while (childIdx != firstChild.previousSibling);
-		}
+			coEntity& child = entities[childIdx];
+			const coUint32 previousIdx = child.previousSibling;
+			if (!func(child))
+				return false;
+			childIdx = previousIdx;
+		} while (childIdx != firstChild.previousSibling);
 	}
 	return true;
 }
