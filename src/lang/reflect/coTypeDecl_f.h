@@ -120,7 +120,7 @@ coType* coGetType()
 			type->moveFunc = &coMove<_Class_>; \
 			type->constructFunc = &coConstruct<_Class_>; \
 			type->destructFunc = &coDestruct<_Class_>; \
-			type->super = coTypeHelper<Base>::GetStaticType(); \
+			type->base = coTypeHelper<Base>::GetStaticType(); \
 			type->triviallyCopyable = std::is_trivially_copyable<_Class_>::value; \
 			OnInitType<_Class_>(type, nullptr); \
 		} \

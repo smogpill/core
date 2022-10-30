@@ -172,4 +172,3 @@ coTEST(ecs, ArchiveChildren)
 		ecs->DestroyEntity(parent);
 	}
 }
-

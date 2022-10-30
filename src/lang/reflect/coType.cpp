@@ -50,7 +50,7 @@ coBool coType::IsCompatibleWith(const coType& type) const
 	{
 		if (it->uid == expectedUid)
 			return true;
-		it = it->super;
+		it = it->base;
 	} while (it);
 	return false;
 }

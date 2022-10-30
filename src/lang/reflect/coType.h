@@ -43,7 +43,7 @@ public:
 	coBool triviallyCopyable : 1;
 	coBool triviallySerializable : 1;
 	coCustomTypeData* customTypeData = nullptr;
-	const coType* super = nullptr;
+	const coType* base = nullptr;
 	const coType* subType = nullptr;
 	coCreateFunc createFunc = nullptr;
 	coCopyCreateFunc copyCreateFunc = nullptr;

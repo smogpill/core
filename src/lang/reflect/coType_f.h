@@ -16,7 +16,7 @@ coBool coIsTypeCompatible(const U&)
 	{
 		if (type == otherType)
 			return true;
-		type = type->super;
+		type = type->base;
 	}
 	return false;
 }
