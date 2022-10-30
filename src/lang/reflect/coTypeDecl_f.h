@@ -87,9 +87,9 @@ coType* coGetType()
 	field->name = #_name_; \
 	field->nameHash = coHash32(field->name); \
 	field->uid = field->nameHash; \
-	field->pointer = std::is_pointer<decltype(Class::_name_)>::value; \
-	field->type = coTypeHelper<std::remove_pointer<decltype(Class::_name_)>::type>::GetStaticType(); \
-	field->offset8 = static_cast<decltype(field->offset8)>(coGetFieldOffset<Class>(&Class::_name_)); \
+	field->pointer = std::is_pointer<decltype(Self::_name_)>::value; \
+	field->type = coTypeHelper<std::remove_pointer<decltype(Self::_name_)>::type>::GetStaticType(); \
+	field->offset8 = static_cast<decltype(field->offset8)>(coGetFieldOffset<Self>(&Self::_name_)); \
 	type->Give(*field);
 
 #define coDEFINE_VIRTUAL_FIELD(_name_, _Type_) \
@@ -122,13 +122,13 @@ coType* coGetType()
 			type->destructFunc = &coDestruct<_Class_>; \
 			type->base = coTypeHelper<Base>::GetStaticType(); \
 			type->triviallyCopyable = std::is_trivially_copyable<_Class_>::value; \
-			OnInitType<_Class_>(type, nullptr); \
+			OnInitType(type, nullptr); \
 		} \
 		return type; \
 	}
 
 #define _coDEFINE_ON_INIT_TYPE(_Class_) \
-	template <class Class> void _Class_::OnInitType(coType* type, coField* field)
+	void _Class_::OnInitType(coType* type, coField* field)
 
 #define coDEFINE_CLASS(_Class_) \
 	_coDEFINE_AUTO_REGISTRATOR(_Class_); \

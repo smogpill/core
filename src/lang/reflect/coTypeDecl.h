@@ -35,8 +35,10 @@ using Base = void;
 
 #define _coDECLARE_CLASS_SHARED(_Class_) \
 	coDEFINE_ATTRIBUTE(Reflected); \
+	private: \
+		using Self = _Class_; \
 	public: \
-		template <class T> static void OnInitType(coType*, coField*); \
+		static void OnInitType(coType*, coField*); \
 		static coType* GetStaticType(); \
 	private:
 
