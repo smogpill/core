@@ -54,3 +54,13 @@ coBool coType::IsCompatibleWith(const coType& type) const
 	} while (it);
 	return false;
 }
+
+void coType::Init(coType* type)
+{
+	if (type == nullptr)
+		type = this;
+	if (base)
+		base->Init(type);
+	if (initTypeFunc)
+		initTypeFunc(type, nullptr);
+}

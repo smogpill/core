@@ -13,6 +13,7 @@ using coConstructFunc = void (*)(void*);
 using coDestructFunc = void (*)(void*);
 using coWriteArchiveFunc = coUint32 (*)(coArchive&, const void*);
 using coReadArchiveFunc = void (*)(const coArchive&, coUint32, void*);
+using coInitTypeFunc = void (*)(coType*, coField*);
 
 class coCustomTypeData
 {
@@ -30,6 +31,7 @@ public:
 	void AddDependency(coType& type);
 	template <class T>
 	void AddDependency() { AddDependency(*T::GetStaticType()); }
+	void Init(coType* type = nullptr);
 
 	const coArray<coType*>& GetDependencies() const { return dependencies; }
 	coUint GetNbSerializableFields() const;
@@ -43,8 +45,11 @@ public:
 	coBool triviallyCopyable : 1;
 	coBool triviallySerializable : 1;
 	coCustomTypeData* customTypeData = nullptr;
-	const coType* base = nullptr;
-	const coType* subType = nullptr;
+	coType* base = nullptr;
+	coType* subType = nullptr;
+	coDynamicArray<coField*> fields;
+	coDynamicArray<coFunction*> functions;
+	coDynamicArray<coType*> dependencies;
 	coCreateFunc createFunc = nullptr;
 	coCopyCreateFunc copyCreateFunc = nullptr;
 	coMoveFunc moveFunc = nullptr;
@@ -52,7 +57,5 @@ public:
 	coDestructFunc destructFunc = nullptr;
 	coWriteArchiveFunc writeArchiveFunc = nullptr;
 	coReadArchiveFunc readArchiveFunc = nullptr;
-	coDynamicArray<coField*> fields;
-	coDynamicArray<coFunction*> functions;
-	coDynamicArray<coType*> dependencies;
+	coInitTypeFunc initTypeFunc = nullptr;
 };

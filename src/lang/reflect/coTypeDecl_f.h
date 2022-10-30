@@ -122,7 +122,8 @@ coType* coGetType()
 			type->destructFunc = &coDestruct<_Class_>; \
 			type->base = coTypeHelper<Base>::GetStaticType(); \
 			type->triviallyCopyable = std::is_trivially_copyable<_Class_>::value; \
-			OnInitType(type, nullptr); \
+			type->initTypeFunc = &_Class_::OnInitType; \
+			type->Init(); \
 		} \
 		return type; \
 	}
@@ -169,6 +170,7 @@ coType* coGetType()
 				type->destructFunc = &coDestruct<_Type_>; \
 				type->triviallyCopyable = true; \
 				type->triviallySerializable = true; \
+				type->Init(); \
 			} \
 			return type; \
 		} \
