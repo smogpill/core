@@ -24,9 +24,12 @@ public:
 	void SaveEntity(coArchive& archive, const coEntityHandle&) const;
 	coEntityHandle LoadEntity(const coArchive& archive);
 	void SetParent(const coEntityHandle& child, const coEntityHandle& parent);
+	coEntityHandle GetFirstChild(const coEntityHandle&) const;
+	coEntityHandle GetPreviousSibling(const coEntityHandle&) const;
+	coEntityHandle GetNextSibling(const coEntityHandle&) const;
 	void SetStarted(const coEntityHandle& entity, coBool);
 	void AddProcessor(coProcessor& processor);
-	coUint GetNbEntities(const coEntityHandle& root) const;
+	coUint32 GetNbEntities(const coEntityHandle& root) const;
 
 	coBool IsAlive(const coEntityHandle&) const;
 	coComponent* GetComponent(const coEntityHandle&, const coType& type) const;
@@ -42,7 +45,7 @@ public:
 private:
 	coEntity* GetEntity(const coEntityHandle& handle) const;
 	void DestroyEntity(coUint32 index);
-	coUint GetNbEntities(coUint32 entityIndex) const;
+	coUint32 GetNbEntities(coUint32 entityIndex) const;
 	void SaveEntity(coEntityPackStorage& packStorage, coUint32 entityIndex, coUint32 parentEntityStorageIndex) const;
 
 	coDynamicArray<coEntity> entities;

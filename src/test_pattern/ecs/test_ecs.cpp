@@ -116,6 +116,7 @@ coTEST(ecs, Archive)
 coTEST(ecs, Children)
 {
 	coECS* ecs = coECS::instance;
+
 	coEntityHandle parent = ecs->CreateEntity<TestEntity>();
 	coEntityHandle a = ecs->CreateEntity<TestEntity>();
 	coEntityHandle b = ecs->CreateEntity<TestEntity>();
@@ -124,6 +125,51 @@ coTEST(ecs, Children)
 	ecs->SetParent(b, parent);
 
 	ecs->DestroyEntity(parent);
+	coEXPECT(!ecs->IsAlive(parent));
 	coEXPECT(!ecs->IsAlive(a));
 	coEXPECT(!ecs->IsAlive(b));
 }
+
+coTEST(ecs, ArchiveChildren)
+{
+	coECS* ecs = coECS::instance;
+
+	coArchive archive;
+
+	// Save
+	{
+		coEntityHandle parent = ecs->CreateEntity<TestEntity>();
+		coEntityHandle a = ecs->CreateEntity<TestEntity>();
+		coEntityHandle b = ecs->CreateEntity<TestEntity>();
+		TestBComp* pc = ecs->GetComponent<TestBComp>(parent);
+		TestBComp* ac = ecs->GetComponent<TestBComp>(a);
+		TestBComp* bc = ecs->GetComponent<TestBComp>(b);
+		pc->b = 70.0f;
+		ac->b = 71.0f;
+		bc->b = 72.0f;
+
+		ecs->SetParent(a, parent);
+		ecs->SetParent(b, parent);
+		ecs->SaveEntity(archive, parent);
+		ecs->DestroyEntity(parent);
+	}
+
+	// Load
+	{
+		const coEntityHandle parent = ecs->LoadEntity(archive);
+		coEXPECT(parent.IsValid());
+		coEXPECT(ecs->IsAlive(parent));
+		const coEntityHandle a = ecs->GetFirstChild(parent);
+		coEXPECT(a.IsValid());
+		const coEntityHandle b = ecs->GetNextSibling(a);
+		coEXPECT(b.IsValid());
+		const TestBComp* pc = ecs->GetComponent<TestBComp>(parent);
+		const TestBComp* ac = ecs->GetComponent<TestBComp>(a);
+		const TestBComp* bc = ecs->GetComponent<TestBComp>(b);
+		coEXPECT(pc->b == 70.0f);
+		coEXPECT(ac->b == 71.0f);
+		coEXPECT(bc->b == 72.0f);
+		ecs->DestroyEntity(parent);
+	}
+}
+

@@ -246,29 +246,55 @@ void coECS::AddProcessor(coProcessor& processor)
 	coPushBack(processors, &processor);
 }
 
-coUint coECS::GetNbEntities(const coEntityHandle& root) const
+coUint32 coECS::GetNbEntities(const coEntityHandle& root) const
 {
 	coEntity* entity = GetEntity(root);
 	if (entity)
 	{
-		return GetNbEntities(root.index);
+		return GetNbEntities(entity->index);
 	}
-	else
-	{
-		return 0;
-	}
+	return 0;
 }
 
-coUint coECS::GetNbEntities(coUint32 entityIndex) const
+coUint32 coECS::GetNbEntities(coUint32 entityIndex) const
 {
 	const coEntity& entity = _GetEntity(entityIndex);
-	coUint nb = 1;
-	coUint32 childIdx = entity.firstChild;
-	while (childIdx != coUint32(-1))
+	coUint32 nb = 1;
+	auto countFunc = [&](const coEntity& child)
 	{
-		nb += GetNbEntities(childIdx);
-		const coEntity& child = _GetEntity(childIdx);
-		childIdx = child.nextSibling;
-	}
+		nb += GetNbEntities(child.index);
+		return true;
+	};
+	_VisitChildren(entity, countFunc);
 	return nb;
+}
+
+coEntityHandle coECS::GetFirstChild(const coEntityHandle& handle) const
+{
+	coEntity* entity = GetEntity(handle);
+	if (entity && entity->firstChild != coUint32(-1))
+	{
+		return _GetEntity(entity->firstChild).GetHandle();
+	}
+	return coEntityHandle();
+}
+
+coEntityHandle coECS::GetPreviousSibling(const coEntityHandle& handle) const
+{
+	coEntity* entity = GetEntity(handle);
+	if (entity && entity->previousSibling != coUint32(-1))
+	{
+		return _GetEntity(entity->previousSibling).GetHandle();
+	}
+	return coEntityHandle();
+}
+
+coEntityHandle coECS::GetNextSibling(const coEntityHandle& handle) const
+{
+	coEntity* entity = GetEntity(handle);
+	if (entity && entity->nextSibling != coUint32(-1))
+	{
+		return _GetEntity(entity->nextSibling).GetHandle();
+	}
+	return coEntityHandle();
 }
