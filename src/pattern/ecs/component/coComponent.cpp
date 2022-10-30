@@ -9,8 +9,3 @@
 coDEFINE_CLASS(coComponent)
 {
 }
-
-coComponent::coComponent()
-{
-	nextComponent = this;
-}

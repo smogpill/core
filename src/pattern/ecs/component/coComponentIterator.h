@@ -4,6 +4,7 @@
 #include "coComponent.h"
 #include <container/array/coFixedArray_f.h>
 
+/*
 class coComponentIterator
 {
 public:
@@ -100,3 +101,4 @@ coBool coReverseVisitAll(coComponent* component, Functor func)
 	}
 	return true;
 }
+*/
