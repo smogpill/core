@@ -11,7 +11,6 @@ class coEntityType;
 
 class coEntity
 {
-	coDECLARE_CLASS_NO_POLYMORPHISM(coEntity);
 public:
 	enum class State : coUint8
 	{
@@ -23,7 +22,6 @@ public:
 	void SetState(State state);
 
 	coUint GetNbComponents() const;
-	coUint GetNbChildren() const;
 	coComponent** GetComponentBuffer() const { return componentBuffer; }
 	coArray<coComponent*> GetComponents() const { return coArray<coComponent*>(componentBuffer, GetNbComponents()); }
 	State GetState() const { return state; }
@@ -34,8 +32,6 @@ public:
 	void CreateComponents();
 	void CreateComponents(const coEntity& source);
 	void DestroyComponents();
-	template <class F>
-	coBool VisitChildren(F functor);
 
 	coUint32 index = coUint32(-1); // temporary
 	coUint32 generation = 0;
@@ -48,16 +44,19 @@ public:
 	coComponent** componentBuffer = nullptr;
 	const coEntityType* entityType = nullptr;
 private:
+	friend class coECS;
+
+	void SetChildrenState(State state);
 	void SetTargetState(State state_) { targetState = state_; }
-	void Init();
-	void Shutdown();
-	void Start();
-	void Stop();
-	void UpdateState();
+	void DoOneStateTransition();
 	void InitComponents();
 	void ShutdownComponents();
 	void StartComponents();
 	void StopComponents();
+	void OnStateNoneToInitialized();
+	void OnStateInitializedToStarted();
+	void OnStateStartedToInitialized();
+	void OnStateInitializedToNone();
 };
 
 template <class T>
