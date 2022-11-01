@@ -1,6 +1,8 @@
-#include "pattern/pch.h"
+// Copyright(c) 2022 Jounayd Id Salah
+// Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
+#include "ecs/pch.h"
 #include "coEntityHandle.h"
-#include "../../uuid/coUuid_f.h"
+#include <pattern/uuid/coUuid_f.h>
 #include "../coEntitySystem.h"
 #include "coEntity.h"
 

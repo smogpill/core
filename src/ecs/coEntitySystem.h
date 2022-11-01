@@ -5,7 +5,7 @@
 #include <container/map/coHashMap.h>
 #include <lang/result/coResult.h>
 #include <pattern/uuid/coUuid.h>
-#include "../singleton/coSingleton.h"
+#include <pattern/singleton/coSingleton.h>
 #include "entity/coEntityHandle.h"
 class coEntity;
 class coBinaryOutputStream;

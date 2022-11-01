@@ -1,14 +1,14 @@
 // Copyright(c) 2022 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
-#include "test_pattern/pch.h"
+#include "test_ecs/pch.h"
 #include "test/unit/coTest.h"
-#include "pattern/ecs/coECS.h"
-#include "pattern/ecs/entity/coEntity.h"
-#include "pattern/ecs/component/coComponent.h"
-#include "pattern/ecs/component/coComponent_f.h"
-#include "pattern/ecs/processor/coProcessor.h"
-#include "pattern/ecs/entity/coEntityType_f.h"
-#include "pattern/ecs/entity/coEntity_f.h"
+#include "ecs/coECS.h"
+#include "ecs/entity/coEntity.h"
+#include "ecs/component/coComponent.h"
+#include "ecs/component/coComponent_f.h"
+#include "ecs/processor/coProcessor.h"
+#include "ecs/entity/coEntityType_f.h"
+#include "ecs/entity/coEntity_f.h"
 #include "pattern/pointer/coUniquePtr.h"
 #include <io/archive/coArchive.h>
 #include <math/transform/coTransform.h>
