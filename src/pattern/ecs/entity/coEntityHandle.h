@@ -16,6 +16,7 @@ public:
 	coBool IsValid() const { return index != coUint32(-1); }
 	coBool IsGenerationMax() const { return generation == coUint32(-1); }
 	coUint64 GetRaw() const { return reinterpret_cast<const coUint64&>(index); }
+	operator coBool() const { return IsValid(); }
 
 	static const coEntityHandle invalid;
 	static const coUint32 maxGeneration = coUint32(-1);

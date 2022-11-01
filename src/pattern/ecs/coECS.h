@@ -27,6 +27,8 @@ public:
 	coEntityHandle GetFirstChild(const coEntityHandle&) const;
 	coEntityHandle GetPreviousSibling(const coEntityHandle&) const;
 	coEntityHandle GetNextSibling(const coEntityHandle&) const;
+	void Init(const coEntityHandle& entity);
+	void Shutdown(const coEntityHandle& entity);
 	void SetStarted(const coEntityHandle& entity, coBool);
 	void AddProcessor(coProcessor& processor);
 	coUint32 GetNbEntities(const coEntityHandle& root) const;

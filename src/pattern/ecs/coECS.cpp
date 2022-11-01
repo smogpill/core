@@ -208,6 +208,24 @@ void coECS::SetParent(const coEntityHandle& childHandle, const coEntityHandle& p
 	}
 }
 
+void coECS::Init(const coEntityHandle& handle)
+{
+	coEntity* entity = GetEntity(handle);
+	if (entity && entity->GetState() == coEntity::State::NONE)
+	{
+		entity->SetState(coEntity::State::INITIALIZED);
+	}
+}
+
+void coECS::Shutdown(const coEntityHandle& handle)
+{
+	coEntity* entity = GetEntity(handle);
+	if (entity)
+	{
+		entity->SetState(coEntity::State::NONE);
+	}
+}
+
 void coECS::SetStarted(const coEntityHandle& handle, coBool b)
 {
 	coEntity* entity = GetEntity(handle);
