@@ -5,8 +5,9 @@
 #include <container/array/coDynamicArray.h>
 class coType;
 class coComponent;
+class coEntity;
 
-using coComponentFunc = void (*)(coComponent&);
+using coComponentFunc = void (*)(coEntity&, coComponent&);
 
 class coComponentType : public coCustomTypeData
 {

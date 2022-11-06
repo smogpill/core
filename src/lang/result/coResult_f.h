@@ -5,4 +5,5 @@
 #include "debug/log/coLog.h"
 
 #define coTRY(_cond_, _msg_) coSAFE_SCOPE( if(!(_cond_)){ coERROR(_msg_); coBREAK(); return false; } )
+#define coTRY_NO_RESULT(_cond_, _msg_) coSAFE_SCOPE( if(!(_cond_)){ coERROR(_msg_); coBREAK(); return; } )
 #define coCHECK(_cond_, _msg_) coSAFE_SCOPE( if(!(_cond_)){ coERROR(_msg_); coBREAK(); } )

@@ -6,13 +6,7 @@
 #include "../../coECS.h"
 #include "../../component/coComponent_f.h"
 
-void coNode::Init(coNode& comp)
-{
-	
-}
-
 coBEGIN_COMPONENT(coNode);
-coDEFINE_COMPONENT_INIT();
 coEND_COMPONENT();
 
 void coNode::SetLocal(const coTransform& t)

@@ -162,7 +162,7 @@ void coEntity::InitComponents()
 			{
 				coComponent* component = componentBuffer[compIdx];
 				coASSERT(component);
-				compTypeData->initFunc(*component);
+				compTypeData->initFunc(*this, *component);
 			}
 		}
 	}
@@ -181,7 +181,7 @@ void coEntity::ShutdownComponents()
 			{
 				coComponent* component = componentBuffer[compIdx];
 				coASSERT(component);
-				compTypeData->shutdownFunc(*component);
+				compTypeData->shutdownFunc(*this, *component);
 			}
 		}
 	}
@@ -200,7 +200,7 @@ void coEntity::StartComponents()
 			{
 				coComponent* component = componentBuffer[compIdx];
 				coASSERT(component);
-				compTypeData->startFunc(*component);
+				compTypeData->startFunc(*this, *component);
 			}
 		}
 	}
@@ -219,7 +219,7 @@ void coEntity::StopComponents()
 			{
 				coComponent* component = componentBuffer[compIdx];
 				coASSERT(component);
-				compTypeData->stopFunc(*component);
+				compTypeData->stopFunc(*this, *component);
 			}
 		}
 	}

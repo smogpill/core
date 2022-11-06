@@ -20,9 +20,9 @@ public:
 protected:
 	friend class coEntity;
 
-	static void Init(coComponent&) {}
-	static void Shutdown(coComponent&) {}
-	static void Start(coComponent&) {}
-	static void Stop(coComponent&) {}
+	void Init(coEntity& entity) {}
+	void Shutdown(coEntity& entity) {}
+	void Start(coEntity& entity) {}
+	void Stop(coEntity& entity) {}
 private:
 };

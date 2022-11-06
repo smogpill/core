@@ -22,8 +22,6 @@ private:
 	void UpdateGlobal();
 	const coTransform& GetParentGlobal() const;
 
-	static void Init(coNode&);
-
 	coTransform local;
 	coTransform global;
 	coUint32 version : 30;
