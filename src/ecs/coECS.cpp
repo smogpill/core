@@ -19,14 +19,14 @@ coECS::~coECS()
 
 coEntityHandle coECS::CreateEntity(const coType& type)
 {
-	const coEntityHandle handle = _CreateEmptyEntity();
+	const coEntityHandle handle = CreateEmptyEntity();
 	coEntity& entity = entities[handle.index];
 	entity.entityType = static_cast<const coEntityType*>(type.customTypeData);
 	entity.CreateComponents();
 	return handle;
 }
 
-coEntityHandle coECS::_CreateEmptyEntity()
+coEntityHandle coECS::CreateEmptyEntity()
 {
 	if (freeEntities.count == 0)
 	{
@@ -93,7 +93,7 @@ coEntityHandle coECS::Clone(const coEntityHandle& entityHandle)
 
 	coASSERT(source->state == coEntity::State::NONE); // Other states not supported yet
 
-	const coEntityHandle targetHandle = _CreateEmptyEntity();
+	const coEntityHandle targetHandle = CreateEmptyEntity();
 	coEntity& target = _GetEntity(targetHandle.index);
 	target.entityType = source->entityType;
 	target.CreateComponents(*source);

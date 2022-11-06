@@ -19,6 +19,7 @@ public:
 	coEntityHandle CreateEntity(const coType&);
 	template <class T>
 	coEntityHandle CreateEntity() { return CreateEntity(*T::GetStaticType()); }
+	coEntityHandle CreateEmptyEntity();
 	void DestroyEntity(const coEntityHandle&);
 	coEntityHandle Clone(const coEntityHandle&);
 	void SaveEntity(coArchive& archive, const coEntityHandle&) const;
@@ -39,7 +40,6 @@ public:
 	T* GetComponent(const coEntityHandle& entity) const { return static_cast<T*>(GetComponent(entity, *T::GetStaticType())); }
 	coEntity& _GetEntity(coUint32 index) { return entities[index]; }
 	const coEntity& _GetEntity(coUint32 index) const { return entities[index]; }
-	coEntityHandle _CreateEmptyEntity();
 	template <class F>
 	coBool _VisitChildren(const coEntity& entity, F func) const;
 	template <class F>

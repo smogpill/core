@@ -8,6 +8,7 @@ class coUuidComp : public coComponent
 {
 	coDECLARE_COMPONENT(coUuidComp, coComponent);
 public:
+	void SetUuid(const coUuid& u) { uuid = u; }
 private:
 	coUuid uuid;
 };
