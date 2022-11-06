@@ -6,9 +6,9 @@
 #include "../coEntitySystem.h"
 #include "coEntity.h"
 
-/*
-const coEntityHandle coEntityHandle::empty;
+const coEntityHandle coEntityHandle::invalid;
 
+/*
 void coEntityHandle::Write(coBinaryOutputStream& stream) const
 {
 	coASSERT(coEntitySystem::instance);
