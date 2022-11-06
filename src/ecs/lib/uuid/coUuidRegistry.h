@@ -2,7 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include <pattern/singleton/coSingleton.h>
-#include <pattern/uuid/coUuid.h>
+#include <pattern/uuid/coUuid_f.h>
 #include <container/map/coHashMap.h>
 #include <container/map/coHashMap_f.h>
 #include "../../entity/coEntityHandle.h"
