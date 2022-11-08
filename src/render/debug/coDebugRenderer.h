@@ -7,17 +7,17 @@
 #include <container/array/coDynamicArray.h>
 #include <lang/result/coResult.h>
 #include <pattern/singleton/coSingleton.h>
+#include <ecs/component/coComponent.h>
 class coAabb;
 class coShaderProgram;
 class coShader;
 class coMat4;
 
-class coDebugRenderer
+class coDebugRenderer : public coComponent
 {
+	coDECLARE_COMPONENT(coDebugRenderer, coComponent);
 	coDECLARE_SINGLETON(coDebugRenderer);
 public:
-	~coDebugRenderer();
-	coResult Init();
 	enum Options
 	{
 		WIREFRAME = 1 << 0,
@@ -50,6 +50,8 @@ private:
 		coColor color;
 	};
 	coResult InitShaders();
+	void Init(coEntity& entity);
+	void Shutdown(coEntity& entity);
 
 	coDynamicArray<Vertex> vertexBuffers[Buffer::END];
 	coDynamicArray<coShader*> shaders;
