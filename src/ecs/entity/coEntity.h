@@ -22,10 +22,10 @@ public:
 	void SetState(State state);
 
 	coUint GetNbComponents() const;
-	coComponent** GetComponentBuffer() const { return componentBuffer; }
-	coArray<coComponent*> GetComponents() const { return coArray<coComponent*>(componentBuffer, GetNbComponents()); }
+	void** GetComponentBuffer() const { return componentBuffer; }
+	coArray<void*> GetComponents() const { return coArray<void*>(componentBuffer, GetNbComponents()); }
 	State GetState() const { return state; }
-	coComponent* GetComponent(const coType& type) const;
+	void* GetComponent(const coType& type) const;
 	coEntityHandle GetHandle() const { return coEntityHandle(index, generation); }
 	template <class T>
 	T* GetComponent() const;
@@ -41,7 +41,7 @@ public:
 	coUint32 parent = coUint32(-1);
 	State state = State::NONE;
 	State targetState = State::NONE;
-	coComponent** componentBuffer = nullptr;
+	void** componentBuffer = nullptr;
 	const coEntityType* entityType = nullptr;
 private:
 	friend class coECS;

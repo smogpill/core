@@ -34,7 +34,7 @@ coDEFINE_CLASS(coComponentsStorage)
 		coUint32 itOffsetIdx = offsetsIdx;
 		for (coUint32 compIdx = 0; compIdx < nbComponents; ++compIdx)
 		{
-			const coComponent* comp = entity.componentBuffer[compIdx];
+			const void* comp = entity.componentBuffer[compIdx];
 			const coType* compType = componentTypes[compIdx];
 			(coUint32&)(data[itOffsetIdx]) = compType->uid;
 			itOffsetIdx += sizeof(coUint32);
@@ -59,7 +59,7 @@ coDEFINE_CLASS(coComponentsStorage)
 		entityStorage->index = entityHandle.index;
 		const coUint32* componentsBuffer = &data[1];
 		const coArray<const coType*>& compTypes = entityType->GetComponentTypes();
-		const coArray<coComponent*>& components = entity.GetComponents();
+		const coArray<void*>& components = entity.GetComponents();
 		for (coUint32 compIdx = 0; compIdx < nbComponents; ++compIdx)
 		{
 			const coUint32 compTypeUID = componentsBuffer[compIdx * 2 + 0];
@@ -67,7 +67,7 @@ coDEFINE_CLASS(coComponentsStorage)
 			if (compIndex >= 0)
 			{
 				const coType* compType = compTypes[compIndex];
-				coComponent* component = components[compIndex];
+				void* component = components[compIndex];
 				coASSERT(component);
 				const coUint32 compDataOffset = componentsBuffer[compIdx * 2 + 1];
 				const coUint32 compDataIdx = idx + (compIdx * 2 + 2) * sizeof(coUint32) + compDataOffset;

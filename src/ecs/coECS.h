@@ -35,7 +35,7 @@ public:
 	coUint32 GetNbEntities(const coEntityHandle& root) const;
 
 	coBool IsAlive(const coEntityHandle&) const;
-	coComponent* GetComponent(const coEntityHandle&, const coType& type) const;
+	void* GetComponent(const coEntityHandle&, const coType& type) const;
 	template <class T>
 	T* GetComponent(const coEntityHandle& entity) const { return static_cast<T*>(GetComponent(entity, *T::GetStaticType())); }
 	coEntity& _GetEntity(coUint32 index) { return entities[index]; }

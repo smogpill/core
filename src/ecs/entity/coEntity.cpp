@@ -28,7 +28,7 @@ coUint coEntity::GetNbComponents() const
 	return entityType->GetComponentTypes().count;
 }
 
-coComponent* coEntity::GetComponent(const coType& type) const
+void* coEntity::GetComponent(const coType& type) const
 {
 	const auto& componentTypes = entityType->GetComponentTypes();
 	for (coUint componentIdx = 0; componentIdx < componentTypes.count; ++componentIdx)
@@ -49,12 +49,12 @@ void coEntity::CreateComponents()
 		const auto& componentTypes = entityType->GetComponentTypes();
 		if (componentTypes.count)
 		{
-			componentBuffer = new coComponent*[componentTypes.count];
+			componentBuffer = new void*[componentTypes.count];
 			for (coUint compIdx = 0; compIdx < componentTypes.count; ++compIdx)
 			{
 				const coType* compType = componentTypes[compIdx];
-				coComponent* comp = static_cast<coComponent*>(compType->createFunc());
-				componentBuffer[compIdx] = comp;
+				//coComponent* comp = static_cast<coComponent*>(compType->createFunc());
+				componentBuffer[compIdx] = compType->createFunc();
 			}
 		}
 	}
@@ -70,14 +70,14 @@ void coEntity::CreateComponents(const coEntity& source)
 		if (componentTypes.count)
 		{
 			coASSERT(source.componentBuffer);
-			componentBuffer = new coComponent * [componentTypes.count];
+			componentBuffer = new void * [componentTypes.count];
 			for (coUint compIdx = 0; compIdx < componentTypes.count; ++compIdx)
 			{
-				const coComponent* sourceComp = source.componentBuffer[compIdx];
+				const void* sourceComp = source.componentBuffer[compIdx];
 				coASSERT(sourceComp);
 				const coType* compType = componentTypes[compIdx];
-				coComponent* comp = static_cast<coComponent*>(compType->copyCreateFunc(sourceComp));
-				componentBuffer[compIdx] = comp;
+				//coComponent* comp = static_cast<coComponent*>(compType->copyCreateFunc(sourceComp));
+				componentBuffer[compIdx] = compType->copyCreateFunc(sourceComp);
 			}
 		}
 	}
@@ -160,9 +160,9 @@ void coEntity::InitComponents()
 			const coComponentType* compTypeData = static_cast<const coComponentType*>(compType->customTypeData);
 			if (compTypeData->initFunc)
 			{
-				coComponent* component = componentBuffer[compIdx];
+				void* component = componentBuffer[compIdx];
 				coASSERT(component);
-				compTypeData->initFunc(*this, *component);
+				compTypeData->initFunc(*this, component);
 			}
 		}
 	}
@@ -179,9 +179,9 @@ void coEntity::ShutdownComponents()
 			const coComponentType* compTypeData = static_cast<const coComponentType*>(compType->customTypeData);
 			if (compTypeData->shutdownFunc)
 			{
-				coComponent* component = componentBuffer[compIdx];
+				void* component = componentBuffer[compIdx];
 				coASSERT(component);
-				compTypeData->shutdownFunc(*this, *component);
+				compTypeData->shutdownFunc(*this, component);
 			}
 		}
 	}
@@ -198,9 +198,9 @@ void coEntity::StartComponents()
 			const coComponentType* compTypeData = static_cast<const coComponentType*>(compType->customTypeData);
 			if (compTypeData->startFunc)
 			{
-				coComponent* component = componentBuffer[compIdx];
+				void* component = componentBuffer[compIdx];
 				coASSERT(component);
-				compTypeData->startFunc(*this, *component);
+				compTypeData->startFunc(*this, component);
 			}
 		}
 	}
@@ -217,9 +217,9 @@ void coEntity::StopComponents()
 			const coComponentType* compTypeData = static_cast<const coComponentType*>(compType->customTypeData);
 			if (compTypeData->stopFunc)
 			{
-				coComponent* component = componentBuffer[compIdx];
+				void* component = componentBuffer[compIdx];
 				coASSERT(component);
-				compTypeData->stopFunc(*this, *component);
+				compTypeData->stopFunc(*this, component);
 			}
 		}
 	}

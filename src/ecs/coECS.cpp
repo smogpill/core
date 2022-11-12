@@ -46,7 +46,7 @@ coEntityHandle coECS::CreateEmptyEntity()
 	return coEntityHandle(index, entity.generation);
 }
 
-coComponent* coECS::GetComponent(const coEntityHandle& entityHandle, const coType& type) const
+void* coECS::GetComponent(const coEntityHandle& entityHandle, const coType& type) const
 {
 	coEntity* entity = GetEntity(entityHandle);
 	if (entity)

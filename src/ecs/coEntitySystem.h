@@ -18,7 +18,7 @@ class coEntitySystem
 public:
 	void SetUuid(const coUuid& uuid, coEntity* entity);
 	coEntity* GetFromUuid(const coUuid& uuid) const;
-	coComponent* GetComponent(const coUuid& uuid, const coType& type) const;
+	void* GetComponent(const coUuid& uuid, const coType& type) const;
 	template <class T>
 	T* GetComponent(const coUuid& uuid) const;
 

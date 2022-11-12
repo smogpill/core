@@ -24,7 +24,7 @@ coEntity* coEntitySystem::GetFromUuid(const coUuid& uuid) const
 	return coGet(uuidToEntity, uuid, static_cast<coEntity*>(nullptr));
 }
 
-coComponent* coEntitySystem::GetComponent(const coUuid& uuid, const coType& type) const
+void* coEntitySystem::GetComponent(const coUuid& uuid, const coType& type) const
 {
 	coEntity* entity = GetFromUuid(uuid);
 	return entity ? entity->GetComponent(type) : nullptr;

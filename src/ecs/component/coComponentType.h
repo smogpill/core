@@ -7,7 +7,7 @@ class coType;
 class coComponent;
 class coEntity;
 
-using coComponentFunc = void (*)(coEntity&, coComponent&);
+using coComponentFunc = void (*)(coEntity&, void*);
 
 class coComponentType : public coCustomTypeData
 {
