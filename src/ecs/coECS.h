@@ -14,6 +14,7 @@ class coECS
 {
 	coDECLARE_SINGLETON(coECS);
 public:
+	coECS();
 	~coECS();
 	void Reserve(coUint32 nbEntities);
 	coEntityHandle CreateEntity(const coType&);

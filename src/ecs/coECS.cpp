@@ -9,8 +9,14 @@
 #include "storage/coEntityPackStorage.h"
 #include "component/coComponentIterator.h"
 #include "component/coComponentType.h"
+#include "lib/uuid/coUuidRegistry.h"
 
 coDEFINE_SINGLETON(coECS);
+
+coECS::coECS()
+{
+	coUuidRegistry::CreateInstanceIfMissing();
+}
 
 coECS::~coECS()
 {

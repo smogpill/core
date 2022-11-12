@@ -10,5 +10,7 @@ class coUuidComp : public coComponent
 public:
 	void SetUuid(const coUuid& u) { uuid = u; }
 private:
+	void Init(coEntity& entity);
+	void Shutdown(coEntity& entity);
 	coUuid uuid;
 };
