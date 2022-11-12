@@ -8,6 +8,7 @@
 
 void coEntityType::AddComponent(const coType& comp)
 {
+	coASSERT(comp.IsCompatibleWith<coComponent>());
 	for (coType* dependency : comp.GetDependencies())
 	{
 		if (dependency->IsCompatibleWith<coComponent>())

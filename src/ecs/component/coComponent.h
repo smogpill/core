@@ -15,8 +15,6 @@ class coComponent
 {
 	coDECLARE_CLASS_NO_POLYMORPHISM(coComponent);
 public:
-	template <class T> T* GetComponent() const;
-
 protected:
 	friend class coEntity;
 
