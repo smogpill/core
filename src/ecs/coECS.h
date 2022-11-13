@@ -35,13 +35,13 @@ public:
 	void SetStarted(const coEntityHandle& entity, coBool);
 	void AddProcessor(coProcessor& processor);
 	coUint32 GetNbEntities(const coEntityHandle& root) const;
-
+	coLock& GetLock() const { return lock; }
 	coBool IsAlive(const coEntityHandle&) const;
 	void* GetComponent(const coEntityHandle&, const coType& type) const;
 	template <class T>
 	T* GetComponent(const coEntityHandle& entity) const { return static_cast<T*>(GetComponent(entity, *T::GetStaticType())); }
-	coEntity& _GetEntity(coUint32 index) { return entities[index]; }
-	const coEntity& _GetEntity(coUint32 index) const { return entities[index]; }
+	coEntity& _GetEntity(coUint32 index) { return entityBlocks[index >> blockIndexShift]->entities[index & blockIndexMask]; }
+	const coEntity& _GetEntity(coUint32 index) const { return entityBlocks[index >> blockIndexShift]->entities[index & blockIndexMask]; }
 	template <class F>
 	coBool _VisitChildren(const coEntity& entity, F func) const;
 	template <class F>
@@ -52,8 +52,18 @@ private:
 	coUint32 GetNbEntities(coUint32 entityIndex) const;
 	void SaveEntity(coEntityPackStorage& packStorage, coUint32 entityIndex, coUint32 parentEntityStorageIndex) const;
 
-	coLock lock;
-	coDynamicArray<coEntity> entities;
+	static constexpr coUint32 blockIndexShift = 16;
+	static constexpr coUint32 nbEntitiesPerBlock = 1 << blockIndexShift;
+	static constexpr coUint32 blockIndexMask = nbEntitiesPerBlock - 1;
+	
+
+	mutable coLock lock;
+	struct EntityBlock
+	{
+		coEntity entities[nbEntitiesPerBlock];
+	};
+
+	coDynamicArray<EntityBlock*> entityBlocks;
 	coDynamicArray<coUint32> freeEntities;
 	coDynamicArray<coProcessor*> processors;
 };
@@ -66,7 +76,7 @@ coBool coECS::_VisitChildren(const coEntity& entity, F func) const
 	{
 		do
 		{
-			coEntity& child = const_cast<coEntity&>(entities[childIdx]);
+			coEntity& child = const_cast<coEntity&>(_GetEntity(childIdx));
 			const coUint32 nextIdx = child.nextSibling;
 			if (!func(child))
 				return false;
@@ -81,11 +91,11 @@ coBool coECS::_ReverseVisitChildren(const coEntity& entity, F func)
 {
 	if (entity.firstChild != coUint32(-1))
 	{
-		coEntity& firstChild = entities[entity.firstChild];
+		coEntity& firstChild = _GetEntity(entity.firstChild);
 		coUint32 childIdx = firstChild.previousSibling;
 		do
 		{
-			coEntity& child = entities[childIdx];
+			coEntity& child = _GetEntity(childIdx);
 			const coUint32 previousIdx = child.previousSibling;
 			if (!func(child))
 				return false;

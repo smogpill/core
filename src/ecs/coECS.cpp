@@ -25,8 +25,9 @@ coECS::~coECS()
 
 coEntityHandle coECS::CreateEntity(const coType& type)
 {
+	coLockScope l(lock);
 	const coEntityHandle handle = CreateEmptyEntity();
-	coEntity& entity = entities[handle.index];
+	coEntity& entity = _GetEntity(handle.index);
 	entity.entityType = static_cast<const coEntityType*>(type.customTypeData);
 	entity.CreateComponents();
 	return handle;
@@ -34,17 +35,20 @@ coEntityHandle coECS::CreateEntity(const coType& type)
 
 coEntityHandle coECS::CreateEmptyEntity()
 {
+	coLockScope l(lock);
 	if (freeEntities.count == 0)
 	{
-		const coUint32 startIndex = entities.count;
+		const coUint32 blockIndex = entityBlocks.count;
+		EntityBlock* block = new EntityBlock();
+		coPushBack(entityBlocks, block);
 		const coUint32 nbAdded = 256;
-		coResize(entities, entities.count + nbAdded);
-		coResize(freeEntities, nbAdded);
-		for (coUint32 index = 0; index < nbAdded; ++index)
+		coResize(freeEntities, nbEntitiesPerBlock);
+		const coUint32 startIndex = blockIndex << blockIndexShift;
+		for (coUint32 index = 0; index < nbEntitiesPerBlock; ++index)
 			freeEntities[index] = startIndex + index;
 	}
 	const coUint32 index = coPopBack(freeEntities);
-	coEntity& entity = entities[index];
+	coEntity& entity = _GetEntity(index);
 	const coUint32 generation = entity.generation;
 	new (&entity) coEntity();
 	entity.index = index;
@@ -54,6 +58,7 @@ coEntityHandle coECS::CreateEmptyEntity()
 
 void* coECS::GetComponent(const coEntityHandle& entityHandle, const coType& type) const
 {
+	coLockScope l(lock);
 	coEntity* entity = GetEntity(entityHandle);
 	if (entity)
 	{
@@ -75,7 +80,8 @@ void coECS::DestroyEntity(const coEntityHandle& entityHandle)
 
 void coECS::DestroyEntity(coUint32 index)
 {
-	coEntity& entity = entities[index];
+	coLockScope l(lock);
+	coEntity& entity = _GetEntity(index);
 
 	// Destroy children
 	auto destroyChild = [&](const coEntity& child)
@@ -93,6 +99,7 @@ void coECS::DestroyEntity(coUint32 index)
 
 coEntityHandle coECS::Clone(const coEntityHandle& entityHandle)
 {
+	coLockScope l(lock);
 	const coEntity* source = GetEntity(entityHandle);
 	if (source == nullptr)
 		return coEntityHandle();
@@ -117,6 +124,7 @@ coEntityHandle coECS::Clone(const coEntityHandle& entityHandle)
 
 void coECS::SaveEntity(coArchive& archive, const coEntityHandle& handle) const
 {
+	coLockScope l(lock);
 	if (!handle.IsValid())
 		return;
 	coASSERT(IsAlive(handle));
@@ -129,6 +137,7 @@ void coECS::SaveEntity(coArchive& archive, const coEntityHandle& handle) const
 
 void coECS::SaveEntity(coEntityPackStorage& packStorage, coUint32 entityIndex, coUint32 parentEntityStorageIndex) const
 {
+	coLockScope l(lock);
 	const coEntity& entity = _GetEntity(entityIndex);
 	const coUint32 storageIndex = packStorage.entities.count;
 	coEntityStorage& entityStorage = coPushBack(packStorage.entities);
@@ -146,6 +155,7 @@ void coECS::SaveEntity(coEntityPackStorage& packStorage, coUint32 entityIndex, c
 
 coEntityHandle coECS::LoadEntity(const coArchive& archive)
 {
+	coLockScope l(lock);
 	const coEntityPackStorage* packStorage = archive.CreateObjects<coEntityPackStorage>();
 	if (packStorage == nullptr)
 		return coEntityHandle();
@@ -176,14 +186,15 @@ coEntityHandle coECS::LoadEntity(const coArchive& archive)
 
 void coECS::SetParent(const coEntityHandle& childHandle, const coEntityHandle& parentHandle)
 {
+	coLockScope l(lock);
 	coEntity* child = GetEntity(childHandle);
 	coASSERT(child);
 	if (child->parent != coUint32(-1))
 	{
-		coEntity& previousSibling = entities[child->previousSibling];
+		coEntity& previousSibling = _GetEntity(child->previousSibling);
 		coASSERT(previousSibling.nextSibling == childHandle.index);
 		previousSibling.nextSibling = child->nextSibling;
-		coEntity& nextSibling = entities[child->nextSibling];
+		coEntity& nextSibling = _GetEntity(child->nextSibling);
 		coASSERT(nextSibling.previousSibling == childHandle.index);
 		nextSibling.previousSibling = child->previousSibling;
 		child->previousSibling = coUint32(-1);
@@ -203,9 +214,9 @@ void coECS::SetParent(const coEntityHandle& childHandle, const coEntityHandle& p
 		}
 		else
 		{
-			coEntity& firstChild = entities[parent->firstChild];
+			coEntity& firstChild = _GetEntity(parent->firstChild);
 			const coUint32 lastChildIdx = firstChild.previousSibling;
-			coEntity& lastChild = entities[lastChildIdx];
+			coEntity& lastChild = _GetEntity(lastChildIdx);
 			firstChild.previousSibling = childHandle.index;
 			lastChild.nextSibling = childHandle.index;
 			child->previousSibling = lastChildIdx;
@@ -216,6 +227,7 @@ void coECS::SetParent(const coEntityHandle& childHandle, const coEntityHandle& p
 
 void coECS::Init(const coEntityHandle& handle)
 {
+	coLockScope l(lock);
 	coEntity* entity = GetEntity(handle);
 	if (entity && entity->GetState() == coEntity::State::NONE)
 	{
@@ -225,6 +237,7 @@ void coECS::Init(const coEntityHandle& handle)
 
 void coECS::Shutdown(const coEntityHandle& handle)
 {
+	coLockScope l(lock);
 	coEntity* entity = GetEntity(handle);
 	if (entity)
 	{
@@ -234,6 +247,7 @@ void coECS::Shutdown(const coEntityHandle& handle)
 
 void coECS::SetStarted(const coEntityHandle& handle, coBool b)
 {
+	coLockScope l(lock);
 	coEntity* entity = GetEntity(handle);
 	if (entity)
 	{
@@ -243,6 +257,7 @@ void coECS::SetStarted(const coEntityHandle& handle, coBool b)
 
 coBool coECS::IsAlive(const coEntityHandle& handle) const
 {
+	coLockScope l(lock);
 	return GetEntity(handle) != nullptr;
 }
 
@@ -250,7 +265,7 @@ coEntity* coECS::GetEntity(const coEntityHandle& handle) const
 {
 	if (handle.IsValid())
 	{
-		const coEntity& entity = entities[handle.index];
+		const coEntity& entity = _GetEntity(handle.index);
 		return entity.generation == handle.generation ? const_cast<coEntity*>(&entity) : nullptr;
 	}
 	else
@@ -272,6 +287,7 @@ void coECS::AddProcessor(coProcessor& processor)
 
 coUint32 coECS::GetNbEntities(const coEntityHandle& root) const
 {
+	coLockScope l(lock);
 	coEntity* entity = GetEntity(root);
 	if (entity)
 	{
@@ -282,6 +298,7 @@ coUint32 coECS::GetNbEntities(const coEntityHandle& root) const
 
 coUint32 coECS::GetNbEntities(coUint32 entityIndex) const
 {
+	coLockScope l(lock);
 	const coEntity& entity = _GetEntity(entityIndex);
 	coUint32 nb = 1;
 	auto countFunc = [&](const coEntity& child)
@@ -295,6 +312,7 @@ coUint32 coECS::GetNbEntities(coUint32 entityIndex) const
 
 coEntityHandle coECS::GetFirstChild(const coEntityHandle& handle) const
 {
+	coLockScope l(lock);
 	coEntity* entity = GetEntity(handle);
 	if (entity && entity->firstChild != coUint32(-1))
 	{
@@ -305,6 +323,7 @@ coEntityHandle coECS::GetFirstChild(const coEntityHandle& handle) const
 
 coEntityHandle coECS::GetPreviousSibling(const coEntityHandle& handle) const
 {
+	coLockScope l(lock);
 	coEntity* entity = GetEntity(handle);
 	if (entity && entity->previousSibling != coUint32(-1))
 	{
@@ -315,6 +334,7 @@ coEntityHandle coECS::GetPreviousSibling(const coEntityHandle& handle) const
 
 coEntityHandle coECS::GetNextSibling(const coEntityHandle& handle) const
 {
+	coLockScope l(lock);
 	coEntity* entity = GetEntity(handle);
 	if (entity && entity->nextSibling != coUint32(-1))
 	{
