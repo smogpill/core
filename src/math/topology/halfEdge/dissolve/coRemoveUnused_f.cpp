@@ -12,18 +12,18 @@ void coRemoveUnusedVertices(coHalfEdgeMesh& mesh)
 	coDynamicArray<coUint32> oldVertexToNew;
 	auto& halfEdges = mesh.halfEdges;
 	coReserve(newVertices, oldVertices.count);
-	coResize(oldVertexToNew, oldVertices.count, ~coUint32(0));
+	coResize(oldVertexToNew, oldVertices.count, coUint32(-1));
 	for (coUint32 halfEdgeIdx = 0; halfEdgeIdx < halfEdges.count; ++halfEdgeIdx)
 	{
 		coHalfEdge& halfEdge = halfEdges[halfEdgeIdx];
 		if (halfEdge.next == halfEdgeIdx)
 		{
-			halfEdge.vertexIdx = ~coUint32(0);
+			halfEdge.vertexIdx = coUint32(-1);
 		}
 		else
 		{
 			coUint32& newIdx = oldVertexToNew[halfEdge.vertexIdx];
-			if (newIdx == ~coUint32(0))
+			if (newIdx == coUint32(-1))
 			{
 				newIdx = newVertices.count;
 				coPushBack(newVertices, oldVertices[halfEdge.vertexIdx]);
@@ -44,12 +44,12 @@ void coRemoveUnusedHalfEdges(coHalfEdgeMesh& mesh)
 	for (coUint32 edgeIdx = 0; edgeIdx < edges.count; ++edgeIdx)
 	{
 		const coHalfEdge& edge = edges[edgeIdx];
-		coASSERT(edge.next != ~coUint32(0));
-		coASSERT(edge.prev != ~coUint32(0));
-		coASSERT(edge.twin != ~coUint32(0));
+		coASSERT(edge.next != coUint32(-1));
+		coASSERT(edge.prev != coUint32(-1));
+		coASSERT(edge.twin != coUint32(-1));
 		if (edge.next == edgeIdx)
 		{
-			oldToNew[edgeIdx] = ~coUint32(0);
+			oldToNew[edgeIdx] = coUint32(-1);
 		}
 		else
 		{
@@ -59,9 +59,9 @@ void coRemoveUnusedHalfEdges(coHalfEdgeMesh& mesh)
 	}
 	for (coHalfEdge& edge : newEdges)
 	{
-		coASSERT(oldToNew[edge.next] != ~coUint32(0));
-		coASSERT(oldToNew[edge.prev] != ~coUint32(0));
-		coASSERT(oldToNew[edge.twin] != ~coUint32(0));
+		coASSERT(oldToNew[edge.next] != coUint32(-1));
+		coASSERT(oldToNew[edge.prev] != coUint32(-1));
+		coASSERT(oldToNew[edge.twin] != coUint32(-1));
 		edge.next = oldToNew[edge.next];
 		edge.prev = oldToNew[edge.prev];
 		edge.twin = oldToNew[edge.twin];
@@ -77,7 +77,7 @@ void coRemoveUnusedFaces(coHalfEdgeMesh& mesh)
 	coUint32 oldNbFaces = faceNormals.count;
 	if (oldNbFaces == 0)
 	{
-		coUint32 maxFaceIdx = ~coUint32(0);
+		coUint32 maxFaceIdx = coUint32(-1);
 		for (const coHalfEdge& edge : edges)
 			if (edge.faceIdx > maxFaceIdx)
 				maxFaceIdx = edge.faceIdx;
@@ -87,13 +87,13 @@ void coRemoveUnusedFaces(coHalfEdgeMesh& mesh)
 	coDynamicArray<coUint32> oldToNew;
 	coDynamicArray<coVec3> newFaceNormals;
 	coUint32 nbFaces = 0;
-	coResize(oldToNew, oldNbFaces, ~coUint32(0));
+	coResize(oldToNew, oldNbFaces, coUint32(-1));
 	if (faceNormals.count)
 		coReserve(newFaceNormals, oldNbFaces);
 	for (coHalfEdge& edge : edges)
 	{
 		coUint32& newFaceIdx = oldToNew[edge.faceIdx];
-		if (newFaceIdx == ~coUint32(0))
+		if (newFaceIdx == coUint32(-1))
 		{
 			newFaceIdx = nbFaces++;
 			if (faceNormals.count)

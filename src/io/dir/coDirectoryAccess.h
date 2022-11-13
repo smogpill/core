@@ -7,7 +7,7 @@
 
 class coDirectoryAccess : public coObject
 {
-	coDECLARE_SUPER(coObject);
+	coDECLARE_BASE(coObject);
 public:
 	class InitConfig : public Super::InitConfig
 	{

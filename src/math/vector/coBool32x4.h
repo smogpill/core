@@ -9,7 +9,7 @@ class coBool32x3;
 
 class alignas(16) coBool32x4
 {
-	coDECLARE_REFLECTED_NO_VIRTUAL();
+	coDECLARE_CLASS_NO_POLYMORPHISM(coBool32x4);
 public:
 	coFORCE_INLINE operator coBool () const { return _mm_movemask_ps(coBitCast<__m128>(*this)) == 15; }
 	coFORCE_INLINE operator const coBool32x3& () const { return reinterpret_cast<const coBool32x3&>(*this); }

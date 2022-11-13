@@ -8,12 +8,11 @@ class coDefaultLogHandler;
 
 class coCoreModule : public coModule
 {
-	coDECLARE_SUPER(coModule);
+	coDECLARE_BASE(coModule);
 public:
 	coCoreModule();
 	~coCoreModule();
 
-	virtual coResult InitTypes() override;
 	virtual coResult Init() override;
 
 private:

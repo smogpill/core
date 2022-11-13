@@ -9,7 +9,7 @@
 
 class coObject
 {
-	coDECLARE_REFLECTED_VIRTUAL();
+	coDECLARE_CLASS(coObject);
 public:
 	enum class ObjectState : coUint8
 	{

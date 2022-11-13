@@ -3,19 +3,21 @@
 #pragma once
 #include "container/array/coArray.h"
 #include "memory/allocator/coAllocator.h"
+#include <lang/reflect/coTypeDecl.h>
 class coBinaryInputStream;
 
 template <class T>
 class coDynamicArray : public coArray<T>
 {
-	typedef coArray<T> Super;
+	using Base = coArray<T>;
+	//coDECLARE_BASE(coArray<T>);
+	coDECLARE_CLASS_NO_POLYMORPHISM(coDynamicArray);
 public:
 	coDynamicArray() = default;
 	template <coUint N>
 	explicit coDynamicArray(const T(&_a)[N]);
 	~coDynamicArray()
 	{
-		coAllocator* allocator = coAllocator::GetHeap();
 		coAllocator::GetHeap()->FreeAligned(this->data);
 	}
 	explicit coDynamicArray(std::initializer_list<T> _l);

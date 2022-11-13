@@ -8,7 +8,7 @@ class coTaskScheduler;
 
 class coTaskWorkerThread : public coThread
 {
-	coDECLARE_SUPER(coThread);
+	coDECLARE_BASE(coThread);
 public:
 	coTaskWorkerThread(coTaskScheduler& scheduler, coUint index);
 

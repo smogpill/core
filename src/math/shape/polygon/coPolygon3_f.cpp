@@ -128,7 +128,7 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 	// Remove "ear" triangles one by one.
 	while (remainingVertices.count > 3)
 	{
-		coUint32 earIdx = ~coUint32(0);
+		coUint32 earIdx = coUint32(-1);
 
 		// Find ear vertex
 		for (coUint32 i = 0; i < remainingVertices.count; ++i)
@@ -183,7 +183,7 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 
 		// No ear found? That means that the polygon is degenerate (e.g. nearly collinear)
 		// Note that the provided polygon was not necessarily degenerate at first.
-		if (earIdx == ~coUint32(0))
+		if (earIdx == coUint32(-1))
 		{
 			for (coUint32 i = 0; i < remainingVertices.count; ++i)
 			{
@@ -206,7 +206,7 @@ void coTriangulateAssumingFlat(const coPolygon3& poly, coDynamicArray<coUint32>&
 
 			// No convex found, just return the first one
 			// Note: we don't care anymore if it's concave
-			if (earIdx == ~coUint32(0))
+			if (earIdx == coUint32(-1))
 			{
 				earIdx = 0;
 			}

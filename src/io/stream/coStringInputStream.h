@@ -6,7 +6,7 @@
 
 class coStringInputStream final : public coInputStream
 {
-	coDECLARE_SUPER(coInputStream);
+	coDECLARE_BASE(coInputStream);
 public:
 	coStringInputStream(const coArray<coByte>& buffer);
 	void PassHorizontalWhitespace();

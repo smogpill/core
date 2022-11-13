@@ -92,7 +92,7 @@ void coSplitHardEdges(coHalfEdgeMesh& mesh, coFloat angle)
 		const coUint32 vertexIdx = edge.vertexIdx;
 
 		// Find first edge
-		coUint32 startEdgeIdx = ~coUint32(0);
+		coUint32 startEdgeIdx = coUint32(-1);
 		{
 			// Find border
 			{
@@ -114,7 +114,7 @@ void coSplitHardEdges(coHalfEdgeMesh& mesh, coFloat angle)
 			}
 
 			// No border found -> Find a sharp edge
-			if (startEdgeIdx == ~coUint32(0))
+			if (startEdgeIdx == coUint32(-1))
 			{
 				coUint32 itEdgeIdx = edgeIdx;
 				do
@@ -132,7 +132,7 @@ void coSplitHardEdges(coHalfEdgeMesh& mesh, coFloat angle)
 			}
 
 			// No border && no sharp edge -> ignore.
-			if (startEdgeIdx == ~coUint32(0))
+			if (startEdgeIdx == coUint32(-1))
 				continue;
 		}
 

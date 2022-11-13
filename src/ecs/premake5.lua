@@ -1,0 +1,2 @@
+coSetCppProjectDefaults("ecs")
+coSetProjectDependencies{"optick"}

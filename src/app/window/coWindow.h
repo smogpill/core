@@ -11,7 +11,7 @@ class coInputContext;
 
 class coWindow : public coObject
 {
-	coDECLARE_SUPER(coObject);
+	coDECLARE_BASE(coObject);
 public:
 	enum class ShowState
 	{

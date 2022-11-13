@@ -31,13 +31,24 @@ coFORCE_INLINE void coMemMove(void* _dest, const void* _src, coUint64 _size8)
 }
 
 template <class T>
+void coFill(void* ptr, const T& val)
+{
+	*static_cast<T*>(ptr) = val;
+}
+
+template <class T>
 void coFill(void* _ptr, coUint _count, const T& _val)
 {
 	T* p = static_cast<T*>(_ptr);
 	for (coUint i = 0; i < _count; ++i)
-	{
-		*p++ = _val;
-	}
+		p[i] = _val;
+}
+
+template <class T, coUint N>
+void coFill(T(&array_)[N], const T& _val)
+{
+	for (T& v : array_)
+		v = _val;
 }
 
 template <typename T>

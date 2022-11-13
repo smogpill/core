@@ -5,7 +5,7 @@
 
 class coBinaryOutputStream final : public coOutputStream
 {
-	coDECLARE_SUPER(coOutputStream);
+	coDECLARE_BASE(coOutputStream);
 public:
 };
 

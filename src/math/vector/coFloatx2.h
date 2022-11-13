@@ -7,7 +7,7 @@ class coBinaryInputStream;
 
 class alignas(16) coFloatx2
 {
-	coDECLARE_REFLECTED_NO_VIRTUAL();
+	coDECLARE_CLASS_NO_POLYMORPHISM(coFloatx2);
 public:
 	coFORCE_INLINE coFloatx2()
 	{

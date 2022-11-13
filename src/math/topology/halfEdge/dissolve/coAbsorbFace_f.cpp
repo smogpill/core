@@ -22,7 +22,7 @@ coUint32 coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 
 	// Already same face?
 	if (faceA == faceToAbsorb)
-		return ~coUint32(0);
+		return coUint32(-1);
 
 	coASSERT(mesh.IsEdgeContiguous(edgeIdx));
 

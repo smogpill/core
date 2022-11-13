@@ -6,7 +6,7 @@
 
 class alignas(16) coInt32x2
 {
-	coDECLARE_REFLECTED_NO_VIRTUAL();
+	coDECLARE_CLASS_NO_POLYMORPHISM(coInt32x2);
 public:
 	coFORCE_INLINE coInt32x2() {}
 	coFORCE_INLINE coInt32x2(coInt32 _xy) : x(_xy), y(_xy) {}

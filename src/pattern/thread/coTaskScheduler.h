@@ -14,7 +14,7 @@ class coTaskWorkerThread;
 class coTaskScheduler : public coObject
 {
 	coDECLARE_SINGLETON(coTaskScheduler);
-	coDECLARE_SUPER(coObject);
+	coDECLARE_BASE(coObject);
 public:
 	coTaskScheduler(coUint nbWorkers = coUint(-1));
 	~coTaskScheduler();

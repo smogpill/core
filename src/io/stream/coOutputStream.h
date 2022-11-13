@@ -6,7 +6,7 @@
 
 class coOutputStream : public coStream
 {
-	coDECLARE_SUPER(coStream);
+	coDECLARE_BASE(coStream);
 public:
 	~coOutputStream();
 	void Write(coByte value);

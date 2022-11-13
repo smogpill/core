@@ -4,6 +4,11 @@
 #include "pattern/object/coObject.h"
 #include "lang/result/coResult_f.h"
 #include "lang/reflect/coType.h"
+#include "lang/reflect/coTypeDecl_f.h"
+
+coDEFINE_CLASS(coObject)
+{
+}
 
 coObject::coObject()
 	: objectState(ObjectState::none)

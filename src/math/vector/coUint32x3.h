@@ -5,7 +5,7 @@
 
 class alignas(16) coUint32x3
 {
-	coDECLARE_REFLECTED_NO_VIRTUAL();
+	coDECLARE_CLASS_NO_POLYMORPHISM(coUint32x3);
 public:
 	coFORCE_INLINE coUint32x3(coUint32 x, coUint32 y, coUint32 z) : x(x), y(y), z(z) {}
 	coFORCE_INLINE coUint32x3(coUint32 xyz) : x(xyz), y(xyz), z(xyz) {}

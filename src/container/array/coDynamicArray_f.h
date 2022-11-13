@@ -1,7 +1,6 @@
 // Copyright(c) 2016 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
-
 #include "container/array/coDynamicArray.h"
 #include "container/array/coArray_f.h"
 #include "container/array/coConstArray_f.h"
@@ -26,7 +25,6 @@ coDynamicArray<T>::coDynamicArray(std::initializer_list<T> _l)
 }
 
 coUint32 _coComputeBestArrayCapacity(coUint32 _capacity);
-
 
 template <class T>
 void _coSetCapacity(coDynamicArray<T>& a, coUint32 capacity)
@@ -144,7 +142,7 @@ coDynamicArray<T>::coDynamicArray(const coDynamicArray<T>& _this)
 
 template <class T>
 coDynamicArray<T>::coDynamicArray(coDynamicArray<T>&& _other)
-	: Super(_other)
+	: Base(_other)
 	, capacity(_other.capacity)
 {
 	_other.data = nullptr;

@@ -1,22 +1,14 @@
-// Copyright(c) 2016 Jounayd Id Salah
+// Copyright(c) 2016-2022 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
+#include "debug/log/coAssert.h"
 
-#define coDECLARE_SINGLETON(_className_) \
+#define coDECLARE_SINGLETON(_Class_) \
 	public: \
-	static _className_* instance; \
-	static void SetInstance(_className_*); \
-	static void DestroyInstance(); \
+	inline static _Class_* instance = nullptr; \
+	static void CreateInstanceIfMissing() { if (!instance) instance = new _Class_(); } \
+	static void SetInstance(_Class_* p) { coASSERT(instance == nullptr); instance = p; } \
+	static void DestroyInstance() { delete instance; instance = nullptr; } \
 	private: 
 
-#define coDEFINE_SINGLETON(_className_) \
-	_className_* _className_::instance = nullptr; \
-	void _className_::SetInstance(_className_* p) \
-	{ \
-		instance = p; \
-	} \
-	void _className_::DestroyInstance() \
-	{ \
-		delete instance; \
-		instance = nullptr; \
-	}
+#define coDEFINE_SINGLETON(_Class_) 

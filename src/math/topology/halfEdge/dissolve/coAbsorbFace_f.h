@@ -3,5 +3,5 @@
 #pragma once
 class coHalfEdgeMesh;
 
-/// Returns an arbitrary half edge of the resulting face or ~coUint32(0) if no joining took place
+/// Returns an arbitrary half edge of the resulting face or coUint32(-1) if no joining took place
 coUint32 coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx);

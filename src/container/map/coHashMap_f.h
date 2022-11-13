@@ -64,14 +64,7 @@ const T& coGet(const coHashMap<K, T, NB_BUCKETS, Hash>& _this, const K& _key, co
 {
 	typedef coHashMapEntry<K, T> Entry;
 	const coHashMapEntry<K, T>* entry = coFind(_this, _key);
-	if (entry)
-	{
-		return entry->value;
-	}
-	else
-	{
-		return _defaultValue;
-	}
+	return entry ? entry->value : _defaultValue;
 }
 
 template <class K, class T, coUint NB_BUCKETS, class Hash>

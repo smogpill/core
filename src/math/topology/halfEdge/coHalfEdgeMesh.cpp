@@ -255,8 +255,8 @@ void coHalfEdgeMesh::CheckNoMoreThan2FacesPerEdge() const
 		if (bIdx < aIdx)
 			coSwap(aIdx, bIdx);
 		const coUint64 edgeKey = coUint64(aIdx) | (coUint64(bIdx) << 32);
-		const coUint32 foundHalfEdgeIdx = coGet(edgeToCount, edgeKey, ~coUint32(0));
-		coASSERT(foundHalfEdgeIdx == ~coUint32(0) || edge.twin == foundHalfEdgeIdx);
+		const coUint32 foundHalfEdgeIdx = coGet(edgeToCount, edgeKey, coUint32(-1));
+		coASSERT(foundHalfEdgeIdx == coUint32(-1) || edge.twin == foundHalfEdgeIdx);
 		coSet(edgeToCount, edgeKey, edgeIdx);
 	}
 }
@@ -308,7 +308,7 @@ coBool coHalfEdgeMesh::IsEdgeContiguous(coUint32 edgeIdx) const
 {
 	const coHalfEdge& e = halfEdges[edgeIdx];
 	const coHalfEdge& twin = halfEdges[e.twin];
-	return halfEdges[e.twin].twin == edgeIdx && (e.vertexIdx == ~coUint32(0) || twin.vertexIdx != e.vertexIdx);
+	return halfEdges[e.twin].twin == edgeIdx && (e.vertexIdx == coUint32(-1) || twin.vertexIdx != e.vertexIdx);
 }
 
 void coHalfEdgeMesh::Check() const

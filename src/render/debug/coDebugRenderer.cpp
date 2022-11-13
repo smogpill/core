@@ -9,23 +9,31 @@
 #include <math/vector/coVec3_f.h>
 #include <math/vector/coVec4_f.h>
 #include <math/matrix/coMat4_f.h>
+#include <ecs/component/coComponent_f.h>
 
 coDEFINE_SINGLETON(coDebugRenderer);
+coBEGIN_COMPONENT(coDebugRenderer);
+coDEFINE_COMPONENT_INIT();
+coDEFINE_COMPONENT_SHUTDOWN();
+coEND_COMPONENT();
 
-coDebugRenderer::~coDebugRenderer()
+void coDebugRenderer::Init(coEntity& entity)
+{
+	Base::Init(entity);
+	coDebugRenderer::SetInstance(this);
+	coTRY_NO_RESULT(InitShaders(), nullptr);
+	glGenVertexArrays(1, &vertexArrayObject);
+	glGenBuffers(1, &vertexBufferObject);
+	glGenBuffers(1, &elementBufferObject);
+}
+
+void coDebugRenderer::Shutdown(coEntity& entity)
 {
 	delete shaderProgram;
 	for (coShader* shader : shaders)
 		delete shader;
-}
-
-coResult coDebugRenderer::Init()
-{
-	coTRY(InitShaders(), nullptr);
-	glGenVertexArrays(1, &vertexArrayObject);
-	glGenBuffers(1, &vertexBufferObject);
-	glGenBuffers(1, &elementBufferObject);
-	return true;
+	coDebugRenderer::SetInstance(nullptr);
+	Base::Shutdown(entity);
 }
 
 coResult coDebugRenderer::InitShaders()

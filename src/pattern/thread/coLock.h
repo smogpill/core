@@ -16,3 +16,18 @@ public:
 private:
 	coDECLARE_PIMPL(40, 8);
 };
+
+class coLockScope
+{
+public:
+	coLockScope(coLock& lock_) : lock(lock_)
+	{
+		lock.Lock();
+	}
+	~coLockScope()
+	{
+		lock.Unlock();
+	}
+private:
+	coLock& lock;
+};

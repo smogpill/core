@@ -1,30 +1,30 @@
-// Copyright(c) 2016 Jounayd Id Salah
+// Copyright(c) 2016-2022 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
-typedef bool			coBool;
+using coBool = bool;
 
-typedef unsigned char	coByte;
+using coInt = int;
+using coInt8 = int8_t;
+using coInt16 = int16_t;
+using coInt32 = int32_t;
+using coInt64 = int64_t;
 
-typedef char			coChar;
-typedef unsigned char	coUchar;
-typedef wchar_t			coWideChar;
+using coUint = unsigned int;
+using coUint8 = uint8_t;
+using coUint16 = uint16_t;
+using coUint32 = uint32_t;
+using coUint64 = uint64_t;
 
-typedef int				coInt;
-typedef int8_t			coInt8;
-typedef int16_t			coInt16;
-typedef int32_t			coInt32;
-typedef int64_t			coInt64;
+using coFloat = float;
+using coFloat64 = double;
 
-typedef unsigned int	coUint;
-typedef uint8_t			coUint8;
-typedef uint16_t		coUint16;
-typedef uint32_t		coUint32;
-typedef uint64_t		coUint64;
+using coNullPtr = std::nullptr_t;
 
-typedef float			coFloat;
-typedef double			coFloat64;
-
-typedef std::nullptr_t	coNullPtr;
-typedef intptr_t		coIntPtr;
-typedef uintptr_t		coUintPtr;
+// Aliases
+using coByte = unsigned char; // TODO: std::byte
+using coChar = char;
+using coUchar = unsigned char;
+using coWideChar = wchar_t;
+using coIntPtr = intptr_t;
+using coUintPtr = uintptr_t;
