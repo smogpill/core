@@ -2,6 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include <pattern/singleton/coSingleton.h>
+#include <pattern/thread/coLock.h>
 #include "entity/coEntityHandle.h"
 #include "entity/coEntity.h"
 class coType;
@@ -51,6 +52,7 @@ private:
 	coUint32 GetNbEntities(coUint32 entityIndex) const;
 	void SaveEntity(coEntityPackStorage& packStorage, coUint32 entityIndex, coUint32 parentEntityStorageIndex) const;
 
+	coLock lock;
 	coDynamicArray<coEntity> entities;
 	coDynamicArray<coUint32> freeEntities;
 	coDynamicArray<coProcessor*> processors;
