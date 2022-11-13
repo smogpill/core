@@ -1,4 +1,4 @@
-// Copyright(c) 2016 Jounayd Id Salah
+// Copyright(c) 2016-2022 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include "math/scalar/coFloat_f.h"
@@ -50,6 +50,30 @@ coFORCE_INLINE coQuat coRotation(const coFloatx3& _eulerAngles)
 
 	r  = coNormalize(r); // HACK
 	return r;
+}
+
+coFORCE_INLINE coFloatx3 coGetEulerAngles(const coQuat& q)
+{
+	coFloatx3 out;
+
+	// Roll
+	const coFloat sinr_cosp = 2 * (q.w * q.x + q.y * q.z);
+	const coFloat cosr_cosp = 1 - 2 * (q.x * q.x + q.y * q.y);
+	out.x = coAtan(cosr_cosp, sinr_cosp);
+
+	// Pitch
+	const coFloat sinp = 2 * (q.w * q.y - q.z * q.x);
+	if (coAbs(sinp) >= 1.0f)
+		out.y = coCopySign(coFloat_halfPi, sinp); // Use 90 degrees if out of range
+	else
+		out.y = coAsin(sinp);
+
+	// Yaw
+	const coFloat siny_cosp = 2 * (q.w * q.z + q.x * q.y);
+	const coFloat cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
+	out.z = coAtan(cosy_cosp, siny_cosp);
+
+	return out;
 }
 
 coFORCE_INLINE coQuat coRotation(const coVec3& _axis, coFloat _angle)

@@ -24,6 +24,13 @@ void coNode::SetLocal(const coTransform& t)
 	++version;
 }
 
+void coNode::TranslateGlobal(const coVec3& translation)
+{
+	coTransform newGlobal = GetGlobal();
+	newGlobal.translation += translation;
+	SetGlobal(newGlobal);
+}
+
 void coNode::SetGlobal(const coTransform& t)
 {
 	global = t;

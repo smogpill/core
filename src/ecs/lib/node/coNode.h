@@ -10,10 +10,11 @@ class coNode : public coComponent
 {
 	coDECLARE_COMPONENT(coNode, coComponent);
 public:
-	coNode() : version(0), localDirty(0), globalDirty(0) {}
+	coNode() : version(0), localDirty(false), globalDirty(false), static_(false) {}
 	void SetLocal(const coTransform&);
 	void SetGlobal(const coTransform&);
 	void SetParent(const coEntityHandle& newParent);
+	void TranslateGlobal(const coVec3&);
 	const coTransform& GetLocal() { if (localDirty) UpdateLocal(); return local; }
 	const coTransform& GetGlobal() { if (globalDirty) UpdateGlobal(); return global; }
 
@@ -24,8 +25,9 @@ private:
 
 	coTransform local;
 	coTransform global;
-	coUint32 version : 30;
+	coUint32 version : 29;
 	coUint32 localDirty : 1;
 	coUint32 globalDirty : 1;
+	coUint32 static_ : 1;
 	coEntityHandle parent;
 };
