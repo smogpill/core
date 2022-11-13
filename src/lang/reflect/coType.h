@@ -28,12 +28,8 @@ public:
 	~coType();
 
 	void Give(coField& field);
-	void AddDependency(coType& type);
-	template <class T>
-	void AddDependency() { AddDependency(*T::GetStaticType()); }
 	void Init(coType* type = nullptr);
 
-	const coArray<coType*>& GetDependencies() const { return dependencies; }
 	coUint GetNbSerializableFields() const;
 	coBool IsCompatibleWith(const coType& type) const;
 	template <class T>
@@ -49,7 +45,6 @@ public:
 	coType* subType = nullptr;
 	coDynamicArray<coField*> fields;
 	coDynamicArray<coFunction*> functions;
-	coDynamicArray<coType*> dependencies;
 	coCreateFunc createFunc = nullptr;
 	coCopyCreateFunc copyCreateFunc = nullptr;
 	coMoveFunc moveFunc = nullptr;

@@ -28,12 +28,6 @@ void coType::Give(coField& field)
 	coPushBack(fields, &field);
 }
 
-void coType::AddDependency(coType& type)
-{
-	if (!coContains(dependencies, &type))
-		coPushBack(dependencies, &type);
-}
-
 coUint coType::GetNbSerializableFields() const
 {
 	coUint nb = 0;

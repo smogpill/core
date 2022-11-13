@@ -5,18 +5,20 @@
 #include <lang/reflect/coType.h>
 #include <container/array/coDynamicArray_f.h>
 #include "../component/coComponent.h"
+#include "../component/coComponentType.h"
 
-void coEntityType::AddComponent(const coType& comp)
+void coEntityType::AddComponent(const coType& type_)
 {
-	coASSERT(comp.IsCompatibleWith<coComponent>());
-	for (coType* dependency : comp.GetDependencies())
+	coASSERT(type_.IsCompatibleWith<coComponent>());
+	const coComponentType* componentType = static_cast<const coComponentType*>(type_.customTypeData);
+	for (coType* dependency : componentType->GetDependencies())
 	{
 		if (dependency->IsCompatibleWith<coComponent>())
 		{
 			AddComponent(*dependency);
 		}
 	}
-	coPushBack(componentTypes, &comp);
+	coPushBack(componentTypes, &type_);
 }
 
 coInt coEntityType::GetComponentIndexByTypeUID(coUint32 uid) const

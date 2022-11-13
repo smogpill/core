@@ -15,6 +15,7 @@ public:
 	void AddDependency(const coType&);
 	template <class T>
 	void AddDependency() { AddDependency(*T::GetStaticType()); }
+	const coArray<coType*>& GetDependencies() const { return dependencies; }
 
 	coComponentFunc initFunc = nullptr;
 	coComponentFunc shutdownFunc = nullptr;
