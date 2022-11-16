@@ -8,6 +8,6 @@
 void coComponentType::AddDependency(const coType& dep)
 {
 	coASSERT(dep.IsCompatibleWith<coComponent>());
-	coASSERT(!coContains(dependencies, const_cast<coType*>(&dep)));
-	coPushBack(dependencies, const_cast<coType*>(&dep));
+	if (!coContains(dependencies, const_cast<coType*>(&dep)))
+		coPushBack(dependencies, const_cast<coType*>(&dep));
 }
