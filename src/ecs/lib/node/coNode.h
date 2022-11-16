@@ -5,6 +5,7 @@
 #include "../../processor/coProcessor.h"
 #include "../../entity/coEntityHandle.h"
 #include <math/transform/coTransform.h>
+class coMat4;
 
 class coNode : public coComponent
 {
@@ -13,21 +14,23 @@ public:
 	coNode() : version(0), localDirty(false), globalDirty(false), static_(false) {}
 	void SetLocal(const coTransform&);
 	void SetGlobal(const coTransform&);
+	void SetLocalTranslation(const coVec3&);
+	void SetGlobalTranslation(const coVec3&);
 	void SetParent(const coEntityHandle& newParent);
 	void TranslateGlobal(const coVec3&);
-	const coTransform& GetLocal() { if (localDirty) UpdateLocal(); return local; }
-	const coTransform& GetGlobal() { if (globalDirty) UpdateGlobal(); return global; }
+	const coTransform& GetLocal() const { if (localDirty) UpdateLocal(); return local; }
+	const coTransform& GetGlobal() const { if (globalDirty) UpdateGlobal(); return global; }
 
 private:
-	void UpdateLocal();
-	void UpdateGlobal();
+	void UpdateLocal() const;
+	void UpdateGlobal() const;
 	const coTransform& GetParentGlobal() const;
 
-	coTransform local;
-	coTransform global;
+	mutable coTransform local;
+	mutable coTransform global;
 	coUint32 version : 29;
-	coUint32 localDirty : 1;
-	coUint32 globalDirty : 1;
+	mutable coUint32 localDirty : 1;
+	mutable coUint32 globalDirty : 1;
 	coUint32 static_ : 1;
 	coEntityHandle parent;
 };

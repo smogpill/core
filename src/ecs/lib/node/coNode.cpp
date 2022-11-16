@@ -62,13 +62,27 @@ void coNode::SetParent(const coEntityHandle& newParent)
 	}
 }
 
-void coNode::UpdateLocal()
+void coNode::SetLocalTranslation(const coVec3& translation)
+{
+	coTransform t = GetLocal();
+	t.translation = translation;
+	SetLocal(t);
+}
+
+void coNode::SetGlobalTranslation(const coVec3& translation)
+{
+	coTransform t = GetGlobal();
+	t.translation = translation;
+	SetGlobal(t);
+}
+
+void coNode::UpdateLocal() const
 {
 	local = global * coInverse(GetParentGlobal());
 	localDirty = 0;
 }
 
-void coNode::UpdateGlobal()
+void coNode::UpdateGlobal() const
 {
 	global = local * GetParentGlobal();
 	globalDirty = 0;
