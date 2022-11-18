@@ -6,12 +6,12 @@
 #include <math/vector/coVec3.h>
 
 /// Warning: Not all vertices/faceNormals are used.
-class coHalfEdgeMesh
+class coDCEL
 {
 public:
-	coHalfEdgeMesh() {}
-	coHalfEdgeMesh(const coArray<coUint32>& indices, const coArray<coVec3>& vertices);
-	coHalfEdgeMesh(const coArray<coUint32>& indices, coUint32 nbVertices = coUint32(-1));
+	coDCEL() {}
+	coDCEL(const coArray<coUint32>& indices, const coArray<coVec3>& vertices);
+	coDCEL(const coArray<coUint32>& indices, coUint32 nbVertices = coUint32(-1));
 
 	void Clear();
 	void ShrinkToFit();
@@ -43,7 +43,7 @@ public:
 };
 
 template <class F>
-void coHalfEdgeMesh::VisitFaces(F functor) const
+void coDCEL::VisitFaces(F functor) const
 {
 	coDynamicArray<coBool> doneEdges;
 	coResize(doneEdges, halfEdges.count, false);
@@ -69,7 +69,7 @@ void coHalfEdgeMesh::VisitFaces(F functor) const
 	}
 }
 
-inline coBool coHalfEdgeMesh::IsFaceTriangle(coUint32 edgeIdx) const
+inline coBool coDCEL::IsFaceTriangle(coUint32 edgeIdx) const
 {
 	const coHalfEdge& edge = halfEdges[edgeIdx];
 	const coHalfEdge& next = halfEdges[edge.next];

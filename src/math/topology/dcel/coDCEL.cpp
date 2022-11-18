@@ -1,7 +1,7 @@
 // Copyright(c) 2022 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "math/pch.h"
-#include "coHalfEdgeMesh.h"
+#include "coDCEL.h"
 #include "visit/coVisit_f.h"
 #include <container/array/coDynamicArray_f.h>
 #include <container/map/coHashMap_f.h>
@@ -9,13 +9,13 @@
 
 coBool co_advancedChecks = false;
 
-coHalfEdgeMesh::coHalfEdgeMesh(const coArray<coUint32>& indices, const coArray<coVec3>& vertices_)
-	: coHalfEdgeMesh(indices, vertices_.count)
+coDCEL::coDCEL(const coArray<coUint32>& indices, const coArray<coVec3>& vertices_)
+	: coDCEL(indices, vertices_.count)
 {
 	vertices = vertices_;
 }
 
-coHalfEdgeMesh::coHalfEdgeMesh(const coArray<coUint32>& indices, coUint32 nbVertices)
+coDCEL::coDCEL(const coArray<coUint32>& indices, coUint32 nbVertices)
 {
 	coASSERT(indices.count % 3 == 0);
 
@@ -107,21 +107,21 @@ coHalfEdgeMesh::coHalfEdgeMesh(const coArray<coUint32>& indices, coUint32 nbVert
 	coDEBUG_CODE(Check());
 }
 
-void coHalfEdgeMesh::Clear()
+void coDCEL::Clear()
 {
 	coClear(vertices);
 	coClear(faceNormals);
 	coClear(halfEdges);
 }
 
-void coHalfEdgeMesh::ShrinkToFit()
+void coDCEL::ShrinkToFit()
 {
 	coShrinkToFit(vertices);
 	coShrinkToFit(faceNormals);
 	coShrinkToFit(halfEdges);
 }
 
-void coHalfEdgeMesh::RemoveHalfEdge(coUint32 edgeIdx)
+void coDCEL::RemoveHalfEdge(coUint32 edgeIdx)
 {
 	coHalfEdge& edge = halfEdges[edgeIdx];
 
@@ -148,7 +148,7 @@ void coHalfEdgeMesh::RemoveHalfEdge(coUint32 edgeIdx)
 /// - At most one face fan per vertex
 /// - Circling edges share the same vertex
 /// - Edges are contiguous
-void coHalfEdgeMesh::CheckManifoldExceptHoles() const
+void coDCEL::CheckManifoldExceptHoles() const
 {
 	if (!co_advancedChecks)
 		return;
@@ -186,7 +186,7 @@ void coHalfEdgeMesh::CheckManifoldExceptHoles() const
 	}
 }
 
-void coHalfEdgeMesh::CheckEdgeLoop(coUint32 edgeIdx) const
+void coDCEL::CheckEdgeLoop(coUint32 edgeIdx) const
 {
 	if (!co_advancedChecks)
 		return;
@@ -207,7 +207,7 @@ void coHalfEdgeMesh::CheckEdgeLoop(coUint32 edgeIdx) const
 	}
 }
 
-void coHalfEdgeMesh::CheckEdge(coUint32 edgeIdx) const
+void coDCEL::CheckEdge(coUint32 edgeIdx) const
 {
 	if (!co_advancedChecks)
 		return;
@@ -221,7 +221,7 @@ void coHalfEdgeMesh::CheckEdge(coUint32 edgeIdx) const
 	edge.checked = true;
 }
 
-void coHalfEdgeMesh::CheckEdgeNotReferencedByOthers(coUint32 edgeIdx) const
+void coDCEL::CheckEdgeNotReferencedByOthers(coUint32 edgeIdx) const
 {
 	if (!co_advancedChecks)
 		return;
@@ -237,7 +237,7 @@ void coHalfEdgeMesh::CheckEdgeNotReferencedByOthers(coUint32 edgeIdx) const
 	}
 }
 
-void coHalfEdgeMesh::CheckNoMoreThan2FacesPerEdge() const
+void coDCEL::CheckNoMoreThan2FacesPerEdge() const
 {
 	if (!co_advancedChecks)
 		return;
@@ -261,7 +261,7 @@ void coHalfEdgeMesh::CheckNoMoreThan2FacesPerEdge() const
 	}
 }
 
-void coHalfEdgeMesh::CheckNoVertexDuplicatesOnFaces() const
+void coDCEL::CheckNoVertexDuplicatesOnFaces() const
 {
 	if (!co_advancedChecks)
 		return;
@@ -298,20 +298,20 @@ void coHalfEdgeMesh::CheckNoVertexDuplicatesOnFaces() const
 	}
 }
 
-coBool coHalfEdgeMesh::IsEdgeManifold(coUint32 edgeIdx) const
+coBool coDCEL::IsEdgeManifold(coUint32 edgeIdx) const
 {
 	const coHalfEdge& e = halfEdges[edgeIdx];
 	return halfEdges[e.twin].twin == edgeIdx;
 }
 
-coBool coHalfEdgeMesh::IsEdgeContiguous(coUint32 edgeIdx) const
+coBool coDCEL::IsEdgeContiguous(coUint32 edgeIdx) const
 {
 	const coHalfEdge& e = halfEdges[edgeIdx];
 	const coHalfEdge& twin = halfEdges[e.twin];
 	return halfEdges[e.twin].twin == edgeIdx && (e.vertexIdx == coUint32(-1) || twin.vertexIdx != e.vertexIdx);
 }
 
-void coHalfEdgeMesh::Check() const
+void coDCEL::Check() const
 {
 	if (!co_advancedChecks)
 		return;
@@ -324,7 +324,7 @@ void coHalfEdgeMesh::Check() const
 	}
 }
 
-coUint32 coHalfEdgeMesh::GetNbFaces() const
+coUint32 coDCEL::GetNbFaces() const
 {
 	coUint32 nb = 0;
 	auto functor = [&](const coHalfEdge& edge)
@@ -336,7 +336,7 @@ coUint32 coHalfEdgeMesh::GetNbFaces() const
 	return nb;
 }
 
-coUint32 coHalfEdgeMesh::GetNbNonDegenerateFaces() const
+coUint32 coDCEL::GetNbNonDegenerateFaces() const
 {
 	coUint32 nb = 0;
 	auto functor = [&](const coHalfEdge& edge)
@@ -349,7 +349,7 @@ coUint32 coHalfEdgeMesh::GetNbNonDegenerateFaces() const
 	return nb;
 }
 
-coUint32 coHalfEdgeMesh::GetNbDegenerateFaces() const
+coUint32 coDCEL::GetNbDegenerateFaces() const
 {
 	coUint32 nb = 0;
 	auto functor = [&](const coHalfEdge& edge)
@@ -362,13 +362,13 @@ coUint32 coHalfEdgeMesh::GetNbDegenerateFaces() const
 	return nb;
 }
 
-void coHalfEdgeMesh::ClearCheckedFlags() const
+void coDCEL::ClearCheckedFlags() const
 {
 	for (const coHalfEdge& edge : halfEdges)
 		edge.checked = false;
 }
 
-coUint32 coHalfEdgeMesh::AddFace(coUint32 faceIdx, coUint32 nbHalfEdges)
+coUint32 coDCEL::AddFace(coUint32 faceIdx, coUint32 nbHalfEdges)
 {
 	const coUint32 offset = halfEdges.count;
 
@@ -386,7 +386,7 @@ coUint32 coHalfEdgeMesh::AddFace(coUint32 faceIdx, coUint32 nbHalfEdges)
 	return offset;
 }
 
-void coHalfEdgeMesh::SetTwins(coUint32 edgeAIdx, coUint32 edgeBIdx)
+void coDCEL::SetTwins(coUint32 edgeAIdx, coUint32 edgeBIdx)
 {
 	coHalfEdge& edgeA = halfEdges[edgeAIdx];
 	coHalfEdge& edgeB = halfEdges[edgeBIdx];

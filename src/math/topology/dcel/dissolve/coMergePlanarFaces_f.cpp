@@ -3,16 +3,16 @@
 #include "math/pch.h"
 #include "coMergePlanarFaces_f.h"
 #include "coAbsorbFace_f.h"
-#include "../coHalfEdgeMesh.h"
+#include "../coDCEL.h"
 #include "../../../vector/coVec3_f.h"
 #include <debug/profiler/coProfile.h>
 
-void coMergePlanarFaces(coHalfEdgeMesh& mesh, coFloat tolerance)
+void coMergePlanarFaces(coDCEL& dcel, coFloat tolerance)
 {
 	coPROFILE_EVENT();
 
-	auto& edges = mesh.halfEdges;
-	const auto& faceNormals = mesh.faceNormals;
+	auto& edges = dcel.halfEdges;
+	const auto& faceNormals = dcel.faceNormals;
 	for (coUint32 edgeAIdx = 0; edgeAIdx < edges.count; ++edgeAIdx)
 	{
 		coHalfEdge& edgeA = edges[edgeAIdx];
@@ -30,7 +30,7 @@ void coMergePlanarFaces(coHalfEdgeMesh& mesh, coFloat tolerance)
 		const coVec3& normalB = faceNormals[edgeB.faceIdx];
 		if (coAbs(coDot(normalA, normalB) - 1.0f) < tolerance)
 		{
-			coAbsorbNextRadialFace(mesh, edgeAIdx);
+			coAbsorbNextRadialFace(dcel, edgeAIdx);
 		}
 	}
 }

@@ -7,10 +7,10 @@
 #include "../../../vector/coFloatx4_f.h"
 #include "../../../vector/coVec3_f.h"
 
-void coComputeFaceNormals(const coHalfEdgeMesh& mesh, coDynamicArray<coVec3>& outNormals)
+void coComputeFaceNormals(const coDCEL& dcel, coDynamicArray<coVec3>& outNormals)
 {
-	const auto& edges = mesh.halfEdges;
-	const auto& vertices = mesh.vertices;
+	const auto& edges = dcel.halfEdges;
+	const auto& vertices = dcel.vertices;
 
 	coInt32 maxFaceIndex = -1;
 	for (const coHalfEdge& edge : edges)
@@ -51,13 +51,13 @@ void coComputeFaceNormals(const coHalfEdgeMesh& mesh, coDynamicArray<coVec3>& ou
 	}
 }
 
-void coSplitHardEdges(coHalfEdgeMesh& mesh, coFloat angle)
+void coSplitHardEdges(coDCEL& dcel, coFloat angle)
 {
-	coDEBUG_CODE(mesh.CheckManifoldExceptHoles());
+	coDEBUG_CODE(dcel.CheckManifoldExceptHoles());
 	const coFloatx4 cosAngle = coCos(angle);
-	auto& edges = mesh.halfEdges;
-	auto& vertices = mesh.vertices;
-	const auto& faceNormals = mesh.faceNormals;
+	auto& edges = dcel.halfEdges;
+	auto& vertices = dcel.vertices;
+	const auto& faceNormals = dcel.faceNormals;
 	const coUint nbEdges = edges.count;
 
 	for (coHalfEdge& edge : edges)
@@ -215,7 +215,7 @@ void coSplitHardEdges(coHalfEdgeMesh& mesh, coFloat angle)
 			} while (itEdgeIdx != startEdgeIdx);
 		}
 
-		coDEBUG_CODE(mesh.CheckManifoldExceptHoles());
+		coDEBUG_CODE(dcel.CheckManifoldExceptHoles());
 	}
-	coDEBUG_CODE(mesh.CheckManifoldExceptHoles());
+	coDEBUG_CODE(dcel.CheckManifoldExceptHoles());
 }

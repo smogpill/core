@@ -1,24 +1,24 @@
 // Copyright(c) 2022 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
-#include "../coHalfEdgeMesh.h"
+#include "../coDCEL.h"
 
 /// Does not work if the vertex is non-manifold (joined by two or more face fans).
 /// There is no specific order, it can be visit in one order, then change halfway.
 /// Returns true if all edges were visited
 template <class Functor>
-coBool coVisitHalfEdgeFanAroundVertex(const coHalfEdgeMesh& mesh, coUint32 halfEdgeIdx, Functor functor)
+coBool coVisitHalfEdgeFanAroundVertex(const coDCEL& dcel, coUint32 halfEdgeIdx, Functor functor)
 {
-	coDEBUG_CODE(const coUint32 vertexIdx = mesh.halfEdges[halfEdgeIdx].vertexIdx);
+	coDEBUG_CODE(const coUint32 vertexIdx = dcel.halfEdges[halfEdgeIdx].vertexIdx);
 
-	const auto& edges = mesh.halfEdges;
+	const auto& edges = dcel.halfEdges;
 
 	// First we loop in one direction
 	{
 		coUint32 itEdgeIdx = halfEdgeIdx;
 		for (;;)
 		{
-			coASSERT(mesh.halfEdges[itEdgeIdx].vertexIdx == vertexIdx);
+			coASSERT(dcel.halfEdges[itEdgeIdx].vertexIdx == vertexIdx);
 			const coHalfEdge& edge = edges[itEdgeIdx];
 			const coUint32 prevIdx = edge.prev;
 			if (!functor(itEdgeIdx))
@@ -54,12 +54,12 @@ coBool coVisitHalfEdgeFanAroundVertex(const coHalfEdgeMesh& mesh, coUint32 halfE
 }
 
 template <class Functor>
-void coVisitAllHalfEdgesAroundFace(const coHalfEdgeMesh& mesh, coUint32 anyHalfEdgeOfTheFaceIdx, Functor functor)
+void coVisitAllHalfEdgesAroundFace(const coDCEL& dcel, coUint32 anyHalfEdgeOfTheFaceIdx, Functor functor)
 {
 	coUint32 itEdgeIdx = anyHalfEdgeOfTheFaceIdx;
 	do
 	{
-		const coUint32 nextIdx = mesh.halfEdges[itEdgeIdx].next;
+		const coUint32 nextIdx = dcel.halfEdges[itEdgeIdx].next;
 		if (!functor(itEdgeIdx))
 			return;
 		itEdgeIdx = nextIdx;

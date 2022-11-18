@@ -2,21 +2,21 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "math/pch.h"
 #include "coCollapseEdges_f.h"
-#include "../coHalfEdgeMesh.h"
+#include "../coDCEL.h"
 #include "../visit/coVisit_f.h"
 #include "../../../vector/coVec3_f.h"
 
-void coDissolveDegenerateEdge(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
+void coDissolveDegenerateEdge(coDCEL& dcel, coUint32 edgeIdx)
 {
 	const coUint32 aIdx = edgeIdx;
-	coHalfEdge& a = mesh.halfEdges[aIdx];
+	coHalfEdge& a = dcel.halfEdges[aIdx];
 	coASSERT(a.IsDegenerate());
 	const coUint32 bIdx = a.next;
-	coHalfEdge& b = mesh.halfEdges[bIdx];
+	coHalfEdge& b = dcel.halfEdges[bIdx];
 	const coUint32 aTwinIdx = a.twin;
 	const coUint32 bTwinIdx = b.twin;
-	coHalfEdge& aTwin = mesh.halfEdges[aTwinIdx];
-	coHalfEdge& bTwin = mesh.halfEdges[bTwinIdx];
+	coHalfEdge& aTwin = dcel.halfEdges[aTwinIdx];
+	coHalfEdge& bTwin = dcel.halfEdges[bTwinIdx];
 	coASSERT(aTwin.twin == aIdx);
 	coASSERT(bTwin.twin == bIdx);
 	aTwin.twin = bTwinIdx == bIdx ? aTwinIdx : bTwinIdx;
@@ -29,27 +29,27 @@ void coDissolveDegenerateEdge(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 	b.twin = bIdx;
 }
 
-void coCollapseEdge(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
+void coCollapseEdge(coDCEL& dcel, coUint32 edgeIdx)
 {
-	coASSERT(coIsCollapsible(mesh, edgeIdx));
-	coHalfEdge& edge = mesh.halfEdges[edgeIdx];
+	coASSERT(coIsCollapsible(dcel, edgeIdx));
+	coHalfEdge& edge = dcel.halfEdges[edgeIdx];
 	if (edge.next == edgeIdx)
 		return;
 	const coUint32 twinIdx = edge.twin;
-	coHalfEdge& twin = mesh.halfEdges[twinIdx];
+	coHalfEdge& twin = dcel.halfEdges[twinIdx];
 	const coUint32 prevIdx = edge.prev;
 	const coUint32 nextIdx = edge.next;
 	const coUint32 prevTwinIdx = twin.prev;
 	const coUint32 nextTwinIdx = twin.next;
-	coHalfEdge& prev = mesh.halfEdges[prevIdx];
-	coHalfEdge& next = mesh.halfEdges[nextIdx];
-	coHalfEdge& prevTwin = mesh.halfEdges[prevTwinIdx];
-	coHalfEdge& nextTwin = mesh.halfEdges[nextTwinIdx];
+	coHalfEdge& prev = dcel.halfEdges[prevIdx];
+	coHalfEdge& next = dcel.halfEdges[nextIdx];
+	coHalfEdge& prevTwin = dcel.halfEdges[prevTwinIdx];
+	coHalfEdge& nextTwin = dcel.halfEdges[nextTwinIdx];
 
 	// Collapse vertices
 	{
-		coVec3& edgeVert = mesh.vertices[edge.vertexIdx];
-		const coVec3& nextVert = mesh.vertices[next.vertexIdx];
+		coVec3& edgeVert = dcel.vertices[edge.vertexIdx];
+		const coVec3& nextVert = dcel.vertices[next.vertexIdx];
 		edgeVert = (edgeVert + nextVert) * 0.5f;
 	}
 
@@ -58,11 +58,11 @@ void coCollapseEdge(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 		const coUint32 bIdx = next.vertexIdx;
 		auto changeVertex = [&](coUint32 e)
 		{
-			coASSERT(mesh.halfEdges[e].vertexIdx == bIdx);
-			mesh.halfEdges[e].vertexIdx = aIdx;
+			coASSERT(dcel.halfEdges[e].vertexIdx == bIdx);
+			dcel.halfEdges[e].vertexIdx = aIdx;
 			return true;
 		};
-		coVisitHalfEdgeFanAroundVertex(mesh, edge.next, changeVertex);
+		coVisitHalfEdgeFanAroundVertex(dcel, edge.next, changeVertex);
 	}
 
 	// Link
@@ -79,64 +79,64 @@ void coCollapseEdge(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 	twin.next = twinIdx;
 	twin.twin = twinIdx;
 
-	coDEBUG_CODE(mesh.CheckEdge(prevIdx));
-	coDEBUG_CODE(mesh.CheckEdge(nextIdx));
-	coDEBUG_CODE(mesh.CheckEdge(prevTwinIdx));
-	coDEBUG_CODE(mesh.CheckEdge(nextTwinIdx));
+	coDEBUG_CODE(dcel.CheckEdge(prevIdx));
+	coDEBUG_CODE(dcel.CheckEdge(nextIdx));
+	coDEBUG_CODE(dcel.CheckEdge(prevTwinIdx));
+	coDEBUG_CODE(dcel.CheckEdge(nextTwinIdx));
 
 	// Todo: dissolve degenerate faces
 	if (next.IsDegenerate())
 	{
-		coDissolveDegenerateEdge(mesh, nextIdx);
+		coDissolveDegenerateEdge(dcel, nextIdx);
 	}
 	if (nextTwin.IsDegenerate())
 	{
-		coDissolveDegenerateEdge(mesh, nextTwinIdx);
+		coDissolveDegenerateEdge(dcel, nextTwinIdx);
 	}
 
-	//mesh.CheckNoVertexDuplicatesOnFaces();
+	//dcel.CheckNoVertexDuplicatesOnFaces();
 }
 
-coBool coCollapseEdgeIfSmallerThanSquaredDist(coHalfEdgeMesh& mesh, coUint32 halfEdgeIdx, coFloat squaredDist)
+coBool coCollapseEdgeIfSmallerThanSquaredDist(coDCEL& dcel, coUint32 halfEdgeIdx, coFloat squaredDist)
 {
-	const coHalfEdge& edge = mesh.halfEdges[halfEdgeIdx];
-	const coHalfEdge& next = mesh.halfEdges[edge.next];
+	const coHalfEdge& edge = dcel.halfEdges[halfEdgeIdx];
+	const coHalfEdge& next = dcel.halfEdges[edge.next];
 	const coUint32 aIdx = edge.vertexIdx;
 	const coUint32 bIdx = next.vertexIdx;
-	coVec3& a = mesh.vertices[edge.vertexIdx];
-	const coVec3& b = mesh.vertices[next.vertexIdx];
+	coVec3& a = dcel.vertices[edge.vertexIdx];
+	const coVec3& b = dcel.vertices[next.vertexIdx];
 	if (coSquareLength(b - a) < squaredDist)
 	{
 		a = (a + b) * 0.5f;
-		coCollapseEdge(mesh, halfEdgeIdx);
-		mesh.CheckNoMoreThan2FacesPerEdge();
+		coCollapseEdge(dcel, halfEdgeIdx);
+		dcel.CheckNoMoreThan2FacesPerEdge();
 		return true;
 	}
 	return false;
 }
 
-void coCollapseEdgesSmallerThanDist(coHalfEdgeMesh& mesh, coFloat distance)
+void coCollapseEdgesSmallerThanDist(coDCEL& dcel, coFloat distance)
 {
-	mesh.CheckNoMoreThan2FacesPerEdge();
+	dcel.CheckNoMoreThan2FacesPerEdge();
 	const coFloat squaredDist = distance * distance;
 	coDynamicArray<coUint32> scratch;
-	for (coUint32 edgeIdx = 0; edgeIdx < mesh.halfEdges.count; ++edgeIdx)
+	for (coUint32 edgeIdx = 0; edgeIdx < dcel.halfEdges.count; ++edgeIdx)
 	{
-		if (coIsCollapsible(mesh, edgeIdx, scratch))
-			coCollapseEdgeIfSmallerThanSquaredDist(mesh, edgeIdx, squaredDist);
+		if (coIsCollapsible(dcel, edgeIdx, scratch))
+			coCollapseEdgeIfSmallerThanSquaredDist(dcel, edgeIdx, squaredDist);
 	}
-	mesh.CheckNoMoreThan2FacesPerEdge();
+	dcel.CheckNoMoreThan2FacesPerEdge();
 }
 
-coBool coIsCollapsible(const coHalfEdgeMesh& mesh, coUint32 halfEdgeIdx)
+coBool coIsCollapsible(const coDCEL& dcel, coUint32 halfEdgeIdx)
 {
 	coDynamicArray<coUint32> scratch;
-	return coIsCollapsible(mesh, halfEdgeIdx, scratch);
+	return coIsCollapsible(dcel, halfEdgeIdx, scratch);
 }
 
-coBool coIsCollapsible(const coHalfEdgeMesh& mesh, coUint32 halfEdgeIdx, coDynamicArray<coUint32>& scratch)
+coBool coIsCollapsible(const coDCEL& dcel, coUint32 halfEdgeIdx, coDynamicArray<coUint32>& scratch)
 {
-	const auto& edges = mesh.halfEdges;
+	const auto& edges = dcel.halfEdges;
 	const coHalfEdge& edge = edges[halfEdgeIdx];
 	if (edge.next == halfEdgeIdx)
 		return false;
@@ -150,7 +150,7 @@ coBool coIsCollapsible(const coHalfEdgeMesh& mesh, coUint32 halfEdgeIdx, coDynam
 		coPushBack(scratch, circleVertex);
 		return true;
 	};
-	coVisitHalfEdgeFanAroundVertex(mesh, halfEdgeIdx, gatherNextVertices);
+	coVisitHalfEdgeFanAroundVertex(dcel, halfEdgeIdx, gatherNextVertices);
 
 	auto compareWithOtherVertices = [&](const coUint32 circleEdgeIdx)
 	{
@@ -161,5 +161,5 @@ coBool coIsCollapsible(const coHalfEdgeMesh& mesh, coUint32 halfEdgeIdx, coDynam
 			return false;
 		return true;
 	};
-	return coVisitHalfEdgeFanAroundVertex(mesh, edge.next, compareWithOtherVertices);
+	return coVisitHalfEdgeFanAroundVertex(dcel, edge.next, compareWithOtherVertices);
 }

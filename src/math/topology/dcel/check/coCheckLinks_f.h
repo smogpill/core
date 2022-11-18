@@ -1,7 +1,6 @@
 // Copyright(c) 2022 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
-class coHalfEdgeMesh;
+class coDCEL;
 
-void coDissolveDegenerateFace(coHalfEdgeMesh&, coUint32 anyHalfEdgeIdx);
-void coRemoveDegenerateFaces(coHalfEdgeMesh&);
+void coCheckEdgesNotLinkedToDeadEdges(coDCEL& dcel);

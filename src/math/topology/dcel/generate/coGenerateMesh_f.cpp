@@ -2,17 +2,17 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "math/pch.h"
 #include "coGenerateMesh_f.h"
-#include "coHalfEdgeMeshGenInfo.h"
-#include "../coHalfEdgeMesh.h"
+#include "coDCELGenInfo.h"
+#include "../coDCEL.h"
 #include "../../../vector/coVec3_f.h"
 #include "../../../shape/polygon/coPolygon3_f.h"
 #include <debug/profiler/coProfile.h>
 
-void coGenerateMesh(coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& faceNormals, coDynamicArray<coUint32>& outIndices, coHalfEdgeMeshGenInfo* info)
+void coGenerateMesh(coDCEL& dcel, const coArray<coVec3>& faceNormals, coDynamicArray<coUint32>& outIndices, coDCELGenInfo* info)
 {
 	coPROFILE_EVENT();
 	coClear(outIndices);
-	auto& edges = halfEdgeMesh.halfEdges;
+	auto& edges = dcel.halfEdges;
 	coPolygon3 polygon;
 	coDynamicArray<coHalfEdge*> faceEdges;
 	coDynamicArray<coUint32> loopVertices; // temp
@@ -24,7 +24,7 @@ void coGenerateMesh(coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& faceNor
 		coClear(info->triangleToHalfEdge);
 		coReserve(info->triangleToHalfEdge, edges.count); // Arbitrary
 	}
-	//halfEdgeMesh.CheckNoVertexDuplicatesOnFaces();
+	//dcel.CheckNoVertexDuplicatesOnFaces();
 
 	// Temp
 	struct VToH
@@ -75,7 +75,7 @@ void coGenerateMesh(coHalfEdgeMesh& halfEdgeMesh, const coArray<coVec3>& faceNor
 			for (coUint32 idx = 0; idx < faceEdges.count; ++idx)
 			{
 				const coHalfEdge* faceEdge = faceEdges[idx];
-				polygon.vertices[idx] = halfEdgeMesh.vertices[faceEdge->vertexIdx];
+				polygon.vertices[idx] = dcel.vertices[faceEdge->vertexIdx];
 
 				// temp
 				if (faceEdge->vertexIdx == 12)

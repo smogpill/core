@@ -5,10 +5,10 @@
 #include "../visit/coVisit_f.h"
 #include <container/array/coDynamicArray_f.h>
 
-void coSplitVerticesLinkedToManyFaceFans(coHalfEdgeMesh& mesh)
+void coSplitVerticesLinkedToManyFaceFans(coDCEL& dcel)
 {
-	auto& edges = mesh.halfEdges;
-	auto& vertices = mesh.vertices;
+	auto& edges = dcel.halfEdges;
+	auto& vertices = dcel.vertices;
 
 	// Reset temporary flags
 	for (coHalfEdge& edge : edges)
@@ -39,7 +39,7 @@ void coSplitVerticesLinkedToManyFaceFans(coHalfEdgeMesh& mesh)
 				itEdge.done = true;
 				return true;
 			};
-			coVisitHalfEdgeFanAroundVertex(mesh, edgeIdx, modifyEdge);
+			coVisitHalfEdgeFanAroundVertex(dcel, edgeIdx, modifyEdge);
 		}
 		else
 		{
@@ -49,7 +49,7 @@ void coSplitVerticesLinkedToManyFaceFans(coHalfEdgeMesh& mesh)
 				itEdge.done = true;
 				return true;
 			};
-			coVisitHalfEdgeFanAroundVertex(mesh, edgeIdx, markEdgeAsDone);
+			coVisitHalfEdgeFanAroundVertex(dcel, edgeIdx, markEdgeAsDone);
 			touchedVertices[edge.vertexIdx] = true;
 		}
 	}

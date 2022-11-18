@@ -2,19 +2,19 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "math/pch.h"
 #include "coCheckLinks_f.h"
-#include "../coHalfEdgeMesh.h"
+#include "../coDCEL.h"
 
-void coCheckEdgesNotLinkedToDeadEdges(coHalfEdgeMesh& mesh)
+void coCheckEdgesNotLinkedToDeadEdges(coDCEL& dcel)
 {
-	auto& edges = mesh.halfEdges;
+	auto& edges = dcel.halfEdges;
 	for (coUint32 edgeIdx = 0; edgeIdx < edges.count; ++edgeIdx)
 	{
-		if (mesh.IsEdgeAlive(edgeIdx))
+		if (dcel.IsEdgeAlive(edgeIdx))
 		{
 			const coHalfEdge& edge = edges[edgeIdx];
-			coASSERT(mesh.IsEdgeAlive(edge.next));
-			coASSERT(mesh.IsEdgeAlive(edge.prev));
-			coASSERT(mesh.IsEdgeAlive(edge.twin));
+			coASSERT(dcel.IsEdgeAlive(edge.next));
+			coASSERT(dcel.IsEdgeAlive(edge.prev));
+			coASSERT(dcel.IsEdgeAlive(edge.twin));
 		}
 	}
 }

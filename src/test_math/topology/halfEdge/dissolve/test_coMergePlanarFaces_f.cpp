@@ -5,9 +5,9 @@
 #include <container/array/coDynamicArray_f.h>
 #include <math/vector/coVec3_f.h>
 #include "math/topology/mesh/coMesh_f.h"
-#include "math/topology/halfEdge/coHalfEdgeMesh.h"
-#include "math/topology/halfEdge/dissolve/coMergePlanarFaces_f.h"
-#include "math/topology/halfEdge/dissolve/coDissolveDegenerateFaces_f.h"
+#include "math/topology/dcel/coDCEL.h"
+#include "math/topology/dcel/dissolve/coMergePlanarFaces_f.h"
+#include "math/topology/dcel/dissolve/coDissolveDegenerateFaces_f.h"
 
 coTEST(coMergePlanarFaces, simple)
 {
@@ -19,7 +19,7 @@ coTEST(coMergePlanarFaces, simple)
 		coVec3(1, 1, 0)
 	});
 	const coDynamicArray<coUint32> indices({ 0, 1, 2, 2, 1, 3 });
-	coHalfEdgeMesh m(indices);
+	coDCEL m(indices);
 	coDynamicArray<coVec3> normals;
 	coComputeTriangleNormals(positions, indices, normals);
 	m.faceNormals = normals;
@@ -40,7 +40,7 @@ coTEST(coMergePlanarFaces, same_plane_but_not_connected)
 		coVec3(1, 1, 0)
 		});
 	const coDynamicArray<coUint32> indices({ 0, 1, 2, 4, 3, 5 });
-	coHalfEdgeMesh m(indices);
+	coDCEL m(indices);
 	coDynamicArray<coVec3> normals;
 	coComputeTriangleNormals(positions, indices, normals);
 	m.faceNormals = normals;
@@ -60,7 +60,7 @@ coTEST(coMergePlanarFaces, two_triangles_but_with_flat_vertex)
 		coVec3(0.5f, 0.5f, 0)
 		});
 	const coDynamicArray<coUint32> indices({ 0, 1, 4, 0, 4, 2, 4, 1, 3, 4, 3, 2 });
-	coHalfEdgeMesh m(indices);
+	coDCEL m(indices);
 	coDynamicArray<coVec3> normals;
 	coComputeTriangleNormals(positions, indices, normals);
 	m.faceNormals = normals;
@@ -86,7 +86,7 @@ coTEST(coMergePlanarFaces, triangle_hole_in_larger_triangle)
 		coVec3(0, 5, 0)
 		});
 	const coDynamicArray<coUint32> indices({ 3, 4, 0, 0, 4, 1, 1, 4, 5, 2, 1, 5, 3, 2, 5, 3, 0, 2 });
-	coHalfEdgeMesh m(indices);
+	coDCEL m(indices);
 	coDynamicArray<coVec3> normals;
 	coComputeTriangleNormals(positions, indices, normals);
 	m.faceNormals = normals;

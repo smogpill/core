@@ -2,19 +2,19 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "math/pch.h"
 #include "coAbsorbFace_f.h"
-#include "../coHalfEdgeMesh.h"
+#include "../coDCEL.h"
 #include <container/array/coDynamicArray_f.h>
 
-coUint32 coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
+coUint32 coAbsorbNextRadialFace(coDCEL& dcel, coUint32 edgeIdx)
 {
 	// Refs:
 	// - bmesh_kernel_join_face_kill_edge() from https://github.com/blender/blender/blob/594f47ecd2d5367ca936cf6fc6ec8168c2b360d0/source/blender/bmesh/intern/bmesh_core.c
 
-	auto& edges = mesh.halfEdges;
+	auto& edges = dcel.halfEdges;
 
 	const coHalfEdge& edgeA = edges[edgeIdx];
 	coASSERT(!edgeA.IsDegenerate());
-	coASSERT(mesh.IsEdgeManifold(edgeIdx));
+	coASSERT(dcel.IsEdgeManifold(edgeIdx));
 
 	const coHalfEdge& edgeB = edges[edgeA.twin];
 	const coUint32 faceA = edgeA.faceIdx;
@@ -24,10 +24,10 @@ coUint32 coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 	if (faceA == faceToAbsorb)
 		return coUint32(-1);
 
-	coASSERT(mesh.IsEdgeContiguous(edgeIdx));
+	coASSERT(dcel.IsEdgeContiguous(edgeIdx));
 
-	coDEBUG_CODE(mesh.CheckEdgeLoop(edgeIdx));
-	coDEBUG_CODE(mesh.CheckEdgeLoop(edgeA.twin));
+	coDEBUG_CODE(dcel.CheckEdgeLoop(edgeIdx));
+	coDEBUG_CODE(dcel.CheckEdgeLoop(edgeA.twin));
 
 	// Find first in the chain
 	coUint32 aFirstRelatedToBIdx = edgeIdx;
@@ -120,8 +120,8 @@ coUint32 coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 		coASSERT(!next.IsDegenerate());
 		prev.next = nextIdx;
 		next.prev = prevIdx;
-		coDEBUG_CODE(mesh.CheckEdge(prevIdx));
-		coDEBUG_CODE(mesh.CheckEdge(nextIdx));
+		coDEBUG_CODE(dcel.CheckEdge(prevIdx));
+		coDEBUG_CODE(dcel.CheckEdge(nextIdx));
 		newLoopIdx = nextIdx;
 	}
 	else if (edges[edges[aFirstRelatedToBIdx].twin].next == edges[aLastRelatedToBIdx].twin)
@@ -134,8 +134,8 @@ coUint32 coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 		coASSERT(!next.IsDegenerate());
 		prev.next = nextIdx;
 		next.prev = prevIdx;
-		coDEBUG_CODE(mesh.CheckEdge(prevIdx));
-		coDEBUG_CODE(mesh.CheckEdge(nextIdx));
+		coDEBUG_CODE(dcel.CheckEdge(prevIdx));
+		coDEBUG_CODE(dcel.CheckEdge(nextIdx));
 		newLoopIdx = nextIdx;
 	}
 	else
@@ -160,8 +160,8 @@ coUint32 coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 			coASSERT(b.prev != aIdx);
 			a.next = bIdx;
 			b.prev = aIdx;
-			coDEBUG_CODE(mesh.CheckEdge(aIdx));
-			coDEBUG_CODE(mesh.CheckEdge(bIdx));
+			coDEBUG_CODE(dcel.CheckEdge(aIdx));
+			coDEBUG_CODE(dcel.CheckEdge(bIdx));
 		}
 		{
 			coHalfEdge& edge = edges[aLastRelatedToBIdx];
@@ -182,12 +182,12 @@ coUint32 coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 			coASSERT(b.next != aIdx);
 			a.prev = bIdx;
 			b.next = aIdx;
-			coDEBUG_CODE(mesh.CheckEdge(aIdx));
-			coDEBUG_CODE(mesh.CheckEdge(bIdx));
+			coDEBUG_CODE(dcel.CheckEdge(aIdx));
+			coDEBUG_CODE(dcel.CheckEdge(bIdx));
 		}
 	}
 
-	coDEBUG_CODE(mesh.CheckEdgeLoop(newLoopIdx));
+	coDEBUG_CODE(dcel.CheckEdgeLoop(newLoopIdx));
 
 	// Disable any intermediate edges in the chain
 	{
@@ -208,8 +208,8 @@ coUint32 coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 				radialEdge.prev = radialIdx;
 				radialEdge.twin = radialIdx;
 
-				coDEBUG_CODE(mesh.CheckEdge(idx));
-				coDEBUG_CODE(mesh.CheckEdge(radialIdx));
+				coDEBUG_CODE(dcel.CheckEdge(idx));
+				coDEBUG_CODE(dcel.CheckEdge(radialIdx));
 			}
 		}
 		else
@@ -234,8 +234,8 @@ coUint32 coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 				twinEdge.prev = twinIdx;
 				twinEdge.twin = twinIdx;
 
-				coDEBUG_CODE(mesh.CheckEdge(idx));
-				coDEBUG_CODE(mesh.CheckEdge(twinIdx));
+				coDEBUG_CODE(dcel.CheckEdge(idx));
+				coDEBUG_CODE(dcel.CheckEdge(twinIdx));
 
 				if (idx == aLastRelatedToBIdx)
 					break;
@@ -246,9 +246,9 @@ coUint32 coAbsorbNextRadialFace(coHalfEdgeMesh& mesh, coUint32 edgeIdx)
 		}
 	}
 
-	coDEBUG_CODE(mesh.CheckEdgeLoop(newLoopIdx));
-	//coDEBUG_CODE(mesh.Check());
-	//coDEBUG_CODE(mesh.CheckNoVertexDuplicatesOnFaces());
-	//coDEBUG_CODE(mesh.CheckNoMoreThan2FacesPerEdge());
+	coDEBUG_CODE(dcel.CheckEdgeLoop(newLoopIdx));
+	//coDEBUG_CODE(dcel.Check());
+	//coDEBUG_CODE(dcel.CheckNoVertexDuplicatesOnFaces());
+	//coDEBUG_CODE(dcel.CheckNoMoreThan2FacesPerEdge());
 	return newLoopIdx;
 }

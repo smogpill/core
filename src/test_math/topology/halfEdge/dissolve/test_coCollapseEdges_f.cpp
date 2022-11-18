@@ -3,8 +3,8 @@
 #include "test_math/pch.h"
 #include "test/unit/coTest.h"
 #include <container/array/coDynamicArray_f.h>
-#include "math/topology/halfEdge/coHalfEdgeMesh.h"
-#include "math/topology/halfEdge/dissolve/coCollapseEdges_f.h"
+#include "math/topology/dcel/coDCEL.h"
+#include "math/topology/dcel/dissolve/coCollapseEdges_f.h"
 
 coTEST(coCollapseEdges, simple)
 {
@@ -15,7 +15,7 @@ coTEST(coCollapseEdges, simple)
 		coVec3(0, 1, 0)
 	});
 	const coDynamicArray<coUint32> indices({ 0, 1, 2 });
-	coHalfEdgeMesh m(indices, positions);
+	coDCEL m(indices, positions);
 	coCollapseEdgesSmallerThanDist(m, 0.1f);
 	coEXPECT(m.GetNbNonDegenerateFaces() == 0);
 }
@@ -39,7 +39,7 @@ coTEST(coCollapseEdges, shared_neighbor_vertices)
 		coVec3(0, 2, 0)
 		});
 	const coDynamicArray<coUint32> indices({ 0, 1, 2, 2, 1, 3, 0, 2, 3 });
-	coHalfEdgeMesh m(indices, positions);
+	coDCEL m(indices, positions);
 	coCollapseEdgesSmallerThanDist(m, 0.1f);
 	coEXPECT(m.GetNbNonDegenerateFaces() == 3);
 }

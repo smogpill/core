@@ -2,12 +2,8 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include <container/array/coDynamicArray.h>
+#include "math/vector/coVec3.h"
+class coDCEL;
+class coDCELGenInfo;
 
-class coHalfEdgeMeshGenInfo
-{
-public:
-	void Clear();
-	void ShrinkToFit();
-
-	coDynamicArray<coUint32> triangleToHalfEdge;
-};
+void coGenerateMesh(coDCEL& dcel, const coArray<coVec3>& faceNormals, coDynamicArray<coUint32>& outIndices, coDCELGenInfo* info = nullptr);

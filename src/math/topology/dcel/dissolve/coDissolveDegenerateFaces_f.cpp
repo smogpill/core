@@ -3,11 +3,11 @@
 #include "math/pch.h"
 #include "coDissolveDegenerateFaces_f.h"
 #include <container/array/coArray_f.h>
-#include "../coHalfEdgeMesh.h"
+#include "../coDCEL.h"
 
-void coDissolveDegenerateFace(coHalfEdgeMesh& mesh, coUint32 anyHalfEdgeIdx)
+void coDissolveDegenerateFace(coDCEL& dcel, coUint32 anyHalfEdgeIdx)
 {
-	auto& halfEdges = mesh.halfEdges;
+	auto& halfEdges = dcel.halfEdges;
 	coHalfEdge& edge = halfEdges[anyHalfEdgeIdx];
 	coASSERT(edge.IsDegenerate());
 	const coUint32 nextIdx = edge.next;
@@ -25,15 +25,15 @@ void coDissolveDegenerateFace(coHalfEdgeMesh& mesh, coUint32 anyHalfEdgeIdx)
 	next.twin = nextIdx;
 }
 
-void coRemoveDegenerateFaces(coHalfEdgeMesh& mesh)
+void coRemoveDegenerateFaces(coDCEL& dcel)
 {
-	auto& halfEdges = mesh.halfEdges;
+	auto& halfEdges = dcel.halfEdges;
 	for (coUint32 edgeIdx = 0; edgeIdx < halfEdges.count;)
 	{
 		coHalfEdge& edge = halfEdges[edgeIdx];
 		if (edge.next == edge.prev)
 		{
-			mesh.RemoveHalfEdge(edgeIdx);
+			dcel.RemoveHalfEdge(edgeIdx);
 			continue;
 		}
 		++edgeIdx;

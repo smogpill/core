@@ -2,15 +2,15 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "math/pch.h"
 #include "coRemoveUnused_f.h"
-#include "../coHalfEdgeMesh.h"
+#include "../coDCEL.h"
 #include <container/array/coDynamicArray_f.h>
 
-void coRemoveUnusedVertices(coHalfEdgeMesh& mesh)
+void coRemoveUnusedVertices(coDCEL& dcel)
 {
 	coDynamicArray<coVec3> newVertices;
-	const coArray<coVec3>& oldVertices = mesh.vertices;
+	const coArray<coVec3>& oldVertices = dcel.vertices;
 	coDynamicArray<coUint32> oldVertexToNew;
-	auto& halfEdges = mesh.halfEdges;
+	auto& halfEdges = dcel.halfEdges;
 	coReserve(newVertices, oldVertices.count);
 	coResize(oldVertexToNew, oldVertices.count, coUint32(-1));
 	for (coUint32 halfEdgeIdx = 0; halfEdgeIdx < halfEdges.count; ++halfEdgeIdx)
@@ -31,12 +31,12 @@ void coRemoveUnusedVertices(coHalfEdgeMesh& mesh)
 			halfEdge.vertexIdx = newIdx;
 		}
 	}
-	mesh.vertices = std::move(newVertices);
+	dcel.vertices = std::move(newVertices);
 }
 
-void coRemoveUnusedHalfEdges(coHalfEdgeMesh& mesh)
+void coRemoveUnusedHalfEdges(coDCEL& dcel)
 {
-	auto& edges = mesh.halfEdges;
+	auto& edges = dcel.halfEdges;
 	coDynamicArray<coUint32> oldToNew;
 	coDynamicArray<coHalfEdge> newEdges;
 	coResize(oldToNew, edges.count);
@@ -69,10 +69,10 @@ void coRemoveUnusedHalfEdges(coHalfEdgeMesh& mesh)
 	edges = std::move(newEdges);
 }
 
-void coRemoveUnusedFaces(coHalfEdgeMesh& mesh)
+void coRemoveUnusedFaces(coDCEL& dcel)
 {
-	auto& edges = mesh.halfEdges;
-	auto& faceNormals = mesh.faceNormals;
+	auto& edges = dcel.halfEdges;
+	auto& faceNormals = dcel.faceNormals;
 
 	coUint32 oldNbFaces = faceNormals.count;
 	if (oldNbFaces == 0)
@@ -104,9 +104,9 @@ void coRemoveUnusedFaces(coHalfEdgeMesh& mesh)
 	faceNormals = std::move(newFaceNormals);
 }
 
-void coRemoveUnused(coHalfEdgeMesh& mesh)
+void coRemoveUnused(coDCEL& dcel)
 {
-	coRemoveUnusedHalfEdges(mesh);
-	coRemoveUnusedFaces(mesh);
-	coRemoveUnusedVertices(mesh);
+	coRemoveUnusedHalfEdges(dcel);
+	coRemoveUnusedFaces(dcel);
+	coRemoveUnusedVertices(dcel);
 }

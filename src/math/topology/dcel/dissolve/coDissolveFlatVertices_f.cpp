@@ -3,15 +3,15 @@
 #include "math/pch.h"
 #include "coDissolveFlatVertices_f.h"
 #include "coDissolveDegenerateFaces_f.h"
-#include "../coHalfEdgeMesh.h"
+#include "../coDCEL.h"
 #include "../../../vector/coVec3_f.h"
 #include <debug/profiler/coProfile.h>
 
-void coDissolveFlatVertices(coHalfEdgeMesh& mesh, coFloat tolerance)
+void coDissolveFlatVertices(coDCEL& dcel, coFloat tolerance)
 {
 	coPROFILE_EVENT();
-	auto& edges = mesh.halfEdges;
-	const auto& vertices = mesh.vertices;
+	auto& edges = dcel.halfEdges;
+	const auto& vertices = dcel.vertices;
 	for (coUint32 a1Idx = 0; a1Idx < edges.count; ++a1Idx)
 	{
 		coHalfEdge& a1 = edges[a1Idx];
@@ -46,7 +46,7 @@ void coDissolveFlatVertices(coHalfEdgeMesh& mesh, coFloat tolerance)
 				a1.next = a1Idx;
 
 				if (a0.IsDegenerate())
-					coDissolveDegenerateFace(mesh, a0Idx);
+					coDissolveDegenerateFace(dcel, a0Idx);
 			}
 		}
 		else if (a1.twin != a1Idx)
@@ -72,7 +72,7 @@ void coDissolveFlatVertices(coHalfEdgeMesh& mesh, coFloat tolerance)
 			b0.twin = a0Idx;
 			b2.prev = b0Idx;
 
-			mesh.CheckEdgeNotReferencedByOthers(a1Idx);
+			dcel.CheckEdgeNotReferencedByOthers(a1Idx);
 
 			// Remove 1
 			a1.prev = a1Idx;
@@ -83,9 +83,9 @@ void coDissolveFlatVertices(coHalfEdgeMesh& mesh, coFloat tolerance)
 			b1.twin = b1Idx;
 
 			if (a0.IsDegenerate())
-				coDissolveDegenerateFace(mesh, a0Idx);
+				coDissolveDegenerateFace(dcel, a0Idx);
 			if (b0.IsDegenerate())
-				coDissolveDegenerateFace(mesh, b0Idx);
+				coDissolveDegenerateFace(dcel, b0Idx);
 		}
 	}
 }
