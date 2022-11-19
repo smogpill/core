@@ -83,7 +83,8 @@ function coSetCppProjectDefaults(_name)
 	editandcontinue "Off"
 	symbols "On"
 	cppdialect "C++17"
-	runtime "Release" -- Even on debug builds, Unreal is setup this way anyway.
+	runtime "Release" -- Even on debug builds, Unreal is setup this way anyway. But can't use the CRT library memory leaks detector
+
 	flags { "NoMinimalRebuild", "FatalWarnings", "MultiProcessorCompile" }
 	files { "**.cpp", "**.h", "**.inl", "**.frag", "**.vert", "**.comp", "**.tesc", "**.tese", "**.geom", "**.importShaders"}
 
