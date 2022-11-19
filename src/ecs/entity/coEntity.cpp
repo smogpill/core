@@ -33,7 +33,7 @@ void* coEntity::GetComponent(const coType& type) const
 	const auto& componentTypes = entityType->GetComponentTypes();
 	for (coUint componentIdx = 0; componentIdx < componentTypes.count; ++componentIdx)
 	{
-		if (componentTypes[componentIdx] == &type)
+		if (componentTypes[componentIdx]->IsCompatibleWith(type))
 		{
 			return componentBuffer[componentIdx];
 		}
