@@ -210,8 +210,8 @@ coBool coSweepCapsuleTriangles_Precise(coUint32 nbTris, const coTriangle* coREST
 		else
 			OUTPUT_TRI(p0, p1, p2)
 
-			// ### it's probably useless to extrude all the shared edges !!!!!
-			//if(CurrentFlags & TriangleCollisionFlag::eACTIVE_EDGE12)
+		// ### it's probably useless to extrude all the shared edges !!!!!
+		//if(CurrentFlags & TriangleCollisionFlag::eACTIVE_EDGE12)
 		{
 			OUTPUT_TRI2(p1, p1b, p2b, unitDir)
 			OUTPUT_TRI2(p1, p2b, p2, unitDir)

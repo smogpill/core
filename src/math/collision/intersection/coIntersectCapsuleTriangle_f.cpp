@@ -106,8 +106,13 @@ coFORCE_INLINE coVec3 coComputeEdgeAxis(const coVec3& p, const coVec3& a,
 	return T + b * u - a * t;
 }
 
-coBool coIntersectCapsuleTriangle(const coVec3& N, const coVec3& p0, const coVec3& p1, const coVec3& p2, const coCapsule& capsule, const coCapsuleTriangleOverlapData& params)
+coBool coIntersectCapsuleTriangle(const coVec3& N, const coVec3& pA, const coVec3& pB, const coVec3& pC, const coCapsule& capsule, const coCapsuleTriangleOverlapData& params)
 {
+	// HACK
+	const coVec3 p0 = pA;
+	const coVec3 p1 = pB;
+	const coVec3 p2 = pC;
+
 	coASSERT(!coNearEqual(capsule.a, capsule.b));
 
 	{
