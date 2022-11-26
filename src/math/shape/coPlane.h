@@ -11,6 +11,7 @@ public:
 	coPlane(coNullPtr) {}
 	coPlane() : normalAndDistance(0.f) {}
 	coPlane(const coFloatx4& _normalAndDistance) : normalAndDistance(_normalAndDistance) {}
+	coPlane(const coVec3& normal, const coFloatx4& distance);
 	coPlane(const coVec3& normal, const coVec3& point);
 	coPlane(const coVec3& a, const coVec3& b, const coVec3& c);
 

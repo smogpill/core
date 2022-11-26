@@ -15,3 +15,8 @@ coPlane::coPlane(const coVec3& a, const coVec3& b, const coVec3& c)
 	: coPlane(coGetNormal(a, b, c), a)
 {
 }
+
+coPlane::coPlane(const coVec3& normal, const coFloatx4& distance)
+{
+	normalAndDistance = coSelectXYZ(reinterpret_cast<const coFloatx4&>(normal), distance);
+}
