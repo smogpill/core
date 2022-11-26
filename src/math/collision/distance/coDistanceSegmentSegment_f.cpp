@@ -51,7 +51,7 @@ coVec4 coDistanceSegmentSegmentSquared4(const coVec3 p, const coVec3 d0,
 	//=====
 	// Impl from distanceSegmentSegmentSquared4(), \PhysX\physx\source\geomutils\src\distance\GuDistanceSegmentSegment.cpp, PhysX 4
 	// Most comments are from the original code.
-	// Thanks to the talented people at PhysX for this great piece of work, and for sharing it.
+	// From the open source version of the PhysX SDK
 	//=====
 	const coVec4 zero = coVec4(0.0f);
 	const coVec4 one = coVec4(1.0f);

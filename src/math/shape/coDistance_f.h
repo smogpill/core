@@ -143,7 +143,7 @@ coFORCE_INLINE void _coUpdateClosestHit(coFloat fSqrDist0, coFloat fR0, coFloat 
 	//=====
 	// Impl from updateClosestHit(), \PhysX-4.0\physx\source\geomutils\src\distance\GuDistanceSegmentTriangle.cpp
 	// Most comments are from the original code.
-	// Thanks to the talented people at PhysX for this great piece of work, and for sharing it.
+	// From the open source version of the PhysX SDK
 	//=====
 
 	if (fSqrDist0 < fSqrDist)
@@ -164,7 +164,7 @@ inline coFloat coSquareDistanceSegmentSegment2(const coVec3& vOrigin0, const coV
 	//=====
 	// Impl from Gu::distanceSegmentSegmentSquared(), \PhysX-4.0\physx\source\geomutils\src\distance\GuDistanceSegmentSegment.cpp
 	// Most comments are from the original code.
-	// Thanks to the talented people at PhysX for this great piece of work, and for sharing it.
+	// From the open source version of the PhysX SDK
 	//=====
 
 	const coVec3 vDiff = vOrigin0 - vOrigin1;
@@ -472,7 +472,7 @@ inline coFloat coSquareDistanceSegmentSegment2(const coVec3& vOrigin0, const coV
 	//=====
 	// Impl from Gu::distanceSegmentSegmentSquared(), \PhysX-4.0\physx\source\geomutils\src\distance\GuDistanceSegmentSegment.cpp
 	// Most comments are from the original code.
-	// Thanks to the talented people at PhysX for this great piece of work, and for sharing it.
+	// From the open source version of the PhysX SDK
 	//=====
 
 	// Some conversion is needed between the old & new code
@@ -540,7 +540,7 @@ coFORCE_INLINE coVec3 coGetClosestPointPointTriangle2(const coVec3& p, const coV
 	//=====
 	// Impl from closestPtPointTriangle2(), \physx\source\geomutils\src\distance\GuDistancePointTriangle.h
 	// Most comments are from the original code.
-	// Thanks to the talented people at PhysX for this great piece of work, and for sharing it.
+	// From the open source version of the PhysX SDK
 	//=====
 
 	// Check if P in vertex region outside A
@@ -602,7 +602,7 @@ inline coVec3 coGetClosestPointPointTriangle(const coVec3& p, const coVec3& a, c
 	//=====
 	// Impl from closestPtPointTriangle(), \PhysX-4.0\physx\source\geomutils\src\contact\GuContactSphereMesh.cpp
 	// Most comments are from the original code.
-	// Thanks to the talented people at PhysX for this great piece of work, and for sharing it.
+	// From the open source version of the PhysX SDK
 	//=====
 
 	// Check if P in vertex region outside A
@@ -685,7 +685,7 @@ coFORCE_INLINE coFloat coSquareDistancePointTriangle(const coVec3& vPoint, const
 	//=====
 	// Impl from Gu::distancePointTriangleSquared(), \PhysX-4.0\physx\source\geomutils\src\distance\GuDistancePointTriangle.cpp
 	// Most comments are from the original code.
-	// Thanks to the talented people at PhysX for this great piece of work, and for sharing it.
+	// From the open source version of the PhysX SDK
 	//=====
 
 	const coVec3 vPt0 = vTriangleEdge0 + vTriangleOrigin;

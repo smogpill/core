@@ -157,7 +157,7 @@ coFORCE_INLINE coBool coSetInitialOverlapResults(coSweepHit& hit, const coVec3& 
 {
 	// PT: please write these fields in the order they are listed in the struct.
 	hit.faceIndex = faceIndex;
-	hit.flags = coHitFlag::eNORMAL | coHitFlag::eFACE_INDEX;
+	hit.flags = coHitFlag::eNORMAL | coHitFlag::eFACE_INDEX | coHitFlag::eWAS_INITIAL_OVERLAP;
 	hit.normal = -unitDir;
 	hit.distance = 0.0f;
 	return true;	// PT: true indicates a hit, saves some lines in calling code

@@ -13,7 +13,7 @@
 //=====
 // Impl from \physx\source\geomutils\src\sweep\GuSweepCapsuleTriangle.cpp from PhysX 4
 // Most comments are from the original code.
-// Thanks to the talented people at PhysX for this great piece of work, and for sharing it.
+// From the open source version of the PhysX SDK
 //=====
 
 #define COLINEARITY_EPSILON 0.00001f
@@ -191,6 +191,11 @@ coBool coSweepCapsuleTriangles_Precise(coUint32 nbTris, const coTriangle* coREST
 		if (testInitialOverlap && coIntersectCapsuleTriangle(denormalizedNormal, currentSrcTri.a, currentSrcTri.b, currentSrcTri.c, capsule, params))
 		{
 			triNormalOut = -unitDir;
+			//triNormalOut = coNormalize(denormalizedNormal);
+
+			// Debug
+			coIntersectCapsuleTriangle(denormalizedNormal, currentSrcTri.a, currentSrcTri.b, currentSrcTri.c, capsule, params);
+
 			return coSetInitialOverlapResults(hit, unitDir, i);
 		}
 

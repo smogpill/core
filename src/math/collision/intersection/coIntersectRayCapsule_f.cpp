@@ -10,7 +10,7 @@ coUint32 _coIntersectRayCapsuleInternal(const coVec3& origin, const coVec3& dir,
 	//=====
 	// Impl from Gu::intersectRayCapsuleInternal(), \physx\source\geomutils\src\intersection\GuIntersectionRayCapsule.cpp
 	// Most comments are from the original code.
-	// Thanks to the talented people at PhysX for this great piece of work, and for sharing it.
+	// From the open source version of the PhysX SDK
 	//=====
 
 	// set up quadratic Q(t) = a*t^2 + 2*b*t + c

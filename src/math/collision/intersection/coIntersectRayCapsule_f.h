@@ -12,7 +12,7 @@ coFORCE_INLINE coBool coIntersectRayCapsule(const coVec3& origin, const coVec3& 
 	//=====
 	// Impl from Gu::intersectRayCapsule(), \physx\source\geomutils\src\intersection\GuIntersectionRayCapsule.h
 	// Most comments are from the original code.
-	// Thanks to the talented people at PhysX for this great piece of work, and for sharing it.
+	// From the open source version of the PhysX SDK
 	//=====
 
 	// PT: move ray origin close to capsule, to solve accuracy issues.

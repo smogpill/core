@@ -18,7 +18,7 @@ static coFORCE_INLINE coUint32 rayTriSpecial(const coVec3& orig, const coVec3& d
 	//=====
 	// Impl from rayTriSpecial(), \physx\source\geomutils\src\sweep\GuSweepSphereTriangle.cpp, from Physx 4
 	// Most comments are from the original code.
-	// Thanks to the talented people at PhysX for this great piece of work, and for sharing it.
+	// From the open source version of the PhysX SDK
 	//=====
 
 	// Begin calculating determinant - also used to calculate U parameter
@@ -70,7 +70,7 @@ static coFORCE_INLINE bool coEdgeOrVertexTest(const coVec3& planeIntersectPoint,
 	//=====
 	// Impl from edgeOrVertexTest(), \physx\source\geomutils\src\sweep\GuSweepSphereTriangle.cpp, from Physx 4
 	// Most comments are from the original code.
-	// Thanks to the talented people at PhysX for this great piece of work, and for sharing it.
+	// From the open source version of the PhysX SDK
 	//=====
 
 	{
@@ -196,12 +196,18 @@ coBool coSweepSphereTriangles(coUint32 nbTris, const coTriangle* coRESTRICT tria
 	return coComputeSphereTriangleImpactData(h, triNormalOut, index, curT, center, unitDir, bestTriNormal, triangles, isDoubleSided, meshBothSides);
 }
 
-coBool coSweepSphereTriangle(const coVec3* coRESTRICT triVerts, const coVec3& normal, const coVec3& center, coFloat radius, const coVec3& dir, coFloat& impactDistance, coBool& directHit, coBool testInitialOverlap)
+coBool coSweepSphereTriangle(const coVec3* coRESTRICT triVertsRaw, const coVec3& normal, const coVec3& center, coFloat radius, const coVec3& dir, coFloat& impactDistance, coBool& directHit, coBool testInitialOverlap)
 {
+	// HACK
+	coVec3 triVerts[3];
+	triVerts[0] = triVertsRaw[0];
+	triVerts[1] = triVertsRaw[2];
+	triVerts[2] = triVertsRaw[1];
+
 	//=====
 	// Impl from Gu::sweepSphereVSTri(), \physx\source\geomutils\src\sweep\GuSweepSphereTriangle.cpp, from Physx 4
 	// Most comments are from the original code.
-	// Thanks to the talented people at PhysX for this great piece of work, and for sharing it.
+	// From the open source version of the PhysX SDK
 	//=====
 
 	directHit = false;

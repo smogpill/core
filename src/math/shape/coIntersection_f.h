@@ -95,7 +95,7 @@ coFORCE_INLINE coUint32 _coGetClosestAxis(const coVec3& vV, coUint32& uiJ, coUin
 	//=====
 	// Impl from closestAxis(), \PhysX-4.0\physx\source\foundation\include\PsMathUtils.h
 	// Most comments are from the original code.
-	// Thanks to the talented people at PhysX for this great piece of work, and for sharing it.
+	// From the open source version of the PhysX SDK
 	//=====
 
 	// find largest 2D plane projection
@@ -128,7 +128,7 @@ coFORCE_INLINE coBool coIntersectEdgeEdge(const coVec3& vP1, const coVec3& vP2, 
 	//=====
 	// Impl from Gu::intersectEdgeEdge(), \PhysX-4.0\physx\source\geomutils\src\intersection\GuIntersectionEdgeEdge.cpp
 	// Most comments are from the original code.
-	// Thanks to the talented people at PhysX for this great piece of work, and for sharing it.
+	// From the open source version of the PhysX SDK
 	//=====
 
 	auto GetSignedDistanceFromPlane = [](const coVec4& vPlane, const coVec3& vPoint)
@@ -201,7 +201,7 @@ coFORCE_INLINE coBool coIntersectRayTriangle(const coVec3& vOrigin, const coVec3
 	//=====
 	// Impl from intersectRayTriangle(), \PhysX-4.0\physx\source\geomutils\src\intersection\GuIntersectionRayTriangle.h
 	// Most comments are from the original code.
-	// Thanks to the talented people at PhysX for this great piece of work, and for sharing it.
+	// From the open source version of the PhysX SDK
 	//=====
 
 	// Find vectors for two edges sharing vA

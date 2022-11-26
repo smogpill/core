@@ -21,6 +21,7 @@ struct coHitFlag
 												//!< May provide better compatibility with PhysX 3.2 sweep behavior.
 		eMTD = (1 << 9),						//!< Report the minimum translation depth, normal and contact point.
 		eFACE_INDEX = (1 << 10),				//!< "face index" member of #PxQueryHit is valid
+		eWAS_INITIAL_OVERLAP = (1 << 11),
 
 		eDEFAULT = ePOSITION | eNORMAL | eFACE_INDEX,
 

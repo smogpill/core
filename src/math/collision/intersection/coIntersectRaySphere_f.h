@@ -10,7 +10,7 @@ inline coBool coIntersectRaySphereBasic(const coVec3& origin, const coVec3& dir,
 	//=====
 	// Impl from Gu::intersectRaySphereBasic(), \physx\source\geomutils\src\intersection\GuIntersectionRaySphere.cpp
 	// Most comments are from the original code.
-	// Thanks to the talented people at PhysX for this great piece of work, and for sharing it.
+	// From the open source version of the PhysX SDK
 	//=====
 
 	// get the offset vector
@@ -67,7 +67,7 @@ inline coBool coIntersectRaySphere(const coVec3& origin, const coVec3& dir, coFl
 	//=====
 	// Impl from Gu::intersectRaySphere(), \physx\source\geomutils\src\intersection\GuIntersectionRaySphere.cpp
 	// Most comments are from the original code.
-	// Thanks to the talented people at PhysX for this great piece of work, and for sharing it.
+	// From the open source version of the PhysX SDK
 	//=====
 
 	// PT: small distance between a ray origin and a potentially hit surface. Should be small enough to

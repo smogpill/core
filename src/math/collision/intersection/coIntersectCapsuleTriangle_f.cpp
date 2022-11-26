@@ -8,7 +8,7 @@
 //=====
 // Impl from \physx\source\geomutils\src\intersection\GuIntersectionCapsuleTriangle.cpp from PhysX 4
 // Most comments are from the original code.
-// Thanks to the talented people at PhysX for this great piece of work, and for sharing it.
+// From the open source version of the PhysX SDK
 //=====
 
 // dir = p1 - p0
