@@ -132,28 +132,78 @@ coFORCE_INLINE coQuat coSyncWith(const coQuat& _a, const coQuat& _b)
 	const coInt32x4 comp = coBitCast<coInt32x4>(coDot(_a, _b) < coFloatx4_ZERO);
 	return coBitCast<coQuat>(coBitCast<coInt32x4>(_a) ^ (comp & coBitCast<coInt32x4>(__m128_SIGN_MASK)));
 }
-coFORCE_INLINE coQuat operator*(const coQuat& _a, const coQuat& _b)
+coFORCE_INLINE coQuat operator*(const coQuat& a, const coQuat& b)
 {
-	// Implementation found at: https://github.com/bulletphysics/bullet3/blob/master/src/Bullet3Common/b3Quaternion.h
-	const coFloatx4 a = coBitCast<coFloatx4>(_a);
-	const coFloatx4 b = coBitCast<coFloatx4>(_b);
-	coFloatx4 a1 = coShuffle<0, 1, 2, 0>(a);
-	coFloatx4 b1 = coShuffle<3, 3, 3, 0>(b);
-	a1 = a1 * b1;
-	coFloatx4 a2 = coShuffle<1, 2, 0, 1>(a);
-	coFloatx4 b2 = coShuffle<2, 0, 1, 1>(a);
-	a2 = a2 * b2;
-	b1 = coShuffle<2, 0, 1, 2>(a);
-	b2 = coShuffle<1, 2, 0, 2>(b);
-	b1 = b1 * b2;
-	coFloatx4 a0 = coBroadcastW(a);
-	a0 = a0 * b;
-	a1 = a1 + a2;
-	a0 = a0 - b1;
-	a1 = coBitCast<coFloatx4>(coBitCast<coInt32x4>(a1) ^ coInt32x4_SIGN_MASK_W);
-	a0 = a0 + a1;
-	return coBitCast<coQuat>(a0);
+	if (true)
+	{
+		// Taken from: http://momchil-velikov.blogspot.nl/2013/10/fast-sse-quternion-multiplication.html
+		const coFloatx4 abcd = a;
+		const coFloatx4 xyzw = b;
+
+		const coFloatx4 t0 = coBroadcastW(abcd);
+		const coFloatx4 t1 = coShuffle<1, 0, 3, 2>(xyzw);
+
+		const coFloatx4 t3 = coBroadcastX(abcd);
+		const coFloatx4 t4 = coShuffle<2, 3, 0, 1>(xyzw);
+
+		const coFloatx4 t5 = coBroadcastY(abcd);
+		const coFloatx4 t6 = coShuffle<1, 3, 0, 2>(xyzw);
+
+		// [d,d,d,d] * [z,w,x,y] = [dz,dw,dx,dy]
+		const coFloatx4 m0 = t0 * t1;
+
+		// [a,a,a,a] * [y,x,w,z] = [ay,ax,aw,az]
+		const coFloatx4 m1 = t3 * t4;
+
+		// [b,b,b,b] * [z,x,w,y] = [bz,bx,bw,by]
+		const coFloatx4 m2 = t5 * t6;
+
+		// [c,c,c,c] * [w,z,x,y] = [cw,cz,cx,cy]
+		const coFloatx4 t7 = coBroadcastZ(abcd);
+		const coFloatx4 t8 = coShuffle<1, 0, 2, 3>(xyzw);
+		const coFloatx4 m3 = t7 * t8;
+
+		// [dz,dw,dx,dy] + -[ay,ax,aw,az] = [dz+ay,dw-ax,dx+aw,dy-az]
+		coFloatx4 e = coAddSub(m0, m1);
+
+		// [dx+aw,dz+ay,dy-az,dw-ax]
+		e = coShuffle<2, 0, 3, 1>(e);
+
+		// [dx+aw,dz+ay,dy-az,dw-ax] + -[bz,bx,bw,by] = [dx+aw+bz,dz+ay-bx,dy-az+bw,dw-ax-by]
+		e = coAddSub(e, m2);
+
+		// [dz+ay-bx,dw-ax-by,dy-az+bw,dx+aw+bz]
+		e = coShuffle<3, 1, 0, 2>(e);
+
+		// [dz+ay-bx,dw-ax-by,dy-az+bw,dx+aw+bz] + -[cw,cz,cx,cy] = [dz+ay-bx+cw,dw-ax-by-cz,dy-az+bw+cx,dx+aw+bz-cy]
+		e = coAddSub(e, m3);
+
+		// [dw-ax-by-cz,dz+ay-bx+cw,dy-az+bw+cx,dx+aw+bz-cy]
+		return coQuat(coShuffle<0, 1, 3, 2>(e));
+	}
+	
+	else
+	{
+		// Implementation from JoltPhysics
+		const coFloat lx = a.x;
+		const coFloat ly = a.y;
+		const coFloat lz = a.z;
+		const coFloat lw = a.w;
+
+		const coFloat rx = b.x;
+		const coFloat ry = b.y;
+		const coFloat rz = b.z;
+		const coFloat rw = b.w;
+
+		const coFloat x = lw * rx + lx * rw + ly * rz - lz * ry;
+		const coFloat y = lw * ry - lx * rz + ly * rw + lz * rx;
+		const coFloat z = lw * rz + lx * ry - ly * rx + lz * rw;
+		const coFloat w = lw * rw - lx * rx - ly * ry - lz * rz;
+
+		return coQuat(x, y, z, w);
+	}
 }
+
 coFORCE_INLINE coQuat& operator*=(coQuat& this_, const coQuat& b)
 {
 	return this_ = this_ * b;

@@ -55,6 +55,7 @@ coFORCE_INLINE coFloatx4& operator*= (coFloatx4& _this, const coFloatx4& _b) { r
 coFORCE_INLINE coFloatx4& operator/= (coFloatx4& _this, const coFloatx4& _b) { return _this = coBitCast<coFloatx4>(_mm_div_ps(coBitCast<__m128>(_this), coBitCast<__m128>(_b))); }
 //coFORCE_INLINE coFloatx4 coMulAdd(const coFloatx4& a, const coFloatx4& b, const coFloatx4& c) { return coBitCast<coFloatx4>(_mm_fmadd_ps(coBitCast<__m128>(a), coBitCast<__m128>(b), coBitCast<__m128>(c))); }
 coFORCE_INLINE coFloatx4 coMulAdd(const coFloatx4& a, const coFloatx4& b, const coFloatx4& c) { return a * b + c; }
+coFORCE_INLINE coFloatx4 coAddSub(const coFloatx4& a, const coFloatx4& b) { return coBitCast<coFloatx4>(_mm_addsub_ps(coBitCast<__m128>(a), coBitCast<__m128>(b))); }
 coFORCE_INLINE coBool32x4 coIsValid(const coFloatx4& _a) { return _a == _a; }
 template <coInt8 X, coInt8 Y, coInt8 Z, coInt8 W>
 coFORCE_INLINE coFloatx4 coShuffle(const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coFloatx4>(_mm_shuffle_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b), _MM_SHUFFLE(W, Z, Y, X))); }

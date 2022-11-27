@@ -3,25 +3,28 @@
 #include "ecs/pch.h"
 #include "coNode.h"
 #include <math/transform/coTransform_f.h>
+#include "../../entity/coEntity_f.h"
 #include "../../coECS.h"
 #include "../../component/coComponent_f.h"
 
 coBEGIN_COMPONENT(coNode);
+coDEFINE_COMPONENT_START();
+coDEFINE_COMPONENT_STOP();
 coEND_COMPONENT();
+
+coBEGIN_ENTITY(coNodeEntity);
+entity->AddComponent<coNode>();
+coEND_ENTITY();
 
 void coNode::SetLocal(const coTransform& t)
 {
-	local = t;
-	localDirty = 0;
-	if (parent.IsValid())
+	if (local != t)
 	{
-		globalDirty = 1;
+		local = t;
+		localDirty = 0;
+		++version;
+		SetGlobalDirtyRec();
 	}
-	else
-	{
-		global = t;
-	}
-	++version;
 }
 
 void coNode::TranslateGlobal(const coVec3& translation)
@@ -33,17 +36,14 @@ void coNode::TranslateGlobal(const coVec3& translation)
 
 void coNode::SetGlobal(const coTransform& t)
 {
-	global = t;
-	globalDirty = 0;
-	if (parent.IsValid())
+	if (global != t)
 	{
+		global = t;
+		globalDirty = 0;
+		++version;
 		localDirty = 1;
+		SetGlobalDirtyOnDescendents();
 	}
-	else
-	{
-		local = t;
-	}
-	++version;
 }
 
 void coNode::SetParent(const coEntityHandle& newParent)
@@ -51,13 +51,9 @@ void coNode::SetParent(const coEntityHandle& newParent)
 	if (parent != newParent)
 	{
 		parent = newParent;
-		if (parent.IsValid())
+		if (started)
 		{
-			localDirty = 1;
-		}
-		else
-		{
-			local = global;
+			RefreshParentNode();
 		}
 	}
 }
@@ -78,19 +74,96 @@ void coNode::SetGlobalTranslation(const coVec3& translation)
 
 void coNode::UpdateLocal() const
 {
-	local = global * coInverse(GetParentGlobal());
+	if (parentNode)
+		local = global * coInverse(parentNode->GetGlobal());
+	else
+		local = global;
 	localDirty = 0;
 }
 
 void coNode::UpdateGlobal() const
 {
-	global = local * GetParentGlobal();
+	if (parentNode)
+		global = local * parentNode->GetGlobal();
+	else
+		global = local;
 	globalDirty = 0;
 }
 
-const coTransform& coNode::GetParentGlobal() const
+void coNode::SetGlobalDirtyRec()
 {
-	const coECS* ecs = coECS::instance;
-	coNode* parentTransform = ecs->GetComponent<coNode>(parent);
-	return parentTransform->GetGlobal();
+	if (!globalDirty)
+	{
+		globalDirty = 1;
+		SetGlobalDirtyOnDescendents();
+	}
+}
+
+void coNode::SetGlobalDirtyOnDescendents()
+{
+	coNode* child = firstChild;
+	while (child)
+	{
+		child->SetGlobalDirtyRec();
+		child = child->nextSibling;
+	}
+}
+
+void coNode::Start(coEntity& entity)
+{
+	Base::Start(entity);
+	RefreshParentNode();
+	started = 1;
+}
+
+void coNode::Stop(coEntity& entity)
+{
+	started = false;
+	SetParentNode(nullptr);
+	Base::Stop(entity);
+}
+
+void coNode::SetParentNode(coNode* node)
+{
+	if (parentNode != node)
+	{
+		if (parentNode)
+		{
+			if (nextSibling)
+			{
+				previousSibling->nextSibling = nextSibling;
+				nextSibling->previousSibling = previousSibling;
+			}
+			if (parentNode->firstChild == this)
+				parentNode->firstChild = nextSibling;
+			parentNode = nullptr;
+			previousSibling = nullptr;
+			nextSibling = nullptr;
+		}
+
+		parentNode = node;
+
+		if (parentNode)
+		{
+			coNode* parentFirstChild = parentNode->firstChild;
+			if (parentFirstChild)
+			{
+				previousSibling = parentFirstChild->previousSibling;
+				nextSibling = parentFirstChild;
+				previousSibling->nextSibling = this;
+				parentFirstChild->previousSibling = this;
+			}
+			else
+			{
+				parentNode->firstChild = this;
+			}
+		}
+		localDirty = 1;
+	}
+}
+
+void coNode::RefreshParentNode()
+{
+	coNode* node = coECS::instance->GetComponent<coNode>(parent);
+	SetParentNode(node);
 }

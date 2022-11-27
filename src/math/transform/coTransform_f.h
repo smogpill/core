@@ -65,6 +65,7 @@ coFORCE_INLINE coTransform coRemoveScale(const coTransform& this_)
 	t.scale = coVec3(1.0f);
 	return t;
 }
+
 coFORCE_INLINE coTransform operator * (const coTransform& _a, const coTransform& _b)
 {
 	coTransform r(nullptr);
@@ -126,4 +127,14 @@ coFORCE_INLINE coBinaryInputStream& operator>>(coBinaryInputStream& stream, coTr
 	stream >> a.translation;
 	stream >> a.scale;
 	return stream;
+}
+
+coFORCE_INLINE coBool operator== (const coTransform& a, const coTransform& b)
+{
+	return coAreAllTrue(a.rotation == b.rotation && coBool32x4(a.translation == b.translation, true) && coBool32x4(a.scale == b.scale, true));
+}
+
+coFORCE_INLINE coBool operator!= (const coTransform& a, const coTransform& b)
+{
+	return !(a == b);
 }
