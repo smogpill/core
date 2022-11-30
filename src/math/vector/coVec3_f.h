@@ -25,6 +25,7 @@ coFORCE_INLINE coVec3 coCross(const coVec3& _a, const coVec3& _b)
 	const coVec3 tmp3 = coShuffle<1, 2, 0>(_b, _b);
 	return tmp0 * tmp1 - tmp2 * tmp3;
 }
+coFORCE_INLINE coVec3 coXY(const coVec3& a) { return coVec3(a.x, a.y, 0.0f); }
 coFORCE_INLINE coFloatx4 coSquareLength(const coVec3& _a) { return coDot(_a, _a); }
 coFORCE_INLINE coFloatx4 coLength(const coVec3& _a) { return coSquareRoot(coDot(_a, _a)); }
 coFORCE_INLINE coVec3 coNormalize(const coVec3& _a, const coVec3& epsilon = coVec3(1e-10f)) { return coNearEqual0(_a, epsilon) ? coVec3(0.0f) : _a * coInvSquareRoot(coDot(_a, _a)); }
