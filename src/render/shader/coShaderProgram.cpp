@@ -119,19 +119,24 @@ void coShaderProgram::SetUniform(coInt location, coBool value)
 	glUniform1i(location, value);
 }
 
+void coShaderProgram::SetUniform(coInt location, coFloat value)
+{
+	glUniform1f(location, value);
+}
+
 void coShaderProgram::SetUniform(coInt location, const coVec2& value)
 {
-	glUniform2fv(location, 1, &value.x);
+	glUniform2f(location, value.x, value.y);
 }
 
 void coShaderProgram::SetUniform(coInt location, const coVec3& value)
 {
-	glUniform3fv(location, 1, &value.x);
+	glUniform3f(location, value.x, value.y, value.z);
 }
 
 void coShaderProgram::SetUniform(coInt location, const coVec4& value)
 {
-	glUniform4fv(location, 1, &value.x);
+	glUniform4f(location, value.x, value.y, value.z, value.w);
 }
 
 void coShaderProgram::SetUniform(coInt location, coUint32 value)
@@ -141,12 +146,12 @@ void coShaderProgram::SetUniform(coInt location, coUint32 value)
 
 void coShaderProgram::SetUniform(coInt location, const coUint32x2& value)
 {
-	glUniform2uiv(location, 1, &value.x);
+	glUniform2ui(location, value.x, value.y);
 }
 
 void coShaderProgram::SetUniform(coInt location, const coUint32x4& value)
 {
-	glUniform4uiv(location, 1, &value.x);
+	glUniform4ui(location, value.x, value.y, value.z, value.w);
 }
 
 void coShaderProgram::SetUniform(coInt location, const coMat4& value)

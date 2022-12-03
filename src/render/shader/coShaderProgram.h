@@ -22,6 +22,7 @@ public:
 	void Unbind();
 	coInt GetUniformLocation(const coChar* name) const;
 	void SetUniform(coInt location, coBool value);
+	void SetUniform(coInt location, coFloat value);
 	void SetUniform(coInt location, const coVec2& value);
 	void SetUniform(coInt location, const coVec3& value);
 	void SetUniform(coInt location, const coVec4& value);

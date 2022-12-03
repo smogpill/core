@@ -9,4 +9,5 @@
 #include <shlobj.h>
 #define STBI_ONLY_PNG
 #define STBI_ONLY_TGA
+#define STBI_ONLY_JPEG
 #include <stb/stb_image.h>

@@ -7,11 +7,14 @@ class coImage
 {
 public:
 	~coImage();
+
+	void Clear();
+	coResult Load(const coChar* path);
+	coResult LoadOnlyHeader(const coChar* path);
+	coBool IsEmpty() const;
+
 	coUchar* buffer = nullptr;
 	coUint width = 0;
 	coUint height = 0;
 	coUint nbComponents = 0;
 };
-
-coResult coLoadImage(const coChar* path, coImage& image);
-coResult coLoadOnlyImageHeader(const coChar* path, coImage& image);

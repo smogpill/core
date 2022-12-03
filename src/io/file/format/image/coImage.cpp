@@ -8,20 +8,37 @@ coImage::~coImage()
 	stbi_image_free(buffer);
 }
 
-coResult coLoadImage(const coChar* path, coImage& image)
+void coImage::Clear()
 {
-	image = coImage();
-	int width, height, nbComponents;
-	image.buffer = stbi_load(path, &width, &height, &nbComponents, 0);
-	image.width = width;
-	image.height = height;
-	image.nbComponents = nbComponents;
-	return image.buffer != nullptr;
+	*this = coImage();
 }
 
-coResult coLoadOnlyImageHeader(const coChar* path, coImage& image)
+coResult coImage::Load(const coChar* path)
 {
-	image = coImage();
-	int width, height, nbComponents;
-	return stbi_info(path, &width, &height, &nbComponents) == 1;
+	Clear();
+	int widthi, heighti, nbComponentsi;
+	buffer = stbi_load(path, &widthi, &heighti, &nbComponentsi, 0);
+	if (buffer)
+	{
+		width = widthi;
+		height = heighti;
+		nbComponents = nbComponentsi;
+	}
+	return buffer != nullptr;
+}
+
+coResult coImage::LoadOnlyHeader(const coChar* path)
+{
+	Clear();
+	int widthi, heighti, nbComponentsi;
+	coTRY(stbi_info(path, &widthi, &heighti, &nbComponentsi) == 1, nullptr);
+	width = widthi;
+	height = heighti;
+	nbComponents = nbComponentsi;
+	return true;
+}
+
+coBool coImage::IsEmpty() const
+{
+	return !(buffer && width && height && nbComponents);
 }
