@@ -191,6 +191,10 @@ coResult coRenderContext::InitOpengl()
 	glEnable(GL_DEBUG_OUTPUT);
 	glDebugMessageCallback(OnDebugMessage, nullptr);
 #endif
+
+	//int maxComputeTextureImageUnits = 0;
+	//glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxComputeTextureImageUnits);
+	//maxNbTextureUnits = maxComputeTextureImageUnits;
 	
 	return true;
 }

@@ -33,6 +33,7 @@ coResult coRenderTexture::SetContent(const coImage& image)
 	}
 	}
 
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, id);
 	glTexImage2D(GL_TEXTURE_2D, 0, format, image.width, image.height, 0, format, GL_UNSIGNED_BYTE, image.buffer);
 	glGenerateMipmap(GL_TEXTURE_2D);
@@ -40,6 +41,20 @@ coResult coRenderTexture::SetContent(const coImage& image)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, GL_INVALID_VALUE);
+	glBindTexture(GL_TEXTURE_2D, 0);
 	return true;
+}
+
+void coRenderTexture::Bind(coUint8 unit)
+{
+	coASSERT(unit < maxNbUnits);
+	glActiveTexture(GL_TEXTURE0 + unit);
+	glBindTexture(GL_TEXTURE_2D, id);
+}
+
+void coRenderTexture::Unbind(coUint8 unit)
+{
+	coASSERT(unit < maxNbUnits);
+	glActiveTexture(GL_TEXTURE0 + unit);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }

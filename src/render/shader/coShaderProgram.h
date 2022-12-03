@@ -26,6 +26,7 @@ public:
 	void SetUniform(coInt location, const coVec2& value);
 	void SetUniform(coInt location, const coVec3& value);
 	void SetUniform(coInt location, const coVec4& value);
+	void SetUniform(coInt location, coInt32 value);
 	void SetUniform(coInt location, coUint32 value);
 	void SetUniform(coInt location, const coUint32x2& value);
 	void SetUniform(coInt location, const coUint32x4& value);

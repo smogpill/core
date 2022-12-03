@@ -34,4 +34,5 @@ private:
 #endif
 	coRenderView* mainRenderView = nullptr;
 	coPicker* picker = nullptr;
+	//coUint maxNbTextureUnits = 0;
 };

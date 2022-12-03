@@ -11,6 +11,11 @@ public:
 	~coRenderTexture();
 
 	coResult SetContent(const coImage& image);
+	void Bind(coUint8 unit);
+	static void Unbind(coUint8 unit);
+
+	static inline const coUint8 maxNbUnits = 16; // No need more
+
 private:
-	GLuint id = GL_INVALID_VALUE;
+	GLuint id = 0;
 };
