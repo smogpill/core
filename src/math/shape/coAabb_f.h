@@ -33,3 +33,9 @@ coFORCE_INLINE coFloat coGetSurfaceArea(const coAabb& a)
 		return 2.0f * (size.x * size.y + size.y * size.z + size.z * size.x);
 	}
 }
+
+coFORCE_INLINE coAabb coReduce(const coAabb& a, const coFloatx3& offset)
+{
+	const coFloatx3 clampedOffset = coMin(offset, (a.max - a.min) * 0.5f);
+	return coAabb(a.min + clampedOffset, a.max - clampedOffset);
+}
