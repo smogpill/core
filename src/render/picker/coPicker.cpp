@@ -6,14 +6,14 @@
 #include "render/shader/coShaderProgram.h"
 #include "render/context/coRenderContext.h"
 #include "render/view/coRenderView.h"
-#include "render/buffer/coFrameBuffer.h"
+#include "render/buffer/coFramebuffer.h"
 #include <lang/result/coResult_f.h>
 #include <math/vector/coVec2.h>
 #include <math/scalar/coUint32_f.h>
 
 coPicker::~coPicker()
 {
-	delete frameBuffer;
+	delete framebuffer;
 	for (ModeInfo& modeInfo : modeInfos)
 	{
 		delete modeInfo.shaderProgram;
@@ -69,8 +69,8 @@ coResult coPicker::Init(coRenderContext& context_)
 		info.idShaderLocation = info.shaderProgram->GetUniformLocation("id");
 	}
 	
-	frameBuffer = new coFrameBuffer();
-	coTRY(frameBuffer->Init(context_.GetMainRenderView()->GetSize(), coFrameBuffer::R32UI_D24_S8), nullptr);
+	framebuffer = new coFramebuffer();
+	coTRY(framebuffer->Init(context_.GetMainRenderView()->GetSize(), coFramebuffer::R32UI_D24_S8), nullptr);
 	return true;
 }
 
@@ -81,8 +81,8 @@ void coPicker::Begin(Mode mode)
 	context->Clear();
 	ModeInfo& modeInfo = modeInfos[coUint(currentMode)];
 	modeInfo.shaderProgram->Bind();
-	frameBuffer->Bind(coFrameBuffer::READ_WRITE);
-	frameBuffer->Clear();
+	framebuffer->Bind(coFramebuffer::READ_WRITE);
+	framebuffer->Clear();
 	started = true;
 	glPointSize(8.0f);
 }
@@ -92,7 +92,7 @@ void coPicker::End()
 	coASSERT(started);
 	started = false;
 	ModeInfo& modeInfo = modeInfos[coUint(currentMode)];
-	frameBuffer->Unbind();
+	framebuffer->Unbind();
 	modeInfo.shaderProgram->Unbind();
 }
 
@@ -166,7 +166,7 @@ coUint32 coPicker::PickValue(const coUint32x2& pos) const
 	glFlush();
 	glFinish();
 	
-	frameBuffer->Bind(coFrameBuffer::READ_WRITE);
+	framebuffer->Bind(coFramebuffer::READ_WRITE);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glPixelStorei(GL_PACK_ALIGNMENT, 1);
 	glPixelStorei(GL_PACK_ROW_LENGTH, 0);
@@ -176,7 +176,7 @@ coUint32 coPicker::PickValue(const coUint32x2& pos) const
 	
 	coUint32 value;
 	glReadPixels(pos.x, pos.y, 1, 1, GL_RED_INTEGER, GL_UNSIGNED_INT, &value);
-	frameBuffer->Unbind();
+	framebuffer->Unbind();
 	return value;
 }
 
