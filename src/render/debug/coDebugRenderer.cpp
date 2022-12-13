@@ -10,6 +10,7 @@
 #include <math/vector/coVec4_f.h>
 #include <math/matrix/coMat4_f.h>
 #include <ecs/component/coComponent_f.h>
+#include <pattern/pointer/coUniquePtr.h>
 
 coDEFINE_SINGLETON(coDebugRenderer);
 coBEGIN_COMPONENT(coDebugRenderer);
@@ -30,29 +31,16 @@ void coDebugRenderer::Init(coEntity& entity)
 void coDebugRenderer::Shutdown(coEntity& entity)
 {
 	delete shaderProgram;
-	for (coShader* shader : shaders)
-		delete shader;
+	shaderProgram = nullptr;
 	coDebugRenderer::SetInstance(nullptr);
 	Base::Shutdown(entity);
 }
 
 coResult coDebugRenderer::InitShaders()
 {
-	coShader* concreteVS = new coShader();
-	{
-		coTRY(concreteVS->Init(coShader::Type::VERTEX, "shaders/render/Debug"), nullptr);
-		coPushBack(shaders, concreteVS);
-	}
-	coShader* concreteFS = new coShader();
-	{
-		coTRY(concreteFS->Init(coShader::Type::FRAGMENT, "shaders/render/Debug"), nullptr);
-		coPushBack(shaders, concreteFS);
-	}
-	shaderProgram = new coShaderProgram();
-	coDynamicArray<coShader*> shaderList;
-	coPushBack(shaderList, concreteVS);
-	coPushBack(shaderList, concreteFS);
-	coTRY(shaderProgram->Init(shaderList), nullptr);
+	coUniquePtr<coShaderProgram> debugProgram = new coShaderProgram();
+	coTRY(debugProgram->Init("shaders/render/Debug"), nullptr);
+	shaderProgram = debugProgram.Release();
 	return true;
 }
 

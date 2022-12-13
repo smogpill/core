@@ -13,6 +13,7 @@ public:
 	coResult SetContent(const coImage& image);
 	void Bind(coUint8 unit);
 	static void Unbind(coUint8 unit);
+	GLuint GetGLID() const { return id; }
 
 	static inline const coUint8 maxNbUnits = 16; // No need more
 

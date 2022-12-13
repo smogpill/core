@@ -4,24 +4,22 @@
 #include "lang/result/coResult.h"
 #include <math/vector/coUint32x2.h>
 
-class coFramebuffer
+class coRenderTexture;
+class coRenderBuffer;
+
+class coRenderFrameBuffer
 {
 public:
-	enum class AttachmentFormat
+	enum AttachmentFormat
 	{
 		NONE,
 		D24S8,
+		D32F,
 		R32UI,
 		RGBA8,
 		RGBA16
 	};
 
-	enum class Format
-	{
-		NONE,
-		R32UI_D24_S8,
-		RGBA8_RGBA16,
-	};
 	enum BindMode
 	{
 		READ,
@@ -29,24 +27,20 @@ public:
 		READ_WRITE
 	};
 
-	coFramebuffer();
-	~coFramebuffer();
+	coRenderFrameBuffer();
+	~coRenderFrameBuffer();
 	coResult Init(const coUint32x2& size, const coArray<AttachmentFormat>& attachmentFormats);
 	void Bind(BindMode mode);
 	void Unbind();
 	void Clear();
+	const coArray<coRenderTexture*>& GetTextures() const { return textures; }
 private:
-	struct Attachment
-	{
-		AttachmentFormat format;
-		GLuint id;
-	};
 	static coBool IsRenderBuffer(const AttachmentFormat& format);
-	void InitTexture(GLuint textureID, GLint internalFormat, GLenum texformat, GLenum type);
-	coUint GetNbAttachments() const;
 
-	coDynamicArray<Attachment> attachments;
+	coDynamicArray<coRenderTexture*> textures;
+	coDynamicArray<coRenderBuffer*> buffers;
 	coUint32x2 size = coUint32x2(0);
 	GLuint frameBufferObject = GL_INVALID_VALUE;
-	coUint nbColorAttachments = 0;
+	coBool depth = false;
+	coBool stencil = false;
 };

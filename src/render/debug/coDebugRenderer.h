@@ -10,7 +10,6 @@
 #include <ecs/component/coComponent.h>
 class coAabb;
 class coShaderProgram;
-class coShader;
 class coMat4;
 
 class coDebugRenderer : public coComponent
@@ -54,7 +53,6 @@ private:
 	void Shutdown(coEntity& entity);
 
 	coDynamicArray<Vertex> vertexBuffers[Buffer::END];
-	coDynamicArray<coShader*> shaders;
 	coShaderProgram* shaderProgram = nullptr;
 	GLuint vertexArrayObject = 0;
 	GLuint vertexBufferObject = 0;

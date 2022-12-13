@@ -12,7 +12,7 @@ class coMat4;
 class coUint32x2;
 class coRenderView;
 class coRenderContext;
-class coFramebuffer;
+class coRenderFrameBuffer;
 
 class coPicker
 {
@@ -52,6 +52,6 @@ private:
 	coBool started = false;
 	ModeInfo modeInfos[Mode::END];
 	coRenderContext* context = nullptr;
-	coFramebuffer* framebuffer = nullptr;
+	coRenderFrameBuffer* framebuffer = nullptr;
 	Mode currentMode = Mode::MESH;
 };

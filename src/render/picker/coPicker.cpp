@@ -6,7 +6,7 @@
 #include "render/shader/coShaderProgram.h"
 #include "render/context/coRenderContext.h"
 #include "render/view/coRenderView.h"
-#include "render/buffer/coFramebuffer.h"
+#include "render/buffer/coRenderFrameBuffer.h"
 #include <lang/result/coResult_f.h>
 #include <math/vector/coVec2.h>
 #include <math/scalar/coUint32_f.h>
@@ -69,8 +69,9 @@ coResult coPicker::Init(coRenderContext& context_)
 		info.idShaderLocation = info.shaderProgram->GetUniformLocation("id");
 	}
 	
-	framebuffer = new coFramebuffer();
-	coTRY(framebuffer->Init(context_.GetMainRenderView()->GetSize(), coFramebuffer::R32UI_D24_S8), nullptr);
+	framebuffer = new coRenderFrameBuffer();
+	const coDynamicArray<coRenderFrameBuffer::AttachmentFormat> attachments{ coRenderFrameBuffer::R32UI, coRenderFrameBuffer::D24S8 };
+	coTRY(framebuffer->Init(context_.GetMainRenderView()->GetSize(), attachments), nullptr);
 	return true;
 }
 
@@ -81,7 +82,7 @@ void coPicker::Begin(Mode mode)
 	context->Clear();
 	ModeInfo& modeInfo = modeInfos[coUint(currentMode)];
 	modeInfo.shaderProgram->Bind();
-	framebuffer->Bind(coFramebuffer::READ_WRITE);
+	framebuffer->Bind(coRenderFrameBuffer::READ_WRITE);
 	framebuffer->Clear();
 	started = true;
 	glPointSize(8.0f);
@@ -166,7 +167,7 @@ coUint32 coPicker::PickValue(const coUint32x2& pos) const
 	glFlush();
 	glFinish();
 	
-	framebuffer->Bind(coFramebuffer::READ_WRITE);
+	framebuffer->Bind(coRenderFrameBuffer::READ_WRITE);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glPixelStorei(GL_PACK_ALIGNMENT, 1);
 	glPixelStorei(GL_PACK_ROW_LENGTH, 0);
