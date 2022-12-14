@@ -45,14 +45,14 @@ coResult coRenderTexture::SetContent(const coImage& image)
 	return true;
 }
 
-void coRenderTexture::Bind(coUint8 unit)
+void coRenderTexture::Bind(coUint unit)
 {
 	coASSERT(unit < maxNbUnits);
 	glActiveTexture(GL_TEXTURE0 + unit);
 	glBindTexture(GL_TEXTURE_2D, id);
 }
 
-void coRenderTexture::Unbind(coUint8 unit)
+void coRenderTexture::Unbind(coUint unit)
 {
 	coASSERT(unit < maxNbUnits);
 	glActiveTexture(GL_TEXTURE0 + unit);

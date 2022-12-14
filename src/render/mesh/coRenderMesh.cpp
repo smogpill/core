@@ -14,6 +14,16 @@ coResult coRenderMesh::Init()
 	return true;
 }
 
+void coRenderMesh::Fill(coArray<VertexP>& vertices, const coArray<coVec3>& positions)
+{
+    coASSERT(vertices.count == positions.count);
+    for (coUint i = 0; i < positions.count; ++i)
+    {
+        VertexP& vertex = vertices[i];
+        vertex.SetPos(positions[i]);
+    }
+}
+
 void coRenderMesh::Fill(coArray<VertexPN>& vertices, const coArray<coVec3>& positions, const coArray<coVec3>& normals)
 {
     coASSERT(vertices.count == positions.count);

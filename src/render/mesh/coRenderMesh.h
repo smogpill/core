@@ -30,6 +30,7 @@ public:
 	};
 
 	coResult Init();
+	static void Fill(coArray<VertexP>& vertices, const coArray<coVec3>& positions);
 	static void Fill(coArray<VertexPN>& vertices, const coArray<coVec3>& positions, const coArray<coVec3>& normals);
 	template <class T>
 	void SetBuffers(const coArray<T>& vertices);

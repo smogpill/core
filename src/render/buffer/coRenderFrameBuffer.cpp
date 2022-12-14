@@ -60,13 +60,13 @@ coResult coRenderFrameBuffer::Init(const coUint32x2& size_, const coArray<Attach
 			GLint internalFormat;
 			GLenum formatGL;
 			GLenum typeGL;
-			GLenum attachmentGL = GL_COLOR_ATTACHMENT0 + textures.count;
+			GLenum attachmentGL;
 			switch (attachmentFormat)
 			{
 			case AttachmentFormat::D24S8:
 			{
 				internalFormat = GL_DEPTH24_STENCIL8;
-				formatGL = GL_DEPTH_STENCIL; 
+				formatGL = GL_DEPTH_STENCIL;
 				typeGL = GL_UNSIGNED_INT_24_8;
 				attachmentGL = GL_DEPTH_STENCIL_ATTACHMENT;
 				depth = true;
@@ -80,12 +80,32 @@ coResult coRenderFrameBuffer::Init(const coUint32x2& size_, const coArray<Attach
 				typeGL = GL_FLOAT;
 				attachmentGL = GL_DEPTH_ATTACHMENT;
 				depth = true;
-				stencil = true;
 				break;
 			}
-			case AttachmentFormat::R32UI: internalFormat = GL_R32UI; formatGL = GL_RED_INTEGER; typeGL = GL_UNSIGNED_INT; break;
-			case AttachmentFormat::RGBA8: internalFormat = GL_RGBA8; formatGL = GL_RGBA; typeGL = GL_UNSIGNED_INT; break;
-			case AttachmentFormat::RGBA16: internalFormat = GL_RGBA16; formatGL = GL_RGBA; typeGL = GL_UNSIGNED_INT; break;
+			case AttachmentFormat::R32UI:
+			{
+				internalFormat = GL_R32UI;
+				formatGL = GL_RED_INTEGER;
+				typeGL = GL_UNSIGNED_INT;
+				attachmentGL = GL_COLOR_ATTACHMENT0 + nbColorAttachments++;
+				break;
+			}
+			case AttachmentFormat::RGBA8:
+			{
+				internalFormat = GL_RGBA8;
+				formatGL = GL_RGBA;
+				typeGL = GL_UNSIGNED_INT;
+				attachmentGL = GL_COLOR_ATTACHMENT0 + nbColorAttachments++;
+				break;
+			}
+			case AttachmentFormat::RGBA16:
+			{
+				internalFormat = GL_RGBA16;
+				formatGL = GL_RGBA;
+				typeGL = GL_UNSIGNED_INT;
+				attachmentGL = GL_COLOR_ATTACHMENT0 + nbColorAttachments++;
+				break;
+			}
 			default:
 			{
 				coASSERT(false);
@@ -127,8 +147,8 @@ void coRenderFrameBuffer::Bind(BindMode mode)
 	if (write)
 	{
 		const GLuint attachmentList[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
-		coASSERT(textures.count <= coARRAY_SIZE(attachmentList));
-		glDrawBuffers(textures.count, attachmentList);
+		coASSERT(nbColorAttachments <= coARRAY_SIZE(attachmentList));
+		glDrawBuffers(nbColorAttachments, attachmentList);
 	}
 		
 	if (read)

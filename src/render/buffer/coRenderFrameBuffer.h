@@ -41,6 +41,7 @@ private:
 	coDynamicArray<coRenderBuffer*> buffers;
 	coUint32x2 size = coUint32x2(0);
 	GLuint frameBufferObject = GL_INVALID_VALUE;
+	coUint nbColorAttachments = 0;
 	coBool depth = false;
 	coBool stencil = false;
 };
