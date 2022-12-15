@@ -14,7 +14,7 @@ public:
 	{
 		NONE,
 		D24S8,
-		D32F,
+		DEPTH,
 		R32UI,
 		RGBA8,
 		RGBA16

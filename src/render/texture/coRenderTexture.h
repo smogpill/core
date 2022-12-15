@@ -15,7 +15,7 @@ public:
 	static void Unbind(coUint unit);
 	GLuint GetGLID() const { return id; }
 
-	static inline const coUint8 maxNbUnits = 16; // No need more
+	static inline const coUint8 maxNbUnits = 32; // No need more
 
 private:
 	GLuint id = 0;

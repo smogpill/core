@@ -36,6 +36,12 @@ void coRenderMesh::Fill(coArray<VertexPN>& vertices, const coArray<coVec3>& posi
     }
 }
 
+void coRenderMesh::SetBuffers(coUint nbVertices_)
+{
+    drawWithIndices = false;
+    nbVertices = nbVertices_;
+}
+
 void coRenderMesh::Draw()
 {
     glBindVertexArray(vertexArrayObject);

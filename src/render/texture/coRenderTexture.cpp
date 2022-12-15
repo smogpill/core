@@ -33,7 +33,6 @@ coResult coRenderTexture::SetContent(const coImage& image)
 	}
 	}
 
-	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, id);
 	glTexImage2D(GL_TEXTURE_2D, 0, format, image.width, image.height, 0, format, GL_UNSIGNED_BYTE, image.buffer);
 	glGenerateMipmap(GL_TEXTURE_2D);

@@ -73,7 +73,7 @@ coResult coRenderFrameBuffer::Init(const coUint32x2& size_, const coArray<Attach
 				stencil = true;
 				break;
 			}
-			case AttachmentFormat::D32F:
+			case AttachmentFormat::DEPTH:
 			{
 				internalFormat = GL_DEPTH_COMPONENT;
 				formatGL = GL_DEPTH_COMPONENT;
@@ -115,15 +115,22 @@ coResult coRenderFrameBuffer::Init(const coUint32x2& size_, const coArray<Attach
 
 			coUniquePtr<coRenderTexture> texture(new coRenderTexture());
 			const GLuint id = texture->GetGLID();
+			glActiveTexture(GL_TEXTURE0 + textures.count);
 			glBindTexture(GL_TEXTURE_2D, id);
 			glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, size.x, size.y, 0, formatGL, typeGL, nullptr);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
 			glBindTexture(GL_TEXTURE_2D, 0);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentGL, GL_TEXTURE_2D, id, 0);
 			coPushBack(textures, texture.Release());
 		}
 	}
+
+	glActiveTexture(GL_TEXTURE0);
 
 	const GLenum framebufferStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	coTRY(framebufferStatus == GL_FRAMEBUFFER_COMPLETE, nullptr);
