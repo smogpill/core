@@ -34,6 +34,7 @@ public:
 	void Unbind();
 	void Clear();
 	const coArray<coRenderTexture*>& GetTextures() const { return textures; }
+	GLuint GetGLID() const { return frameBufferObject; }
 private:
 	static coBool IsRenderBuffer(const AttachmentFormat& format);
 
