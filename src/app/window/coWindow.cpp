@@ -22,8 +22,6 @@ coResult coWindow::OnInit(const coObject::InitConfig& _config)
 	const InitConfig& config = static_cast<const InitConfig&>(_config);
 	name = config.name;
 	clientSize = config.clientSize;
-	coTRY(clientSize.x >= 0, nullptr);
-	coTRY(clientSize.y >= 0, nullptr);
 	coTRY(OnImplInit(config), "Failed to init implementation.");
 	return true;
 }
