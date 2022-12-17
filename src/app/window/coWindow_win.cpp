@@ -47,7 +47,9 @@ static LRESULT CALLBACK coWindowProc(HWND _hwnd, UINT _msg, WPARAM _wParam, LPAR
 	{
 		if (_wParam != SIZE_MINIMIZED)
 		{
-
+			UINT width = LOWORD(_lParam);
+			UINT height = HIWORD(_lParam);
+			window->SetClientSize(coUint32x2(width, height));
 		}
 		break;
 	}

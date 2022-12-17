@@ -48,3 +48,8 @@ coResult coWindow::SetShowState(const ShowState& _state)
 	showState = _state;
 	return true;
 }
+
+void coWindow::SetClientSize(const coUint32x2& newSize)
+{
+	clientSize = newSize;
+}

@@ -35,6 +35,7 @@ public:
 	ShowState GetShowState() const { return showState; }
 	coResult SetForeground();
 	coResult SetFocus();
+	void SetClientSize(const coUint32x2&);
 	const coUint32x2& GetClientSize() const { return clientSize; }
 	coRenderContext* GetRenderContext() const { return renderContext; };
 	coInputContext* GetInputContext() const { return inputContext; }
