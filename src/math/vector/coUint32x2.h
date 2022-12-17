@@ -4,7 +4,7 @@
 
 #include "lang/reflect/coTypeDecl.h"
 
-class alignas(16) coUint32x2
+class coUint32x2
 {
 	coDECLARE_CLASS_NO_POLYMORPHISM(coUint32x2);
 public:
@@ -12,7 +12,4 @@ public:
 	coFORCE_INLINE coUint32x2(coUint32 xy) : x(xy), y(xy) {}
 	coUint32 x;
 	coUint32 y;
-private:
-	coUint32 pad0;
-	coUint32 pad1;
 };

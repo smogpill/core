@@ -3,7 +3,7 @@
 #pragma once
 
 #include "pattern/object/coObject.h"
-#include "math/vector/coInt32x2.h"
+#include "math/vector/coUint32x2.h"
 
 class coRenderContext;
 class coImgui;
@@ -25,7 +25,7 @@ public:
 	{
 	public:
 		coConstString name;
-		coInt32x2 clientSize = coInt32x2(1024, 768);
+		coUint32x2 clientSize = coUint32x2(1024, 768);
 	};
 
 	coWindow();
@@ -35,7 +35,7 @@ public:
 	ShowState GetShowState() const { return showState; }
 	coResult SetForeground();
 	coResult SetFocus();
-	const coInt32x2& GetClientSize() const { return clientSize; }
+	const coUint32x2& GetClientSize() const { return clientSize; }
 	coRenderContext* GetRenderContext() const { return renderContext; };
 	coInputContext* GetInputContext() const { return inputContext; }
 	coBool _ProcessWindowMessages(UINT msg, WPARAM wParam, LPARAM lParam, LRESULT& result);
@@ -60,7 +60,7 @@ private:
 	void ApplySize();
 
 	ShowState showState = ShowState::hidden;
-	coInt32x2 clientSize = coInt32x2(0);
+	coUint32x2 clientSize = coUint32x2(0);
 	coDynamicString name;
 	coImgui* imgui = nullptr;
 
