@@ -2,6 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include <lang/result/coResult.h>
+#include <math/vector/coUint32x2.h>
 class coImage;
 
 class coRenderTexture
@@ -11,6 +12,9 @@ public:
 	~coRenderTexture();
 
 	coResult SetContent(const coImage& image);
+	void SetNearestFiltering(coBool b) { nearestFiltering = b; }
+	void SetMipMaps(coBool b) { mipMaps = b; }
+	coUint32x2 GetSize() const { return size; }
 	void Bind(coUint unit);
 	static void Unbind(coUint unit);
 	GLuint GetGLID() const { return id; }
@@ -19,4 +23,7 @@ public:
 
 private:
 	GLuint id = 0;
+	coUint32x2 size = 0;
+	coBool nearestFiltering : 1;
+	coBool mipMaps : 1;
 };

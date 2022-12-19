@@ -6,6 +6,8 @@
 #include <lang/result/coResult_f.h>
 
 coRenderTexture::coRenderTexture()
+	: nearestFiltering(false)
+	, mipMaps(true)
 {
 	glGenTextures(1, &id);
 }
@@ -35,12 +37,24 @@ coResult coRenderTexture::SetContent(const coImage& image)
 
 	glBindTexture(GL_TEXTURE_2D, id);
 	glTexImage2D(GL_TEXTURE_2D, 0, format, image.width, image.height, 0, format, GL_UNSIGNED_BYTE, image.buffer);
-	glGenerateMipmap(GL_TEXTURE_2D);
+	if (mipMaps)
+	{
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (nearestFiltering)
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	}
+	else
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	}
 	glBindTexture(GL_TEXTURE_2D, 0);
+	size = coUint32x2(image.width, image.height);
 	return true;
 }
 
