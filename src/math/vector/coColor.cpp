@@ -2,6 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "math/pch.h"
 #include "math/vector/coColor.h"
+#include "math/vector/coVec3_f.h"
 #include "math/vector/coVec4_f.h"
 
 const coColor coColor::s_white(255, 255, 255);
@@ -13,6 +14,11 @@ const coColor coColor::s_coolRed(241, 29, 29);
 const coColor coColor::s_coolGreen(61, 230, 59);
 const coColor coColor::s_coolBlue(0, 155, 178);
 const coColor coColor::s_coolOrange(255, 113, 0);
+
+coColor::operator coVec3() const
+{
+	return coVec3(r, g, b) / coVec3(255.0f);
+}
 
 coColor::operator coVec4() const
 {
