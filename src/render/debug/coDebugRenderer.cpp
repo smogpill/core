@@ -2,7 +2,6 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "render/pch.h"
 #include "render/debug/coDebugRenderer.h"
-#include "render/shader/coShader.h"
 #include "render/shader/coShaderProgram.h"
 #include "lang/result/coResult_f.h"
 #include <math/shape/coAabb_f.h>

@@ -4,7 +4,7 @@
 #include <container/array/coArray.h>
 #include <container/array/coDynamicArray.h>
 #include <lang/result/coResult.h>
-class coShader;
+class coShaderFile;
 class coMat4;
 class coVec4;
 class coVec3;
@@ -17,7 +17,6 @@ class coShaderProgram
 public:
 	~coShaderProgram();
 	coResult Init(const coConstString& path);
-	coResult Init(const coArray<coShader*>& shaders);
 	void Bind();
 	void Unbind();
 	coInt GetUniformLocation(const coChar* name) const;
@@ -33,6 +32,8 @@ public:
 	void SetUniform(coInt location, const coMat4& value);
 
 private:
+	coResult Init(const coArray<coShaderFile*>& files);
+
 	GLuint id = 0;
-	coDynamicArray<coShader*> shaders;
+	coDynamicArray<coShaderFile*> files;
 };

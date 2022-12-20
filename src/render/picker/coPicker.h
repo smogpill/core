@@ -5,7 +5,7 @@
 #include <math/vector/coColor.h>
 #include <math/vector/coUint32x2.h>
 #include <math/vector/coUint32x4.h>
-class coShader;
+class coShaderFile;
 class coShaderProgram;
 class coVec2;
 class coMat4;

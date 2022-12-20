@@ -1,17 +1,17 @@
 // Copyright(c) 2021 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "render/pch.h"
-#include "render/shader/coShader.h"
+#include "coShaderFile.h"
 #include "io/file/coFile_f.h"
 #include "lang/result/coResult_f.h"
 
-coShader::~coShader()
+coShaderFile::~coShaderFile()
 {
 	glDeleteShader(id);
 	coCHECK(glGetError() == GL_NO_ERROR, "glDeleteShader()");
 }
 
-coResult coShader::Init(Type type_, const coConstString& rawPath)
+coResult coShaderFile::Init(Type type_, const coConstString& rawPath)
 {
 	type = type_;
 
@@ -78,7 +78,7 @@ coResult coShader::Init(Type type_, const coConstString& rawPath)
 	return true;
 }
 
-GLenum coShader::_GetGLType() const
+GLenum coShaderFile::_GetGLType() const
 {
 	switch (type)
 	{

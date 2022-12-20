@@ -2,7 +2,6 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "render/pch.h"
 #include "coPicker.h"
-#include "render/shader/coShader.h"
 #include "render/shader/coShaderProgram.h"
 #include "render/context/coRenderContext.h"
 #include "render/view/coRenderView.h"

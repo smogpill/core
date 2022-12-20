@@ -1,8 +1,8 @@
 // Copyright(c) 2021 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "render/pch.h"
-#include "render/shader/coShaderProgram.h"
-#include "render/shader/coShader.h"
+#include "coShaderProgram.h"
+#include "coShaderFile.h"
 #include "lang/result/coResult_f.h"
 #include "math/matrix/coMat4.h"
 #include "math/vector/coVec2.h"
@@ -17,8 +17,8 @@ coShaderProgram::~coShaderProgram()
 {
 	glDeleteProgram(id);
 	coCHECK(glGetError() == GL_NO_ERROR, "glDeleteProgram()");
-	for (coShader* shader : shaders)
-		delete shader;
+	for (coShaderFile* file : files)
+		delete file;
 }
 
 coResult coShaderProgram::Init(const coConstString& path)
@@ -31,50 +31,50 @@ coResult coShaderProgram::Init(const coConstString& path)
 	filePath << ".vert.spv";
 	if (coExists(filePath))
 	{
-		coUniquePtr<coShader> shader(new coShader());
-		coTRY(shader->Init(coShader::Type::VERTEX, path), nullptr);
-		coPushBack(shaders, shader.Release());
+		coUniquePtr<coShaderFile> file(new coShaderFile());
+		coTRY(file->Init(coShaderFile::Type::VERTEX, path), nullptr);
+		coPushBack(files, file.Release());
 	}
 
 	filePath = path;
 	filePath << ".geom.spv";
 	if (coExists(filePath))
 	{
-		coUniquePtr<coShader> shader(new coShader());
-		coTRY(shader->Init(coShader::Type::GEOMETRY, path), nullptr);
-		coPushBack(shaders, shader.Release());
+		coUniquePtr<coShaderFile> file(new coShaderFile());
+		coTRY(file->Init(coShaderFile::Type::GEOMETRY, path), nullptr);
+		coPushBack(files, file.Release());
 	}
 
 	filePath = path;
 	filePath << ".frag.spv";
 	if (coExists(filePath))
 	{
-		coUniquePtr<coShader> shader(new coShader());
-		coTRY(shader->Init(coShader::Type::FRAGMENT, path), nullptr);
-		coPushBack(shaders, shader.Release());
+		coUniquePtr<coShaderFile> file(new coShaderFile());
+		coTRY(file->Init(coShaderFile::Type::FRAGMENT, path), nullptr);
+		coPushBack(files, file.Release());
 	}
 
 	filePath = path;
 	filePath << ".comp.spv";
 	if (coExists(filePath))
 	{
-		coUniquePtr<coShader> shader(new coShader());
-		coTRY(shader->Init(coShader::Type::COMPUTE, path), nullptr);
-		coPushBack(shaders, shader.Release());
+		coUniquePtr<coShaderFile> file(new coShaderFile());
+		coTRY(file->Init(coShaderFile::Type::COMPUTE, path), nullptr);
+		coPushBack(files, file.Release());
 	}
 
-	coTRY(Init(shaders), nullptr);
+	coTRY(Init(files), nullptr);
 	return true;
 }
 
-coResult coShaderProgram::Init(const coArray<coShader*>& shaders_)
+coResult coShaderProgram::Init(const coArray<coShaderFile*>& files_)
 {
 	id = glCreateProgram();
 	coTRY(id, "glCreateProgram()");
 
-	for (const coShader* shader : shaders_)
+	for (const coShaderFile* file : files_)
 	{
-		glAttachShader(id, shader->_GetGLId());
+		glAttachShader(id, file->_GetGLId());
 		coTRY(glGetError() == GL_NO_ERROR, "glAttachShader()");
 	}
 	glLinkProgram(id);

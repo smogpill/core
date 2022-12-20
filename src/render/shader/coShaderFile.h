@@ -5,7 +5,7 @@
 
 class coConstString;
 
-class coShader
+class coShaderFile
 {
 public:
 	enum class Type
@@ -15,7 +15,7 @@ public:
 		FRAGMENT,
 		COMPUTE
 	};
-	~coShader();
+	~coShaderFile();
 	coResult Init(Type type_, const coConstString& path_);
 	GLuint _GetGLId() const { return id; }
 
