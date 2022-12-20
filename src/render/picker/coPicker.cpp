@@ -17,8 +17,6 @@ coPicker::~coPicker()
 	for (ModeInfo& modeInfo : modeInfos)
 	{
 		delete modeInfo.shaderProgram;
-		delete modeInfo.fragmentShader;
-		delete modeInfo.vertexShader;
 	}
 }
 
@@ -29,43 +27,22 @@ coResult coPicker::Init(coRenderContext& context_)
 	// Vertex
 	{
 		ModeInfo& info = modeInfos[coUint(Mode::VERTEX)];
-		info.vertexShader = new coShader();
-		coTRY(info.vertexShader->Init(coShader::Type::VERTEX, "shaders/render/VertexPicker"), nullptr);
-		info.fragmentShader = new coShader();
-		coTRY(info.fragmentShader->Init(coShader::Type::FRAGMENT, "shaders/render/VertexPicker"), nullptr);
 		info.shaderProgram = new coShaderProgram();
-		coDynamicArray<coShader*> shaderList;
-		coPushBack(shaderList, info.vertexShader);
-		coPushBack(shaderList, info.fragmentShader);
-		coTRY(info.shaderProgram->Init(shaderList), nullptr);
+		coTRY(info.shaderProgram->Init("shaders/render/VertexPicker"), nullptr);
 	}
 
 	// Triangle
 	{
 		ModeInfo& info = modeInfos[coUint(Mode::TRIANGLE)];
-		info.vertexShader = new coShader();
-		coTRY(info.vertexShader->Init(coShader::Type::VERTEX, "shaders/render/TrianglePicker"), nullptr);
-		info.fragmentShader = new coShader();
-		coTRY(info.fragmentShader->Init(coShader::Type::FRAGMENT, "shaders/render/TrianglePicker"), nullptr);
 		info.shaderProgram = new coShaderProgram();
-		coDynamicArray<coShader*> shaderList;
-		coPushBack(shaderList, info.vertexShader);
-		coPushBack(shaderList, info.fragmentShader);
-		coTRY(info.shaderProgram->Init(shaderList), nullptr);
+		coTRY(info.shaderProgram->Init("shaders/render/TrianglePicker"), nullptr);
 	}
 
 	// Mesh
 	{
 		ModeInfo& info = modeInfos[coUint(Mode::MESH)];
-		info.vertexShader = new coShader();
-		coTRY(info.vertexShader->Init(coShader::Type::VERTEX, "shaders/render/MeshPicker"), nullptr);
-		info.fragmentShader = new coShader();
-		coTRY(info.fragmentShader->Init(coShader::Type::FRAGMENT, "shaders/render/MeshPicker"), nullptr);
 		info.shaderProgram = new coShaderProgram();
-		coDynamicArray<coShader*> shaderList;
-		coPushBack(shaderList, info.vertexShader);
-		coPushBack(shaderList, info.fragmentShader);
-		coTRY(info.shaderProgram->Init(shaderList), nullptr);
+		coTRY(info.shaderProgram->Init("shaders/render/MeshPicker"), nullptr);
 		info.idShaderLocation = info.shaderProgram->GetUniformLocation("id");
 	}
 	

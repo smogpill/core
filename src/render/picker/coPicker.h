@@ -41,8 +41,6 @@ private:
 	class ModeInfo
 	{
 	public:
-		coShader* vertexShader = nullptr;
-		coShader* fragmentShader = nullptr;
 		coShaderProgram* shaderProgram = nullptr;
 		coInt idShaderLocation = -1;
 	};
