@@ -2,14 +2,18 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include "lang/result/coResult.h"
-
+#include <pattern/singleton/coSingleton.h>
 class coVec3;
 class coRenderView;
+class coRenderTexture;
+class coRenderFrameBuffer;
 class coPicker;
 
 class coRenderContext
 {
+	coDECLARE_SINGLETON(coRenderContext);
 public:
+	coRenderContext();
 	~coRenderContext();
 #ifdef coMSWINDOWS
 	coResult Init(HWND hwnd);
@@ -21,6 +25,11 @@ public:
 	coPicker* GetPicker() const { return picker; }
 
 	void Clear();
+	void BindTexture(coUint unit, const coRenderTexture&);
+	void UnbindTexture(coUint unit);
+	void UnbindAllTextures();
+
+	static const inline coUint8 maxNbTextureUnits = 32;
 
 private:
 	coResult Bind();
@@ -34,5 +43,5 @@ private:
 #endif
 	coRenderView* mainRenderView = nullptr;
 	coPicker* picker = nullptr;
-	//coUint maxNbTextureUnits = 0;
+	coUint32 boundTextureUnits = 0;
 };

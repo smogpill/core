@@ -33,7 +33,8 @@ public:
 	void Bind(BindMode mode);
 	void Unbind();
 	void Clear();
-	const coArray<coRenderTexture*>& GetTextures() const { return textures; }
+	coRenderTexture* GetTexture(coUint index = 0) const { return textures[index]; }
+	coUint GetNbTextures() const { return textures.count; }
 	GLuint GetGLID() const { return frameBufferObject; }
 private:
 	static coBool IsRenderBuffer(const AttachmentFormat& format);

@@ -25,15 +25,15 @@ coShader::~coShader()
 		delete file;
 }
 
-coResult coShader::Init(const coConstString& path, TypeMask types)
+coResult coShader::Init(const coConstString& path, StageMask stages)
 {
 	//coTRY(coExists(path), "Missing: "<<path);
 
-	typeMask = types;
+	stageMask = stages;
 
 	coDynamicString filePath;
 	
-	if (types & Type::VERTEX)
+	if (stages & Stage::VERTEX)
 	{
 		filePath = path;
 		filePath << ".vert.spv";
@@ -45,7 +45,7 @@ coResult coShader::Init(const coConstString& path, TypeMask types)
 		}
 	}
 
-	if (types & Type::GEOMETRY)
+	if (stages & Stage::GEOMETRY)
 	{
 		filePath = path;
 		filePath << ".geom.spv";
@@ -57,7 +57,7 @@ coResult coShader::Init(const coConstString& path, TypeMask types)
 		}
 	}
 
-	if (types & Type::FRAGMENT)
+	if (stages & Stage::FRAGMENT)
 	{
 		filePath = path;
 		filePath << ".frag.spv";
@@ -69,7 +69,7 @@ coResult coShader::Init(const coConstString& path, TypeMask types)
 		}
 	}
 	
-	if (types & Type::COMPUTE)
+	if (stages & Stage::COMPUTE)
 	{
 		filePath = path;
 		filePath << ".comp.spv";

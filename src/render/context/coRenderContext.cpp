@@ -4,12 +4,21 @@
 #include "render/context/coRenderContext.h"
 #include "render/picker/coPicker.h"
 #include "render/view/coRenderView.h"
+#include "render/texture/coRenderTexture.h"
 #include "debug/log/coLog.h"
 #include "lang/result/coResult_f.h"
 #include "platform/coOs.h"
 
+coDEFINE_SINGLETON(coRenderContext);
+
+coRenderContext::coRenderContext()
+{
+	coRenderContext::instance = this;
+}
+
 coRenderContext::~coRenderContext()
 {
+	coRenderContext::instance = nullptr;
 	delete picker;
 	delete mainRenderView;
 	if (hglrc)
@@ -197,4 +206,34 @@ coResult coRenderContext::InitOpengl()
 	//maxNbTextureUnits = maxComputeTextureImageUnits;
 	
 	return true;
+}
+
+void coRenderContext::BindTexture(coUint unit, const coRenderTexture& texture)
+{
+	coASSERT(unit < maxNbTextureUnits);
+	boundTextureUnits |= 1 << unit;
+	glActiveTexture(GL_TEXTURE0 + unit);
+	glBindTexture(GL_TEXTURE_2D, texture.GetGLID());
+}
+
+void coRenderContext::UnbindTexture(coUint unit)
+{
+	coASSERT(unit < maxNbTextureUnits);
+	boundTextureUnits &= ~(1 << unit);
+	glActiveTexture(GL_TEXTURE0 + unit);
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void coRenderContext::UnbindAllTextures()
+{
+	coUint32 units = boundTextureUnits;
+	coUint8 unit = 0;
+	while (units)
+	{
+		if (units & 1)
+			UnbindTexture(unit);
+		units >>= 1;
+		++unit;
+	}
+	boundTextureUnits = 0;
 }

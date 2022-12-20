@@ -15,16 +15,16 @@ class coUint32x4;
 class coShader
 {
 public:
-	enum Type
+	enum Stage
 	{
 		VERTEX = 1 << 0,
 		GEOMETRY = 1 << 1,
 		FRAGMENT = 1 << 2,
 		COMPUTE = 1 << 3
 	};
-	using TypeMask = coUint8;
+	using StageMask = coUint8;
 	~coShader();
-	coResult Init(const coConstString& path, TypeMask types);
+	coResult Init(const coConstString& path, StageMask stages);
 	void Bind();
 	void Unbind();
 	coInt GetUniformLocation(const coChar* name) const;
@@ -42,7 +42,7 @@ public:
 private:
 	coResult Init(const coArray<coShaderFile*>& files);
 
-	TypeMask typeMask = 0;
+	StageMask stageMask = 0;
 	GLuint id = 0;
 	coDynamicArray<coShaderFile*> files;
 };
