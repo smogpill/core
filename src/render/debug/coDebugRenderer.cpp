@@ -38,7 +38,7 @@ void coDebugRenderer::Shutdown(coEntity& entity)
 coResult coDebugRenderer::InitShaders()
 {
 	coUniquePtr<coShader> debugProgram = new coShader();
-	coTRY(debugProgram->Init("shaders/render/Debug"), nullptr);
+	coTRY(debugProgram->Init("shaders/render/Debug", coShader::VERTEX | coShader::FRAGMENT), nullptr);
 	shaderProgram = debugProgram.Release();
 	return true;
 }

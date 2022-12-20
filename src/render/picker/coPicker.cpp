@@ -27,21 +27,21 @@ coResult coPicker::Init(coRenderContext& context_)
 	{
 		ModeInfo& info = modeInfos[coUint(Mode::VERTEX)];
 		info.shaderProgram = new coShader();
-		coTRY(info.shaderProgram->Init("shaders/render/VertexPicker"), nullptr);
+		coTRY(info.shaderProgram->Init("shaders/render/VertexPicker", coShader::VERTEX | coShader::FRAGMENT), nullptr);
 	}
 
 	// Triangle
 	{
 		ModeInfo& info = modeInfos[coUint(Mode::TRIANGLE)];
 		info.shaderProgram = new coShader();
-		coTRY(info.shaderProgram->Init("shaders/render/TrianglePicker"), nullptr);
+		coTRY(info.shaderProgram->Init("shaders/render/TrianglePicker", coShader::VERTEX | coShader::FRAGMENT), nullptr);
 	}
 
 	// Mesh
 	{
 		ModeInfo& info = modeInfos[coUint(Mode::MESH)];
 		info.shaderProgram = new coShader();
-		coTRY(info.shaderProgram->Init("shaders/render/MeshPicker"), nullptr);
+		coTRY(info.shaderProgram->Init("shaders/render/MeshPicker", coShader::VERTEX | coShader::FRAGMENT), nullptr);
 		info.idShaderLocation = info.shaderProgram->GetUniformLocation("id");
 	}
 	

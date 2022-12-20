@@ -13,6 +13,10 @@
 #include "io/path/coPath_f.h"
 #include "pattern/pointer/coUniquePtr.h"
 
+// Notes:
+// - The types have to be provided by the user because compiled files might be leaking in the directory 
+// and we have no way of knowing if they are required or not.
+
 coShader::~coShader()
 {
 	glDeleteProgram(id);
@@ -21,46 +25,60 @@ coShader::~coShader()
 		delete file;
 }
 
-coResult coShader::Init(const coConstString& path)
+coResult coShader::Init(const coConstString& path, TypeMask types)
 {
 	//coTRY(coExists(path), "Missing: "<<path);
 
+	typeMask = types;
+
 	coDynamicString filePath;
 	
-	filePath = path;
-	filePath << ".vert.spv";
-	if (coExists(filePath))
+	if (types & Type::VERTEX)
 	{
-		coUniquePtr<coShaderFile> file(new coShaderFile());
-		coTRY(file->Init(coShaderFile::Type::VERTEX, path), nullptr);
-		coPushBack(files, file.Release());
+		filePath = path;
+		filePath << ".vert.spv";
+		if (coExists(filePath))
+		{
+			coUniquePtr<coShaderFile> file(new coShaderFile());
+			coTRY(file->Init(coShaderFile::Type::VERTEX, path), nullptr);
+			coPushBack(files, file.Release());
+		}
 	}
 
-	filePath = path;
-	filePath << ".geom.spv";
-	if (coExists(filePath))
+	if (types & Type::GEOMETRY)
 	{
-		coUniquePtr<coShaderFile> file(new coShaderFile());
-		coTRY(file->Init(coShaderFile::Type::GEOMETRY, path), nullptr);
-		coPushBack(files, file.Release());
+		filePath = path;
+		filePath << ".geom.spv";
+		if (coExists(filePath))
+		{
+			coUniquePtr<coShaderFile> file(new coShaderFile());
+			coTRY(file->Init(coShaderFile::Type::GEOMETRY, path), nullptr);
+			coPushBack(files, file.Release());
+		}
 	}
 
-	filePath = path;
-	filePath << ".frag.spv";
-	if (coExists(filePath))
+	if (types & Type::FRAGMENT)
 	{
-		coUniquePtr<coShaderFile> file(new coShaderFile());
-		coTRY(file->Init(coShaderFile::Type::FRAGMENT, path), nullptr);
-		coPushBack(files, file.Release());
+		filePath = path;
+		filePath << ".frag.spv";
+		if (coExists(filePath))
+		{
+			coUniquePtr<coShaderFile> file(new coShaderFile());
+			coTRY(file->Init(coShaderFile::Type::FRAGMENT, path), nullptr);
+			coPushBack(files, file.Release());
+		}
 	}
-
-	filePath = path;
-	filePath << ".comp.spv";
-	if (coExists(filePath))
+	
+	if (types & Type::COMPUTE)
 	{
-		coUniquePtr<coShaderFile> file(new coShaderFile());
-		coTRY(file->Init(coShaderFile::Type::COMPUTE, path), nullptr);
-		coPushBack(files, file.Release());
+		filePath = path;
+		filePath << ".comp.spv";
+		if (coExists(filePath))
+		{
+			coUniquePtr<coShaderFile> file(new coShaderFile());
+			coTRY(file->Init(coShaderFile::Type::COMPUTE, path), nullptr);
+			coPushBack(files, file.Release());
+		}
 	}
 
 	coTRY(Init(files), nullptr);
