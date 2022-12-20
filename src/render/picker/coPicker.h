@@ -6,7 +6,7 @@
 #include <math/vector/coUint32x2.h>
 #include <math/vector/coUint32x4.h>
 class coShaderFile;
-class coShaderProgram;
+class coShader;
 class coVec2;
 class coMat4;
 class coUint32x2;
@@ -41,7 +41,7 @@ private:
 	class ModeInfo
 	{
 	public:
-		coShaderProgram* shaderProgram = nullptr;
+		coShader* shaderProgram = nullptr;
 		coInt idShaderLocation = -1;
 	};
 	coUint32x2 Convert(const coVec2& pos) const;

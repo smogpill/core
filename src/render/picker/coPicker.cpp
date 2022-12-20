@@ -2,7 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "render/pch.h"
 #include "coPicker.h"
-#include "render/shader/coShaderProgram.h"
+#include "render/shader/coShader.h"
 #include "render/context/coRenderContext.h"
 #include "render/view/coRenderView.h"
 #include "render/buffer/coRenderFrameBuffer.h"
@@ -26,21 +26,21 @@ coResult coPicker::Init(coRenderContext& context_)
 	// Vertex
 	{
 		ModeInfo& info = modeInfos[coUint(Mode::VERTEX)];
-		info.shaderProgram = new coShaderProgram();
+		info.shaderProgram = new coShader();
 		coTRY(info.shaderProgram->Init("shaders/render/VertexPicker"), nullptr);
 	}
 
 	// Triangle
 	{
 		ModeInfo& info = modeInfos[coUint(Mode::TRIANGLE)];
-		info.shaderProgram = new coShaderProgram();
+		info.shaderProgram = new coShader();
 		coTRY(info.shaderProgram->Init("shaders/render/TrianglePicker"), nullptr);
 	}
 
 	// Mesh
 	{
 		ModeInfo& info = modeInfos[coUint(Mode::MESH)];
-		info.shaderProgram = new coShaderProgram();
+		info.shaderProgram = new coShader();
 		coTRY(info.shaderProgram->Init("shaders/render/MeshPicker"), nullptr);
 		info.idShaderLocation = info.shaderProgram->GetUniformLocation("id");
 	}

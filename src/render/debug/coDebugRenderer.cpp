@@ -2,7 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "render/pch.h"
 #include "render/debug/coDebugRenderer.h"
-#include "render/shader/coShaderProgram.h"
+#include "render/shader/coShader.h"
 #include "lang/result/coResult_f.h"
 #include <math/shape/coAabb_f.h>
 #include <math/vector/coVec3_f.h>
@@ -37,7 +37,7 @@ void coDebugRenderer::Shutdown(coEntity& entity)
 
 coResult coDebugRenderer::InitShaders()
 {
-	coUniquePtr<coShaderProgram> debugProgram = new coShaderProgram();
+	coUniquePtr<coShader> debugProgram = new coShader();
 	coTRY(debugProgram->Init("shaders/render/Debug"), nullptr);
 	shaderProgram = debugProgram.Release();
 	return true;

@@ -12,10 +12,10 @@ class coVec2;
 class coUint32x2;
 class coUint32x4;
 
-class coShaderProgram
+class coShader
 {
 public:
-	~coShaderProgram();
+	~coShader();
 	coResult Init(const coConstString& path);
 	void Bind();
 	void Unbind();

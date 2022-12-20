@@ -1,7 +1,7 @@
 // Copyright(c) 2021 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "render/pch.h"
-#include "coShaderProgram.h"
+#include "coShader.h"
 #include "coShaderFile.h"
 #include "lang/result/coResult_f.h"
 #include "math/matrix/coMat4.h"
@@ -13,7 +13,7 @@
 #include "io/path/coPath_f.h"
 #include "pattern/pointer/coUniquePtr.h"
 
-coShaderProgram::~coShaderProgram()
+coShader::~coShader()
 {
 	glDeleteProgram(id);
 	coCHECK(glGetError() == GL_NO_ERROR, "glDeleteProgram()");
@@ -21,7 +21,7 @@ coShaderProgram::~coShaderProgram()
 		delete file;
 }
 
-coResult coShaderProgram::Init(const coConstString& path)
+coResult coShader::Init(const coConstString& path)
 {
 	//coTRY(coExists(path), "Missing: "<<path);
 
@@ -67,7 +67,7 @@ coResult coShaderProgram::Init(const coConstString& path)
 	return true;
 }
 
-coResult coShaderProgram::Init(const coArray<coShaderFile*>& files_)
+coResult coShader::Init(const coArray<coShaderFile*>& files_)
 {
 	id = glCreateProgram();
 	coTRY(id, "glCreateProgram()");
@@ -99,67 +99,67 @@ coResult coShaderProgram::Init(const coArray<coShaderFile*>& files_)
 	return true;
 }
 
-void coShaderProgram::Bind()
+void coShader::Bind()
 {
 	glUseProgram(id);
 }
 
-void coShaderProgram::Unbind()
+void coShader::Unbind()
 {
 	glUseProgram(0);
 }
 
-coInt coShaderProgram::GetUniformLocation(const coChar* name) const
+coInt coShader::GetUniformLocation(const coChar* name) const
 {
 	return glGetUniformLocation(id, name);
 }
 
-void coShaderProgram::SetUniform(coInt location, coBool value)
+void coShader::SetUniform(coInt location, coBool value)
 {
 	glUniform1i(location, value);
 }
 
-void coShaderProgram::SetUniform(coInt location, coFloat value)
+void coShader::SetUniform(coInt location, coFloat value)
 {
 	glUniform1f(location, value);
 }
 
-void coShaderProgram::SetUniform(coInt location, const coVec2& value)
+void coShader::SetUniform(coInt location, const coVec2& value)
 {
 	glUniform2f(location, value.x, value.y);
 }
 
-void coShaderProgram::SetUniform(coInt location, const coVec3& value)
+void coShader::SetUniform(coInt location, const coVec3& value)
 {
 	glUniform3f(location, value.x, value.y, value.z);
 }
 
-void coShaderProgram::SetUniform(coInt location, const coVec4& value)
+void coShader::SetUniform(coInt location, const coVec4& value)
 {
 	glUniform4f(location, value.x, value.y, value.z, value.w);
 }
 
-void coShaderProgram::SetUniform(coInt location, coInt32 value)
+void coShader::SetUniform(coInt location, coInt32 value)
 {
 	glUniform1i(location, value);
 }
 
-void coShaderProgram::SetUniform(coInt location, coUint32 value)
+void coShader::SetUniform(coInt location, coUint32 value)
 {
 	glUniform1ui(location, value);
 }
 
-void coShaderProgram::SetUniform(coInt location, const coUint32x2& value)
+void coShader::SetUniform(coInt location, const coUint32x2& value)
 {
 	glUniform2ui(location, value.x, value.y);
 }
 
-void coShaderProgram::SetUniform(coInt location, const coUint32x4& value)
+void coShader::SetUniform(coInt location, const coUint32x4& value)
 {
 	glUniform4ui(location, value.x, value.y, value.z, value.w);
 }
 
-void coShaderProgram::SetUniform(coInt location, const coMat4& value)
+void coShader::SetUniform(coInt location, const coMat4& value)
 {
 	glUniformMatrix4fv(location, 1, GL_FALSE, &value.c0.x);
 }
