@@ -20,7 +20,7 @@ public:
 	}
 	coFORCE_INLINE coFloatx4(coFloat _xyzw) { coBitCast<__m128>(*this) = _mm_set_ps1(_xyzw); }
 	coFORCE_INLINE coFloatx4(coFloat _x, coFloat _y, coFloat _z, coFloat _w) { coBitCast<__m128>(*this) = _mm_set_ps(_w, _z, _y, _x); }
-	coFORCE_INLINE coFloatx4(coFloatx4 _xxxx, coFloatx4 _yyyy, coFloatx4 _zzzz, coFloatx4 _wwww)
+	coFORCE_INLINE coFloatx4(const coFloatx4& _xxxx, const coFloatx4& _yyyy, const coFloatx4& _zzzz, const coFloatx4& _wwww)
 	{
 		const __m128 xxxx = coBitCast<__m128>(_xxxx);
 		const __m128 yyyy = coBitCast<__m128>(_yyyy);
