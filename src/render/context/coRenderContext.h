@@ -7,6 +7,7 @@ class coVec3;
 class coRenderView;
 class coRenderTexture;
 class coRenderFrameBuffer;
+class coRenderSampler;
 class coPicker;
 
 class coRenderContext
@@ -26,8 +27,11 @@ public:
 
 	void Clear();
 	void BindTexture(coUint unit, const coRenderTexture&);
+	void BindSampler(coUint unit, const coRenderSampler&);
 	void UnbindTexture(coUint unit);
+	void UnbindSampler(coUint unit);
 	void UnbindAllTextures();
+	void UnbindAllSamplers();
 
 	static const inline coUint8 maxNbTextureUnits = 32;
 
@@ -44,4 +48,5 @@ private:
 	coRenderView* mainRenderView = nullptr;
 	coPicker* picker = nullptr;
 	coUint32 boundTextureUnits = 0;
+	coUint32 boundSamplerUnits = 0;
 };

@@ -15,8 +15,6 @@ public:
 	void SetNearestFiltering(coBool b) { nearestFiltering = b; }
 	void SetMipMaps(coBool b) { mipMaps = b; }
 	coUint32x2 GetSize() const { return size; }
-	void Bind(coUint unit);
-	static void Unbind(coUint unit);
 	GLuint GetGLID() const { return id; }
 
 	static inline const coUint8 maxNbUnits = 32; // No need more

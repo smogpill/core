@@ -21,7 +21,33 @@ coFORCE_INLINE constexpr coUint32 coMod16(coUint32 _a) { return _a & 15; }
 coFORCE_INLINE constexpr coUint32 coMod32(coUint32 _a) { return _a & 31; }
 coFORCE_INLINE constexpr coUint32 coPow2(coUint32 _a) { return _a * _a; }
 coFORCE_INLINE constexpr coUint32 coPow3(coUint32 _a) { return _a * _a * _a; }
+
+/// 0 returns 0
+coFORCE_INLINE coUint32 coHighestBitIndex(coUint32 _a)
+{
+#ifdef coMSVC_COMPILER
+	unsigned long ret;
+	_BitScanReverse(&ret, _a);
+	return ret;
+#else
+	return _a ? (32 - __builtin_clz(_a)) : 0;
+#endif
+}
+
+/// 0 returns 0
+coFORCE_INLINE coUint32 coLowestBitIndex(coUint32 _a)
+{
+#ifdef coMSVC_COMPILER
+	unsigned long ret;
+	_BitScanForward(&ret, _a);
+	return ret;
+#else
+	return _a ? (32 - __builtin_ctz(_a)) : 0;
+#endif
+}
+
 constexpr coUint32 coLog2Immediate(coUint32 x) { return (x == 1) ? 0 : 1 + coLog2Immediate(x / 2); }
+coFORCE_INLINE coUint32 coLog2(coUint32 x) { return coHighestBitIndex(x); }
 coFORCE_INLINE coUint32 coPow4(coUint32 _a) { const coUint32 a2 = _a * _a; return a2 * a2; }
 template <class F>
 coFORCE_INLINE coUint32 coSetFlag(coUint32 _mask, const F& _flags, coBool _onoff) { return _onoff ? (_mask | static_cast<coUint32>(_flags)) : (_mask & ~static_cast<coUint32>(_flags)); }
@@ -125,30 +151,6 @@ coFORCE_INLINE coUint32 coRand(coUint32& _seed, coUint32 from, coUint32 to)
 	return from + (coRand(_seed) % (to - from));
 }
 
-/// @param 0 returns 0
-coFORCE_INLINE coUint32 coHighestBitIndex(coUint32 _a)
-{
-#ifdef coMSVC_COMPILER
-	unsigned long ret;
-	_BitScanReverse(&ret, _a);
-	return ret;
-#else
-	return _a ? (32 - __builtin_clz(_a)) : 0;
-#endif
-}
-
-/// @param 0 returns 0
-coFORCE_INLINE coUint32 coLowestBitIndex(coUint32 _a)
-{
-#ifdef coMSVC_COMPILER
-	unsigned long ret;
-	_BitScanForward(&ret, _a);
-	return ret;
-#else
-	return _a ? (32 - __builtin_ctz(_a)) : 0;
-#endif
-}
-
 coFORCE_INLINE coUint32 coRevert(coUint32 _a)
 {
 	_a = ((_a & 0xaaaaaaaa) >> 1) | ((_a & 0x55555555) << 1);
@@ -166,4 +168,3 @@ coFORCE_INLINE coUint32 coRotl(coUint32 _a, coUint _shift)
 	return (_a << _shift) | (_a >> (32 - _shift));
 #endif
 }
-

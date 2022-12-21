@@ -2,6 +2,9 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 
+// Refs: 
+// [A Guide to Modern OpenGL Functions](https://github.com/fendevel/Guide-to-Modern-OpenGL-Functions)
+
 #include "platform/publicPch.h"
 
 //#include <gl/GL.h>

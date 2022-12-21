@@ -3,14 +3,13 @@
 #include "render/pch.h"
 #include "coRenderFrameBuffer.h"
 #include <lang/result/coResult_f.h>
-#include <pattern/scope/coScopeExit.h>
 #include <pattern/pointer/coUniquePtr.h>
 #include "../texture/coRenderTexture.h"
 #include "coRenderBuffer.h"
 
 coRenderFrameBuffer::coRenderFrameBuffer()
 {
-	glGenFramebuffers(1, &frameBufferObject);
+	glCreateFramebuffers(1, &id);
 }
 
 coRenderFrameBuffer::~coRenderFrameBuffer()
@@ -19,7 +18,7 @@ coRenderFrameBuffer::~coRenderFrameBuffer()
 		delete texture;
 	for (coRenderBuffer* buffer : buffers)
 		delete buffer;
-	glDeleteFramebuffers(1, &frameBufferObject);
+	glDeleteFramebuffers(1, &id);
 }
 
 coResult coRenderFrameBuffer::Init(const coUint32x2& size_, const coArray<AttachmentFormat>& attachmentFormats)
@@ -27,8 +26,6 @@ coResult coRenderFrameBuffer::Init(const coUint32x2& size_, const coArray<Attach
 	coTRY(size_.x <= GL_MAX_RENDERBUFFER_SIZE, nullptr);
 	coTRY(size_.y <= GL_MAX_RENDERBUFFER_SIZE, nullptr);
 	size = size_;
-	glBindFramebuffer(GL_FRAMEBUFFER, frameBufferObject);
-	coSCOPE_EXIT(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 
 	for (const AttachmentFormat& attachmentFormat : attachmentFormats)
 	{
@@ -48,11 +45,9 @@ coResult coRenderFrameBuffer::Init(const coUint32x2& size_, const coArray<Attach
 			stencil = true;
 
 			coUniquePtr<coRenderBuffer> buffer(new coRenderBuffer());
-			const GLuint id = buffer->GetGLID();
-			glBindRenderbuffer(GL_RENDERBUFFER, id);
-			glRenderbufferStorage(GL_RENDERBUFFER, internalFormat, size.x, size.y);
-			glBindRenderbuffer(GL_RENDERBUFFER, 0);
-			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, id);
+			const GLuint bufferID = buffer->GetGLID();
+			glNamedRenderbufferStorage(bufferID, internalFormat, size.x, size.y);
+			glNamedFramebufferRenderbuffer(id, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, bufferID);
 			coPushBack(buffers, buffer.Release());
 		}
 		else
@@ -75,7 +70,7 @@ coResult coRenderFrameBuffer::Init(const coUint32x2& size_, const coArray<Attach
 			}
 			case AttachmentFormat::DEPTH:
 			{
-				internalFormat = GL_DEPTH_COMPONENT;
+				internalFormat = GL_DEPTH_COMPONENT24;
 				formatGL = GL_DEPTH_COMPONENT;
 				typeGL = GL_FLOAT;
 				attachmentGL = GL_DEPTH_ATTACHMENT;
@@ -122,22 +117,20 @@ coResult coRenderFrameBuffer::Init(const coUint32x2& size_, const coArray<Attach
 			}
 
 			coUniquePtr<coRenderTexture> texture(new coRenderTexture());
-			const GLuint id = texture->GetGLID();
-			glBindTexture(GL_TEXTURE_2D, id);
-			glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, size.x, size.y, 0, formatGL, typeGL, nullptr);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
-			glBindTexture(GL_TEXTURE_2D, 0);
-			glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentGL, GL_TEXTURE_2D, id, 0);
+			const GLuint textureID = texture->GetGLID();
+			glTextureParameteri(textureID, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTextureParameteri(textureID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTextureParameteri(textureID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTextureParameteri(textureID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTextureParameteri(textureID, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+			glTextureParameteri(textureID, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+			glTextureStorage2D(textureID, 1, internalFormat, size.x, size.y);
+			glNamedFramebufferTexture(id, attachmentGL, textureID, 0);
 			coPushBack(textures, texture.Release());
 		}
 	}
 
-	const GLenum framebufferStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	const GLenum framebufferStatus = glCheckNamedFramebufferStatus(id, GL_FRAMEBUFFER);
 	coTRY(framebufferStatus == GL_FRAMEBUFFER_COMPLETE, nullptr);
 	return true;
 }
@@ -154,7 +147,7 @@ void coRenderFrameBuffer::Bind(BindMode mode)
 	case READ_WRITE: modeGL = GL_FRAMEBUFFER; read = write = true;  break;
 	default: coASSERT(false); modeGL = GL_FRAMEBUFFER; break;
 	}
-	glBindFramebuffer(modeGL, frameBufferObject);
+	glBindFramebuffer(modeGL, id);
 
 	if (write)
 	{
@@ -174,6 +167,10 @@ void coRenderFrameBuffer::Unbind()
 
 void coRenderFrameBuffer::Clear()
 {
+	//coFloat rgba[4] = 
+	//glClearNamedFramebufferfv(id, GL_COLOR, col_buff_index, &rgba);
+	//coFloat depth = 1.0f;
+	//glClearNamedFramebufferfv(id, GL_DEPTH, 0, &depth);
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }

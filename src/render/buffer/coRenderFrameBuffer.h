@@ -31,19 +31,19 @@ public:
 	coRenderFrameBuffer();
 	~coRenderFrameBuffer();
 	coResult Init(const coUint32x2& size, const coArray<AttachmentFormat>& attachmentFormats);
-	void Bind(BindMode mode);
+	void Bind(BindMode mode = BindMode::WRITE);
 	void Unbind();
 	void Clear();
 	coRenderTexture* GetTexture(coUint index = 0) const { return textures[index]; }
 	coUint GetNbTextures() const { return textures.count; }
-	GLuint GetGLID() const { return frameBufferObject; }
+	GLuint GetGLID() const { return id; }
 private:
 	static coBool IsRenderBuffer(const AttachmentFormat& format);
 
 	coDynamicArray<coRenderTexture*> textures;
 	coDynamicArray<coRenderBuffer*> buffers;
 	coUint32x2 size = coUint32x2(0);
-	GLuint frameBufferObject = GL_INVALID_VALUE;
+	GLuint id = 0;
 	coUint nbColorAttachments = 0;
 	coBool depth = false;
 	coBool stencil = false;

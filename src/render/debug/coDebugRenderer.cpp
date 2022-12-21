@@ -22,13 +22,16 @@ void coDebugRenderer::Init(coEntity& entity)
 	Base::Init(entity);
 	coDebugRenderer::SetInstance(this);
 	coTRY_NO_RESULT(InitShaders(), nullptr);
-	glGenVertexArrays(1, &vertexArrayObject);
-	glGenBuffers(1, &vertexBufferObject);
-	glGenBuffers(1, &elementBufferObject);
+	glCreateVertexArrays(1, &vertexArrayObject);
+	glCreateBuffers(1, &vertexBufferObject);
+	glCreateBuffers(1, &elementBufferObject);
 }
 
 void coDebugRenderer::Shutdown(coEntity& entity)
 {
+	glDeleteBuffers(1, &vertexBufferObject);
+	glDeleteBuffers(1, &elementBufferObject);
+	glDeleteVertexArrays(1, &vertexArrayObject);
 	delete shaderProgram;
 	shaderProgram = nullptr;
 	coDebugRenderer::SetInstance(nullptr);

@@ -29,7 +29,8 @@ public:
 		coUint32 u[2];
 	};
 
-	coResult Init();
+	coRenderMesh();
+	~coRenderMesh();
 	static void Fill(coArray<VertexP>& vertices, const coArray<coVec3>& positions);
 	static void Fill(coArray<VertexPN>& vertices, const coArray<coVec3>& positions, const coArray<coVec3>& normals);
 	template <class T>

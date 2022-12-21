@@ -5,6 +5,7 @@
 #include "render/picker/coPicker.h"
 #include "render/view/coRenderView.h"
 #include "render/texture/coRenderTexture.h"
+#include "render/sampler/coRenderSampler.h"
 #include "debug/log/coLog.h"
 #include "lang/result/coResult_f.h"
 #include "platform/coOs.h"
@@ -212,16 +213,28 @@ void coRenderContext::BindTexture(coUint unit, const coRenderTexture& texture)
 {
 	coASSERT(unit < maxNbTextureUnits);
 	boundTextureUnits |= 1 << unit;
-	glActiveTexture(GL_TEXTURE0 + unit);
-	glBindTexture(GL_TEXTURE_2D, texture.GetGLID());
+	glBindTextureUnit(unit, texture.GetGLID());
+}
+
+void coRenderContext::BindSampler(coUint unit, const coRenderSampler& sampler)
+{
+	coASSERT(unit < maxNbTextureUnits);
+	boundSamplerUnits |= 1 << unit;
+	glBindSampler(unit, sampler.GetGLID());
 }
 
 void coRenderContext::UnbindTexture(coUint unit)
 {
 	coASSERT(unit < maxNbTextureUnits);
 	boundTextureUnits &= ~(1 << unit);
-	glActiveTexture(GL_TEXTURE0 + unit);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindTextureUnit(unit, 0);
+}
+
+void coRenderContext::UnbindSampler(coUint unit)
+{
+	coASSERT(unit < maxNbTextureUnits);
+	boundSamplerUnits &= ~(1 << unit);
+	glBindSampler(unit, 0);
 }
 
 void coRenderContext::UnbindAllTextures()
@@ -236,4 +249,18 @@ void coRenderContext::UnbindAllTextures()
 		++unit;
 	}
 	boundTextureUnits = 0;
+}
+
+void coRenderContext::UnbindAllSamplers()
+{
+	coUint32 units = boundSamplerUnits;
+	coUint8 unit = 0;
+	while (units)
+	{
+		if (units & 1)
+			UnbindSampler(unit);
+		units >>= 1;
+		++unit;
+	}
+	boundSamplerUnits = 0;
 }

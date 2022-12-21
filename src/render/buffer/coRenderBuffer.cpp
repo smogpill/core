@@ -6,7 +6,7 @@
 
 coRenderBuffer::coRenderBuffer()
 {
-	glGenRenderbuffers(1, &id);
+	glCreateRenderbuffers(1, &id);
 }
 
 coRenderBuffer::~coRenderBuffer()

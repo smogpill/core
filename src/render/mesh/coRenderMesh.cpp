@@ -5,13 +5,18 @@
 #include "container/array/coDynamicArray_f.h"
 #include <lang/result/coResult_f.h>
 
-coResult coRenderMesh::Init()
+coRenderMesh::coRenderMesh()
 {
-	glGenVertexArrays(1, &vertexArrayObject);
-	glGenBuffers(1, &vertexBufferObject);
-	glGenBuffers(1, &elementBufferObject);
+    glCreateVertexArrays(1, &vertexArrayObject);
+    glCreateBuffers(1, &vertexBufferObject);
+    glCreateBuffers(1, &elementBufferObject);
+}
 
-	return true;
+coRenderMesh::~coRenderMesh()
+{
+    glDeleteBuffers(1, &vertexBufferObject);
+    glDeleteBuffers(1, &elementBufferObject);
+    glDeleteVertexArrays(1, &vertexArrayObject);
 }
 
 void coRenderMesh::Fill(coArray<VertexP>& vertices, const coArray<coVec3>& positions)
