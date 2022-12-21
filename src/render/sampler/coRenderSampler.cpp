@@ -6,7 +6,7 @@
 
 coRenderSampler::coRenderSampler()
 {
-	glGenSamplers(1, &glID);
+	glCreateSamplers(1, &glID);
 }
 
 coRenderSampler::~coRenderSampler()
