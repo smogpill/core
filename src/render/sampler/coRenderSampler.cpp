@@ -35,8 +35,9 @@ void coRenderSampler::SetWrapMode(WrapMode mode)
 		break;
 	}
 	}
-	glSamplerParameteri(glID, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_WRAP_S);
-	glSamplerParameteri(glID, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_T);
+	glSamplerParameteri(glID, GL_TEXTURE_WRAP_S, modeGL);
+	glSamplerParameteri(glID, GL_TEXTURE_WRAP_T, modeGL);
+	glSamplerParameteri(glID, GL_TEXTURE_WRAP_R, modeGL);
 }
 
 void coRenderSampler::SetFilterMode(FilterMode mode)
@@ -45,19 +46,19 @@ void coRenderSampler::SetFilterMode(FilterMode mode)
 	GLint minFilter;
 	switch (mode)
 	{
-	case FilterMode::NEAREST: magFilter = GL_NEAREST; minFilter = GL_NEAREST; break;
-	case FilterMode::LINEAR: magFilter = GL_LINEAR; minFilter = GL_LINEAR; break;
-	case FilterMode::LINEAR_MIPMAP_LINEAR: magFilter = GL_LINEAR; minFilter = GL_LINEAR_MIPMAP_LINEAR; break;
+	case FilterMode::NEAREST: minFilter = GL_NEAREST; magFilter = GL_NEAREST; break;
+	case FilterMode::LINEAR: minFilter = GL_LINEAR; magFilter = GL_LINEAR; break;
+	case FilterMode::LINEAR_MIPMAP_LINEAR: minFilter = GL_LINEAR_MIPMAP_LINEAR; magFilter = GL_LINEAR; break;
 	default:
 	{
 		coASSERT(false);
-		magFilter = GL_NEAREST;
 		minFilter = GL_NEAREST;
+		magFilter = GL_NEAREST;
 		break;
 	}
 	}
-	glSamplerParameteri(glID, GL_TEXTURE_MAG_FILTER, magFilter);
 	glSamplerParameteri(glID, GL_TEXTURE_MIN_FILTER, minFilter);
+	glSamplerParameteri(glID, GL_TEXTURE_MAG_FILTER, magFilter);
 }
 
 void coRenderSampler::SetMaxAnisotropy(coFloat anisotropy)

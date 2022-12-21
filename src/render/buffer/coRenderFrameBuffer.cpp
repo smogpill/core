@@ -122,8 +122,6 @@ coResult coRenderFrameBuffer::Init(const coUint32x2& size_, const coArray<Attach
 			glTextureParameteri(textureID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 			glTextureParameteri(textureID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTextureParameteri(textureID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			glTextureParameteri(textureID, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-			glTextureParameteri(textureID, GL_TEXTURE_COMPARE_MODE, GL_NONE);
 			glTextureStorage2D(textureID, 1, internalFormat, size.x, size.y);
 			glNamedFramebufferTexture(id, attachmentGL, textureID, 0);
 			coPushBack(textures, texture.Release());
