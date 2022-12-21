@@ -106,6 +106,14 @@ coResult coRenderFrameBuffer::Init(const coUint32x2& size_, const coArray<Attach
 				attachmentGL = GL_COLOR_ATTACHMENT0 + nbColorAttachments++;
 				break;
 			}
+			case AttachmentFormat::RGBA16F:
+			{
+				internalFormat = GL_RGBA16F;
+				formatGL = GL_RGBA;
+				typeGL = GL_FLOAT;
+				attachmentGL = GL_COLOR_ATTACHMENT0 + nbColorAttachments++;
+				break;
+			}
 			default:
 			{
 				coASSERT(false);

@@ -17,7 +17,8 @@ public:
 		DEPTH,
 		R32UI,
 		RGBA8,
-		RGBA16
+		RGBA16,
+		RGBA16F,
 	};
 
 	enum BindMode
