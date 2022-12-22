@@ -86,7 +86,7 @@ function coSetCppProjectDefaults(_name)
 	runtime "Release" -- Even on debug builds, Unreal is setup this way anyway. But can't use the CRT library memory leaks detector
 
 	flags { "NoMinimalRebuild", "FatalWarnings", "MultiProcessorCompile" }
-	files { "**.cpp", "**.h", "**.inl", "**.frag", "**.vert", "**.comp", "**.tesc", "**.tese", "**.geom", "**.importShaders"}
+	files { "**.cpp", "**.h", "**.inl", "**.frag", "**.vert", "**.comp", "**.tesc", "**.tese", "**.geom", "**.glsl", "**.importShaders"}
 
 	if os.isfile("pch.h") then
 		coSetPCH(co_projectDir, _name, "pch")
