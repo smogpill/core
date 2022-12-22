@@ -27,8 +27,7 @@ coFORCE_INLINE coUint32 coHighestBitIndex(coUint32 _a)
 {
 #ifdef coMSVC_COMPILER
 	unsigned long ret;
-	_BitScanReverse(&ret, _a);
-	return ret;
+	return _BitScanReverse(&ret, _a) ? ret : 0;
 #else
 	return _a ? (32 - __builtin_clz(_a)) : 0;
 #endif
@@ -39,8 +38,7 @@ coFORCE_INLINE coUint32 coLowestBitIndex(coUint32 _a)
 {
 #ifdef coMSVC_COMPILER
 	unsigned long ret;
-	_BitScanForward(&ret, _a);
-	return ret;
+	return _BitScanForward(&ret, _a) ? ret : 0;
 #else
 	return _a ? (32 - __builtin_ctz(_a)) : 0;
 #endif
