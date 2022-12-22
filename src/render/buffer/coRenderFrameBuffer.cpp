@@ -49,6 +49,7 @@ coResult coRenderFrameBuffer::Init(const coUint32x2& size_, const coArray<Attach
 
 			coUniquePtr<coRenderBuffer> buffer(new coRenderBuffer());
 			scratchString = GetDebugLabel();
+			scratchString << "_";
 			scratchString << buffers.count;
 			buffer->SetDebugLabel(scratchString);
 			const GLuint bufferID = buffer->GetGLID();
@@ -132,6 +133,7 @@ coResult coRenderFrameBuffer::Init(const coUint32x2& size_, const coArray<Attach
 
 			coUniquePtr<coRenderTexture> texture(new coRenderTexture());
 			scratchString = GetDebugLabel();
+			scratchString << "_";
 			scratchString << textures.count;
 			texture->SetDebugLabel(scratchString);
 			texture->_SetSize(size);
