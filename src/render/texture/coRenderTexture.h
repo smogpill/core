@@ -14,6 +14,7 @@ public:
 	coResult SetContent(const coImage& image);
 	void SetNearestFiltering(coBool b) { nearestFiltering = b; }
 	void SetMipMaps(coBool b) { mipMaps = b; }
+	void SetDebugLabel(const coConstString& label);
 	coUint32x2 GetSize() const { return size; }
 	GLuint GetGLID() const { return id; }
 

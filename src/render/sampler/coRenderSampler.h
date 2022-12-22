@@ -1,6 +1,7 @@
 // Copyright(c) 2022 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
+class coConstString;
 
 class coRenderSampler
 {
@@ -23,8 +24,9 @@ public:
 	void SetWrapMode(WrapMode);
 	void SetFilterMode(FilterMode mode);
 	void SetMaxAnisotropy(coFloat anisotropy);
-	GLuint GetGLID() const { return glID; }
+	void SetDebugLabel(const coConstString& label);
+	GLuint GetGLID() const { return id; }
 
 private:
-	GLuint glID = 0;
+	GLuint id = 0;
 };

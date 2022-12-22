@@ -5,6 +5,7 @@
 #include <io/file/format/image/coImage.h>
 #include <lang/result/coResult_f.h>
 #include <math/scalar/coUint32_f.h>
+#include "../context/coRenderContext.h"
 
 coRenderTexture::coRenderTexture()
 	: nearestFiltering(false)
@@ -21,6 +22,7 @@ coRenderTexture::~coRenderTexture()
 coResult coRenderTexture::SetContent(const coImage& image)
 {
 	coTRY(!image.IsEmpty(), nullptr);
+	SetDebugLabel(image.GetDebugLabel());
 	coTRY(id != GL_INVALID_VALUE, nullptr);
 
 	glTextureParameteri(id, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -66,4 +68,9 @@ coResult coRenderTexture::SetContent(const coImage& image)
 	
 	size = coUint32x2(image.width, image.height);
 	return true;
+}
+
+void coRenderTexture::SetDebugLabel(const coConstString& label)
+{
+	coRenderContext::SetGLDebugLabel(GL_TEXTURE, id, label);
 }

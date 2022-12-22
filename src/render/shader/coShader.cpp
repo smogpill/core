@@ -12,6 +12,7 @@
 #include "math/vector/coUint32x4.h"
 #include "io/path/coPath_f.h"
 #include "pattern/pointer/coUniquePtr.h"
+#include "../context/coRenderContext.h"
 
 // Notes:
 // - The types have to be provided by the user because compiled files might be leaking in the directory 
@@ -82,6 +83,14 @@ coResult coShader::Init(const coConstString& path, StageMask stages)
 	}
 
 	coTRY(Init(files), nullptr);
+
+#ifdef coDEV
+	{
+		coConstString fileName;
+		coGetFileName(fileName, path);
+		SetDebugLabel(fileName);
+	}
+#endif
 	return true;
 }
 
@@ -125,6 +134,11 @@ void coShader::Bind()
 void coShader::Unbind()
 {
 	glUseProgram(0);
+}
+
+void coShader::SetDebugLabel(const coConstString& s)
+{
+	coRenderContext::SetGLDebugLabel(GL_PROGRAM, id, s);
 }
 
 coInt coShader::GetUniformLocation(const coChar* name) const

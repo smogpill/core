@@ -8,6 +8,7 @@ class coRenderBuffer
 public:
 	coRenderBuffer();
 	~coRenderBuffer();
+	void SetDebugLabel(const coConstString& label);
 	GLuint GetGLID() const { return id; }
 private:
 	GLuint id = 0;

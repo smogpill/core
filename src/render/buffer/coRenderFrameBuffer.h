@@ -3,9 +3,10 @@
 #pragma once
 #include "lang/result/coResult.h"
 #include <math/vector/coUint32x2.h>
-
+#include <container/string/coDynamicString.h>
 class coRenderTexture;
 class coRenderBuffer;
+class coConstString;
 
 class coRenderFrameBuffer
 {
@@ -31,6 +32,8 @@ public:
 	coRenderFrameBuffer();
 	~coRenderFrameBuffer();
 	coResult Init(const coUint32x2& size, const coArray<AttachmentFormat>& attachmentFormats);
+	void SetDebugLabel(const coConstString&);
+	const coConstString& GetDebugLabel() const { return debugLabel; }
 	void Bind(BindMode mode = BindMode::WRITE);
 	void Unbind();
 	void Clear();
@@ -47,4 +50,5 @@ private:
 	coUint nbColorAttachments = 0;
 	coBool depth = false;
 	coBool stencil = false;
+	coDynamicString debugLabel;
 };

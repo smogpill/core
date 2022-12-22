@@ -4,6 +4,7 @@
 #include "render/mesh/coRenderMesh.h"
 #include "container/array/coDynamicArray_f.h"
 #include <lang/result/coResult_f.h>
+#include "../context/coRenderContext.h"
 
 coRenderMesh::coRenderMesh()
 {
@@ -88,4 +89,11 @@ void coRenderMesh::VertexPUx2::SetVertexAttribs()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPUx2), (void*)0);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_UNSIGNED_INT, GL_FALSE, sizeof(VertexPUx2), (void*)offsetof(VertexPUx2, u));
+}
+
+void coRenderMesh::SetDebugLabel(const coConstString& label)
+{
+    coRenderContext::SetGLDebugLabel(GL_VERTEX_ARRAY, vertexArrayObject, label);
+    coRenderContext::SetGLDebugLabel(GL_BUFFER, vertexBufferObject, label);
+    coRenderContext::SetGLDebugLabel(GL_BUFFER, elementBufferObject, label);
 }

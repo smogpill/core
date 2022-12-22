@@ -8,6 +8,8 @@
 #include "render/sampler/coRenderSampler.h"
 #include "debug/log/coLog.h"
 #include "lang/result/coResult_f.h"
+#include <container/string/coDynamicString_f.h>
+#include <math/scalar/coUint32_f.h>
 #include "platform/coOs.h"
 
 coDEFINE_SINGLETON(coRenderContext);
@@ -263,4 +265,12 @@ void coRenderContext::UnbindAllSamplers()
 		++unit;
 	}
 	boundSamplerUnits = 0;
+}
+
+void coRenderContext::SetGLDebugLabel(GLenum type, GLuint id, const coConstString& label)
+{
+#ifdef coDEV
+	if (label.count)
+		glObjectLabel(type, id, -1, label.data);
+#endif
 }

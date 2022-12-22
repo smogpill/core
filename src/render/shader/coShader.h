@@ -11,6 +11,7 @@ class coVec3;
 class coVec2;
 class coUint32x2;
 class coUint32x4;
+class coConstString;
 
 class coShader
 {
@@ -27,6 +28,7 @@ public:
 	coResult Init(const coConstString& path, StageMask stages);
 	void Bind();
 	void Unbind();
+	void SetDebugLabel(const coConstString&);
 	coInt GetUniformLocation(const coChar* name) const;
 	void SetUniform(coInt location, coBool value);
 	void SetUniform(coInt location, coFloat value);

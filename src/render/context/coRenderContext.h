@@ -32,6 +32,7 @@ public:
 	void UnbindSampler(coUint unit);
 	void UnbindAllTextures();
 	void UnbindAllSamplers();
+	static void SetGLDebugLabel(GLenum type, GLuint id, const coConstString& label);
 
 	static const inline coUint8 maxNbTextureUnits = 32;
 

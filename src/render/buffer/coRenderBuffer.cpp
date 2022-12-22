@@ -3,6 +3,7 @@
 #include "render/pch.h"
 #include "coRenderBuffer.h"
 #include <lang/result/coResult_f.h>
+#include "../context/coRenderContext.h"
 
 coRenderBuffer::coRenderBuffer()
 {
@@ -12,4 +13,9 @@ coRenderBuffer::coRenderBuffer()
 coRenderBuffer::~coRenderBuffer()
 {
 	glDeleteRenderbuffers(1, &id);
+}
+
+void coRenderBuffer::SetDebugLabel(const coConstString& label)
+{
+	coRenderContext::SetGLDebugLabel(GL_RENDERBUFFER, id, label);
 }

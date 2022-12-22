@@ -5,6 +5,7 @@
 #include <lang/result/coResult_f.h>
 #include <pattern/pointer/coUniquePtr.h>
 #include "../texture/coRenderTexture.h"
+#include "../context/coRenderContext.h"
 #include "coRenderBuffer.h"
 
 coRenderFrameBuffer::coRenderFrameBuffer()
@@ -27,6 +28,8 @@ coResult coRenderFrameBuffer::Init(const coUint32x2& size_, const coArray<Attach
 	coTRY(size_.y <= GL_MAX_RENDERBUFFER_SIZE, nullptr);
 	size = size_;
 
+	coDynamicString scratchString;
+
 	for (const AttachmentFormat& attachmentFormat : attachmentFormats)
 	{
 		if (IsRenderBuffer(attachmentFormat))
@@ -45,6 +48,9 @@ coResult coRenderFrameBuffer::Init(const coUint32x2& size_, const coArray<Attach
 			stencil = true;
 
 			coUniquePtr<coRenderBuffer> buffer(new coRenderBuffer());
+			scratchString = GetDebugLabel();
+			scratchString << buffers.count;
+			buffer->SetDebugLabel(scratchString);
 			const GLuint bufferID = buffer->GetGLID();
 			glNamedRenderbufferStorage(bufferID, internalFormat, size.x, size.y);
 			glNamedFramebufferRenderbuffer(id, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, bufferID);
@@ -117,6 +123,9 @@ coResult coRenderFrameBuffer::Init(const coUint32x2& size_, const coArray<Attach
 			}
 
 			coUniquePtr<coRenderTexture> texture(new coRenderTexture());
+			scratchString = GetDebugLabel();
+			scratchString << textures.count;
+			texture->SetDebugLabel(scratchString);
 			const GLuint textureID = texture->GetGLID();
 			glTextureParameteri(textureID, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			glTextureParameteri(textureID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -131,6 +140,12 @@ coResult coRenderFrameBuffer::Init(const coUint32x2& size_, const coArray<Attach
 	const GLenum framebufferStatus = glCheckNamedFramebufferStatus(id, GL_FRAMEBUFFER);
 	coTRY(framebufferStatus == GL_FRAMEBUFFER_COMPLETE, nullptr);
 	return true;
+}
+
+void coRenderFrameBuffer::SetDebugLabel(const coConstString& label)
+{
+	coRenderContext::SetGLDebugLabel(GL_FRAMEBUFFER, id, label);
+	debugLabel = label;
 }
 
 void coRenderFrameBuffer::Bind(BindMode mode)

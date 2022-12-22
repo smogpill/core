@@ -38,6 +38,7 @@ public:
 	template <class T>
 	void SetBuffers(const coArray<T>& vertices, const coArray<coUint32>& indices);
 	void SetBuffers(coUint nbVertices);
+	void SetDebugLabel(const coConstString& label);
 	void Draw();
 	void DrawAsPoints();
 

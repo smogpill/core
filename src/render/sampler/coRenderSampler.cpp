@@ -3,15 +3,16 @@
 #include "render/pch.h"
 #include "coRenderSampler.h"
 #include <math/scalar/coFloat_f.h>
+#include "../context/coRenderContext.h"
 
 coRenderSampler::coRenderSampler()
 {
-	glCreateSamplers(1, &glID);
+	glCreateSamplers(1, &id);
 }
 
 coRenderSampler::~coRenderSampler()
 {
-	glDeleteSamplers(1, &glID);
+	glDeleteSamplers(1, &id);
 }
 enum class WrapMode
 {
@@ -35,9 +36,9 @@ void coRenderSampler::SetWrapMode(WrapMode mode)
 		break;
 	}
 	}
-	glSamplerParameteri(glID, GL_TEXTURE_WRAP_S, modeGL);
-	glSamplerParameteri(glID, GL_TEXTURE_WRAP_T, modeGL);
-	glSamplerParameteri(glID, GL_TEXTURE_WRAP_R, modeGL);
+	glSamplerParameteri(id, GL_TEXTURE_WRAP_S, modeGL);
+	glSamplerParameteri(id, GL_TEXTURE_WRAP_T, modeGL);
+	glSamplerParameteri(id, GL_TEXTURE_WRAP_R, modeGL);
 }
 
 void coRenderSampler::SetFilterMode(FilterMode mode)
@@ -57,11 +58,16 @@ void coRenderSampler::SetFilterMode(FilterMode mode)
 		break;
 	}
 	}
-	glSamplerParameteri(glID, GL_TEXTURE_MIN_FILTER, minFilter);
-	glSamplerParameteri(glID, GL_TEXTURE_MAG_FILTER, magFilter);
+	glSamplerParameteri(id, GL_TEXTURE_MIN_FILTER, minFilter);
+	glSamplerParameteri(id, GL_TEXTURE_MAG_FILTER, magFilter);
 }
 
 void coRenderSampler::SetMaxAnisotropy(coFloat anisotropy)
 {
-	glSamplerParameterf(glID, GL_TEXTURE_MAX_ANISOTROPY, coMax(1.0f, anisotropy));
+	glSamplerParameterf(id, GL_TEXTURE_MAX_ANISOTROPY, coMax(1.0f, anisotropy));
+}
+
+void coRenderSampler::SetDebugLabel(const coConstString& label)
+{
+	coRenderContext::SetGLDebugLabel(GL_SAMPLER, id, label);
 }
