@@ -17,6 +17,7 @@ public:
 		D24S8,
 		DEPTH,
 		R32UI,
+		RG16F,
 		RGB16F,
 		RGBA8,
 		RGBA16,
