@@ -17,6 +17,7 @@ public:
 	void SetDebugLabel(const coConstString& label);
 	coUint32x2 GetSize() const { return size; }
 	GLuint GetGLID() const { return id; }
+	void _SetSize(const coUint32x2& size_) { size = size_; }
 
 	static inline const coUint8 maxNbUnits = 32; // No need more
 

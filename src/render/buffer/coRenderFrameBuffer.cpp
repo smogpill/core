@@ -91,6 +91,14 @@ coResult coRenderFrameBuffer::Init(const coUint32x2& size_, const coArray<Attach
 				attachmentGL = GL_COLOR_ATTACHMENT0 + nbColorAttachments++;
 				break;
 			}
+			case AttachmentFormat::RGB16F:
+			{
+				internalFormat = GL_RGB16F;
+				formatGL = GL_RGB;
+				typeGL = GL_FLOAT;
+				attachmentGL = GL_COLOR_ATTACHMENT0 + nbColorAttachments++;
+				break;
+			}
 			case AttachmentFormat::RGBA8:
 			{
 				internalFormat = GL_RGBA8;
@@ -126,6 +134,7 @@ coResult coRenderFrameBuffer::Init(const coUint32x2& size_, const coArray<Attach
 			scratchString = GetDebugLabel();
 			scratchString << textures.count;
 			texture->SetDebugLabel(scratchString);
+			texture->_SetSize(size);
 			const GLuint textureID = texture->GetGLID();
 			glTextureParameteri(textureID, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			glTextureParameteri(textureID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

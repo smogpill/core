@@ -271,6 +271,10 @@ void coRenderContext::SetGLDebugLabel(GLenum type, GLuint id, const coConstStrin
 {
 #ifdef coDEV
 	if (label.count)
-		glObjectLabel(type, id, -1, label.data);
+	{
+		coDynamicString s = label;
+		coNullTerminate(s);
+		glObjectLabel(type, id, -1, s.data);
+	}
 #endif
 }
