@@ -10,6 +10,7 @@
 #include "lang/result/coResult_f.h"
 #include <container/string/coDynamicString_f.h>
 #include <math/scalar/coUint32_f.h>
+#include <pattern/pointer/coUniquePtr.h>
 #include "platform/coOs.h"
 
 coDEFINE_SINGLETON(coRenderContext);
@@ -120,8 +121,9 @@ coResult coRenderContext::Init(HWND _hwnd)
 	}
 	mainRenderView->SetViewport(0, 0, rect.right - rect.left, rect.bottom - rect.top);
 
-	picker = new coPicker();
-	coTRY(picker->Init(*this), nullptr);
+	coUniquePtr<coPicker> pickerPtr = new coPicker();
+	coTRY(pickerPtr->Init(*this), nullptr);
+	picker = pickerPtr.Release();
 	return true;
 }
 
