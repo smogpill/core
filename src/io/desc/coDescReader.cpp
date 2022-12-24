@@ -51,7 +51,7 @@ coResult coDescReader::ReadExpression(coStringInputStream& stream, void* object,
 	{
 		PassWhitespace(stream);
 		coChar c = stream.ReadChar();
-		coTRY(c == ':', "Invalid value assignment");
+		coTRY(c == '=', "Invalid value assignment");
 		coIntPtr fieldPtr = coIntPtr(object) + field->offset8;
 		coASSERT(field->type);
 		coTRY(ReadFieldValue(stream, (void*)fieldPtr, *field->type), nullptr);
