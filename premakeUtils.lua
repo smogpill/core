@@ -13,6 +13,9 @@ function coInitParams(_params)
 	co_versionMajor = 0
 	co_versionMinor = 0
 	co_versionBuild = 0
+	if not co_shadersDir then
+		co_shadersDir = co_baseAbsPath.."/dev/shaders/"
+	end
 end
 
 function coSetWorkspaceDefaults(_name)
@@ -109,8 +112,8 @@ function coSetCppProjectDefaults(_name)
 	filter {"configurations:debug or dev or release"}
 
 	filter {'files:**.vert or **.frag or **.comp or **.geom'}
-		co_shadersFolder = "$(OutDir)/shaders/".._name
-		shaderOutPath = co_shadersFolder.."/%{file.name}.spv"
+		co_shadersProjectDir = co_shadersDir.._name
+		shaderOutPath = co_shadersProjectDir.."/%{file.name}.spv"
 		buildmessage 'Compiling %{file.relpath}'
 		buildcommands { '$(GLSLANG)/glslangValidator.exe -G -o "'..shaderOutPath ..'" %{file.relpath}' }
 		buildoutputs { shaderOutPath }

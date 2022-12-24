@@ -16,6 +16,8 @@ coResult coApp::OnInit(const coObject::InitConfig& _config)
 {
 	coTRY(Super::OnInit(_config), nullptr);
 
+	coTRY(coInitDefaultDirs(), "Failed to init default dirs");
+
 	//const InitConfig& config = static_cast<InitConfig>(_config);
 
 	renderManager = new coRenderManager();
