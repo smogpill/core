@@ -190,6 +190,13 @@ coDynamicString coJoinPaths(const coConstString& a, const coConstString& b)
 	return out;
 }
 
+coDynamicString coJoinPaths3(const coConstString& a, const coConstString& b, const coConstString& c)
+{
+	coDynamicString out;
+	coJoinPaths(out, coJoinPaths(a, b), c);
+	return out;
+}
+
 void coGetParentDir(coConstString& _out, const coConstString& _this)
 {
 	coASSERT(coIsPathNormalized(_this));

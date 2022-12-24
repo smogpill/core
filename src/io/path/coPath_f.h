@@ -24,3 +24,4 @@ coBool coIsDotOrDoubleDot(const coConstString& _this);
 coBool coIsDotHiddenPath(const coConstString& _this);
 void coJoinPaths(coDynamicString& _out, const coConstString& _a, const coConstString& _b);
 coDynamicString coJoinPaths(const coConstString& a, const coConstString& b);
+coDynamicString coJoinPaths3(const coConstString& a, const coConstString& b, const coConstString& c);
