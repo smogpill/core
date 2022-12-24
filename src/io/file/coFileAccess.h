@@ -31,6 +31,7 @@ public:
 	const coConstString& GetName() const;
 	coResult GetTime(coUint64& _creationTime, coUint64& _lastAccessTime, coUint64& _lastWriteTime) const;
 	coResult Write(const coArray<coByte>& buffer);
+	coResult Write(const void* buffer, coUint32 size);
 	coResult Read(coArray<coByte>& buffer);
 	coResult Flush();
 	virtual const coConstString& GetDebugName() const override { return path; }

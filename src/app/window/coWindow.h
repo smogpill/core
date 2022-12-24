@@ -31,6 +31,7 @@ public:
 	coWindow();
 	virtual ~coWindow();
 
+	coResult SetFullscreen(coBool);
 	coResult SetShowState(const ShowState& _state);
 	ShowState GetShowState() const { return showState; }
 	coResult SetForeground();
@@ -40,6 +41,7 @@ public:
 	coRenderContext* GetRenderContext() const { return renderContext; };
 	coInputContext* GetInputContext() const { return inputContext; }
 	coBool _ProcessWindowMessages(UINT msg, WPARAM wParam, LPARAM lParam, LRESULT& result);
+	coBool IsFullscreen() const { return fullscreen; }
 	coImgui* GetImgui() const { return imgui; }
 	void Destroy();
 #ifdef coMSWINDOWS
@@ -71,4 +73,5 @@ private:
 #endif
 	coRenderContext* renderContext = nullptr;
 	coInputContext* inputContext = nullptr;
+	coBool fullscreen = false;
 };

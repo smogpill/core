@@ -4,6 +4,11 @@
 #include "container/string/coDynamicString.h"
 #include "container/string/coConstString.h"
 #include "container/array/coDynamicArray_f.h"
+#include "container/array/dynamic/coDynamicArrayType_f.h"
+#include <lang/reflect/coTypeDecl_f.h>
+
+coBEGIN_CLASS(coDynamicString);
+coEND_CLASS();
 
 coDynamicString::coDynamicString(const coConstString& _s)
 	: coDynamicString()

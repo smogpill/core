@@ -30,6 +30,7 @@ static LRESULT CALLBACK coWindowProc(HWND _hwnd, UINT _msg, WPARAM _wParam, LPAR
 	{
 		switch (_wParam)
 		{
+		case VK_RETURN: coCHECK(window->SetFullscreen(!window->IsFullscreen()), nullptr); break;
 		case VK_ESCAPE: ::PostQuitMessage(0); break;
 		}
 		break;
@@ -72,6 +73,10 @@ static LRESULT CALLBACK coWindowProc(HWND _hwnd, UINT _msg, WPARAM _wParam, LPAR
 		switch (_wParam & 0xfff0)
 		{
 		case SC_MINIMIZE:
+		{
+			break;
+		}
+		case SC_MAXIMIZE:
 		{
 			break;
 		}

@@ -7,6 +7,7 @@
 #include "io/file/coFileAccess.h"
 #include "lang/result/coResult_f.h"
 #include "lang/reflect/coNumericLimits.h"
+#include "../dir/coDirectory_f.h"
 
 coResult coGetFileSize(coUint64& _size8, const coConstString& _path)
 {
@@ -94,5 +95,19 @@ coResult coDumpTGA(const coConstString& path, coUint width, coUint height, const
 		coTRY(file.Write(coArray<coByte>(reinterpret_cast<coByte*>(&header), sizeof(header))), nullptr);
 		coTRY(file.Write(reorderedBuffer), nullptr);
 	}
+	return true;
+}
+
+coResult coEasyWriteToFile(const coConstString& rawPath, const coConstString& content)
+{
+	coDynamicString path = rawPath;
+	coNormalizePath(path);
+	coTRY(coCreateDirsIfMissing(path), nullptr);
+	coFileAccess file;
+	coFileAccess::InitConfig c;
+	c.mode = coFileAccess::write;
+	c.path = path;
+	coTRY(file.Init(c), nullptr);
+	coTRY(file.Write(content.data, content.count), nullptr);
 	return true;
 }

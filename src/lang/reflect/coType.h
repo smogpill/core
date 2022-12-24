@@ -34,6 +34,7 @@ public:
 	coBool IsCompatibleWith(const coType& type) const;
 	template <class T>
 	coBool IsCompatibleWith() const { return IsCompatibleWith(*T::GetStaticType()); }
+	coField* FindField(const coConstString& name) const;
 
 	coUint32 size8 = 0;
 	coUint32 alignment8 = 0;

@@ -37,6 +37,14 @@ void coWindow::DestroyInstance()
 	OnImplInstanceDestroy();
 }
 
+coResult coWindow::SetFullscreen(coBool b)
+{
+	if (fullscreen == b)
+		return true;
+	fullscreen = b;
+	return true;
+}
+
 coResult coWindow::SetShowState(const ShowState& _state)
 {
 	if (showState == _state)

@@ -1,22 +1,29 @@
-// Copyright(c) 2016 Jounayd Id Salah
+// Copyright(c) 2016-2022 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
-
 #include "io/stream/coInputStream.h"
+class coDynamicString;
 
 class coStringInputStream final : public coInputStream
 {
 	coDECLARE_BASE(coInputStream);
 public:
 	coStringInputStream(const coArray<coByte>& buffer);
-	void PassHorizontalWhitespace();
-	void PassWhitespace();
-	void PassLine();
+	coBool PassHorizontalWhitespace();
+	coBool PassVerticalWhitespace();
+	coBool PassWhitespace();
+	coBool PassWhitespaceAndCountLines(coUint32& lines);
+	coBool PassLine();
 	coBool IsEndOfLine() const;
 	coChar ReadChar() { return pos < buffer.count ? buffer.data[pos++] : '\0'; }
 	coChar GetChar() const { return pos < buffer.count ? buffer.data[pos] : '\0'; }
+	coChar GetChar(coUint32 offset) const { coUint32 pos2 = pos + offset; return pos2 < buffer.count ? buffer.data[pos2] : '\0'; }
+	coBool ReadIdentifier(coConstString&);
+	coBool ReadString(coConstString&, coChar delimiter = '"');
+
 	friend coStringInputStream& operator >> (coStringInputStream& stream, coFloat& v);
 	friend coStringInputStream& operator >> (coStringInputStream& stream, coUint32& v);
+	//friend coStringInputStream& operator >> (coStringInputStream& stream, coDynamicString& v);
 // 	coStringInputStream& operator >> (coChar&);
 // 	coStringInputStream& operator >> (coInt8&);
 // 	coStringInputStream& operator >> (coInt16&);
@@ -120,6 +127,7 @@ public:
 
 coStringInputStream& operator >> (coStringInputStream& stream, coUint32& v);
 coStringInputStream& operator >> (coStringInputStream& stream, coFloat& v);
+//coStringInputStream& operator >> (coStringInputStream& stream, coDynamicString& v);
 
 // 
 // inline coStringInputStream& coStringInputStream::operator >> (coFloat64& _v)

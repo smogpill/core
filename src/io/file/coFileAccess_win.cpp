@@ -149,10 +149,15 @@ void coFileAccess::OnImplConstruct()
 
 coResult coFileAccess::Write(const coArray<coByte>& buffer)
 {
+	return Write(buffer.data, buffer.count);
+}
+
+coResult coFileAccess::Write(const void* buffer, coUint32 size)
+{
 	HANDLE& handle = static_cast<HANDLE&>(impl);
 	coTRY(handle != INVALID_HANDLE_VALUE, nullptr);
 	DWORD writtenSize8 = 0;
-	const BOOL res = ::WriteFile(handle, buffer.data, buffer.count, &writtenSize8, nullptr);
+	const BOOL res = ::WriteFile(handle, buffer, size, &writtenSize8, nullptr);
 	if (res == FALSE)
 	{
 		coDynamicString str;
@@ -160,7 +165,7 @@ coResult coFileAccess::Write(const coArray<coByte>& buffer)
 		coERROR("Failed to write to the file " << GetDebugName() << ": " << str);
 		return false;
 	}
-	coTRY(buffer.count == writtenSize8, nullptr);
+	coTRY(size == writtenSize8, nullptr);
 	return true;
 }
 

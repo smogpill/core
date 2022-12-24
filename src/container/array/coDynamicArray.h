@@ -32,3 +32,4 @@ public:
 	coDynamicArray<T>& operator=(const coDynamicArray<T>&); // Weird that we need this, the compiler does not like the coArray<> version.
 	void Read(coBinaryInputStream& stream);
 };
+

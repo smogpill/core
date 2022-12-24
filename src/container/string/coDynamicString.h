@@ -2,13 +2,13 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include "container/array/coDynamicArray.h"
-
 class coConstString;
 class coString;
 
 class coDynamicString : public coDynamicArray<coChar>
 {
-	typedef coDynamicArray<coChar> Super;
+	coDECLARE_BASE(coDynamicArray<coChar>);
+	coDECLARE_CLASS_NO_POLYMORPHISM(coDynamicString);
 public:
 	coDynamicString() = default;
 	coDynamicString(coDynamicString&& _);

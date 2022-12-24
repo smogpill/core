@@ -58,3 +58,11 @@ void coType::Init(coType* type)
 	if (initTypeFunc)
 		initTypeFunc(type, nullptr);
 }
+
+coField* coType::FindField(const coConstString& name_) const
+{
+	for (coField* field : fields)
+		if (field->name == name_)
+			return field;
+	return nullptr;
+}

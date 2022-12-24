@@ -11,46 +11,117 @@ coStringInputStream::coStringInputStream(const coArray<coByte>& buffer)
 
 }
 
-void coStringInputStream::PassHorizontalWhitespace()
+coBool coStringInputStream::PassHorizontalWhitespace()
 {
+	const coUint32 originPos = pos;
 	while (pos < buffer.count)
 	{
 		if (!coIsHorizontalWhitespace(buffer.data[pos]))
 			break;
 		++pos;
 	}
+	return pos != originPos;
 }
 
-void coStringInputStream::PassWhitespace()
+coBool coStringInputStream::PassVerticalWhitespace()
 {
-	while (pos < buffer.count)
-	{
-		if (!coIsWhitespace(buffer.data[pos]))
-			break;
-		++pos;
-	}
-}
-
-void coStringInputStream::PassLine()
-{
-	while (pos < buffer.count)
-	{
-		if (coIsVerticalWhitespace(buffer.data[pos]))
-			break;
-		++pos;
-	}
+	const coUint32 originPos = pos;
 	while (pos < buffer.count)
 	{
 		if (!coIsVerticalWhitespace(buffer.data[pos]))
 			break;
 		++pos;
 	}
+	return pos != originPos;
+}
+
+coBool coStringInputStream::PassWhitespaceAndCountLines(coUint32& lines)
+{
+	lines = 0;
+	const coUint32 originPos = pos;
+	do
+	{
+		PassWhitespace();
+		if (!coIsVerticalWhitespace(buffer.data[pos]))
+			break;
+		PassVerticalWhitespace();
+		++lines;
+	} while (true);
+	return pos != originPos;
+}
+
+coBool coStringInputStream::PassWhitespace()
+{
+	const coUint32 originPos = pos;
+	while (pos < buffer.count)
+	{
+		if (!coIsWhitespace(buffer.data[pos]))
+			break;
+		++pos;
+	}
+	return pos != originPos;
+}
+
+coBool coStringInputStream::PassLine()
+{
+	const coUint32 originPos = pos;
+	while (pos < buffer.count)
+	{
+		if (coIsVerticalWhitespace(buffer.data[pos]))
+			break;
+		++pos;
+	}
+	PassVerticalWhitespace();
+	return pos != originPos;
 }
 
 coBool coStringInputStream::IsEndOfLine() const
 {
 	coASSERT(pos < buffer.count);
 	return pos == buffer.count || coIsVerticalWhitespace(buffer.data[pos]);
+}
+
+coBool coStringInputStream::ReadIdentifier(coConstString& value)
+{
+	if (!coIsIdentifierHeadCompatible(GetChar()))
+		return false;
+	coConstString identifier;
+	coUint32 offset = 1;
+	while (coIsIdentifierBodyCompatible(GetChar(offset)))
+		++offset;
+	value.data = reinterpret_cast<const coChar*>(&buffer.data[pos]);
+	value.count = offset;
+	pos += offset;
+	return true;
+}
+
+coBool coStringInputStream::ReadString(coConstString& value, coChar delimiter)
+{
+	if (GetChar() != delimiter)
+		return false;
+	++pos;
+	coUint32 offset = 0;
+	do
+	{
+		const coChar c = GetChar(offset);
+		if (c == delimiter)
+		{
+			value.data = reinterpret_cast<const coChar*>(&buffer[pos]);
+			value.count = offset++;
+			break;
+		}
+		else if (c == '\0')
+		{
+			return false;
+		}
+		else
+		{
+			++offset;
+		}
+	} while (true);
+
+	pos += offset;
+	return true;
 }
 
 coStringInputStream& operator >> (coStringInputStream& stream, coUint32& v)
@@ -89,3 +160,16 @@ coStringInputStream& operator >> (coStringInputStream& stream, coFloat& v)
 	v = coFloat(atof(s));
 	return stream;
 }
+
+/*
+coStringInputStream& operator >> (coStringInputStream& stream, coDynamicString& v)
+{
+	coClear(v);
+	coUint32 count = 0;
+	stream >> count;
+	if (count)
+	{
+
+	}
+}
+*/
