@@ -5,6 +5,8 @@
 #include "test/unit/coTest.h"
 #include "test/unit/internal/coTestInfo.h"
 #include "container/array/coDynamicArray_f.h"
+#include <debug/log/coLogHandler.h>
+#include <debug/log/coDefaultLogHandler.h>
 
 coDEFINE_SINGLETON(coTestRegistry);
 
@@ -18,6 +20,7 @@ void coTestRegistry::RunAllTests()
 	for (const _coTestInfo* info : testInfos)
 	{
 		coASSERT(info);
+		coINFO("[ RUN      ] " << info->testCaseName << "." << info->testName);
 		coTest* test = info->factory.CreateTest();
 		coASSERT(test);
 		test->ExecuteBody();

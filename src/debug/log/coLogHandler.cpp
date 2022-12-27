@@ -4,3 +4,15 @@
 #include "debug/log/coLogHandler.h"
 
 coDEFINE_SINGLETON(coLogHandler);
+
+coLogHandler::coLogHandler()
+{
+	coASSERT(coLogHandler::instance == nullptr);
+	coLogHandler::instance = this;
+}
+
+coLogHandler::~coLogHandler()
+{
+	if (coLogHandler::instance)
+		coLogHandler::instance = nullptr;
+}

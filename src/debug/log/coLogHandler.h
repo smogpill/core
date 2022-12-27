@@ -10,7 +10,8 @@ class coLogHandler
 {
 	coDECLARE_SINGLETON(coLogHandler);
 public:
-	virtual ~coLogHandler() {}
+	coLogHandler();
+	virtual ~coLogHandler();
 
 	virtual void Log(coLogType _type, const coConstString& _file, coUint _line, const coConstString& _message) {}
 };
