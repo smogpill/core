@@ -16,6 +16,7 @@ public:
 	void Clear();
 	void ShrinkToFit();
 	coUint32 AddFace(coUint32 faceIdx, coUint32 nbHalfEdges);
+	coUint32 AddFace(coUint32 faceIdx, const coArray<coVec3>& vertices);
 	void SetTwins(coUint32 edgeA, coUint32 edgeB);
 	void RemoveHalfEdge(coUint32 edgeIdx);
 	void CheckManifoldExceptHoles() const;
@@ -33,6 +34,7 @@ public:
 	coUint32 GetNbFaces() const;
 	coUint32 GetNbNonDegenerateFaces() const;
 	coUint32 GetNbDegenerateFaces() const;
+	coUint32 GetNbAliveEdges() const;
 	template <class F>
 	void VisitFaces(F functor) const;
 	void ClearCheckedFlags() const;
