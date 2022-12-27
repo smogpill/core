@@ -58,7 +58,7 @@ coTEST(coDissolveFlatVertices, simple)
 	coEXPECT(dcel.GetNbAliveEdges() == 3);
 }
 
-coTEST(coDissolveFlatVertices, LeftTwin)
+coTEST(coDissolveFlatVertices, Twin0)
 {
 	coDCEL dcel;
 	dcel.vertices =
@@ -77,4 +77,121 @@ coTEST(coDissolveFlatVertices, LeftTwin)
 	coDissolveFlatVertices(dcel, 0.01f);
 	coEXPECT(dcel.GetNbNonDegenerateFaces() == 2);
 	coEXPECT(dcel.GetNbAliveEdges() == 7);
+}
+
+coTEST(coDissolveFlatVertices, Twin1)
+{
+	coDCEL dcel;
+	dcel.vertices =
+	{
+		coVec3(0, 0, 0),
+		coVec3(0.5f, 0, 0),
+		coVec3(1, 0, 0),
+		coVec3(1, -1, 0),
+		coVec3(0, 1, 0)
+	};
+
+	const coUint32 a0 = dcel.AddFace(0, coDynamicArray<coUint32>({ 0, 1, 2, 3 }));
+	const coUint32 b0 = dcel.AddFace(1, coDynamicArray<coUint32>({ 2, 1, 4 }));
+	dcel.halfEdges[a0+1].twin = b0;
+	dcel.halfEdges[b0].twin = a0+1;
+	coDissolveFlatVertices(dcel, 0.01f);
+	coEXPECT(dcel.GetNbNonDegenerateFaces() == 2);
+	coEXPECT(dcel.GetNbAliveEdges() == 7);
+}
+
+coTEST(coDissolveFlatVertices, twoSeparateTwinFaces)
+{
+	coDCEL dcel;
+	dcel.vertices =
+	{
+		coVec3(0, 0, 0),
+		coVec3(0.5f, 0, 0),
+		coVec3(1, 0, 0),
+		coVec3(1, -1, 0),
+		coVec3(0, 1, 0),
+		coVec3(1, 1, 0),
+	};
+
+	const coUint32 a0 = dcel.AddFace(0, coDynamicArray<coUint32>({ 0, 1, 2, 3 }));
+	const coUint32 b0 = dcel.AddFace(1, coDynamicArray<coUint32>({ 1, 0, 4 }));
+	const coUint32 c0 = dcel.AddFace(1, coDynamicArray<coUint32>({ 2, 1, 5 }));
+	dcel.halfEdges[a0].twin = b0;
+	dcel.halfEdges[b0].twin = a0;
+	dcel.halfEdges[a0 + 1].twin = c0;
+	dcel.halfEdges[c0].twin = a0 + 1;
+	coDissolveFlatVertices(dcel, 0.01f);
+	coEXPECT(dcel.GetNbNonDegenerateFaces() == 3);
+	coEXPECT(dcel.GetNbAliveEdges() == 10);
+}
+
+coTEST(coDissolveFlatVertices, twoTwinFacesTwinAsWell)
+{
+	coDCEL dcel;
+	dcel.vertices =
+	{
+		coVec3(0, 0, 0),
+		coVec3(0.5f, 0, 0),
+		coVec3(1, 0, 0),
+		coVec3(1, -1, 0),
+		coVec3(0, 1, 0),
+	};
+
+	const coUint32 a0 = dcel.AddFace(0, coDynamicArray<coUint32>({ 0, 1, 2, 3 }));
+	const coUint32 b0 = dcel.AddFace(1, coDynamicArray<coUint32>({ 1, 0, 4 }));
+	const coUint32 c0 = dcel.AddFace(1, coDynamicArray<coUint32>({ 2, 1, 4 }));
+	dcel.halfEdges[a0].twin = b0;
+	dcel.halfEdges[b0].twin = a0;
+	dcel.halfEdges[a0 + 1].twin = c0;
+	dcel.halfEdges[c0].twin = a0 + 1;
+	dcel.halfEdges[b0 + 2].twin = c0 + 1;
+	dcel.halfEdges[c0 + 1].twin = b0 + 2;
+	coDissolveFlatVertices(dcel, 0.01f);
+	coEXPECT(dcel.GetNbNonDegenerateFaces() == 3);
+	coEXPECT(dcel.GetNbAliveEdges() == 10);
+}
+
+coTEST(coDissolveFlatVertices, twinToDissolve)
+{
+	coDCEL dcel;
+	dcel.vertices =
+	{
+		coVec3(0, 0, 0),
+		coVec3(0.5f, 0, 0),
+		coVec3(1, 0, 0),
+		coVec3(1, -1, 0),
+		coVec3(0, 1, 0),
+	};
+
+	const coUint32 a0 = dcel.AddFace(0, coDynamicArray<coUint32>({ 0, 1, 2, 3 }));
+	const coUint32 b0 = dcel.AddFace(1, coDynamicArray<coUint32>({ 2, 1, 0, 4 }));
+	dcel.halfEdges[a0].twin = b0 + 1;
+	dcel.halfEdges[b0 + 1].twin = a0;
+	dcel.halfEdges[a0 + 1].twin = b0;
+	dcel.halfEdges[b0].twin = a0 + 1;
+	coDissolveFlatVertices(dcel, 0.01f);
+	coEXPECT(dcel.GetNbNonDegenerateFaces() == 2);
+	coEXPECT(dcel.GetNbAliveEdges() == 6);
+}
+
+coTEST(coDissolveFlatVertices, twinBecomingDegenerate)
+{
+	coDCEL dcel;
+	dcel.vertices =
+	{
+		coVec3(0, 0, 0),
+		coVec3(0.5f, 0, 0),
+		coVec3(1, 0, 0),
+		coVec3(1, -1, 0),
+	};
+
+	const coUint32 a0 = dcel.AddFace(0, coDynamicArray<coUint32>({ 0, 1, 2, 3 }));
+	const coUint32 b0 = dcel.AddFace(1, coDynamicArray<coUint32>({ 2, 1, 0 }));
+	dcel.halfEdges[a0].twin = b0 + 1;
+	dcel.halfEdges[b0 + 1].twin = a0;
+	dcel.halfEdges[a0 + 1].twin = b0;
+	dcel.halfEdges[b0].twin = a0 + 1;
+	coDissolveFlatVertices(dcel, 0.01f);
+	coEXPECT(dcel.GetNbNonDegenerateFaces() == 1);
+	coEXPECT(dcel.GetNbAliveEdges() == 3);
 }
