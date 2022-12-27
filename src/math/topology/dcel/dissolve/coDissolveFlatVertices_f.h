@@ -5,4 +5,6 @@
 #include <container/array/coArray.h>
 class coDCEL;
 
+// Merge two edges into one when they are almost colinear
+// The tolerance is currently arbitrary and related to the cosinus of the angle, and subject to change later on.
 void coDissolveFlatVertices(coDCEL& dcel, coFloat tolerance);

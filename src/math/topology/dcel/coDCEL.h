@@ -17,6 +17,7 @@ public:
 	void ShrinkToFit();
 	coUint32 AddFace(coUint32 faceIdx, coUint32 nbHalfEdges);
 	coUint32 AddFace(coUint32 faceIdx, const coArray<coVec3>& vertices);
+	coUint32 AddFace(coUint32 faceIdx, const coArray<coUint32>& indices);
 	void SetTwins(coUint32 edgeA, coUint32 edgeB);
 	void RemoveHalfEdge(coUint32 edgeIdx);
 	void CheckManifoldExceptHoles() const;

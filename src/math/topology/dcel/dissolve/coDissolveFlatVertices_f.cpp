@@ -28,6 +28,10 @@ void coDissolveFlatVertices(coDCEL& dcel, coFloat tolerance)
 		const coVec3& a0Pos = vertices[a0.vertexIdx];
 		const coVec3& a1Pos = vertices[a1.vertexIdx];
 		const coVec3& a2Pos = vertices[a2.vertexIdx];
+
+		// TODO: The test uses an angle between the edges but should
+		// use the projected distance of the point instead. It would give a better idea of
+		// the real error and also would be more scale independent.
 		const coVec3 dirA01 = coNormalize(a1Pos - a0Pos);
 		const coVec3 dirA12 = coNormalize(a2Pos - a1Pos);
 		if (coAbs(coDot(dirA01, dirA12) - 1.0f) > tolerance)
@@ -37,6 +41,8 @@ void coDissolveFlatVertices(coDCEL& dcel, coFloat tolerance)
 		{
 			if (a1.twin == a1Idx)
 			{
+				// No twins, we simply remove a1
+
 				// Link 0 & 2
 				a0.next = a2Idx;
 				a2.prev = a0Idx;
@@ -48,6 +54,7 @@ void coDissolveFlatVertices(coDCEL& dcel, coFloat tolerance)
 				if (a0.IsDegenerate())
 					coDissolveDegenerateFace(dcel, a0Idx);
 			}
+			// Else, do nothing
 		}
 		else if (a1.twin != a1Idx)
 		{

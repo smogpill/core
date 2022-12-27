@@ -402,6 +402,20 @@ coUint32 coDCEL::AddFace(coUint32 faceIdx, const coArray<coVec3>& newVertices)
 	return halfEdgeOffset;
 }
 
+coUint32 coDCEL::AddFace(coUint32 faceIdx, const coArray<coUint32>& indices)
+{
+	coUint32 halfEdgeOffset = AddFace(faceIdx, indices.count);
+	for (coUint32 i = 0; i < indices.count; ++i)
+	{
+		const coUint32 edgeIdx = halfEdgeOffset + i;
+		const coUint32 vertIdx = indices[i];
+		coASSERT(vertIdx < vertices.count);
+		coHalfEdge& e = halfEdges[edgeIdx];
+		e.vertexIdx = vertIdx;
+	}
+	return halfEdgeOffset;
+}
+
 void coDCEL::SetTwins(coUint32 edgeAIdx, coUint32 edgeBIdx)
 {
 	coHalfEdge& edgeA = halfEdges[edgeAIdx];
