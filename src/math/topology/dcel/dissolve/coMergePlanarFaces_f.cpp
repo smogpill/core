@@ -26,7 +26,7 @@ void coMergePlanarFaces(coDCEL& dcel, coFloat tolerance)
 		const coVec3& normalB = faceNormals[edgeB.faceIdx];
 		if (coAbs(coDot(normalA, normalB) - 1.0f) < tolerance)
 		{
-			coAbsorbNextRadialFace(dcel, edgeAIdx);
+			coAbsorbTwinFace(dcel, edgeAIdx);
 		}
 	}
 }

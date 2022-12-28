@@ -4,4 +4,4 @@
 class coDCEL;
 
 /// Returns an arbitrary half edge of the resulting face or coUint32(-1) if no joining took place
-coUint32 coAbsorbNextRadialFace(coDCEL& dcel, coUint32 edgeIdx);
+coUint32 coAbsorbTwinFace(coDCEL& dcel, coUint32 edgeIdx);

@@ -5,7 +5,7 @@
 #include "../coDCEL.h"
 #include <container/array/coDynamicArray_f.h>
 
-coUint32 coAbsorbNextRadialFace(coDCEL& dcel, coUint32 edgeIdx)
+coUint32 coAbsorbTwinFace(coDCEL& dcel, coUint32 edgeIdx)
 {
 	// Refs:
 	// - bmesh_kernel_join_face_kill_edge() from https://github.com/blender/blender/blob/594f47ecd2d5367ca936cf6fc6ec8168c2b360d0/source/blender/bmesh/intern/bmesh_core.c
@@ -152,9 +152,9 @@ coUint32 coAbsorbNextRadialFace(coDCEL& dcel, coUint32 edgeIdx)
 			newLoopIdx = aIdx;
 			coHalfEdge& a = edges[aIdx];
 			coASSERT(!a.IsDegenerate());
-			coHalfEdge& radial = edges[edge.twin];
-			coASSERT(!radial.IsDegenerate());
-			const coUint32 bIdx = radial.next;
+			coHalfEdge& twin = edges[edge.twin];
+			coASSERT(!twin.IsDegenerate());
+			const coUint32 bIdx = twin.next;
 			coHalfEdge& b = edges[bIdx];
 			coASSERT(!b.IsDegenerate());
 			coASSERT(aIdx != bIdx);
@@ -174,9 +174,9 @@ coUint32 coAbsorbNextRadialFace(coDCEL& dcel, coUint32 edgeIdx)
 			const coUint32 aIdx = edge.next;
 			coHalfEdge& a = edges[aIdx];
 			coASSERT(!a.IsDegenerate());
-			coHalfEdge& radial = edges[edge.twin];
-			coASSERT(!radial.IsDegenerate());
-			const coUint32 bIdx = radial.prev;
+			coHalfEdge& twin = edges[edge.twin];
+			coASSERT(!twin.IsDegenerate());
+			const coUint32 bIdx = twin.prev;
 			coHalfEdge& b = edges[bIdx];
 			coASSERT(!b.IsDegenerate());
 			coASSERT(aIdx != bIdx);

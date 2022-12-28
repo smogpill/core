@@ -6,23 +6,23 @@
 #include "math/topology/dcel/coDCEL.h"
 #include "math/topology/dcel/dissolve/coAbsorbFace_f.h"
 
-coTEST(coAbsorbNextRadialFace, one_triangle)
+coTEST(coAbsorbTwinFace, one_triangle)
 {
 	coDCEL m(coArray<coUint32>({ 0, 1, 2 }));
-	coEXPECT(coAbsorbNextRadialFace(m, 0) == coUint32(-1));
+	coEXPECT(coAbsorbTwinFace(m, 0) == coUint32(-1));
 	coEXPECT(m.GetNbNonDegenerateFaces() == 1);
 }
 
-coTEST(coAbsorbNextRadialFace, two_triangles_start)
+coTEST(coAbsorbTwinFace, two_triangles_start)
 {
 	coDCEL m(coArray<coUint32>({0, 1, 2, 2, 1, 3}));
-	coEXPECT(coAbsorbNextRadialFace(m, 0) == coUint32(-1));
-	coEXPECT(coAbsorbNextRadialFace(m, 2) == coUint32(-1));
-	coEXPECT(coAbsorbNextRadialFace(m, 1) != coUint32(-1));
+	coEXPECT(coAbsorbTwinFace(m, 0) == coUint32(-1));
+	coEXPECT(coAbsorbTwinFace(m, 2) == coUint32(-1));
+	coEXPECT(coAbsorbTwinFace(m, 1) != coUint32(-1));
 	coEXPECT(m.GetNbNonDegenerateFaces() == 1);
 }
 
-coTEST(coAbsorbNextRadialFace, third_triangle_in_middle_of_chain)
+coTEST(coAbsorbTwinFace, third_triangle_in_middle_of_chain)
 {
 	coDCEL mesh;
 	const coUint32 firstEdgeA = mesh.AddFace(0, 3);
@@ -42,20 +42,20 @@ coTEST(coAbsorbNextRadialFace, third_triangle_in_middle_of_chain)
 	// Temp
 	{
 		coDCEL m = mesh;
-		coEXPECT(coAbsorbNextRadialFace(m, 11) != coUint32(-1));
+		coEXPECT(coAbsorbTwinFace(m, 11) != coUint32(-1));
 	}
 
 	for (const coUint32* contact : contacts)
 		for (coUint32 i = 0; i < 2; ++i)
 		{
 			coDCEL m = mesh;
-			coEXPECT(coAbsorbNextRadialFace(m, contact[i]) != coUint32(-1));
+			coEXPECT(coAbsorbTwinFace(m, contact[i]) != coUint32(-1));
 			m.Check();
 			coEXPECT(m.GetNbNonDegenerateFaces() == 2);
 		}
 }
 
-coTEST(coAbsorbNextRadialFace, all_edges_of_face_A_are_contacts)
+coTEST(coAbsorbTwinFace, all_edges_of_face_A_are_contacts)
 {
 	coDCEL mesh;
 	const coUint32 firstEdgeA = mesh.AddFace(0, 3);
@@ -73,7 +73,7 @@ coTEST(coAbsorbNextRadialFace, all_edges_of_face_A_are_contacts)
 		for (coUint32 i = 0; i < 2; ++i)
 		{
 			coDCEL m = mesh;
-			coEXPECT(coAbsorbNextRadialFace(m, contact[i]) != coUint32(-1));
+			coEXPECT(coAbsorbTwinFace(m, contact[i]) != coUint32(-1));
 			m.Check();
 			coEXPECT(m.GetNbNonDegenerateFaces() == 1);
 		}
