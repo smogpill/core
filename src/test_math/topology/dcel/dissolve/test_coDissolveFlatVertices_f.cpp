@@ -4,6 +4,7 @@
 #include "test/unit/coTest.h"
 #include <math/topology/dcel/dissolve/coDissolveFlatVertices_f.h>
 #include <math/topology/dcel/dissolve/coDissolveDegenerateFaces_f.h>
+#include <math/topology/dcel/check/coCheckLinks_f.h>
 #include <math/topology/dcel/coDCEL.h>
 #include <container/array/coDynamicArray_f.h>
 
@@ -27,6 +28,7 @@ coTEST(coDissolveFlatVertices, triangle)
 	coDissolveFlatVertices(dcel, 0.01f);
 	coEXPECT(dcel.GetNbNonDegenerateFaces() == 1);
 	coEXPECT(dcel.GetNbAliveEdges() == 3);
+	coCheckEdgesNotLinkedToDeadEdges(dcel);
 }
 
 coTEST(coDissolveFlatVertices, degenerateTriangle)
@@ -41,6 +43,7 @@ coTEST(coDissolveFlatVertices, degenerateTriangle)
 	coDissolveFlatVertices(dcel, 0.01f);
 	coEXPECT(dcel.GetNbNonDegenerateFaces() == 0);
 	coEXPECT(dcel.GetNbAliveEdges() == 0);
+	coCheckEdgesNotLinkedToDeadEdges(dcel);
 }
 
 coTEST(coDissolveFlatVertices, simple)
@@ -56,6 +59,7 @@ coTEST(coDissolveFlatVertices, simple)
 	coDissolveFlatVertices(dcel, 0.01f);
 	coEXPECT(dcel.GetNbNonDegenerateFaces() == 1);
 	coEXPECT(dcel.GetNbAliveEdges() == 3);
+	coCheckEdgesNotLinkedToDeadEdges(dcel);
 }
 
 coTEST(coDissolveFlatVertices, Twin0)
@@ -77,6 +81,7 @@ coTEST(coDissolveFlatVertices, Twin0)
 	coDissolveFlatVertices(dcel, 0.01f);
 	coEXPECT(dcel.GetNbNonDegenerateFaces() == 2);
 	coEXPECT(dcel.GetNbAliveEdges() == 7);
+	coCheckEdgesNotLinkedToDeadEdges(dcel);
 }
 
 coTEST(coDissolveFlatVertices, Twin1)
@@ -98,6 +103,7 @@ coTEST(coDissolveFlatVertices, Twin1)
 	coDissolveFlatVertices(dcel, 0.01f);
 	coEXPECT(dcel.GetNbNonDegenerateFaces() == 2);
 	coEXPECT(dcel.GetNbAliveEdges() == 7);
+	coCheckEdgesNotLinkedToDeadEdges(dcel);
 }
 
 coTEST(coDissolveFlatVertices, twoSeparateTwinFaces)
@@ -123,6 +129,7 @@ coTEST(coDissolveFlatVertices, twoSeparateTwinFaces)
 	coDissolveFlatVertices(dcel, 0.01f);
 	coEXPECT(dcel.GetNbNonDegenerateFaces() == 3);
 	coEXPECT(dcel.GetNbAliveEdges() == 10);
+	coCheckEdgesNotLinkedToDeadEdges(dcel);
 }
 
 coTEST(coDissolveFlatVertices, twoTwinFacesTwinAsWell)
@@ -149,6 +156,7 @@ coTEST(coDissolveFlatVertices, twoTwinFacesTwinAsWell)
 	coDissolveFlatVertices(dcel, 0.01f);
 	coEXPECT(dcel.GetNbNonDegenerateFaces() == 3);
 	coEXPECT(dcel.GetNbAliveEdges() == 10);
+	coCheckEdgesNotLinkedToDeadEdges(dcel);
 }
 
 coTEST(coDissolveFlatVertices, twinToDissolve)
@@ -172,6 +180,7 @@ coTEST(coDissolveFlatVertices, twinToDissolve)
 	coDissolveFlatVertices(dcel, 0.01f);
 	coEXPECT(dcel.GetNbNonDegenerateFaces() == 2);
 	coEXPECT(dcel.GetNbAliveEdges() == 6);
+	coCheckEdgesNotLinkedToDeadEdges(dcel);
 }
 
 coTEST(coDissolveFlatVertices, twinBecomingDegenerate)
@@ -194,4 +203,5 @@ coTEST(coDissolveFlatVertices, twinBecomingDegenerate)
 	coDissolveFlatVertices(dcel, 0.01f);
 	coEXPECT(dcel.GetNbNonDegenerateFaces() == 1);
 	coEXPECT(dcel.GetNbAliveEdges() == 3);
+	coCheckEdgesNotLinkedToDeadEdges(dcel);
 }
