@@ -11,10 +11,6 @@ class coCoreModule : public coModule
 	coDECLARE_BASE(coModule);
 public:
 	coCoreModule();
-	~coCoreModule();
 
 	virtual coResult Init() override;
-
-private:
-	coDefaultLogHandler* defaultLogHandler = nullptr;
 };

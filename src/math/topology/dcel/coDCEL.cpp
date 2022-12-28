@@ -63,12 +63,12 @@ coDCEL::coDCEL(const coArray<coUint32>& indices, coUint32 nbVertices)
 			const coUint32 indexIdx = triangleIdx * 3 + i;
 			const coUint32 vertexIdx = indices[indexIdx];
 			pushBackVertexToHalfEdge(vertexIdx, halfEdges.count);
-			coHalfEdge& edge = coPushBack(halfEdges);
+			coHalfEdge edge;
 			edge.vertexIdx = vertexIdx;
 			edge.faceIdx = triangleIdx;
 			edge.prev = nodeOffset + (i + 2) % 3;
 			edge.next = nodeOffset + (i + 1) % 3;
-			edge.twin = edgeIdx;
+			coPushBack(halfEdges, edge);
 		}
 	}
 
@@ -128,7 +128,8 @@ void coDCEL::RemoveHalfEdge(coUint32 edgeIdx)
 	// Unlink
 	halfEdges[edge.next].prev = edge.prev;
 	halfEdges[edge.prev].next = edge.next;
-	halfEdges[edge.twin].twin = edge.twin;
+	if (edge.HasTwin())
+		halfEdges[edge.twin].twin = coUint32(-1);
 
 	// Update edge indices of the last halfEdge of the list
 	const coUint32 lastEdgeIdx = halfEdges.count - 1;
@@ -138,7 +139,8 @@ void coDCEL::RemoveHalfEdge(coUint32 edgeIdx)
 		const coUint32 newEdgePrev = newEdge.prev; // It can be changed during the upgrade if the face is degenerate
 		halfEdges[newEdge.next].prev = edgeIdx;
 		halfEdges[newEdgePrev].next = edgeIdx;
-		halfEdges[newEdge.twin].twin = edgeIdx;
+		if (newEdge.HasTwin())
+			halfEdges[newEdge.twin].twin = coUint32(-1);
 	}
 
 	coRemoveUnorderedByIndex(halfEdges, edgeIdx);
@@ -164,7 +166,7 @@ void coDCEL::CheckManifoldExceptHoles() const
 		if (!IsEdgeAlive(edgeIdx))
 			continue;
 
-		coASSERT(edge.twin == edgeIdx || IsEdgeContiguous(edgeIdx));
+		coASSERT(!edge.HasTwin() || IsEdgeContiguous(edgeIdx));
 
 		if (edge.checked)
 			continue;
@@ -190,6 +192,8 @@ void coDCEL::CheckEdgeLoop(coUint32 edgeIdx) const
 {
 	if (!co_advancedChecks)
 		return;
+	if (edgeIdx == coUint32(-1))
+		return;
 	const coHalfEdge& edge = halfEdges[edgeIdx];
 	edge.checked = true;
 	if (!edge.IsDegenerate())
@@ -211,19 +215,23 @@ void coDCEL::CheckEdge(coUint32 edgeIdx) const
 {
 	if (!co_advancedChecks)
 		return;
+	if (edgeIdx == coUint32(-1))
+		return;
 	const coHalfEdge& edge = halfEdges[edgeIdx];
 	const coHalfEdge& next = halfEdges[edge.next];
 	const coHalfEdge& prev = halfEdges[edge.prev];
-	const coHalfEdge& twin = halfEdges[edge.twin];
 	coASSERT(next.prev == edgeIdx);
 	coASSERT(prev.next == edgeIdx);
-	coASSERT(twin.twin == edgeIdx);
+	if (edge.HasTwin())
+		coASSERT(halfEdges[edge.twin].twin == edgeIdx);
 	edge.checked = true;
 }
 
 void coDCEL::CheckEdgeNotReferencedByOthers(coUint32 edgeIdx) const
 {
 	if (!co_advancedChecks)
+		return;
+	if (edgeIdx == coUint32(-1))
 		return;
 	for (coUint32 itEdgeIdx = 0; itEdgeIdx < halfEdges.count; ++itEdgeIdx)
 	{
@@ -301,14 +309,18 @@ void coDCEL::CheckNoVertexDuplicatesOnFaces() const
 coBool coDCEL::IsEdgeManifold(coUint32 edgeIdx) const
 {
 	const coHalfEdge& e = halfEdges[edgeIdx];
-	return halfEdges[e.twin].twin == edgeIdx;
+	return e.IsBorder() || halfEdges[e.twin].twin == edgeIdx;
 }
 
 coBool coDCEL::IsEdgeContiguous(coUint32 edgeIdx) const
 {
 	const coHalfEdge& e = halfEdges[edgeIdx];
-	const coHalfEdge& twin = halfEdges[e.twin];
-	return halfEdges[e.twin].twin == edgeIdx && (e.vertexIdx == coUint32(-1) || twin.vertexIdx != e.vertexIdx);
+	if (e.HasTwin())
+	{
+		const coHalfEdge& twin = halfEdges[e.twin];
+		return twin.twin == edgeIdx && (e.vertexIdx == coUint32(-1) || twin.vertexIdx != e.vertexIdx);
+	}
+	return false;
 }
 
 void coDCEL::Check() const
@@ -379,7 +391,6 @@ coUint32 coDCEL::AddFace(coUint32 faceIdx, coUint32 nbHalfEdges)
 		coHalfEdge e;
 		e.prev = offset + (idx == 0 ? (nbHalfEdges - 1) : (idx - 1));
 		e.next = offset + ((idx + 1) % nbHalfEdges);
-		e.twin = edgeIdx;
 		e.faceIdx = faceIdx;
 		coPushBack(halfEdges, e);
 	}
@@ -420,8 +431,8 @@ void coDCEL::SetTwins(coUint32 edgeAIdx, coUint32 edgeBIdx)
 {
 	coHalfEdge& edgeA = halfEdges[edgeAIdx];
 	coHalfEdge& edgeB = halfEdges[edgeBIdx];
-	coASSERT(edgeA.twin == edgeAIdx);
-	coASSERT(edgeB.twin == edgeBIdx);
+	coASSERT(edgeA.twin == coUint32(-1));
+	coASSERT(edgeB.twin == coUint32(-1));
 	edgeA.twin = edgeBIdx;
 	edgeB.twin = edgeAIdx;
 }

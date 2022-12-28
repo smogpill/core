@@ -16,13 +16,9 @@ void coMergePlanarFaces(coDCEL& dcel, coFloat tolerance)
 	for (coUint32 edgeAIdx = 0; edgeAIdx < edges.count; ++edgeAIdx)
 	{
 		coHalfEdge& edgeA = edges[edgeAIdx];
-		const coUint32 edgeBIdx = edgeA.twin;
-		if (edgeBIdx == edgeAIdx)
+		if (!edgeA.HasTwin() || edgeA.IsDegenerate())
 			continue;
-
-		if (edgeA.IsDegenerate())
-			continue;
-		coHalfEdge& edgeB = edges[edgeBIdx];
+		coHalfEdge& edgeB = edges[edgeA.twin];
 		if (edgeB.IsDegenerate())
 			continue;
 

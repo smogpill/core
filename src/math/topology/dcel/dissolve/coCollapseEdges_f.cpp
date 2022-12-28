@@ -13,20 +13,24 @@ void coDissolveDegenerateEdge(coDCEL& dcel, coUint32 edgeIdx)
 	coASSERT(a.IsDegenerate());
 	const coUint32 bIdx = a.next;
 	coHalfEdge& b = dcel.halfEdges[bIdx];
-	const coUint32 aTwinIdx = a.twin;
-	const coUint32 bTwinIdx = b.twin;
-	coHalfEdge& aTwin = dcel.halfEdges[aTwinIdx];
-	coHalfEdge& bTwin = dcel.halfEdges[bTwinIdx];
-	coASSERT(aTwin.twin == aIdx);
-	coASSERT(bTwin.twin == bIdx);
-	aTwin.twin = bTwinIdx == bIdx ? aTwinIdx : bTwinIdx;
-	bTwin.twin = aTwinIdx == aIdx ? bTwinIdx : aTwinIdx;
+	if (a.HasTwin())
+	{
+		coHalfEdge& aTwin = dcel.halfEdges[a.twin];
+		coASSERT(aTwin.twin == aIdx);
+		aTwin.twin = b.twin;
+	}
+	if (b.HasTwin())
+	{
+		coHalfEdge& bTwin = dcel.halfEdges[b.twin];
+		coASSERT(bTwin.twin == bIdx);
+		bTwin.twin = a.twin;
+	}
 	a.next = aIdx;
 	a.prev = aIdx;
-	a.twin = aIdx;
+	a.twin = coUint32(-1);
 	b.next = bIdx;
 	b.prev = bIdx;
-	b.twin = bIdx;
+	b.twin = coUint32(-1);
 }
 
 void coCollapseEdge(coDCEL& dcel, coUint32 edgeIdx)
@@ -35,16 +39,12 @@ void coCollapseEdge(coDCEL& dcel, coUint32 edgeIdx)
 	coHalfEdge& edge = dcel.halfEdges[edgeIdx];
 	if (edge.next == edgeIdx)
 		return;
-	const coUint32 twinIdx = edge.twin;
-	coHalfEdge& twin = dcel.halfEdges[twinIdx];
+	
 	const coUint32 prevIdx = edge.prev;
 	const coUint32 nextIdx = edge.next;
-	const coUint32 prevTwinIdx = twin.prev;
-	const coUint32 nextTwinIdx = twin.next;
+	
 	coHalfEdge& prev = dcel.halfEdges[prevIdx];
 	coHalfEdge& next = dcel.halfEdges[nextIdx];
-	coHalfEdge& prevTwin = dcel.halfEdges[prevTwinIdx];
-	coHalfEdge& nextTwin = dcel.halfEdges[nextTwinIdx];
 
 	// Collapse vertices
 	{
@@ -65,33 +65,43 @@ void coCollapseEdge(coDCEL& dcel, coUint32 edgeIdx)
 		coVisitHalfEdgeFanAroundVertex(dcel, edge.next, changeVertex);
 	}
 
+	if (edge.HasTwin())
+	{
+		const coUint32 twinIdx = edge.twin;
+		coHalfEdge& twin = dcel.halfEdges[twinIdx];
+		const coUint32 prevTwinIdx = twin.prev;
+		const coUint32 nextTwinIdx = twin.next;
+		coHalfEdge& prevTwin = dcel.halfEdges[prevTwinIdx];
+		coHalfEdge& nextTwin = dcel.halfEdges[nextTwinIdx];
+		prevTwin.next = nextTwinIdx;
+		nextTwin.prev = prevTwinIdx;
+		twin.prev = twinIdx;
+		twin.next = twinIdx;
+		twin.twin = coUint32(-1);
+		coDEBUG_CODE(dcel.CheckEdge(prevTwinIdx));
+		coDEBUG_CODE(dcel.CheckEdge(nextTwinIdx));
+
+		if (nextTwin.IsDegenerate())
+		{
+			coDissolveDegenerateEdge(dcel, nextTwinIdx);
+		}
+	}
+
 	// Link
 	prev.next = nextIdx;
 	next.prev = prevIdx;
-	prevTwin.next = nextTwinIdx;
-	nextTwin.prev = prevTwinIdx;
 
 	edge.prev = edgeIdx;
 	edge.next = edgeIdx;
-	edge.twin = edgeIdx;
-
-	twin.prev = twinIdx;
-	twin.next = twinIdx;
-	twin.twin = twinIdx;
+	edge.twin = coUint32(-1);
 
 	coDEBUG_CODE(dcel.CheckEdge(prevIdx));
 	coDEBUG_CODE(dcel.CheckEdge(nextIdx));
-	coDEBUG_CODE(dcel.CheckEdge(prevTwinIdx));
-	coDEBUG_CODE(dcel.CheckEdge(nextTwinIdx));
 
 	// Todo: dissolve degenerate faces
 	if (next.IsDegenerate())
 	{
 		coDissolveDegenerateEdge(dcel, nextIdx);
-	}
-	if (nextTwin.IsDegenerate())
-	{
-		coDissolveDegenerateEdge(dcel, nextTwinIdx);
 	}
 
 	//dcel.CheckNoVertexDuplicatesOnFaces();

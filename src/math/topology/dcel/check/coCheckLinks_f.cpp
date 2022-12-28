@@ -14,7 +14,8 @@ void coCheckEdgesNotLinkedToDeadEdges(coDCEL& dcel)
 			const coHalfEdge& edge = edges[edgeIdx];
 			coASSERT(dcel.IsEdgeAlive(edge.next));
 			coASSERT(dcel.IsEdgeAlive(edge.prev));
-			coASSERT(dcel.IsEdgeAlive(edge.twin));
+			if (edge.HasTwin())
+				coASSERT(dcel.IsEdgeAlive(edge.twin));
 		}
 	}
 }

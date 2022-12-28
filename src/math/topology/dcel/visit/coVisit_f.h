@@ -24,7 +24,7 @@ coBool coVisitHalfEdgeFanAroundVertex(const coDCEL& dcel, coUint32 halfEdgeIdx, 
 			if (!functor(itEdgeIdx))
 				return false;
 			const coHalfEdge& prev = edges[prevIdx];
-			if (prev.twin == prevIdx)
+			if (!prev.HasTwin())
 				break;
 			itEdgeIdx = prev.twin;
 
@@ -40,10 +40,9 @@ coBool coVisitHalfEdgeFanAroundVertex(const coDCEL& dcel, coUint32 halfEdgeIdx, 
 		for (;;)
 		{
 			const coHalfEdge& edge = edges[itEdgeIdx];
-			const coUint32 twinIdx = edge.twin;
-			if (twinIdx == itEdgeIdx)
+			if (!edge.HasTwin())
 				break;
-			const coHalfEdge& twin = edges[twinIdx];
+			const coHalfEdge& twin = edges[edge.twin];
 			itEdgeIdx = twin.next;
 			if (!functor(itEdgeIdx))
 				return false;

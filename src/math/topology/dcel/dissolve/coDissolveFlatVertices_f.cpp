@@ -37,9 +37,9 @@ void coDissolveFlatVertices(coDCEL& dcel, coFloat tolerance)
 		if (coAbs(coDot(dirA01, dirA12) - 1.0f) > tolerance)
 			continue;
 
-		if (a0.twin == a0Idx)
+		if (!a0.HasTwin())
 		{
-			if (a1.twin == a1Idx)
+			if (!a1.HasTwin())
 			{
 				// No twins, we simply remove a1
 
@@ -56,7 +56,7 @@ void coDissolveFlatVertices(coDCEL& dcel, coFloat tolerance)
 			}
 			// Else, do nothing
 		}
-		else if (a1.twin != a1Idx)
+		else if (a1.HasTwin())
 		{
 			const coUint32 b1Idx = a0.twin;
 			coHalfEdge& b1 = edges[b1Idx];
@@ -84,10 +84,10 @@ void coDissolveFlatVertices(coDCEL& dcel, coFloat tolerance)
 			// Remove 1
 			a1.prev = a1Idx;
 			a1.next = a1Idx;
-			a1.twin = a1Idx;
+			a1.twin = coUint32(-1);
 			b1.prev = b1Idx;
 			b1.next = b1Idx;
-			b1.twin = b1Idx;
+			b1.twin = coUint32(-1);
 
 			if (a0.IsDegenerate())
 				coDissolveDegenerateFace(dcel, a0Idx);

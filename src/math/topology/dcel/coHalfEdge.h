@@ -8,6 +8,8 @@ public:
 	coHalfEdge() : checked(false), done(false) {}
 	void SwapEdgeIdx(coUint32 oldIdx, coUint32 newIdx);
 	coBool IsDegenerate() const { return prev == next; }
+	coBool IsBorder() const { return twin == coUint32(-1); }
+	coBool HasTwin() const { return twin != coUint32(-1); }
 
 	coUint32 next = coUint32(-1);
 	coUint32 prev = coUint32(-1);

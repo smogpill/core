@@ -5,18 +5,11 @@
 #include <lang/result/coResult_f.h>
 #include "lang/reflect/coTypeRegistry.h"
 #include "lang/reflect/coTypeAutoRegistrator.h"
-#include "debug/log/coDefaultLogHandler.h"
 #include "io/dir/coDirectory_f.h"
 
 coCoreModule::coCoreModule()
 {
 	coASSERT(coInitDefaultDirs());
-	coLogHandler::SetInstance(new coDefaultLogHandler());
-}
-
-coCoreModule::~coCoreModule()
-{
-	coLogHandler::DestroyInstance();
 }
 
 coResult coCoreModule::Init()

@@ -13,16 +13,18 @@ void coDissolveDegenerateFace(coDCEL& dcel, coUint32 anyHalfEdgeIdx)
 	const coUint32 nextIdx = edge.next;
 	coHalfEdge& next = halfEdges[nextIdx];
 
-	halfEdges[edge.twin].twin = next.twin;
-	halfEdges[next.twin].twin = edge.twin;
+	if (edge.HasTwin())
+		halfEdges[edge.twin].twin = next.twin;
+	if (next.HasTwin())
+		halfEdges[next.twin].twin = edge.twin;
 
 	edge.next = anyHalfEdgeIdx;
 	edge.prev = anyHalfEdgeIdx;
-	edge.twin = anyHalfEdgeIdx;
+	edge.twin = coUint32(-1);
 
 	next.next = nextIdx;
 	next.prev = nextIdx;
-	next.twin = nextIdx;
+	next.twin = coUint32(-1);
 }
 
 void coRemoveDegenerateFaces(coDCEL& dcel)

@@ -19,7 +19,7 @@ coTEST(coDCEL, constructor_1)
 	{
 		coHalfEdge& e = m.halfEdges[i];
 		coEXPECT(e.faceIdx == 0);
-		coEXPECT(e.twin == i);
+		coEXPECT(e.twin == coUint32(-1));
 		coEXPECT(e.next == (i + 1) % 3);
 		coEXPECT(e.prev == (i + 2) % 3);
 		coEXPECT(e.vertexIdx == i);
@@ -43,7 +43,7 @@ coTEST(coDCEL, constructor_2)
 			coEXPECT(e.vertexIdx == indices[faceIdx * 3 + i]);
 		}
 	}
-	const coUint32 expectedTwins[] = {0, 3, 2, 1, 4, 5};
+	const coUint32 expectedTwins[] = { coUint32(-1), 3, coUint32(-1), 1, coUint32(-1), coUint32(-1) };
 	for (coUint32 i = 0; i < 6; ++i)
 	{
 		coEXPECT(m.halfEdges[i].twin == expectedTwins[i]);
@@ -70,6 +70,6 @@ coTEST(coDCEL, constructor_2_2)
 
 	for (coUint32 i = 0; i < 6; ++i)
 	{
-		coEXPECT(m.halfEdges[i].twin == i);
+		coEXPECT(m.halfEdges[i].twin == coUint32(-1));
 	}
 }

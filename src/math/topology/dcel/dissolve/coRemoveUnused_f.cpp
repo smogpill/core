@@ -46,7 +46,6 @@ void coRemoveUnusedHalfEdges(coDCEL& dcel)
 		const coHalfEdge& edge = edges[edgeIdx];
 		coASSERT(edge.next != coUint32(-1));
 		coASSERT(edge.prev != coUint32(-1));
-		coASSERT(edge.twin != coUint32(-1));
 		if (edge.next == edgeIdx)
 		{
 			oldToNew[edgeIdx] = coUint32(-1);
@@ -61,10 +60,10 @@ void coRemoveUnusedHalfEdges(coDCEL& dcel)
 	{
 		coASSERT(oldToNew[edge.next] != coUint32(-1));
 		coASSERT(oldToNew[edge.prev] != coUint32(-1));
-		coASSERT(oldToNew[edge.twin] != coUint32(-1));
 		edge.next = oldToNew[edge.next];
 		edge.prev = oldToNew[edge.prev];
-		edge.twin = oldToNew[edge.twin];
+		if (edge.HasTwin())
+			edge.twin = oldToNew[edge.twin];
 	}
 	edges = std::move(newEdges);
 }

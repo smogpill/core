@@ -15,6 +15,8 @@ coUint32 coAbsorbNextRadialFace(coDCEL& dcel, coUint32 edgeIdx)
 	const coHalfEdge& edgeA = edges[edgeIdx];
 	coASSERT(!edgeA.IsDegenerate());
 	coASSERT(dcel.IsEdgeManifold(edgeIdx));
+	if (edgeA.IsBorder())
+		return coUint32(-1);
 
 	const coHalfEdge& edgeB = edges[edgeA.twin];
 	const coUint32 faceA = edgeA.faceIdx;
@@ -40,6 +42,8 @@ coUint32 coAbsorbNextRadialFace(coDCEL& dcel, coUint32 edgeIdx)
 				break;
 
 			const coHalfEdge& prev = edges[prevIdx];
+			if (!prev.HasTwin())
+				break;
 			const coUint32 bIdx = prev.twin;
 			coHalfEdge& b = edges[bIdx];
 			if (b.prev != a->twin)
@@ -60,6 +64,8 @@ coUint32 coAbsorbNextRadialFace(coDCEL& dcel, coUint32 edgeIdx)
 				break;
 
 			const coHalfEdge& next = edges[nextIdx];
+			if (!next.HasTwin())
+				break;
 			const coUint32 bIdx = next.twin;
 			const coHalfEdge& b = edges[bIdx];
 			if (b.next != a->twin)
@@ -196,20 +202,21 @@ coUint32 coAbsorbNextRadialFace(coDCEL& dcel, coUint32 edgeIdx)
 			for (const coUint32 idx : edgesToDisable)
 			{
 				coHalfEdge& edge = edges[idx];
-				const coUint32 radialIdx = edge.twin;
-				coHalfEdge& radialEdge = edges[radialIdx];
 				coASSERT(edge.faceIdx == faceA);
-				coASSERT(radialEdge.faceIdx == faceA);
-
+				if (edge.HasTwin())
+				{
+					const coUint32 twinIdx = edge.twin;
+					coHalfEdge& twinEdge = edges[twinIdx];
+					coASSERT(twinEdge.faceIdx == faceA);
+					twinEdge.next = twinIdx;
+					twinEdge.prev = twinIdx;
+					twinEdge.twin = coUint32(-1);
+					coDEBUG_CODE(dcel.CheckEdge(twinIdx));
+				}
 				edge.next = idx;
 				edge.prev = idx;
-				edge.twin = idx;
-				radialEdge.next = radialIdx;
-				radialEdge.prev = radialIdx;
-				radialEdge.twin = radialIdx;
-
+				edge.twin = coUint32(-1);
 				coDEBUG_CODE(dcel.CheckEdge(idx));
-				coDEBUG_CODE(dcel.CheckEdge(radialIdx));
 			}
 		}
 		else
@@ -220,22 +227,23 @@ coUint32 coAbsorbNextRadialFace(coDCEL& dcel, coUint32 edgeIdx)
 			for (;;)
 			{
 				coHalfEdge& edge = edges[idx];
+				if (edge.HasTwin())
+				{
+					const coUint32 twinIdx = edge.twin;
+					coHalfEdge& twinEdge = edges[twinIdx];
+					coASSERT(twinEdge.faceIdx == faceA);
+					twinEdge.next = twinIdx;
+					twinEdge.prev = twinIdx;
+					twinEdge.twin = coUint32(-1);
+					coDEBUG_CODE(dcel.CheckEdge(twinIdx));
+				}
 				const coUint32 nextIdx = edge.next;
 				coASSERT(nextIdx != idx);
-				const coUint32 twinIdx = edge.twin;
-				coHalfEdge& twinEdge = edges[twinIdx];
 				coASSERT(edge.faceIdx == faceA);
-				coASSERT(twinEdge.faceIdx == faceA);
-
 				edge.next = idx;
 				edge.prev = idx;
-				edge.twin = idx;
-				twinEdge.next = twinIdx;
-				twinEdge.prev = twinIdx;
-				twinEdge.twin = twinIdx;
-
+				edge.twin = coUint32(-1);
 				coDEBUG_CODE(dcel.CheckEdge(idx));
-				coDEBUG_CODE(dcel.CheckEdge(twinIdx));
 
 				if (idx == aLastRelatedToBIdx)
 					break;

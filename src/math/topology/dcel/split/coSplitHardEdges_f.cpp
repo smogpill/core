@@ -69,12 +69,13 @@ void coSplitHardEdges(coDCEL& dcel, coFloat angle)
 	auto IsBorder = [&](const coUint32 eIdx)
 	{
 		const coHalfEdge& edge = edges[eIdx];
-		return edge.twin == eIdx;
+		return edge.IsBorder();
 	};
 
 	auto IsSharp = [&](const coUint32 eIdx)
 	{
 		const coHalfEdge& edgeA = edges[eIdx];
+		coASSERT(edgeA.HasTwin());
 		const coHalfEdge& edgeB = edges[edgeA.twin];
 		const coVec3& normalA = faceNormals[edgeA.faceIdx];
 		const coVec3& normalB = faceNormals[edgeB.faceIdx];
@@ -101,14 +102,13 @@ void coSplitHardEdges(coDCEL& dcel, coFloat angle)
 				{
 					const coHalfEdge& itEdge = edges[itEdgeIdx];
 					coASSERT(itEdge.vertexIdx == vertexIdx);
-					const coUint32 twinIdx = itEdge.twin;
-					if (twinIdx == itEdgeIdx)
+					if (!itEdge.HasTwin())
 					{
 						startEdgeIdx = itEdgeIdx;
 						break;
 					}
 						
-					const coHalfEdge& twin = edges[twinIdx];
+					const coHalfEdge& twin = edges[itEdge.twin];
 					itEdgeIdx = twin.next;
 				} while (itEdgeIdx != edgeIdx);
 			}
@@ -145,7 +145,7 @@ void coSplitHardEdges(coDCEL& dcel, coFloat angle)
 				coHalfEdge& itEdge = edges[itEdgeIdx];
 
 				// Sharp?
-				if (!IsBorder(itEdgeIdx) && IsSharp(itEdgeIdx))
+				if (itEdge.HasTwin() && IsSharp(itEdgeIdx))
 				{
 					// Create a new vertex
 					{
@@ -159,15 +159,15 @@ void coSplitHardEdges(coDCEL& dcel, coFloat angle)
 					if (true)
 					{
 						// Circle around the other vertex to find it there is a full circle (meaning the vertex is 100% surrounded by a face fan)
+						coASSERT(itEdge.HasTwin());
 						const coUint32 itEdgeTwinIdx = itEdge.twin;
-						coASSERT(itEdgeTwinIdx != itEdgeIdx);
 						coUint32 itEdge2Idx = itEdgeTwinIdx;
 						do
 						{
 							const coHalfEdge& itEdge2 = edges[itEdge2Idx];
 							const coUint32 prev2Idx = itEdge2.prev;
 							const coHalfEdge& prev2 = edges[prev2Idx];
-							if (prev2.twin == prev2Idx)
+							if (!prev2.HasTwin())
 							{
 								// Create a new twin vertex
 								const coUint32 vertex2Idx = vertices.count;
@@ -185,7 +185,7 @@ void coSplitHardEdges(coDCEL& dcel, coFloat angle)
 									itEdge3.vertexIdx = vertex2Idx;
 									const coUint32 prev3Idx = itEdge3.prev;
 									const coHalfEdge& prev3 = edges[prev3Idx];
-									if (prev3.twin == prev3Idx)
+									if (!prev3.HasTwin())
 										break;
 									itEdge3Idx = prev3.twin;
 								}
@@ -197,8 +197,8 @@ void coSplitHardEdges(coDCEL& dcel, coFloat angle)
 					}
 
 					// Separate the half edges
-					edges[itEdge.twin].twin = itEdge.twin;
-					itEdge.twin = itEdgeIdx;
+					edges[itEdge.twin].twin = coUint32(-1);
+					itEdge.twin = coUint32(-1);
 				}
 
 				// Replace vertex in edge
@@ -207,7 +207,7 @@ void coSplitHardEdges(coDCEL& dcel, coFloat angle)
 
 				const coUint32 prevIdx = itEdge.prev;
 				const coHalfEdge& prev = edges[prevIdx];
-				if (prev.twin == prevIdx)
+				if (prev.IsBorder())
 					break;
 
 				itEdgeIdx = prev.twin;

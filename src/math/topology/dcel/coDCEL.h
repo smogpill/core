@@ -29,7 +29,7 @@ public:
 	coBool IsEdgeAlive(coUint32 edgeIdx) const { return halfEdges[edgeIdx].next != edgeIdx; }
 	coBool IsEdgeManifold(coUint32 edgeIdx) const;
 	coBool IsEdgeContiguous(coUint32 edgeIdx) const;
-	coBool IsEdgeBoundary(coUint32 edgeIdx) const { return halfEdges[edgeIdx].twin == edgeIdx; }
+	coBool IsEdgeBoundary(coUint32 edgeIdx) const { return halfEdges[edgeIdx].twin == coUint32(-1); }
 	coBool IsFaceTriangle(coUint32 edgeIdx) const;
 	void Check() const;
 	coUint32 GetNbFaces() const;
