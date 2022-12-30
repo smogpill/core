@@ -26,7 +26,7 @@ coFORCE_INLINE coFloatx4 coDistance(const coPlane& this_, const coVec4& point)
 	return coDot(this_.normalAndDistance, point);
 }
 
-coFORCE_INLINE coFloatx3 coDistance(const coPlane& this_, const coVec3& point)
+coFORCE_INLINE coFloatx4 coDistance(const coPlane& this_, const coVec3& point)
 {
 	return coDot(this_.normalAndDistance, coVec4(point, 1.0f));
 }
