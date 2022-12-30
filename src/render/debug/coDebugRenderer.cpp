@@ -223,6 +223,9 @@ void coDebugRenderer::Render(const coMat4& viewProj)
 		glDrawArrays(mode, 0, vertexBuffer.count);
 	};
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	drawBuffer(Buffer::LINES, GL_LINES);
 	drawBuffer(Buffer::TRIANGLES, GL_TRIANGLES);
 	glDisable(GL_DEPTH_TEST);
@@ -231,6 +234,7 @@ void coDebugRenderer::Render(const coMat4& viewProj)
 	glEnable(GL_DEPTH_TEST);
 
 	glBindVertexArray(0);
+	glDisable(GL_BLEND);
 	shaderProgram->Unbind();
 
 	for (auto& buffer : vertexBuffers)
