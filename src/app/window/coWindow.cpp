@@ -4,6 +4,8 @@
 #include "app/window/coWindow.h"
 #include "lang/result/coResult_f.h"
 #include "imgui/coImgui.h"
+#include <math/vector/coUint32x2_f.h>
+#include <render/context/coRenderContext.h>
 
 coWindow::coWindow()
 {
@@ -57,5 +59,10 @@ coResult coWindow::SetShowState(const ShowState& _state)
 
 void coWindow::SetClientSize(const coUint32x2& newSize)
 {
-	clientSize = newSize;
+	if (clientSize != newSize)
+	{
+		clientSize = newSize;
+		if (renderContext)
+			renderContext->SetSize(clientSize);
+	}
 }

@@ -36,6 +36,7 @@ public:
 	coColor PickColor(const coUint32x2& pos) const;
 	coUint32 PickID(const coVec2& pos) const;
 	coUint32 PickID(const coUint32x2& pos) const;
+	void OnResize();
 
 private:
 	class ModeInfo
@@ -44,6 +45,8 @@ private:
 		coShader* shader = nullptr;
 		coInt idShaderLocation = -1;
 	};
+	coResult InitFrameBuffer();
+	void ShutFrameBuffer();
 	coUint32x2 Convert(const coVec2& pos) const;
 	coUint32 PickValue(const coUint32x2& pos) const;
 	coRenderView* GetView() const;

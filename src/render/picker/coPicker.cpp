@@ -12,7 +12,7 @@
 
 coPicker::~coPicker()
 {
-	delete framebuffer;
+	ShutFrameBuffer();
 	for (ModeInfo& modeInfo : modeInfos)
 	{
 		delete modeInfo.shader;
@@ -45,10 +45,22 @@ coResult coPicker::Init(coRenderContext& context_)
 		info.idShaderLocation = info.shader->GetUniformLocation("id");
 	}
 	
+	coTRY(InitFrameBuffer(), nullptr);
+	
+	return true;
+}
+
+coResult coPicker::InitFrameBuffer()
+{
 	framebuffer = new coRenderFrameBuffer();
 	const coDynamicArray<coRenderFrameBuffer::AttachmentFormat> attachments{ coRenderFrameBuffer::R32UI, coRenderFrameBuffer::D24S8 };
-	coTRY(framebuffer->Init(context_.GetMainRenderView()->GetSize(), attachments), nullptr);
+	coTRY(framebuffer->Init(context->GetMainRenderView()->GetSize(), attachments), nullptr);
 	return true;
+}
+
+void coPicker::ShutFrameBuffer()
+{
+	delete framebuffer; framebuffer = nullptr;
 }
 
 void coPicker::Begin(Mode mode)
@@ -115,6 +127,12 @@ coUint32 coPicker::PickID(const coUint32x2& pos) const
 {
 	//coASSERT(started);
 	return PickValue(pos);
+}
+
+void coPicker::OnResize()
+{
+	ShutFrameBuffer();
+	coCHECK(InitFrameBuffer(), nullptr);
 }
 
 coUint32x2 coPicker::Convert(const coVec2& pos) const

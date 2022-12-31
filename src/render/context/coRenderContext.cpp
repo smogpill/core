@@ -280,3 +280,14 @@ void coRenderContext::SetGLDebugLabel(GLenum type, GLuint id, const coConstStrin
 	}
 #endif
 }
+
+void coRenderContext::SetSize(const coUint32x2& size)
+{
+	if (mainRenderView)
+	{
+		const coUint32x2 pos = mainRenderView->GetPos();
+		mainRenderView->SetViewport(pos.x, pos.y, size.x, size.y);
+	}
+	if (picker)
+		picker->OnResize();
+}

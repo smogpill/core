@@ -7,6 +7,7 @@ class alignas(16) coUint32x3
 {
 	coDECLARE_CLASS_NO_POLYMORPHISM(coUint32x3);
 public:
+	coFORCE_INLINE coUint32x3() {}
 	coFORCE_INLINE coUint32x3(coUint32 x, coUint32 y, coUint32 z) : x(x), y(y), z(z) {}
 	coFORCE_INLINE coUint32x3(coUint32 xyz) : x(xyz), y(xyz), z(xyz) {}
 	coFORCE_INLINE explicit coUint32x3(const coFloatx3& f) { coBitCast<__m128i>(*this) = _mm_cvttps_epi32(coBitCast<__m128>(f)); }

@@ -4,7 +4,6 @@
 
 #include "pattern/object/coObject.h"
 #include "math/vector/coUint32x2.h"
-
 class coRenderContext;
 class coImgui;
 class coInputContext;

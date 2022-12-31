@@ -13,6 +13,7 @@ public:
 	void SetProjection(const coMat4& proj_) { proj = proj; }
 	coUint GetWidth() const { return width; }
 	coUint GetHeight() const { return height; }
+	coUint32x2 GetPos() const { return coUint32x2(x, y); }
 	coUint32x2 GetSize() const { return coUint32x2(width, height); }
 
 	void Begin();

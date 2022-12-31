@@ -9,6 +9,7 @@ class coRenderTexture;
 class coRenderFrameBuffer;
 class coRenderSampler;
 class coPicker;
+class coUint32x2;
 
 class coRenderContext
 {
@@ -32,6 +33,7 @@ public:
 	void UnbindSampler(coUint unit);
 	void UnbindAllTextures();
 	void UnbindAllSamplers();
+	void SetSize(const coUint32x2& size);
 	static void SetGLDebugLabel(GLenum type, GLuint id, const coConstString& label);
 
 	static const inline coUint8 maxNbTextureUnits = 32;
