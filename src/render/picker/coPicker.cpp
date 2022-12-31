@@ -15,7 +15,7 @@ coPicker::~coPicker()
 	delete framebuffer;
 	for (ModeInfo& modeInfo : modeInfos)
 	{
-		delete modeInfo.shaderProgram;
+		delete modeInfo.shader;
 	}
 }
 
@@ -26,23 +26,23 @@ coResult coPicker::Init(coRenderContext& context_)
 	// Vertex
 	{
 		ModeInfo& info = modeInfos[coUint(Mode::VERTEX)];
-		info.shaderProgram = new coShader();
-		coTRY(info.shaderProgram->Init("shaders/render/VertexPicker", coShader::VERTEX | coShader::FRAGMENT), nullptr);
+		info.shader = new coShader();
+		coTRY(info.shader->Init("shaders/render/VertexPicker", coShader::VERTEX | coShader::FRAGMENT), nullptr);
 	}
 
 	// Triangle
 	{
 		ModeInfo& info = modeInfos[coUint(Mode::TRIANGLE)];
-		info.shaderProgram = new coShader();
-		coTRY(info.shaderProgram->Init("shaders/render/TrianglePicker", coShader::VERTEX | coShader::FRAGMENT), nullptr);
+		info.shader = new coShader();
+		coTRY(info.shader->Init("shaders/render/TrianglePicker", coShader::VERTEX | coShader::FRAGMENT), nullptr);
 	}
 
 	// Mesh
 	{
 		ModeInfo& info = modeInfos[coUint(Mode::MESH)];
-		info.shaderProgram = new coShader();
-		coTRY(info.shaderProgram->Init("shaders/render/MeshPicker", coShader::VERTEX | coShader::FRAGMENT), nullptr);
-		info.idShaderLocation = info.shaderProgram->GetUniformLocation("id");
+		info.shader = new coShader();
+		coTRY(info.shader->Init("shaders/render/MeshPicker", coShader::VERTEX | coShader::FRAGMENT), nullptr);
+		info.idShaderLocation = info.shader->GetUniformLocation("id");
 	}
 	
 	framebuffer = new coRenderFrameBuffer();
@@ -57,7 +57,7 @@ void coPicker::Begin(Mode mode)
 	currentMode = mode;
 	context->Clear();
 	ModeInfo& modeInfo = modeInfos[coUint(currentMode)];
-	modeInfo.shaderProgram->Bind();
+	modeInfo.shader->Bind();
 	framebuffer->Bind(coRenderFrameBuffer::READ_WRITE);
 	framebuffer->Clear();
 	started = true;
@@ -70,30 +70,30 @@ void coPicker::End()
 	started = false;
 	ModeInfo& modeInfo = modeInfos[coUint(currentMode)];
 	framebuffer->Unbind();
-	modeInfo.shaderProgram->Unbind();
+	modeInfo.shader->Unbind();
 }
 
 void coPicker::SetModelViewProj(const coMat4& mvp)
 {
 	ModeInfo& modeInfo = modeInfos[coUint(currentMode)];
-	const auto modelViewProjLocation = modeInfo.shaderProgram->GetUniformLocation("modelViewProj");
-	modeInfo.shaderProgram->SetUniform(modelViewProjLocation, mvp);
+	const auto modelViewProjLocation = modeInfo.shader->GetUniformLocation("modelViewProj");
+	modeInfo.shader->SetUniform(modelViewProjLocation, mvp);
 }
 
 void coPicker::BindID(coUint32 id)
 {
 	coASSERT(started);
 	ModeInfo& modeInfo = modeInfos[coUint(currentMode)];
-	coASSERT(modeInfo.shaderProgram);
-	modeInfo.shaderProgram->SetUniform(modeInfo.idShaderLocation, id);
+	coASSERT(modeInfo.shader);
+	modeInfo.shader->SetUniform(modeInfo.idShaderLocation, id);
 }
 
 void coPicker::BindID(const coUint32x2 id)
 {
 	coASSERT(started);
 	ModeInfo& modeInfo = modeInfos[coUint(currentMode)];
-	coASSERT(modeInfo.shaderProgram);
-	modeInfo.shaderProgram->SetUniform(modeInfo.idShaderLocation, id);
+	coASSERT(modeInfo.shader);
+	modeInfo.shader->SetUniform(modeInfo.idShaderLocation, id);
 }
 
 coColor coPicker::PickColor(const coVec2& pos) const

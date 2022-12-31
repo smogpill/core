@@ -8,9 +8,12 @@
 #include <lang/result/coResult.h>
 #include <pattern/singleton/coSingleton.h>
 #include <ecs/component/coComponent.h>
+#include <ecs/entity/coEntityHandle.h>
 class coAabb;
 class coShader;
 class coMat4;
+class coRenderMesh;
+class coDebugRender;
 
 class coDebugRenderer : public coComponent
 {
@@ -28,8 +31,11 @@ public:
 	void DrawBox(const coMat4& mat, const coColor& color = coColor::s_white, coUint32 options = 0);
 	void DrawFrame(const coMat4& frame, coFloat size, coUint32 options = 0);
 	void DrawDot(const coVec3& pos, coFloat radius, const coColor& color = coColor::s_white, coUint32 options = 0);
+	void Add(coDebugRender&);
+	void Remove(coDebugRender&);
 
 	void Render(const coMat4& viewProj);
+	coShader* GetShader() const { return shader; }
 
 private:
 	enum Buffer
@@ -53,7 +59,8 @@ private:
 	void Shutdown(coEntity& entity);
 
 	coDynamicArray<Vertex> vertexBuffers[Buffer::END];
-	coShader* shaderProgram = nullptr;
+	coDynamicArray<coDebugRender*> renderers;
+	coShader* shader = nullptr;
 	GLuint vertexArrayObject = 0;
 	GLuint vertexBufferObject = 0;
 	GLuint elementBufferObject = 0;

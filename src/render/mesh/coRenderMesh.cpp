@@ -48,7 +48,7 @@ void coRenderMesh::SetBuffers(coUint nbVertices_)
     nbVertices = nbVertices_;
 }
 
-void coRenderMesh::Draw()
+void coRenderMesh::Draw() const
 {
     glBindVertexArray(vertexArrayObject);
     if (drawWithIndices)
@@ -62,7 +62,7 @@ void coRenderMesh::Draw()
     glBindVertexArray(0);
 }
 
-void coRenderMesh::DrawAsPoints()
+void coRenderMesh::DrawAsPoints() const
 {
     glBindVertexArray(vertexArrayObject);
     glDrawArrays(GL_POINTS, 0, nbVertices);
@@ -73,6 +73,14 @@ void coRenderMesh::VertexP::SetVertexAttribs()
 {
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexP), (void*)0);
+}
+
+void coRenderMesh::VertexPC::SetVertexAttribs()
+{
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPC), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(VertexPC), (void*)offsetof(VertexPC, color));
 }
 
 void coRenderMesh::VertexPN::SetVertexAttribs()

@@ -41,7 +41,7 @@ private:
 	class ModeInfo
 	{
 	public:
-		coShader* shaderProgram = nullptr;
+		coShader* shader = nullptr;
 		coInt idShaderLocation = -1;
 	};
 	coUint32x2 Convert(const coVec2& pos) const;

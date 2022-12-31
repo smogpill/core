@@ -1,15 +1,19 @@
 // Copyright(c) 2021 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "render/pch.h"
-#include "render/debug/coDebugRenderer.h"
-#include "render/shader/coShader.h"
+#include "coDebugRenderer.h"
 #include "lang/result/coResult_f.h"
 #include <math/shape/coAabb_f.h>
 #include <math/vector/coVec3_f.h>
 #include <math/vector/coVec4_f.h>
 #include <math/matrix/coMat4_f.h>
 #include <ecs/component/coComponent_f.h>
+#include <ecs/lib/node/coNode.h>
 #include <pattern/pointer/coUniquePtr.h>
+#include <container/array/coDynamicArray_f.h>
+#include "../mesh/coRenderMesh.h"
+#include "../shader/coShader.h"
+#include "coDebugRender.h"
 
 coDEFINE_SINGLETON(coDebugRenderer);
 coBEGIN_COMPONENT(coDebugRenderer);
@@ -32,8 +36,8 @@ void coDebugRenderer::Shutdown(coEntity& entity)
 	glDeleteBuffers(1, &vertexBufferObject);
 	glDeleteBuffers(1, &elementBufferObject);
 	glDeleteVertexArrays(1, &vertexArrayObject);
-	delete shaderProgram;
-	shaderProgram = nullptr;
+	delete shader;
+	shader = nullptr;
 	coDebugRenderer::SetInstance(nullptr);
 	Base::Shutdown(entity);
 }
@@ -42,7 +46,7 @@ coResult coDebugRenderer::InitShaders()
 {
 	coUniquePtr<coShader> debugProgram = new coShader();
 	coTRY(debugProgram->Init("shaders/render/Debug", coShader::VERTEX | coShader::FRAGMENT), nullptr);
-	shaderProgram = debugProgram.Release();
+	shader = debugProgram.Release();
 	return true;
 }
 
@@ -204,39 +208,71 @@ void coDebugRenderer::DrawDot(const coVec3& pos, coFloat radius, const coColor& 
 
 void coDebugRenderer::Render(const coMat4& viewProj)
 {
-	shaderProgram->Bind();
+	shader->Bind();
 
-	const auto modelViewProjLocation = shaderProgram->GetUniformLocation("modelViewProj");
-	shaderProgram->SetUniform(modelViewProjLocation, viewProj);
-
-	glBindVertexArray(vertexArrayObject);
-
-	auto drawBuffer = [&](Buffer buffer, GLenum mode)
-	{
-		auto& vertexBuffer = vertexBuffers[buffer];
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-		glBufferData(GL_ARRAY_BUFFER, vertexBuffer.count * sizeof(Vertex), vertexBuffer.data, GL_STREAM_DRAW);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, pos));
-		glEnableVertexAttribArray(1);
-		glVertexAttribIPointer(1, 4, GL_UNSIGNED_BYTE, sizeof(Vertex), (void*)offsetof(Vertex, color));
-		glDrawArrays(mode, 0, vertexBuffer.count);
-	};
-
+	const auto modelViewProjLocation = shader->GetUniformLocation("modelViewProj");
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDepthMask(GL_FALSE);
 
-	drawBuffer(Buffer::LINES, GL_LINES);
-	drawBuffer(Buffer::TRIANGLES, GL_TRIANGLES);
-	glDisable(GL_DEPTH_TEST);
-	drawBuffer(Buffer::NO_DEPTH_TEST_LINES, GL_LINES);
-	drawBuffer(Buffer::NO_DEPTH_TEST_TRIANGLES, GL_TRIANGLES);
-	glEnable(GL_DEPTH_TEST);
+	// Draw renderers
+	{
+		for (const coDebugRender* renderer : renderers)
+		{
+			const coRenderMesh* renderMesh = renderer->GetRenderMesh();
+			if (renderMesh)
+			{
+				const coNode* node = renderer->GetNode();
+				coASSERT(node);
+				const coMat4 model = coMat4(node->GetGlobal());
+				shader->SetUniform(modelViewProjLocation, model * viewProj);
+				renderMesh->Draw();
+			}
+		}
+	}
 
-	glBindVertexArray(0);
+	// Draw internal buffers
+	{
+		shader->SetUniform(modelViewProjLocation, viewProj);
+		glBindVertexArray(vertexArrayObject);
+
+		auto drawBuffer = [&](Buffer buffer, GLenum mode)
+		{
+			auto& vertexBuffer = vertexBuffers[buffer];
+			glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
+			glBufferData(GL_ARRAY_BUFFER, vertexBuffer.count * sizeof(Vertex), vertexBuffer.data, GL_STREAM_DRAW);
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, pos));
+			glEnableVertexAttribArray(1);
+			glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, color));
+			glDrawArrays(mode, 0, vertexBuffer.count);
+		};
+
+		drawBuffer(Buffer::LINES, GL_LINES);
+		drawBuffer(Buffer::TRIANGLES, GL_TRIANGLES);
+		glDisable(GL_DEPTH_TEST);
+		drawBuffer(Buffer::NO_DEPTH_TEST_LINES, GL_LINES);
+		drawBuffer(Buffer::NO_DEPTH_TEST_TRIANGLES, GL_TRIANGLES);
+		glEnable(GL_DEPTH_TEST);
+
+		glBindVertexArray(0);
+	}
+	
+	glDepthMask(GL_TRUE);
 	glDisable(GL_BLEND);
-	shaderProgram->Unbind();
+	shader->Unbind();
 
 	for (auto& buffer : vertexBuffers)
 		coClear(buffer);
+}
+
+void coDebugRenderer::Add(coDebugRender& render)
+{
+	coASSERT(!coContains(renderers, &render));
+	coPushBack(renderers, &render);
+}
+
+void coDebugRenderer::Remove(coDebugRender& render)
+{
+	coRemoveUnordered(renderers, &render);
 }

@@ -2,6 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include "math/vector/coVec3.h"
+#include "math/vector/coColor.h"
 #include "lang/result/coResult.h"
 
 template <class T> class coArray;
@@ -15,6 +16,12 @@ public:
 		void SetPos(const coVec3& v) { pos[0] = v.x; pos[1] = v.y; pos[2] = v.z; }
 		static void SetVertexAttribs();
 		coFloat pos[3];
+	};
+	struct VertexPC : public VertexP
+	{
+		void SetColor(const coColor& c) { color = c; }
+		static void SetVertexAttribs();
+		coUint32 color;
 	};
 	struct VertexPN : public VertexP
 	{
@@ -39,8 +46,8 @@ public:
 	void SetBuffers(const coArray<T>& vertices, const coArray<coUint32>& indices);
 	void SetBuffers(coUint nbVertices);
 	void SetDebugLabel(const coConstString& label);
-	void Draw();
-	void DrawAsPoints();
+	void Draw() const;
+	void DrawAsPoints() const;
 
 private:
 	GLuint vertexArrayObject = 0;
