@@ -74,7 +74,7 @@ void coRenderMesh::SetBuffers(const coArray<T>& vertices, const coArray<coUint32
 	glBindVertexArray(vertexArrayObject);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, vertices.count * sizeof(VertexPN), vertices.data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertices.count * sizeof(T), vertices.data, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferObject);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.count * sizeof(coUint32), indices.data, GL_STATIC_DRAW);
 
