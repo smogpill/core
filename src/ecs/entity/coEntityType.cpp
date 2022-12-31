@@ -18,7 +18,8 @@ void coEntityType::AddComponent(const coType& type_)
 			AddComponent(*dependency);
 		}
 	}
-	coPushBack(componentTypes, &type_);
+	if (!coContains(componentTypes, &type_))
+		coPushBack(componentTypes, &type_);
 }
 
 coInt coEntityType::GetComponentIndexByTypeUID(coUint32 uid) const
