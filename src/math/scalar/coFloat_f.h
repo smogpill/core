@@ -17,6 +17,8 @@ constexpr coFloat coFloat_e = 2.71828183f;
 constexpr coFloat coFloat_NearEqualDefaultEpsilon = 1e-4f;
 constexpr coFloat coFloat_largeValue = 1e18f; // such as coFloat_largeValue² < coFloat_max
 constexpr coFloat coFloat_inv255 = static_cast<coFloat>(1. / 255.);
+constexpr coFloat coFloat_goldenNumber = 1.618033988749f;
+constexpr coFloat coFloat_goldenRatio01 = coFloat(coFloat_goldenNumber / (1.0 + coFloat_goldenNumber));
 
 void coSetDenormals(coBool b);
 void coSetFloatingPointExceptions(coBool b);
