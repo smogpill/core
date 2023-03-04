@@ -105,6 +105,20 @@ coFORCE_INLINE void coSetRotation(coMat3& this_, const coFloatx3& eulerAngles)
 	coSetRotation(this_, coRotation(eulerAngles));
 }
 
+coFORCE_INLINE coMat3 coMakeOrthogonalFromZ(const coVec3& z, coVec3 x)
+{
+	const coVec3 y = coCross(z, x);
+	x = coCross(y, z);
+	return coMat3(coNormalize(x), coNormalize(y), coNormalize(z));
+}
+
+coFORCE_INLINE coMat3 coMakeOrthogonalFromXZ(const coVec3& x, coVec3 z)
+{
+	const coVec3 y = coCross(z, x);
+	z = coCross(x, y);
+	return coMat3(coNormalize(x), coNormalize(y), coNormalize(z));
+}
+
 coFORCE_INLINE coQuat coGetRotationNoScale(const coMat3& m)
 {
 	// Stolen from FQuat::FQuat(const FMatrix& M) from Unreal
