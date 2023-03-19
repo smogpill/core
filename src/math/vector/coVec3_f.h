@@ -6,6 +6,8 @@
 #include "math/vector/coVec3.h"
 #include "math/vector/coBool32x3_f.h"
 #include "math/vector/coFloatx3_f.h"
+#include "io/stream/coBinaryInputStream.h"
+#include "io/stream/coBinaryOutputStream.h"
 #include "debug/log/coAssert.h"
 
 coFORCE_INLINE coFloatx4 coDot(const coVec3& _a, const coVec3& _b)
@@ -57,4 +59,18 @@ coFORCE_INLINE coVec3 coLambertNoTangent(const coVec3& nor, coFloat u, coFloat v
 	u = 2.0f * u - 1.0f;
 	const coFloat f = coSquareRoot(1.0f - u * u);
 	return coNormalize(nor + coVec3(f * coCos(a), f * coSin(a), u));
+}
+
+coFORCE_INLINE void coVec3::Write(coBinaryOutputStream& stream) const
+{
+	stream << x;
+	stream << y;
+	stream << z;
+}
+
+coFORCE_INLINE void coVec3::Read(coBinaryInputStream& stream)
+{
+	stream >> x;
+	stream >> y;
+	stream >> z;
 }
