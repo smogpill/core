@@ -9,7 +9,10 @@
 #include <container/array/coDynamicArray_f.h>
 #include <math/scalar/coUint32_f.h>
 
-/// Notes:
+/// # Todo
+/// - Blob/Stream fields where the serialization is done by callbacks with streams. To compare to virtual fields to see how much they make sense.
+/// 
+/// # Notes
 /// - The data is often aligned to a sizeof(coUint32) during the serialization. Working on unaligned int are not an issue on x86/x64, but it seems to be slow or even crashes on some ARM platforms. 
 
 void coArchive::Clear()
