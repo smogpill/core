@@ -34,7 +34,7 @@ public:
 	void Read(T& buffer) const { Read(&buffer, sizeof(buffer)); }
 	void SetContext(void* context_) const { context = context_; }
 	void PushToAlignment32();
-	
+
 	coUint32 WriteObject(const void* object, const coType& type);
 	coUint32 WriteObject(const void* object, const coType& type, coUint32 vtableIndex);
 	coUint32 WriteVTable(const coType& type);
@@ -48,6 +48,9 @@ public:
 	coUint32 GetSize() const { return data.count; }
 	coUint32 GetRoot() const;
 	void* GetContext() const { return context; }
+	coBool IsEmpty() const { return data.count == 0; }
+
+	static inline const coChar* fileExtension = "coa";
 
 private:
 	static coBool IsFieldInlinable(const coField& field);
