@@ -57,6 +57,7 @@ void coType::Init(coType* type)
 		base->Init(type);
 	if (initTypeFunc)
 		initTypeFunc(type, nullptr);
+	type->InitTriviallySerializable();
 }
 
 coField* coType::FindField(const coConstString& name_) const
@@ -65,4 +66,20 @@ coField* coType::FindField(const coConstString& name_) const
 		if (field->name == name_)
 			return field;
 	return nullptr;
+}
+
+void coType::InitTriviallySerializable()
+{
+	if (triviallySerializable || !triviallyCopyable || writeArchiveFunc || readArchiveFunc)
+		return;
+
+	if (base && !base->triviallySerializable)
+		return;
+
+	for (const coField* field : fields)
+	{
+		if (!field->type->triviallySerializable)
+			return;
+	}
+	triviallySerializable = true;
 }

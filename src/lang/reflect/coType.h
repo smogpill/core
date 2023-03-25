@@ -54,4 +54,7 @@ public:
 	coWriteArchiveFunc writeArchiveFunc = nullptr;
 	coReadArchiveFunc readArchiveFunc = nullptr;
 	coInitTypeFunc initTypeFunc = nullptr;
+
+private:
+	void InitTriviallySerializable();
 };

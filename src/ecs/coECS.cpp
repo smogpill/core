@@ -44,8 +44,11 @@ coEntityHandle coECS::CreateEmptyEntity()
 		const coUint32 nbAdded = 256;
 		coResize(freeEntities, nbEntitiesPerBlock);
 		const coUint32 startIndex = blockIndex << blockIndexShift;
+		coUint32 entityIndex = startIndex + nbEntitiesPerBlock - 1;
+		// We want first indices to be pushed to the back because entities will be allocated by popping the back of the free list
+		// and it is best to have them used first to keep the used entities as packed as possible for cache.
 		for (coUint32 index = 0; index < nbEntitiesPerBlock; ++index)
-			freeEntities[index] = startIndex + index;
+			freeEntities[index] = entityIndex--;
 	}
 	const coUint32 index = coPopBack(freeEntities);
 	coEntity& entity = _GetEntity(index);
