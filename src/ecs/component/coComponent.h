@@ -18,6 +18,7 @@ public:
 protected:
 	friend class coEntity;
 
+	void OnDeserialized() {}
 	void Init(coEntity& entity) {}
 	void Shutdown(coEntity& entity) {}
 	void Start(coEntity& entity) {}

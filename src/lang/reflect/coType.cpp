@@ -25,6 +25,7 @@ coType::~coType()
 
 void coType::Give(coField& field)
 {
+	coASSERT(field.type);
 	coPushBack(fields, &field);
 }
 

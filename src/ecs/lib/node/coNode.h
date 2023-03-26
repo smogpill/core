@@ -12,7 +12,7 @@ class coNode : public coComponent
 {
 	coDECLARE_COMPONENT(coNode, coComponent);
 public:
-	coNode() : version(0), localDirty(false), globalDirty(false), static_(false), started(false) {}
+	coNode();
 	void SetLocal(const coTransform&);
 	void SetGlobal(const coTransform&);
 	void SetLocalTranslation(const coVec3&);
@@ -25,6 +25,8 @@ public:
 	const coTransform& GetGlobal() const { if (globalDirty) UpdateGlobal(); return global; }
 
 private:
+	void OnDeserialized();
+	void Init(coEntity& entity);
 	void Start(coEntity& entity);
 	void Stop(coEntity& entity);
 	void SetParentNode(coNode* node);

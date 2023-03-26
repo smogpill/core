@@ -10,11 +10,47 @@
 coBEGIN_COMPONENT(coNode);
 coDEFINE_COMPONENT_START();
 coDEFINE_COMPONENT_STOP();
+coDEFINE_ON_DESERIALIZED();
+coDEFINE_FIELD(local);
 coEND_COMPONENT();
 
 coBEGIN_ENTITY(coNodeEntity);
 entity->AddComponent<coNode>();
 coEND_ENTITY();
+
+coNode::coNode()
+	: version(0)
+	, localDirty(false)
+	, globalDirty(false)
+	, static_(false)
+	, started(false)
+{
+}
+
+void coNode::OnDeserialized()
+{
+	Base::OnDeserialized();
+	globalDirty = true;
+}
+
+void coNode::Init(coEntity& entity)
+{
+	Base::Init(entity);
+}
+
+void coNode::Start(coEntity& entity)
+{
+	Base::Start(entity);
+	RefreshParentNode();
+	started = 1;
+}
+
+void coNode::Stop(coEntity& entity)
+{
+	started = false;
+	SetParentNode(nullptr);
+	Base::Stop(entity);
+}
 
 void coNode::SetLocal(const coTransform& t)
 {
@@ -107,20 +143,6 @@ void coNode::SetGlobalDirtyOnDescendents()
 		child->SetGlobalDirtyRec();
 		child = child->nextSibling;
 	}
-}
-
-void coNode::Start(coEntity& entity)
-{
-	Base::Start(entity);
-	RefreshParentNode();
-	started = 1;
-}
-
-void coNode::Stop(coEntity& entity)
-{
-	started = false;
-	SetParentNode(nullptr);
-	Base::Stop(entity);
 }
 
 void coNode::SetParentNode(coNode* node)

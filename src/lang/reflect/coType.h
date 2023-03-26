@@ -13,6 +13,7 @@ using coConstructFunc = void (*)(void*);
 using coDestructFunc = void (*)(void*);
 using coWriteArchiveFunc = coUint32 (*)(coArchive&, const void*);
 using coReadArchiveFunc = void (*)(const coArchive&, coUint32, void*);
+using coOnDeserializedFunc = void (*)(void*);
 using coInitTypeFunc = void (*)(coType*, coField*);
 
 class coCustomTypeData
@@ -53,6 +54,7 @@ public:
 	coDestructFunc destructFunc = nullptr;
 	coWriteArchiveFunc writeArchiveFunc = nullptr;
 	coReadArchiveFunc readArchiveFunc = nullptr;
+	coOnDeserializedFunc onDeserializedFunc = nullptr;
 	coInitTypeFunc initTypeFunc = nullptr;
 
 private:

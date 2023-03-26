@@ -92,6 +92,8 @@ coType* coGetType()
 	field->offset8 = static_cast<decltype(field->offset8)>(coGetFieldOffset<Self>(&Self::_name_)); \
 	type->Give(*field);
 
+#define coDEFINE_ON_DESERIALIZED() type->onDeserializedFunc = [](void* obj) { static_cast<Self*>(obj)->OnDeserialized(); }
+
 #define coDEFINE_VIRTUAL_FIELD(_name_, _Type_) \
 	field = new coField(); \
 	field->name = #_name_; \

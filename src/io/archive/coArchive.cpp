@@ -213,6 +213,8 @@ void coArchive::ReadObject(coUint32 objectIdx, void* object, const coType& type)
 	if (type.readArchiveFunc)
 	{
 		type.readArchiveFunc(*this, objectIdx, object);
+		if (type.onDeserializedFunc)
+			type.onDeserializedFunc(object);
 		return;
 	}
 
@@ -228,11 +230,14 @@ void coArchive::ReadObject(coUint32 objectIdx, void* object, const coType& type)
 			const coType* fieldType = field->type;
 			coASSERT(fieldType);
 			const coUint16 inlineOffset = inlineOffsets[serializableFieldIdx];
+			void* fieldObject = ((coUint8*)object) + field->offset8;
 			if (fieldType->triviallySerializable)
 			{
-				coASSERT(objectIdx + inlineOffset + field->type->size8 <= data.count);
+				coASSERT(objectIdx + inlineOffset + fieldType->size8 <= data.count);
 				const void* fieldData = &data.data[objectIdx + inlineOffset];
-				coMemCopy(((coUint8*)object) + field->offset8, fieldData, field->type->size8);
+				coMemCopy(fieldObject, fieldData, fieldType->size8);
+				if (fieldType->onDeserializedFunc)
+					fieldType->onDeserializedFunc(fieldObject);
 			}
 			else
 			{
@@ -244,22 +249,22 @@ void coArchive::ReadObject(coUint32 objectIdx, void* object, const coType& type)
 					coASSERT(fieldIdx < data.count);
 					if (field->pointer)
 					{
-						void* fieldObject = CreateObjects(fieldIdx, *fieldType);
-						coMemCopy(((coUint8*)object) + field->offset8, &fieldObject, sizeof(fieldObject));
-					}
-					else if (fieldType->readArchiveFunc)
-					{
-						fieldType->readArchiveFunc(*this, fieldIdx, ((coUint8*)object) + field->offset8);
+						void* objectPointer = CreateObjects(fieldIdx, *fieldType);
+						coMemCopy(fieldObject, &objectPointer, sizeof(objectPointer));
 					}
 					else
 					{
-						coASSERT(false);
+						ReadObject(fieldIdx, fieldObject, *fieldType);
 					}
 				}
 			}
+			
 			++serializableFieldIdx;
 		}
 	}
+
+	if (type.onDeserializedFunc)
+		type.onDeserializedFunc(object);
 }
 
 void coArchive::Write(const void* buffer, coUint32 size)
