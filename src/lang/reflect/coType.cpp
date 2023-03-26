@@ -59,6 +59,7 @@ void coType::Init(coType* type)
 	if (initTypeFunc)
 		initTypeFunc(type, nullptr);
 	type->InitTriviallySerializable();
+	type->InitSerializableSize();
 }
 
 coField* coType::FindField(const coConstString& name_) const
@@ -83,4 +84,13 @@ void coType::InitTriviallySerializable()
 			return;
 	}
 	triviallySerializable = true;
+}
+
+void coType::InitSerializableSize()
+{
+	if (serializableSize8 == 0)
+	{
+		serializableSize8 = size8;
+	}
+	coASSERT(serializableSize8 <= size8);
 }

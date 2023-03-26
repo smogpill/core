@@ -5,4 +5,5 @@
 #include <lang/reflect/coTypeDecl_f.h>
 
 coBEGIN_CLASS(coVec3)
+type->serializableSize8 = sizeof(coFloat) * 3;
 coEND_CLASS()

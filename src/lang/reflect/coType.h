@@ -38,6 +38,7 @@ public:
 	coField* FindField(const coConstString& name) const;
 
 	coUint32 size8 = 0;
+	coUint32 serializableSize8 = 0;
 	coUint32 alignment8 = 0;
 	coUint32 indexInRegistry = coUint32(-1);
 	coBool triviallyCopyable : 1;
@@ -59,4 +60,5 @@ public:
 
 private:
 	void InitTriviallySerializable();
+	void InitSerializableSize();
 };
