@@ -94,7 +94,7 @@ void coECS::DestroyEntity(coUint32 index)
 	};
 	_ReverseVisitChildren(entity, destroyChild);
 
-	entity.SetState(coEntity::State::NONE);
+	entity.SetState(coEntityState::NIL);
 	entity.~coEntity();
 	++entity.generation;
 	coPushBack(freeEntities, index);
@@ -107,7 +107,7 @@ coEntityHandle coECS::Clone(const coEntityHandle& entityHandle)
 	if (source == nullptr)
 		return coEntityHandle();
 
-	coASSERT(source->state == coEntity::State::NONE); // Other states not supported yet
+	coASSERT(source->state == coEntityState::NIL); // Other states not supported yet
 
 	const coEntityHandle targetHandle = CreateEmptyEntity();
 	coEntity& target = _GetEntity(targetHandle.index);
@@ -154,6 +154,34 @@ void coECS::SaveEntity(coEntityPackStorage& packStorage, coUint32 entityIndex, c
 		return true;
 	};
 	_VisitChildren(entity, func);
+}
+
+void coECS::UpdateEntityStates()
+{
+	coDynamicArray<coUint32> requestedEntities;
+	while (entitiesToUpdateState.count)
+	{
+		requestedEntities = entitiesToUpdateState;
+		coClear(entitiesToUpdateState);
+		for (coUint32 entityIdx : requestedEntities)
+		{
+			coEntity& entity = _GetEntity(entityIdx);
+			coASSERT(entity.updateStateRequested);
+			entity.updateStateRequested = false;
+			entity.UpdateState();
+		}
+	}
+}
+
+void coECS::RequestUpdateEntityState(coUint32 index)
+{
+	coEntity& entity = _GetEntity(index);
+	if (!entity.updateStateRequested)
+	{
+		coASSERT(!coContains(entitiesToUpdateState, entity.index));
+		coPushBack(entitiesToUpdateState, index);
+		entity.updateStateRequested = true;
+	}
 }
 
 coEntityHandle coECS::LoadEntity(const coArchive& archive)
@@ -228,33 +256,15 @@ void coECS::SetParent(const coEntityHandle& childHandle, const coEntityHandle& p
 	}
 }
 
-void coECS::Init(const coEntityHandle& handle)
-{
-	coLockScope l(lock);
-	coEntity* entity = GetEntity(handle);
-	if (entity && entity->GetState() == coEntity::State::NONE)
-	{
-		entity->SetState(coEntity::State::INITIALIZED);
-	}
-}
-
-void coECS::Shutdown(const coEntityHandle& handle)
+void coECS::RequestEntityState(const coEntityHandle& handle, coEntityState state)
 {
 	coLockScope l(lock);
 	coEntity* entity = GetEntity(handle);
 	if (entity)
 	{
-		entity->SetState(coEntity::State::NONE);
-	}
-}
-
-void coECS::SetStarted(const coEntityHandle& handle, coBool b)
-{
-	coLockScope l(lock);
-	coEntity* entity = GetEntity(handle);
-	if (entity)
-	{
-		entity->SetState(b ? coEntity::State::STARTED : coEntity::State::INITIALIZED);
+		entity->SetTargetState(state);
+		if (entity->GetTargetState() != entity->GetState())
+			RequestUpdateEntityState(handle.index);
 	}
 }
 
@@ -344,4 +354,19 @@ coEntityHandle coECS::GetNextSibling(const coEntityHandle& handle) const
 		return _GetEntity(entity->nextSibling).GetHandle();
 	}
 	return coEntityHandle();
+}
+
+void coECS::RequestEntityNIL(const coEntityHandle& entity)
+{
+	RequestEntityState(entity, coEntityState::NIL);
+}
+
+void coECS::RequestEntityREADY(const coEntityHandle& entity)
+{
+	RequestEntityState(entity, coEntityState::READY);
+}
+
+void coECS::RequestEntitySTARTED(const coEntityHandle& entity)
+{
+	RequestEntityState(entity, coEntityState::STARTED);
 }

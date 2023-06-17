@@ -16,11 +16,14 @@
 #include "../entity/coEntityType.h"
 #include "../coECS.h"
 
-void coEntity::SetState(State newState)
+coEntity::coEntity()
+	: updateStateRequested(false)
 {
-	SetTargetState(newState);
-	while (state != newState)
-		DoOneStateTransition();
+}
+
+void coEntity::SetState(coEntityState newState)
+{
+	state = newState;
 }
 
 coUint coEntity::GetNbComponents() const
@@ -97,7 +100,18 @@ void coEntity::DestroyComponents()
 	}
 }
 
-void coEntity::SetChildrenState(State newState)
+void coEntity::SetChildrenTargetState(coEntityState newState)
+{
+	coECS* ecs = coECS::instance;
+	auto func = [&](coEntity& child)
+	{
+		child.SetTargetState(newState);
+		return true;
+	};
+	ecs->_VisitChildren(*this, func);
+}
+
+void coEntity::SetChildrenState(coEntityState newState)
 {
 	coECS* ecs = coECS::instance;
 	auto func = [&](coEntity& child)
@@ -108,42 +122,30 @@ void coEntity::SetChildrenState(State newState)
 	ecs->_VisitChildren(*this, func);
 }
 
-void coEntity::DoOneStateTransition()
+void coEntity::SetTargetState(coEntityState state_)
 {
-	if (state == targetState)
-		return;
+	if (targetState != state_)
+	{
+		targetState = state_;
+
+		// Hack
+		while (state != targetState)
+		{
+			UpdateState();
+		}
+	}
+}
+
+void coEntity::UpdateState()
+{
 	switch (state)
 	{
-	case State::NONE:
-	{
-		OnStateNoneToInitialized();
-		break;
-	}
-	case State::INITIALIZED:
-	{
-		switch (targetState)
-		{
-		case State::NONE:
-		{
-			OnStateInitializedToNone();
-			break;
-		}
-		case State::STARTED:
-		{
-			OnStateInitializedToStarted();
-			break;
-		}
-		}
-		break;
-	}
-	case State::STARTED:
-	{
-		OnStateStartedToInitialized();
-		break;
-	}
+	case coEntityState::NIL: OnStateUpdate_NIL(); break;
+	case coEntityState::CREATED: OnStateUpdate_CREATED(); break;
+	case coEntityState::READY: OnStateUpdate_READY(); break;
+	case coEntityState::STARTED: OnStateUpdate_STARTED(); break;
 	default:
 	{
-		coASSERT(false);
 		break;
 	}
 	}
@@ -225,30 +227,93 @@ void coEntity::StopComponents()
 	}
 }
 
-void coEntity::OnStateNoneToInitialized()
+void coEntity::OnStateUpdate_NIL()
 {
-	InitComponents();
-	state = State::INITIALIZED;
-	SetChildrenState(State::INITIALIZED);
+	coASSERT(state == coEntityState::NIL);
+	if (targetState != coEntityState::NIL)
+	{
+		SetState(coEntityState::CREATED);
+		RequestUpdateState();
+	}
 }
 
-void coEntity::OnStateInitializedToNone()
+void coEntity::OnStateUpdate_CREATED()
 {
-	SetChildrenState(State::NONE);
-	state = State::NONE;
-	ShutdownComponents();
+	coASSERT(state == coEntityState::CREATED);
+	switch (targetState)
+	{
+	case coEntityState::NIL:
+	{
+		SetChildrenTargetState(coEntityState::NIL);
+		SetState(coEntityState::NIL);
+		break;
+	}
+	case coEntityState::CREATED: break;
+	case coEntityState::READY:
+	case coEntityState::STARTED:
+	{
+		//SetState(coEntityState::READYING);
+		InitComponents();
+		SetState(coEntityState::READY);
+		SetChildrenTargetState(coEntityState::READY);
+		break;
+	}
+	default:
+	{
+		coASSERT(false);
+		break;
+	}
+	}
+
+	if (targetState != state)
+		RequestUpdateState();
 }
 
-void coEntity::OnStateInitializedToStarted()
+void coEntity::OnStateUpdate_READY()
 {
-	StartComponents();
-	state = State::STARTED;
-	SetChildrenState(State::STARTED);
+	coASSERT(state == coEntityState::READY);
+	switch (targetState)
+	{
+	case coEntityState::NIL:
+	case coEntityState::CREATED:
+	{
+		SetChildrenTargetState(coEntityState::CREATED);
+		ShutdownComponents();
+		SetState(coEntityState::CREATED);
+		break;
+	}
+	case coEntityState::READY: break;
+	case coEntityState::STARTED:
+	{
+		StartComponents();
+		SetState(coEntityState::STARTED);
+		SetChildrenTargetState(coEntityState::STARTED);
+		break;
+	}
+	default:
+	{
+		coASSERT(false);
+		break;
+	}
+	}
+	if (targetState != state)
+		RequestUpdateState();
 }
 
-void coEntity::OnStateStartedToInitialized()
+void coEntity::OnStateUpdate_STARTED()
 {
-	SetChildrenState(State::INITIALIZED);
-	state = State::INITIALIZED;
-	StopComponents();
+	coASSERT(state == coEntityState::STARTED);
+	if (targetState != state)
+	{
+		SetChildrenTargetState(coEntityState::READY);
+		StopComponents();
+		SetState(coEntityState::READY);
+	}
+	if (targetState != state)
+		RequestUpdateState();
+}
+
+void coEntity::RequestUpdateState()
+{
+	coECS::instance->RequestUpdateEntityState(index);
 }

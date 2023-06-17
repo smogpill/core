@@ -22,17 +22,18 @@ public:
 	template <class T>
 	coEntityHandle CreateEntity() { return CreateEntity(*T::GetStaticType()); }
 	coEntityHandle CreateEmptyEntity();
-	void DestroyEntity(const coEntityHandle&);
 	coEntityHandle Clone(const coEntityHandle&);
-	void SaveEntity(coArchive& archive, const coEntityHandle&) const;
 	coEntityHandle LoadEntity(const coArchive& archive);
-	void SetParent(const coEntityHandle& child, const coEntityHandle& parent);
 	coEntityHandle GetFirstChild(const coEntityHandle&) const;
 	coEntityHandle GetPreviousSibling(const coEntityHandle&) const;
 	coEntityHandle GetNextSibling(const coEntityHandle&) const;
-	void Init(const coEntityHandle& entity);
-	void Shutdown(const coEntityHandle& entity);
-	void SetStarted(const coEntityHandle& entity, coBool);
+	void SaveEntity(coArchive& archive, const coEntityHandle&) const;
+	void SetParent(const coEntityHandle& child, const coEntityHandle& parent);
+	void DestroyEntity(const coEntityHandle&);
+	void RequestEntityNIL(const coEntityHandle& entity);
+	void RequestEntityREADY(const coEntityHandle& entity);
+	void RequestEntitySTARTED(const coEntityHandle& entity);
+	void RequestEntityState(const coEntityHandle& entity, coEntityState state);
 	void AddProcessor(coProcessor& processor);
 	coUint32 GetNbEntities(const coEntityHandle& root) const;
 	coLock& GetLock() const { return lock; }
@@ -47,16 +48,20 @@ public:
 	template <class F>
 	coBool _ReverseVisitChildren(const coEntity& entity, F func);
 private:
+	friend class coEntityHandle;
+	friend class coEntity;
+
 	coEntity* GetEntity(const coEntityHandle& handle) const;
 	void DestroyEntity(coUint32 index);
 	coUint32 GetNbEntities(coUint32 entityIndex) const;
 	void SaveEntity(coEntityPackStorage& packStorage, coUint32 entityIndex, coUint32 parentEntityStorageIndex) const;
+	void UpdateEntityStates();
+	void RequestUpdateEntityState(coUint32 index);
 
 	static constexpr coUint32 blockIndexShift = 16;
 	static constexpr coUint32 nbEntitiesPerBlock = 1 << blockIndexShift;
 	static constexpr coUint32 blockIndexMask = nbEntitiesPerBlock - 1;
 	
-
 	mutable coLock lock;
 	struct EntityBlock
 	{
@@ -66,6 +71,7 @@ private:
 	coDynamicArray<EntityBlock*> entityBlocks;
 	coDynamicArray<coUint32> freeEntities;
 	coDynamicArray<coProcessor*> processors;
+	coDynamicArray<coUint32> entitiesToUpdateState;
 };
 
 template <class F>

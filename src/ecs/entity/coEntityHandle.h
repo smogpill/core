@@ -1,7 +1,9 @@
-// Copyright(c) 2016-2022 Jounayd Id Salah
+// Copyright(c) 2016-2023 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include <container/handle/coHandle.h>
+
+class coEntity;
 
 class coEntityHandle
 {
@@ -17,6 +19,7 @@ public:
 	coBool IsGenerationMax() const { return generation == coUint32(-1); }
 	coUint64 GetRaw() const { return reinterpret_cast<const coUint64&>(index); }
 	operator coBool() const { return IsValid(); }
+	//const coEntity* operator ->() const { return coECS::instance->GetEntity(*this); }
 
 	static const coEntityHandle invalid;
 	static const coUint32 maxGeneration = coUint32(-1);

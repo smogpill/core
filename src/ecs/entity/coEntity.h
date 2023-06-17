@@ -7,24 +7,20 @@
 #include <lang/result/coResult.h>
 #include "../component/coComponent.h"
 #include "coEntityHandle.h"
+#include "coEntityDecl.h"
 class coEntityType;
 
 class coEntity
 {
 public:
-	enum class State : coUint8
-	{
-		NONE,
-		INITIALIZED,
-		STARTED,
-		END
-	};
-	void SetState(State state);
+	coEntity();
+	void SetTargetState(coEntityState state_);
 
 	coUint GetNbComponents() const;
 	void** GetComponentBuffer() const { return componentBuffer; }
 	coArray<void*> GetComponents() const { return coArray<void*>(componentBuffer, GetNbComponents()); }
-	State GetState() const { return state; }
+	coEntityState GetState() const { return state; }
+	coEntityState GetTargetState() const { return targetState; }
 	void* GetComponent(const coType& type) const;
 	coEntityHandle GetHandle() const { return coEntityHandle(index, generation); }
 	template <class T>
@@ -39,24 +35,27 @@ public:
 	coUint32 previousSibling = coUint32(-1);
 	coUint32 nextSibling = coUint32(-1);
 	coUint32 parent = coUint32(-1);
-	State state = State::NONE;
-	State targetState = State::NONE;
+	coEntityState state = coEntityState::NIL;
+	coEntityState targetState = coEntityState::NIL;
+	coBool updateStateRequested : 1;
 	void** componentBuffer = nullptr;
 	const coEntityType* entityType = nullptr;
 private:
 	friend class coECS;
 
-	void SetChildrenState(State state);
-	void SetTargetState(State state_) { targetState = state_; }
-	void DoOneStateTransition();
+	void SetState(coEntityState state);
+	void SetChildrenTargetState(coEntityState state);
+	void SetChildrenState(coEntityState state);
 	void InitComponents();
 	void ShutdownComponents();
 	void StartComponents();
 	void StopComponents();
-	void OnStateNoneToInitialized();
-	void OnStateInitializedToStarted();
-	void OnStateStartedToInitialized();
-	void OnStateInitializedToNone();
+	void UpdateState();
+	void OnStateUpdate_NIL();
+	void OnStateUpdate_CREATED();
+	void OnStateUpdate_READY();
+	void OnStateUpdate_STARTED();
+	void RequestUpdateState();
 };
 
 template <class T>
