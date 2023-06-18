@@ -2,6 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include "math/scalar/coAtomicInt32.h"
+#include <lang/reflect/coTypeDecl.h>
 class coTaskContext;
 
 class coTask
