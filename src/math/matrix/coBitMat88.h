@@ -10,7 +10,5 @@ public:
 	coBitMat88();
 	coBitMat88(const coUint64 v) : xy(v) {}
 
-	coBool operator[](coUint )
-
 	coUint64 xy;
 };

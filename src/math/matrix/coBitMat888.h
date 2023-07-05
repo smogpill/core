@@ -10,5 +10,5 @@ public:
 	coBool operator()(coUint x, coUint y, coUint z) const;
 	void operator=(coBool b);
 
-	coUint64x4 x[2] = {}
+	coUint64x4 x[2] = {};
 };
