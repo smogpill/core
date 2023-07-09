@@ -6,12 +6,6 @@ function coInitParams(_params)
 	co_buildPathFromRoot = "build/" .. _ACTION
 	co_buildPathAbs = path.join(co_basePathAbs, co_buildPathFromRoot)
 	co_devPathAbs = path.join(co_basePathAbs, "dev")
-	local coreRelativePath = "."
-	if _params.coreRelativePath then
-		coreRelativePath = _params.coreRelativePath
-	end
-	local coreAbsolutePath = path.getabsolute(coreRelativePath)
-	co_prebuildPath = path.join(coreAbsolutePath, "build/prebuild.exe")
 	co_versionMajor = 0
 	co_versionMinor = 0
 	co_versionBuild = 0
@@ -21,7 +15,7 @@ function coSetWorkspaceDefaults(_name)
 	local locationAbs = path.join(co_buildPathAbs, "workspaces")
 	print("Generating workspace ".._name.."... (in "..locationAbs..")")
 	workspace(_name)
-	co_allConfigurations = {"debug", "dev", "release", "prebuildDebug", "prebuildRelease"}
+	co_allConfigurations = {"debug", "dev", "release"}
 	configurations(co_allConfigurations)
 	location(locationAbs)
 end
@@ -60,16 +54,15 @@ function coSetProjectDefaults(_name, _options)
 	debugdir "$(OutDir)"
 	defines { "coPROJECT_NAME=".._name }
 
-	if not (_options and _options.prebuildDependency) then
-		--removeconfigurations {"prebuild*"}
+	if not (_options) then
 		configurations { "debug", "dev", "release" }
 	end
 
-	filter{"configurations:debug or dev or prebuildDebug"}
+	filter{"configurations:debug or dev"}
 		defines {"coDEBUG", "coDEV"}
 	filter{"configurations:debug or dev or release"}
 		defines {"coREFLECT_ENABLED"}
-	filter { "configurations:dev or release or prebuildRelease" }
+	filter { "configurations:dev or release" }
 		optimize "On"
 	filter{"configurations:release"}
 		defines {"coRELEASE"}
@@ -107,7 +100,7 @@ function coSetCppProjectDefaults(_name)
 		--linkoptions { "/ENTRY:mainCRTStartup" } -- TODO: Not working with DLL, should avoid that case somehow.
 		linkoptions {"/ignore:4221"} -- warns when .cpp are empty depending on the order of obj linking.
 		
-	filter { "configurations:dev or release or prebuildRelease" }
+	filter { "configurations:dev or release" }
 		optimize "Speed"
 		omitframepointer "On"
 	filter {"configurations:debug or dev or release"}
@@ -118,20 +111,6 @@ function coSetCppProjectDefaults(_name)
 		buildmessage 'Compiling %{file.relpath}'
 		buildcommands { '$(GLSLANG)/glslangValidator.exe -G -o "'.. shaderOutPath ..'" %{file.relpath}' }
 		buildoutputs { shaderOutPath }
-	filter {}
-
-		--[[
-		if os.isfile("reflect.cpp") then
-			local projectBasePath = "../.."
-			local genAbsPath = "../../gen"
-			local command = co_prebuildPath .. ' "' .. path.getabsolute(co_projectDir, path.getabsolute(projectBasePath)) .. "/.." .. '" "' .. genAbsPath .. '" "' .. _name .. '" "'.. _name ..'/pch.h"'
-			command = command .. ' -I="$(UniversalCRT_IncludePath)"'
-			for _, d in pairs(co_srcDirs) do
-				command = command .. ' -I="'..d..'"'
-			end
-			prebuildcommands{command}
-		end
-		--]]
 	filter {}
 end
 
@@ -152,34 +131,6 @@ function coSetProjectDependencies(_deps)
 	for _,v in pairs(_deps) do 
 		table.insert(co_dependencies, v)
 	end
-
-	-- Add custom build commands on the .importShaders file to import shaders from other projects
-	--[[
-	filter {'files:**.importShaders'}
-		buildmessage 'Importing shaders...'
-		for _,v in pairs(_deps) do 
-			local srcDir, foundDir = coFindDir(co_srcDirs, v)
-			if foundDir == nil then
-				error("Failed to find the project: "..v)
-			else 
-				if path.normalize(path.join(srcDir, "..")) ~= path.normalize(co_basePathAbs) then
-					if os.isdir(foundDir.."/shaders") then
-						print("Setting up shaders import from: "..foundDir.."/shaders")
-						shadersDir = srcDir.."/../"..co_buildPathFromRoot.."/bin/$(Configuration)/shaders/"..v
-						for _, f in pairs(os.matchfiles(foundDir.."/shaders/*")) do
-							name = path.getname(f)
-							local inputs = shadersDir.."/"..name..".spv"
-							buildinputs { inputs }
-							buildcommands { "{COPY} "..inputs.." $(OutDir)shaders/"..v }
-							buildoutputs { "$(OutDir)shaders/"..v.."/"..name..".spv" }
-						end
-						--postbuildcommands { "{COPY} "..shadersDir.."/* $(OutDir)shaders/"..v }				
-					end
-				end
-			end
-		end
-	filter {}
-	--]]
 
 	links(_deps)
 end
