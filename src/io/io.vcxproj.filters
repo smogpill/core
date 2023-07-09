@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="archive">
+      <UniqueIdentifier>{C709B73F-33E9-35DB-3C01-C1B1A85F9C3C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="archive\stream">
+      <UniqueIdentifier>{E22325BA-CEF1-18C0-B785-89E6A3F2F424}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="archive\text">
+      <UniqueIdentifier>{5B174B7C-477A-DA20-F0FF-12D7DC41A6A3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="archive\writer">
+      <UniqueIdentifier>{53E650C3-3FB4-44C9-2848-B5EF14B5202E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="desc">
+      <UniqueIdentifier>{44A2957C-30D9-960D-D9C5-7C10C5DB120F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dir">
+      <UniqueIdentifier>{446A880B-B073-887C-39EF-9E7CA5F7937C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="file">
+      <UniqueIdentifier>{25CB967C-1102-980D-BAEE-7D10A604140F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="file\format">
+      <UniqueIdentifier>{DD862029-493C-991E-D230-93F53EE58F22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="file\format\image">
+      <UniqueIdentifier>{AF6A3F66-1B81-3DFC-64F8-C81DD04D0E84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="path">
+      <UniqueIdentifier>{F2259C7C-DE5C-9D0D-8749-8310735F190F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="stream">
+      <UniqueIdentifier>{519D931C-3D3F-BEF2-26FA-D146123B4543}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="archive\coArchive.h">
+      <Filter>archive</Filter>
+    </ClInclude>
+    <ClInclude Include="archive\coArchiveClass.h">
+      <Filter>archive</Filter>
+    </ClInclude>
+    <ClInclude Include="archive\coArchiveClass_f.h">
+      <Filter>archive</Filter>
+    </ClInclude>
+    <ClInclude Include="archive\coArchiveFormat.h">
+      <Filter>archive</Filter>
+    </ClInclude>
+    <ClInclude Include="archive\coArchiveObject.h">
+      <Filter>archive</Filter>
+    </ClInclude>
+    <ClInclude Include="archive\coArchive_f.h">
+      <Filter>archive</Filter>
+    </ClInclude>
+    <ClInclude Include="archive\stream\coArchiveOutputStream.h">
+      <Filter>archive\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="archive\text\coTextArchiveReader.h">
+      <Filter>archive\text</Filter>
+    </ClInclude>
+    <ClInclude Include="archive\text\coTextArchiveWriter.h">
+      <Filter>archive\text</Filter>
+    </ClInclude>
+    <ClInclude Include="archive\writer\coArchiveWriter.h">
+      <Filter>archive\writer</Filter>
+    </ClInclude>
+    <ClInclude Include="desc\coDescReader.h">
+      <Filter>desc</Filter>
+    </ClInclude>
+    <ClInclude Include="dir\coDirectoryAccess.h">
+      <Filter>dir</Filter>
+    </ClInclude>
+    <ClInclude Include="dir\coDirectoryEntry.h">
+      <Filter>dir</Filter>
+    </ClInclude>
+    <ClInclude Include="dir\coDirectoryIterator.h">
+      <Filter>dir</Filter>
+    </ClInclude>
+    <ClInclude Include="dir\coDirectory_f.h">
+      <Filter>dir</Filter>
+    </ClInclude>
+    <ClInclude Include="file\coFileAccess.h">
+      <Filter>file</Filter>
+    </ClInclude>
+    <ClInclude Include="file\coFile_f.h">
+      <Filter>file</Filter>
+    </ClInclude>
+    <ClInclude Include="file\format\image\coImage.h">
+      <Filter>file\format\image</Filter>
+    </ClInclude>
+    <ClInclude Include="path\coPathStatus.h">
+      <Filter>path</Filter>
+    </ClInclude>
+    <ClInclude Include="path\coPath_f.h">
+      <Filter>path</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="publicPch.h" />
+    <ClInclude Include="stream\coBinaryInputStream.h">
+      <Filter>stream</Filter>
+    </ClInclude>
+    <ClInclude Include="stream\coBinaryOutputStream.h">
+      <Filter>stream</Filter>
+    </ClInclude>
+    <ClInclude Include="stream\coInputStream.h">
+      <Filter>stream</Filter>
+    </ClInclude>
+    <ClInclude Include="stream\coOutputStream.h">
+      <Filter>stream</Filter>
+    </ClInclude>
+    <ClInclude Include="stream\coStream.h">
+      <Filter>stream</Filter>
+    </ClInclude>
+    <ClInclude Include="stream\coStringInputStream.h">
+      <Filter>stream</Filter>
+    </ClInclude>
+    <ClInclude Include="stream\coStringOutputStream.h">
+      <Filter>stream</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="archive\coArchive.cpp">
+      <Filter>archive</Filter>
+    </ClCompile>
+    <ClCompile Include="archive\coArchiveClass.cpp">
+      <Filter>archive</Filter>
+    </ClCompile>
+    <ClCompile Include="archive\coArchiveClass_f.cpp">
+      <Filter>archive</Filter>
+    </ClCompile>
+    <ClCompile Include="archive\coArchiveFormat.cpp">
+      <Filter>archive</Filter>
+    </ClCompile>
+    <ClCompile Include="archive\coArchiveObject.cpp">
+      <Filter>archive</Filter>
+    </ClCompile>
+    <ClCompile Include="archive\coArchive_f.cpp">
+      <Filter>archive</Filter>
+    </ClCompile>
+    <ClCompile Include="archive\stream\coArchiveOutputStream.cpp">
+      <Filter>archive\stream</Filter>
+    </ClCompile>
+    <ClCompile Include="archive\text\coTextArchiveReader.cpp">
+      <Filter>archive\text</Filter>
+    </ClCompile>
+    <ClCompile Include="archive\text\coTextArchiveWriter.cpp">
+      <Filter>archive\text</Filter>
+    </ClCompile>
+    <ClCompile Include="archive\writer\coArchiveWriter.cpp">
+      <Filter>archive\writer</Filter>
+    </ClCompile>
+    <ClCompile Include="desc\coDescReader.cpp">
+      <Filter>desc</Filter>
+    </ClCompile>
+    <ClCompile Include="dir\coDirectoryAccess.cpp">
+      <Filter>dir</Filter>
+    </ClCompile>
+    <ClCompile Include="dir\coDirectoryAccess_win.cpp">
+      <Filter>dir</Filter>
+    </ClCompile>
+    <ClCompile Include="dir\coDirectoryEntry.cpp">
+      <Filter>dir</Filter>
+    </ClCompile>
+    <ClCompile Include="dir\coDirectoryIterator.cpp">
+      <Filter>dir</Filter>
+    </ClCompile>
+    <ClCompile Include="dir\coDirectoryIterator_win.cpp">
+      <Filter>dir</Filter>
+    </ClCompile>
+    <ClCompile Include="dir\coDirectory_f.cpp">
+      <Filter>dir</Filter>
+    </ClCompile>
+    <ClCompile Include="dir\coDirectory_f_win.cpp">
+      <Filter>dir</Filter>
+    </ClCompile>
+    <ClCompile Include="file\coFileAccess.cpp">
+      <Filter>file</Filter>
+    </ClCompile>
+    <ClCompile Include="file\coFileAccess_win.cpp">
+      <Filter>file</Filter>
+    </ClCompile>
+    <ClCompile Include="file\coFile_f.cpp">
+      <Filter>file</Filter>
+    </ClCompile>
+    <ClCompile Include="file\coFile_f_win.cpp">
+      <Filter>file</Filter>
+    </ClCompile>
+    <ClCompile Include="file\format\image\coImage.cpp">
+      <Filter>file\format\image</Filter>
+    </ClCompile>
+    <ClCompile Include="path\coPath_f.cpp">
+      <Filter>path</Filter>
+    </ClCompile>
+    <ClCompile Include="path\coPath_f_win.cpp">
+      <Filter>path</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="stream\coBinaryInputStream.cpp">
+      <Filter>stream</Filter>
+    </ClCompile>
+    <ClCompile Include="stream\coBinaryOutputStream.cpp">
+      <Filter>stream</Filter>
+    </ClCompile>
+    <ClCompile Include="stream\coInputStream.cpp">
+      <Filter>stream</Filter>
+    </ClCompile>
+    <ClCompile Include="stream\coOutputStream.cpp">
+      <Filter>stream</Filter>
+    </ClCompile>
+    <ClCompile Include="stream\coStream.cpp">
+      <Filter>stream</Filter>
+    </ClCompile>
+    <ClCompile Include="stream\coStringInputStream.cpp">
+      <Filter>stream</Filter>
+    </ClCompile>
+    <ClCompile Include="stream\coStringOutputStream.cpp">
+      <Filter>stream</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="clock">
+      <UniqueIdentifier>{51983B0F-BDAC-63C0-862E-0720F20160F1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="module">
+      <UniqueIdentifier>{2BC7320E-1769-5DE4-0024-7138EC64E434}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="object">
+      <UniqueIdentifier>{FCDEF411-E880-1FE8-D13B-333CBD7CA638}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="pimpl">
+      <UniqueIdentifier>{E72A2510-533F-4DC1-1CC1-F020889449F2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="pointer">
+      <UniqueIdentifier>{2629D1BB-9208-5057-9B20-DB2D077FB6B8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scope">
+      <UniqueIdentifier>{9F325810-0B47-80C1-D4C8-2321409C7CF2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="signal">
+      <UniqueIdentifier>{E3ADC61B-CF4F-F1F1-B80A-0546A44B7842}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="singleton">
+      <UniqueIdentifier>{F8C6A838-6431-5DAF-AD6F-0E5519193B04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thread">
+      <UniqueIdentifier>{DD9F0F1E-C941-3AF4-B2FC-4D489E3DC144}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="uuid">
+      <UniqueIdentifier>{7C379F7C-686E-A00D-115B-8610FD701C0F}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="clock\coClock.h">
+      <Filter>clock</Filter>
+    </ClInclude>
+    <ClInclude Include="module\coCoreModule.h">
+      <Filter>module</Filter>
+    </ClInclude>
+    <ClInclude Include="module\coModule.h">
+      <Filter>module</Filter>
+    </ClInclude>
+    <ClInclude Include="module\coModuleManager.h">
+      <Filter>module</Filter>
+    </ClInclude>
+    <ClInclude Include="object\coObject.h">
+      <Filter>object</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="pimpl\coPimpl.h">
+      <Filter>pimpl</Filter>
+    </ClInclude>
+    <ClInclude Include="pointer\coUniquePtr.h">
+      <Filter>pointer</Filter>
+    </ClInclude>
+    <ClInclude Include="publicPch.h" />
+    <ClInclude Include="scope\coScopeExit.h">
+      <Filter>scope</Filter>
+    </ClInclude>
+    <ClInclude Include="signal\coSignal.h">
+      <Filter>signal</Filter>
+    </ClInclude>
+    <ClInclude Include="singleton\coSingleton.h">
+      <Filter>singleton</Filter>
+    </ClInclude>
+    <ClInclude Include="thread\coLock.h">
+      <Filter>thread</Filter>
+    </ClInclude>
+    <ClInclude Include="thread\coTask.h">
+      <Filter>thread</Filter>
+    </ClInclude>
+    <ClInclude Include="thread\coTaskContext.h">
+      <Filter>thread</Filter>
+    </ClInclude>
+    <ClInclude Include="thread\coTaskScheduler.h">
+      <Filter>thread</Filter>
+    </ClInclude>
+    <ClInclude Include="thread\coTaskWorkerThread.h">
+      <Filter>thread</Filter>
+    </ClInclude>
+    <ClInclude Include="thread\coThread.h">
+      <Filter>thread</Filter>
+    </ClInclude>
+    <ClInclude Include="thread\coThread_f.h">
+      <Filter>thread</Filter>
+    </ClInclude>
+    <ClInclude Include="thread\coWaitCondition.h">
+      <Filter>thread</Filter>
+    </ClInclude>
+    <ClInclude Include="uuid\coUuid.h">
+      <Filter>uuid</Filter>
+    </ClInclude>
+    <ClInclude Include="uuid\coUuid_f.h">
+      <Filter>uuid</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="clock\coClock.cpp">
+      <Filter>clock</Filter>
+    </ClCompile>
+    <ClCompile Include="module\coCoreModule.cpp">
+      <Filter>module</Filter>
+    </ClCompile>
+    <ClCompile Include="module\coModule.cpp">
+      <Filter>module</Filter>
+    </ClCompile>
+    <ClCompile Include="module\coModuleManager.cpp">
+      <Filter>module</Filter>
+    </ClCompile>
+    <ClCompile Include="object\coObject.cpp">
+      <Filter>object</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="singleton\coSingleton.cpp">
+      <Filter>singleton</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\coLock.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\coLock_win.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\coTask.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\coTaskContext.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\coTaskScheduler.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\coTaskWorkerThread.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\coThread.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\coThread_f.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\coThread_f_win.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\coThread_win.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\coWaitCondition.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
+    <ClCompile Include="thread\coWaitCondition_win.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
+    <ClCompile Include="uuid\coUuid.cpp">
+      <Filter>uuid</Filter>
+    </ClCompile>
+    <ClCompile Include="uuid\coUuid_f.cpp">
+      <Filter>uuid</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

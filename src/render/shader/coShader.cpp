@@ -86,9 +86,7 @@ coResult coShader::Init(const coConstString& path, StageMask stages)
 
 #ifdef coDEV
 	{
-		coConstString fileName;
-		coGetFileName(fileName, path);
-		SetDebugLabel(fileName);
+		SetDebugLabel(coGetFileName(path));
 	}
 #endif
 	return true;

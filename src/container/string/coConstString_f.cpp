@@ -54,24 +54,23 @@ void coSplit(coDynamicArray<coConstString>& _out, const coConstString& _input, c
 		coPushBack(_out, coConstString(&c[startIndex], i - startIndex));
 }
 
-void coGetSubStringFromPos(coConstString& _out, const coConstString& _a, coUint32 _pos)
+coConstString coGetSubStringFromPos(const coConstString& _a, coUint32 _pos)
 {
 	coASSERT(_pos <= _a.count);
-	_out.data = _a.data + _pos;
-	_out.count = _a.count - _pos;
-}
-void coGetSubStringFromSize(coConstString& _out, const coConstString& _a, coUint32 _size)
-{
-	coASSERT(_size <= _a.count);
-	_out.data = _a.data;
-	_out.count = _size < _a.count ? _size : _a.count;
+	return coConstString(_a.data + _pos, _a.count - _pos);
 }
 
-void ccoGetSubStringAfterToken(coConstString& _out, const coConstString& _a, const coConstString& _token)
+coConstString coGetSubStringFromSize(const coConstString& _a, coUint32 _size)
 {
-	coASSERT(_token.data >= _a.data && coEnd(_token) <= coEnd(_a));
-	_out.data = coEnd(_token);
-	_out.count = static_cast<coUint32>(coIntPtr(coEnd(_a)) - coIntPtr(_out.data));
+	coASSERT(_size <= _a.count);
+	return coConstString(_a.data, _size < _a.count ? _size : _a.count);
+}
+
+coConstString ccoGetSubStringAfterToken(const coConstString& _a, const coConstString& _token)
+{
+	const coChar* tokenEnd = coEnd(_token);
+	coASSERT(_token.data >= _a.data && tokenEnd <= coEnd(_a));
+	return coConstString(tokenEnd, static_cast<coUint32>(coIntPtr(coEnd(_a)) - coIntPtr(tokenEnd)));
 }
 
 coUint coFindFirstChar(const coConstString& _this, coChar _c)
@@ -99,7 +98,7 @@ coBool coAreMemoryOverlapping(const coConstString& _a, const coConstString& _b)
 	return charMin <= charMax;
 }
 
-void coLeftStrip(coConstString& _out, const coConstString& _s, const coConstString& _chars)
+coConstString coLeftStrip(const coConstString& _s, const coConstString& _chars)
 {
 	coInt i;
 	for (i = 0; i < static_cast<coInt>(_s.count); ++i)
@@ -113,10 +112,10 @@ void coLeftStrip(coConstString& _out, const coConstString& _s, const coConstStri
 		if (j == _chars.count)
 			break;
 	}
-	coGetSubStringFromPos(_out, _s, i);
+	return coGetSubStringFromPos(_s, i);
 }
 
-void coRightStrip(coConstString& _out, const coConstString& _s, const coConstString& _chars)
+coConstString coRightStrip(const coConstString& _s, const coConstString& _chars)
 {
 	coInt i;
 	for (i = _s.count - 1; i >= 0; --i)
@@ -130,7 +129,7 @@ void coRightStrip(coConstString& _out, const coConstString& _s, const coConstStr
 		if (j == _chars.count)
 			break;
 	}
-	coGetSubStringFromSize(_out, _s, i + 1);
+	return coGetSubStringFromSize(_s, i + 1);
 }
 
 coBool coStartsWith(const coConstString& _this, const coConstString& _prefix)

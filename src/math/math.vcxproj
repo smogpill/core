@@ -1,0 +1,480 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="prebuildDebug|x64">
+      <Configuration>prebuildDebug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="prebuildRelease|x64">
+      <Configuration>prebuildRelease</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="debug|x64">
+      <Configuration>debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="dev|x64">
+      <Configuration>dev</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="release|x64">
+      <Configuration>release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{CF809A7C-BBB7-9B0D-64A4-811050BA170F}</ProjectGuid>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>math</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='prebuildDebug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='prebuildRelease|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='dev|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='prebuildDebug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='prebuildRelease|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='dev|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='prebuildDebug|x64'">
+    <OutDir>..\..\build\vs2022\bin\$(Configuration)\</OutDir>
+    <IntDir>..\..\build\vs2022\obj\prebuildDebug\math\</IntDir>
+    <TargetName>math</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='prebuildRelease|x64'">
+    <OutDir>..\..\build\vs2022\bin\$(Configuration)\</OutDir>
+    <IntDir>..\..\build\vs2022\obj\prebuildRelease\math\</IntDir>
+    <TargetName>math</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
+    <OutDir>..\..\build\vs2022\bin\$(Configuration)\</OutDir>
+    <IntDir>..\..\build\vs2022\obj\debug\math\</IntDir>
+    <TargetName>math</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='dev|x64'">
+    <OutDir>..\..\build\vs2022\bin\$(Configuration)\</OutDir>
+    <IntDir>..\..\build\vs2022\obj\dev\math\</IntDir>
+    <TargetName>math</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'">
+    <OutDir>..\..\build\vs2022\bin\$(Configuration)\</OutDir>
+    <IntDir>..\..\build\vs2022\obj\release\math\</IntDir>
+    <TargetName>math</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='prebuildDebug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>math/pch.h</PrecompiledHeaderFile>
+      <WarningLevel>Level4</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <PreprocessorDefinitions>coVERSION_MAJOR=0;coVERSION_MINOR=0;coVERSION_BUILD=0;coPROJECT_NAME=math;coDEBUG;coDEV;_HAS_EXCEPTIONS=0;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\build\gen;..\..\..\MazeEngine\external;..\..\..\MazeEngine\src;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Strict</FloatingPointModel>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
+      <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='prebuildRelease|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>math/pch.h</PrecompiledHeaderFile>
+      <WarningLevel>Level4</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <PreprocessorDefinitions>coVERSION_MAJOR=0;coVERSION_MINOR=0;coVERSION_BUILD=0;coPROJECT_NAME=math;_HAS_EXCEPTIONS=0;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\build\gen;..\..\..\MazeEngine\external;..\..\..\MazeEngine\src;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <OmitFramePointers>true</OmitFramePointers>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Strict</FloatingPointModel>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
+      <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>math/pch.h</PrecompiledHeaderFile>
+      <WarningLevel>Level4</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <PreprocessorDefinitions>coVERSION_MAJOR=0;coVERSION_MINOR=0;coVERSION_BUILD=0;coPROJECT_NAME=math;coDEBUG;coDEV;coREFLECT_ENABLED;_HAS_EXCEPTIONS=0;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\build\gen;..\..\..\MazeEngine\external;..\..\..\MazeEngine\src;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Strict</FloatingPointModel>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
+      <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='dev|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>math/pch.h</PrecompiledHeaderFile>
+      <WarningLevel>Level4</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <PreprocessorDefinitions>coVERSION_MAJOR=0;coVERSION_MINOR=0;coVERSION_BUILD=0;coPROJECT_NAME=math;coDEBUG;coDEV;coREFLECT_ENABLED;_HAS_EXCEPTIONS=0;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\build\gen;..\..\..\MazeEngine\external;..\..\..\MazeEngine\src;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <OmitFramePointers>true</OmitFramePointers>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Strict</FloatingPointModel>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
+      <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>math/pch.h</PrecompiledHeaderFile>
+      <WarningLevel>Level4</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <PreprocessorDefinitions>coVERSION_MAJOR=0;coVERSION_MINOR=0;coVERSION_BUILD=0;coPROJECT_NAME=math;coREFLECT_ENABLED;coRELEASE;_HAS_EXCEPTIONS=0;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\build\gen;..\..\..\MazeEngine\external;..\..\..\MazeEngine\src;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <OmitFramePointers>true</OmitFramePointers>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <FloatingPointModel>Strict</FloatingPointModel>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <TreatLibWarningAsErrors>true</TreatLibWarningAsErrors>
+      <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="accel\sbvh\coSBVH.h" />
+    <ClInclude Include="collision\coCollsionsUtils_f.h" />
+    <ClInclude Include="collision\distance\coDistancePointTriangle_f.h" />
+    <ClInclude Include="collision\distance\coDistanceSegmentSegment_f.h" />
+    <ClInclude Include="collision\distance\coDistanceSegmentTriangle_f.h" />
+    <ClInclude Include="collision\intersection\coIntersectCapsuleTriangle_f.h" />
+    <ClInclude Include="collision\intersection\coIntersectRayCapsule_f.h" />
+    <ClInclude Include="collision\intersection\coIntersectRaySphere_f.h" />
+    <ClInclude Include="collision\intersection\coIntersectTriangleBox_f.h" />
+    <ClInclude Include="collision\overlap\aabox\coOverlapAABoxBox.h" />
+    <ClInclude Include="collision\query\coQueries.h" />
+    <ClInclude Include="collision\sweep\coSweepCapsuleTriangle_f.h" />
+    <ClInclude Include="collision\sweep\coSweepSphereTriangle_f.h" />
+    <ClInclude Include="collision\sweep\coSweepTriangleUtils_f.h" />
+    <ClInclude Include="hash\coHash_f.h" />
+    <ClInclude Include="interp\coInterp_f.h" />
+    <ClInclude Include="matrix\coBitMat88.h" />
+    <ClInclude Include="matrix\coBitMat888.h" />
+    <ClInclude Include="matrix\coBitMat888_f.h" />
+    <ClInclude Include="matrix\coBitMat88_f.h" />
+    <ClInclude Include="matrix\coMat3.h" />
+    <ClInclude Include="matrix\coMat3_f.h" />
+    <ClInclude Include="matrix\coMat4.h" />
+    <ClInclude Include="matrix\coMat4_f.h" />
+    <ClInclude Include="matrix\coSymMat3.h" />
+    <ClInclude Include="matrix\coSymMat3_f.h" />
+    <ClInclude Include="matrix\coSymMat4.h" />
+    <ClInclude Include="matrix\coSymMat4_f.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="publicPch.h" />
+    <ClInclude Include="quaternion\coQuat.h" />
+    <ClInclude Include="quaternion\coQuat_f.h" />
+    <ClInclude Include="scalar\coAtomicInt32.h" />
+    <ClInclude Include="scalar\coAtomicInt32_f.h" />
+    <ClInclude Include="scalar\coAtomicInt32_f_win.inl" />
+    <ClInclude Include="scalar\coAtomicInt64.h" />
+    <ClInclude Include="scalar\coAtomicInt64_f.h" />
+    <ClInclude Include="scalar\coFloat_f.h" />
+    <ClInclude Include="scalar\coInt32_f.h" />
+    <ClInclude Include="scalar\coUint32_f.h" />
+    <ClInclude Include="scalar\coUint64_f.h" />
+    <ClInclude Include="scalar\coUint8_f.h" />
+    <ClInclude Include="shape\capsule\coCapsule.h" />
+    <ClInclude Include="shape\coAabb.h" />
+    <ClInclude Include="shape\coAabb_f.h" />
+    <ClInclude Include="shape\coCube_f.h" />
+    <ClInclude Include="shape\coDistance_f.h" />
+    <ClInclude Include="shape\coFloatx2Rect.h" />
+    <ClInclude Include="shape\coInt32x2Rect.h" />
+    <ClInclude Include="shape\coIntersection_f.h" />
+    <ClInclude Include="shape\coOverlap_f.h" />
+    <ClInclude Include="shape\coPlane.h" />
+    <ClInclude Include="shape\coPlane_f.h" />
+    <ClInclude Include="shape\coRay.h" />
+    <ClInclude Include="shape\coRay_f.h" />
+    <ClInclude Include="shape\coSegment.h" />
+    <ClInclude Include="shape\coSegment_f.h" />
+    <ClInclude Include="shape\coSphere.h" />
+    <ClInclude Include="shape\coSphere_f.h" />
+    <ClInclude Include="shape\curve\coExplicitCurve_f.h" />
+    <ClInclude Include="shape\polygon\coPolygon2.h" />
+    <ClInclude Include="shape\polygon\coPolygon2_f.h" />
+    <ClInclude Include="shape\polygon\coPolygon3.h" />
+    <ClInclude Include="shape\polygon\coPolygon3_f.h" />
+    <ClInclude Include="shape\triangle\coTriangle.h" />
+    <ClInclude Include="shape\triangle\coTriangle2.h" />
+    <ClInclude Include="shape\triangle\coTriangle2_f.h" />
+    <ClInclude Include="shape\triangle\coTriangle_f.h" />
+    <ClInclude Include="solver\coSVD_f.h" />
+    <ClInclude Include="solver\qef\coQEF3.h" />
+    <ClInclude Include="topology\dcel\check\coCheckLinks_f.h" />
+    <ClInclude Include="topology\dcel\coDCEL.h" />
+    <ClInclude Include="topology\dcel\coHalfEdge.h" />
+    <ClInclude Include="topology\dcel\dissolve\coAbsorbFace_f.h" />
+    <ClInclude Include="topology\dcel\dissolve\coCollapseEdges_f.h" />
+    <ClInclude Include="topology\dcel\dissolve\coDissolveDegenerateFaces_f.h" />
+    <ClInclude Include="topology\dcel\dissolve\coDissolveFlatVertices_f.h" />
+    <ClInclude Include="topology\dcel\dissolve\coMergePlanarFaces_f.h" />
+    <ClInclude Include="topology\dcel\dissolve\coRemoveUnused_f.h" />
+    <ClInclude Include="topology\dcel\generate\coDCELGenInfo.h" />
+    <ClInclude Include="topology\dcel\generate\coGenerateMesh_f.h" />
+    <ClInclude Include="topology\dcel\split\coSplitHardEdges_f.h" />
+    <ClInclude Include="topology\dcel\split\coSplitVertices_f.h" />
+    <ClInclude Include="topology\dcel\visit\coVisit_f.h" />
+    <ClInclude Include="topology\mesh\coMesh_f.h" />
+    <ClInclude Include="transform\coTransform.h" />
+    <ClInclude Include="transform\coTransform_f.h" />
+    <ClInclude Include="vector\coBool32x2.h" />
+    <ClInclude Include="vector\coBool32x3.h" />
+    <ClInclude Include="vector\coBool32x3_f.h" />
+    <ClInclude Include="vector\coBool32x4.h" />
+    <ClInclude Include="vector\coBool32x4_f.h" />
+    <ClInclude Include="vector\coColor.h" />
+    <ClInclude Include="vector\coFloatx2.h" />
+    <ClInclude Include="vector\coFloatx2_f.h" />
+    <ClInclude Include="vector\coFloatx3.h" />
+    <ClInclude Include="vector\coFloatx3_f.h" />
+    <ClInclude Include="vector\coFloatx4.h" />
+    <ClInclude Include="vector\coFloatx4_f.h" />
+    <ClInclude Include="vector\coInt32x2.h" />
+    <ClInclude Include="vector\coInt32x3.h" />
+    <ClInclude Include="vector\coInt32x3_f.h" />
+    <ClInclude Include="vector\coInt32x4.h" />
+    <ClInclude Include="vector\coInt32x4_f.h" />
+    <ClInclude Include="vector\coUint32x2.h" />
+    <ClInclude Include="vector\coUint32x2_f.h" />
+    <ClInclude Include="vector\coUint32x3.h" />
+    <ClInclude Include="vector\coUint32x3_f.h" />
+    <ClInclude Include="vector\coUint32x4.h" />
+    <ClInclude Include="vector\coUint64x4.h" />
+    <ClInclude Include="vector\coUint64x4_f.h" />
+    <ClInclude Include="vector\coVec2.h" />
+    <ClInclude Include="vector\coVec2_f.h" />
+    <ClInclude Include="vector\coVec3.h" />
+    <ClInclude Include="vector\coVec3_f.h" />
+    <ClInclude Include="vector\coVec4.h" />
+    <ClInclude Include="vector\coVec4_f.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="accel\sbvh\coSBVH.cpp" />
+    <ClCompile Include="collision\distance\coDistancePointTriangle_f.cpp" />
+    <ClCompile Include="collision\distance\coDistanceSegmentSegment_f.cpp" />
+    <ClCompile Include="collision\distance\coDistanceSegmentTriangle_f.cpp" />
+    <ClCompile Include="collision\intersection\coIntersectCapsuleTriangle_f.cpp" />
+    <ClCompile Include="collision\intersection\coIntersectRayCapsule_f.cpp" />
+    <ClCompile Include="collision\intersection\coIntersectRaySphere_f.cpp" />
+    <ClCompile Include="collision\intersection\coIntersectTriangleBox_f.cpp" />
+    <ClCompile Include="collision\sweep\coSweepCapsuleTriangle_f.cpp" />
+    <ClCompile Include="collision\sweep\coSweepSphereTriangle_f.cpp" />
+    <ClCompile Include="hash\coHash_f.cpp" />
+    <ClCompile Include="interp\coInterp_f.cpp" />
+    <ClCompile Include="matrix\coMat3.cpp" />
+    <ClCompile Include="matrix\coMat3_f.cpp" />
+    <ClCompile Include="matrix\coMat4.cpp" />
+    <ClCompile Include="matrix\coMat4_f.cpp" />
+    <ClCompile Include="matrix\coSymMat3.cpp" />
+    <ClCompile Include="matrix\coSymMat3_f.cpp" />
+    <ClCompile Include="matrix\coSymMat4.cpp" />
+    <ClCompile Include="matrix\coSymMat4_f.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="quaternion\coQuat.cpp" />
+    <ClCompile Include="quaternion\coQuat_f.cpp" />
+    <ClCompile Include="scalar\coAtomicInt32_f.cpp" />
+    <ClCompile Include="scalar\coAtomicInt64_f.cpp" />
+    <ClCompile Include="scalar\coFloat_f.cpp" />
+    <ClCompile Include="scalar\coUint8_f.cpp" />
+    <ClCompile Include="shape\aabb\coAabb.cpp" />
+    <ClCompile Include="shape\coCube_f.cpp" />
+    <ClCompile Include="shape\coDistance_f.cpp" />
+    <ClCompile Include="shape\coIntersection_f.cpp" />
+    <ClCompile Include="shape\coOverlap_f.cpp" />
+    <ClCompile Include="shape\coPlane.cpp" />
+    <ClCompile Include="shape\coPlane_f.cpp" />
+    <ClCompile Include="shape\coRay.cpp" />
+    <ClCompile Include="shape\coRay_f.cpp" />
+    <ClCompile Include="shape\coSegment.cpp" />
+    <ClCompile Include="shape\coSegment_f.cpp" />
+    <ClCompile Include="shape\coSphere.cpp" />
+    <ClCompile Include="shape\curve\coExplicitCurve_f.cpp" />
+    <ClCompile Include="shape\polygon\coPolygon2.cpp" />
+    <ClCompile Include="shape\polygon\coPolygon2_f.cpp" />
+    <ClCompile Include="shape\polygon\coPolygon3_f.cpp" />
+    <ClCompile Include="solver\coSVD_f.cpp" />
+    <ClCompile Include="solver\qef\coQEF3.cpp" />
+    <ClCompile Include="topology\dcel\check\coCheckLinks_f.cpp" />
+    <ClCompile Include="topology\dcel\coDCEL.cpp" />
+    <ClCompile Include="topology\dcel\coHalfEdge.cpp" />
+    <ClCompile Include="topology\dcel\dissolve\coAbsorbFace_f.cpp" />
+    <ClCompile Include="topology\dcel\dissolve\coCollapseEdges_f.cpp" />
+    <ClCompile Include="topology\dcel\dissolve\coDissolveDegenerateFaces_f.cpp" />
+    <ClCompile Include="topology\dcel\dissolve\coDissolveFlatVertices_f.cpp" />
+    <ClCompile Include="topology\dcel\dissolve\coMergePlanarFaces_f.cpp" />
+    <ClCompile Include="topology\dcel\dissolve\coRemoveUnused_f.cpp" />
+    <ClCompile Include="topology\dcel\generate\coDCELGenInfo.cpp" />
+    <ClCompile Include="topology\dcel\generate\coGenerateMesh_f.cpp" />
+    <ClCompile Include="topology\dcel\split\coSplitHardEdges_f.cpp" />
+    <ClCompile Include="topology\dcel\split\coSplitVertices_f.cpp" />
+    <ClCompile Include="topology\mesh\coMesh_f.cpp" />
+    <ClCompile Include="transform\coTransform.cpp" />
+    <ClCompile Include="transform\coTransform_f.cpp" />
+    <ClCompile Include="vector\coColor.cpp" />
+    <ClCompile Include="vector\coFloatx2_f.cpp" />
+    <ClCompile Include="vector\coFloatx3.cpp" />
+    <ClCompile Include="vector\coFloatx4.cpp" />
+    <ClCompile Include="vector\coFloatx4_f.cpp" />
+    <ClCompile Include="vector\coInt32x3.cpp" />
+    <ClCompile Include="vector\coInt32x3_f.cpp" />
+    <ClCompile Include="vector\coInt32x4_f.cpp" />
+    <ClCompile Include="vector\coUint32x2.cpp" />
+    <ClCompile Include="vector\coUint32x4.cpp" />
+    <ClCompile Include="vector\coVec2.cpp" />
+    <ClCompile Include="vector\coVec2_f.cpp" />
+    <ClCompile Include="vector\coVec3.cpp" />
+    <ClCompile Include="vector\coVec3_f.cpp" />
+    <ClCompile Include="vector\coVec4.cpp" />
+    <ClCompile Include="vector\coVec4_f.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="coNatvis.natvis" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

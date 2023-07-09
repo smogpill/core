@@ -9,6 +9,7 @@ class coConstString;
 enum class coDefaultDir
 {
 	CURRENT,
+	EXECUTABLE,
 	LOCAL_APP_DATA,
 	ROAMING_APP_DATA,
 	SAVEGAME,

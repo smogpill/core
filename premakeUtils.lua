@@ -1,29 +1,29 @@
 
 function coInitParams(_params)
-	co_baseAbsPath = os.getcwd()
-	print("co_baseAbsPath: "..co_baseAbsPath)
-	co_externalAbsPath = co_baseAbsPath .. "/external"
-	co_buildPath = "build/" .. _ACTION
+	co_basePathAbs = os.getcwd()
+	print("co_basePathAbs: "..co_basePathAbs)
+	co_externalAbsPath = co_basePathAbs .. "/external"
+	co_buildPathFromRoot = "build/" .. _ACTION
+	co_buildPathAbs = path.join(co_basePathAbs, co_buildPathFromRoot)
+	co_devPathAbs = path.join(co_basePathAbs, "dev")
 	local coreRelativePath = "."
 	if _params.coreRelativePath then
 		coreRelativePath = _params.coreRelativePath
 	end
 	local coreAbsolutePath = path.getabsolute(coreRelativePath)
-	co_prebuildPath = coreAbsolutePath .. "/build/prebuild.exe"
+	co_prebuildPath = path.join(coreAbsolutePath, "build/prebuild.exe")
 	co_versionMajor = 0
 	co_versionMinor = 0
 	co_versionBuild = 0
-	if not co_shadersDir then
-		co_shadersDir = co_baseAbsPath.."/dev/shaders/"
-	end
 end
 
 function coSetWorkspaceDefaults(_name)
-	print("Generating workspace ".._name.."... (in "..co_buildPath..")")
+	local locationAbs = path.join(co_buildPathAbs, "workspaces")
+	print("Generating workspace ".._name.."... (in "..locationAbs..")")
 	workspace(_name)
 	co_allConfigurations = {"debug", "dev", "release", "prebuildDebug", "prebuildRelease"}
 	configurations(co_allConfigurations)
-	location(co_buildPath)
+	location(locationAbs)
 end
 
 function coSetPCH(_dir, _projectName, _fileName)
@@ -40,21 +40,22 @@ function coSetPCH(_dir, _projectName, _fileName)
 end
 
 function coSetProjectDefaults(_name, _options)
-	local projectBasePath = "../.."
-	local buildAbsPath = projectBasePath .. "/" .. co_buildPath
-	local buildLocation = buildAbsPath.."/projects"
-	print("Generating project ".._name.."... (in "..buildLocation..")")
+	local buildRelativePath = path.getrelative(path.getabsolute("."), co_buildPathAbs)
+	local locationAbs = path.join(co_buildPathAbs, "projects")
+	local locationFromProject = path.getrelative(locationAbs, path.getabsolute("."))
+	local objDirAbs = path.join(co_buildPathAbs, "obj")
+	local targetDirAbs = path.join(co_buildPathAbs, "bin/$(Configuration)")
+	print("Generating project ".._name.."... (in "..locationAbs..")")
 	project(_name)
 
-	location(buildLocation)
+	location(locationAbs)
 	architecture "x86_64"
 	warnings "Extra"
 	kind "StaticLib"
-	objdir(buildAbsPath .. "/obj")
-	targetdir(buildAbsPath .. "/bin/$(Configuration)")
+	objdir(objDirAbs)
+	targetdir(targetDirAbs)
 	libdirs { "$(OutDir)" }
 	defines { "coVERSION_MAJOR="..co_versionMajor, "coVERSION_MINOR="..co_versionMinor, "coVERSION_BUILD="..co_versionBuild }
-	includedirs { projectBasePath.."/build/gen", co_externalAbsPath }
 	includedirs(co_srcDirs)
 	debugdir "$(OutDir)"
 	defines { "coPROJECT_NAME=".._name }
@@ -112,10 +113,10 @@ function coSetCppProjectDefaults(_name)
 	filter {"configurations:debug or dev or release"}
 
 	filter {'files:**.vert or **.frag or **.comp or **.geom'}
-		co_shadersProjectDir = co_shadersDir.._name
-		shaderOutPath = co_shadersProjectDir.."/%{file.name}.spv"
+		--shaderOutPath = path.join(co_buildAbsPath, "bin/$(Configuration)/shaders/" .. _name .. "/%{file.name}.spv")
+		shaderOutPath = "$(OutDir)/shaders/" .. _name .. "/%{file.name}.spv"
 		buildmessage 'Compiling %{file.relpath}'
-		buildcommands { '$(GLSLANG)/glslangValidator.exe -G -o "'..shaderOutPath ..'" %{file.relpath}' }
+		buildcommands { '$(GLSLANG)/glslangValidator.exe -G -o "'.. shaderOutPath ..'" %{file.relpath}' }
 		buildoutputs { shaderOutPath }
 	filter {}
 
@@ -153,6 +154,7 @@ function coSetProjectDependencies(_deps)
 	end
 
 	-- Add custom build commands on the .importShaders file to import shaders from other projects
+	--[[
 	filter {'files:**.importShaders'}
 		buildmessage 'Importing shaders...'
 		for _,v in pairs(_deps) do 
@@ -160,10 +162,10 @@ function coSetProjectDependencies(_deps)
 			if foundDir == nil then
 				error("Failed to find the project: "..v)
 			else 
-				if path.normalize(path.join(srcDir, "..")) ~= path.normalize(co_baseAbsPath) then
+				if path.normalize(path.join(srcDir, "..")) ~= path.normalize(co_basePathAbs) then
 					if os.isdir(foundDir.."/shaders") then
 						print("Setting up shaders import from: "..foundDir.."/shaders")
-						shadersDir = srcDir.."/../"..co_buildPath.."/bin/$(Configuration)/shaders/"..v
+						shadersDir = srcDir.."/../"..co_buildPathFromRoot.."/bin/$(Configuration)/shaders/"..v
 						for _, f in pairs(os.matchfiles(foundDir.."/shaders/*")) do
 							name = path.getname(f)
 							local inputs = shadersDir.."/"..name..".spv"
@@ -177,8 +179,16 @@ function coSetProjectDependencies(_deps)
 			end
 		end
 	filter {}
+	--]]
 
 	links(_deps)
+end
+
+function coSetProjectDeployBuildFiles(srcDirFromOutDir, destDirFromRoot)
+	local srcDirAbs = "$(OutDir)/"..srcDirFromOutDir
+	local destDirAbs = path.join(co_basePathAbs, destDirFromRoot)
+	local destDirFromProject = path.getrelative(path.getabsolute("."), destDirAbs)
+	postbuildcommands { "{COPY} \""..srcDirAbs.."\" \""..destDirFromProject.."\"" }
 end
 
 function coFindDir(_srcDirs, _dirName)

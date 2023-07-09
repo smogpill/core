@@ -1,0 +1,684 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="accel">
+      <UniqueIdentifier>{1D45120F-8959-3AC0-52DB-DD1FBEAE36F1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="accel\sbvh">
+      <UniqueIdentifier>{FF3E7E85-EBF6-BFD2-54FE-982E40D55AC3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="collision">
+      <UniqueIdentifier>{D13AF3EB-3DA5-A762-86E3-5808F28C85B7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="collision\distance">
+      <UniqueIdentifier>{CB34B312-B718-7468-2079-6EBB0C7C5EEA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="collision\intersection">
+      <UniqueIdentifier>{D7CDE0E5-C3C7-0938-AC34-A04898CD6FA4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="collision\overlap">
+      <UniqueIdentifier>{79A96055-E5BF-5EEB-2E37-EA0C9A8C2F73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="collision\overlap\aabox">
+      <UniqueIdentifier>{13BF76E6-7FF6-BE7D-8800-23A1F4B6E576}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="collision\query">
+      <UniqueIdentifier>{367F23D6-A20A-919A-AB1B-148F1726ED9A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="collision\sweep">
+      <UniqueIdentifier>{44C748D6-B052-B69A-B963-398F256E129B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="hash">
+      <UniqueIdentifier>{C9C2977C-B5F9-980D-5EE6-7E104AFC140F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interp">
+      <UniqueIdentifier>{F78ED404-E330-FFDA-CCEB-122FB82C862B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="matrix">
+      <UniqueIdentifier>{1A293E0D-06CB-68E3-EF85-7C37DBC6EF33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="quaternion">
+      <UniqueIdentifier>{0BD57295-F78C-B4E2-6094-8D3E4C6B4FD3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scalar">
+      <UniqueIdentifier>{1BC8561B-076A-81F1-F024-9545DC650842}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shape">
+      <UniqueIdentifier>{F6B45A10-62C9-82C1-2B4B-2621971E7FF2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shape\aabb">
+      <UniqueIdentifier>{CB98897A-B750-CBC7-2058-A4230C2F66B8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shape\capsule">
+      <UniqueIdentifier>{F20BAF48-5ECC-2A7F-2707-74FC93866F5B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shape\curve">
+      <UniqueIdentifier>{CA21ECCB-36D7-64C1-BFCB-5E982B805BC5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shape\polygon">
+      <UniqueIdentifier>{AD07C751-19C8-4288-E202-8C054E828764}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shape\triangle">
+      <UniqueIdentifier>{DBF5EF19-C7C3-E31F-B057-54469CC4BF84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="solver">
+      <UniqueIdentifier>{6021361C-4CC3-60F2-357E-744621BFE742}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="solver\qef">
+      <UniqueIdentifier>{4B8543A3-373D-85F0-A044-5E4C8C1B20E1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="topology">
+      <UniqueIdentifier>{E29C5FF7-CE69-BA02-F782-A8AAE3AEEF90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="topology\dcel">
+      <UniqueIdentifier>{49023A62-B5C2-B598-7EFD-FE15EA7CFA74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="topology\dcel\check">
+      <UniqueIdentifier>{B6866B02-22E8-4810-AB55-8FC217B67FCF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="topology\dcel\dissolve">
+      <UniqueIdentifier>{01727313-ED6B-9C65-D6D8-3276C27102D2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="topology\dcel\generate">
+      <UniqueIdentifier>{8351AA97-6F4B-D3E9-58B8-69FA44513956}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="topology\dcel\split">
+      <UniqueIdentifier>{64909103-D0F1-6E11-595F-B5C3C5BFA5D0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="topology\dcel\visit">
+      <UniqueIdentifier>{0721C403-7382-A111-FCEF-E7C36850D8D0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="topology\mesh">
+      <UniqueIdentifier>{FEFB3E62-6ABC-BA98-33F7-03169F76FF74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="transform">
+      <UniqueIdentifier>{81DD9323-ED47-489A-3686-F93FA22F26EF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vector">
+      <UniqueIdentifier>{98AF7B22-8451-A6F8-6D0C-BA4C594D2D49}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="accel\sbvh\coSBVH.h">
+      <Filter>accel\sbvh</Filter>
+    </ClInclude>
+    <ClInclude Include="collision\coCollsionsUtils_f.h">
+      <Filter>collision</Filter>
+    </ClInclude>
+    <ClInclude Include="collision\distance\coDistancePointTriangle_f.h">
+      <Filter>collision\distance</Filter>
+    </ClInclude>
+    <ClInclude Include="collision\distance\coDistanceSegmentSegment_f.h">
+      <Filter>collision\distance</Filter>
+    </ClInclude>
+    <ClInclude Include="collision\distance\coDistanceSegmentTriangle_f.h">
+      <Filter>collision\distance</Filter>
+    </ClInclude>
+    <ClInclude Include="collision\intersection\coIntersectCapsuleTriangle_f.h">
+      <Filter>collision\intersection</Filter>
+    </ClInclude>
+    <ClInclude Include="collision\intersection\coIntersectRayCapsule_f.h">
+      <Filter>collision\intersection</Filter>
+    </ClInclude>
+    <ClInclude Include="collision\intersection\coIntersectRaySphere_f.h">
+      <Filter>collision\intersection</Filter>
+    </ClInclude>
+    <ClInclude Include="collision\intersection\coIntersectTriangleBox_f.h">
+      <Filter>collision\intersection</Filter>
+    </ClInclude>
+    <ClInclude Include="collision\overlap\aabox\coOverlapAABoxBox.h">
+      <Filter>collision\overlap\aabox</Filter>
+    </ClInclude>
+    <ClInclude Include="collision\query\coQueries.h">
+      <Filter>collision\query</Filter>
+    </ClInclude>
+    <ClInclude Include="collision\sweep\coSweepCapsuleTriangle_f.h">
+      <Filter>collision\sweep</Filter>
+    </ClInclude>
+    <ClInclude Include="collision\sweep\coSweepSphereTriangle_f.h">
+      <Filter>collision\sweep</Filter>
+    </ClInclude>
+    <ClInclude Include="collision\sweep\coSweepTriangleUtils_f.h">
+      <Filter>collision\sweep</Filter>
+    </ClInclude>
+    <ClInclude Include="hash\coHash_f.h">
+      <Filter>hash</Filter>
+    </ClInclude>
+    <ClInclude Include="interp\coInterp_f.h">
+      <Filter>interp</Filter>
+    </ClInclude>
+    <ClInclude Include="matrix\coBitMat88.h">
+      <Filter>matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="matrix\coBitMat888.h">
+      <Filter>matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="matrix\coBitMat888_f.h">
+      <Filter>matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="matrix\coBitMat88_f.h">
+      <Filter>matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="matrix\coMat3.h">
+      <Filter>matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="matrix\coMat3_f.h">
+      <Filter>matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="matrix\coMat4.h">
+      <Filter>matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="matrix\coMat4_f.h">
+      <Filter>matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="matrix\coSymMat3.h">
+      <Filter>matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="matrix\coSymMat3_f.h">
+      <Filter>matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="matrix\coSymMat4.h">
+      <Filter>matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="matrix\coSymMat4_f.h">
+      <Filter>matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="publicPch.h" />
+    <ClInclude Include="quaternion\coQuat.h">
+      <Filter>quaternion</Filter>
+    </ClInclude>
+    <ClInclude Include="quaternion\coQuat_f.h">
+      <Filter>quaternion</Filter>
+    </ClInclude>
+    <ClInclude Include="scalar\coAtomicInt32.h">
+      <Filter>scalar</Filter>
+    </ClInclude>
+    <ClInclude Include="scalar\coAtomicInt32_f.h">
+      <Filter>scalar</Filter>
+    </ClInclude>
+    <ClInclude Include="scalar\coAtomicInt32_f_win.inl">
+      <Filter>scalar</Filter>
+    </ClInclude>
+    <ClInclude Include="scalar\coAtomicInt64.h">
+      <Filter>scalar</Filter>
+    </ClInclude>
+    <ClInclude Include="scalar\coAtomicInt64_f.h">
+      <Filter>scalar</Filter>
+    </ClInclude>
+    <ClInclude Include="scalar\coFloat_f.h">
+      <Filter>scalar</Filter>
+    </ClInclude>
+    <ClInclude Include="scalar\coInt32_f.h">
+      <Filter>scalar</Filter>
+    </ClInclude>
+    <ClInclude Include="scalar\coUint32_f.h">
+      <Filter>scalar</Filter>
+    </ClInclude>
+    <ClInclude Include="scalar\coUint64_f.h">
+      <Filter>scalar</Filter>
+    </ClInclude>
+    <ClInclude Include="scalar\coUint8_f.h">
+      <Filter>scalar</Filter>
+    </ClInclude>
+    <ClInclude Include="shape\capsule\coCapsule.h">
+      <Filter>shape\capsule</Filter>
+    </ClInclude>
+    <ClInclude Include="shape\coAabb.h">
+      <Filter>shape</Filter>
+    </ClInclude>
+    <ClInclude Include="shape\coAabb_f.h">
+      <Filter>shape</Filter>
+    </ClInclude>
+    <ClInclude Include="shape\coCube_f.h">
+      <Filter>shape</Filter>
+    </ClInclude>
+    <ClInclude Include="shape\coDistance_f.h">
+      <Filter>shape</Filter>
+    </ClInclude>
+    <ClInclude Include="shape\coFloatx2Rect.h">
+      <Filter>shape</Filter>
+    </ClInclude>
+    <ClInclude Include="shape\coInt32x2Rect.h">
+      <Filter>shape</Filter>
+    </ClInclude>
+    <ClInclude Include="shape\coIntersection_f.h">
+      <Filter>shape</Filter>
+    </ClInclude>
+    <ClInclude Include="shape\coOverlap_f.h">
+      <Filter>shape</Filter>
+    </ClInclude>
+    <ClInclude Include="shape\coPlane.h">
+      <Filter>shape</Filter>
+    </ClInclude>
+    <ClInclude Include="shape\coPlane_f.h">
+      <Filter>shape</Filter>
+    </ClInclude>
+    <ClInclude Include="shape\coRay.h">
+      <Filter>shape</Filter>
+    </ClInclude>
+    <ClInclude Include="shape\coRay_f.h">
+      <Filter>shape</Filter>
+    </ClInclude>
+    <ClInclude Include="shape\coSegment.h">
+      <Filter>shape</Filter>
+    </ClInclude>
+    <ClInclude Include="shape\coSegment_f.h">
+      <Filter>shape</Filter>
+    </ClInclude>
+    <ClInclude Include="shape\coSphere.h">
+      <Filter>shape</Filter>
+    </ClInclude>
+    <ClInclude Include="shape\coSphere_f.h">
+      <Filter>shape</Filter>
+    </ClInclude>
+    <ClInclude Include="shape\curve\coExplicitCurve_f.h">
+      <Filter>shape\curve</Filter>
+    </ClInclude>
+    <ClInclude Include="shape\polygon\coPolygon2.h">
+      <Filter>shape\polygon</Filter>
+    </ClInclude>
+    <ClInclude Include="shape\polygon\coPolygon2_f.h">
+      <Filter>shape\polygon</Filter>
+    </ClInclude>
+    <ClInclude Include="shape\polygon\coPolygon3.h">
+      <Filter>shape\polygon</Filter>
+    </ClInclude>
+    <ClInclude Include="shape\polygon\coPolygon3_f.h">
+      <Filter>shape\polygon</Filter>
+    </ClInclude>
+    <ClInclude Include="shape\triangle\coTriangle.h">
+      <Filter>shape\triangle</Filter>
+    </ClInclude>
+    <ClInclude Include="shape\triangle\coTriangle2.h">
+      <Filter>shape\triangle</Filter>
+    </ClInclude>
+    <ClInclude Include="shape\triangle\coTriangle2_f.h">
+      <Filter>shape\triangle</Filter>
+    </ClInclude>
+    <ClInclude Include="shape\triangle\coTriangle_f.h">
+      <Filter>shape\triangle</Filter>
+    </ClInclude>
+    <ClInclude Include="solver\coSVD_f.h">
+      <Filter>solver</Filter>
+    </ClInclude>
+    <ClInclude Include="solver\qef\coQEF3.h">
+      <Filter>solver\qef</Filter>
+    </ClInclude>
+    <ClInclude Include="topology\dcel\check\coCheckLinks_f.h">
+      <Filter>topology\dcel\check</Filter>
+    </ClInclude>
+    <ClInclude Include="topology\dcel\coDCEL.h">
+      <Filter>topology\dcel</Filter>
+    </ClInclude>
+    <ClInclude Include="topology\dcel\coHalfEdge.h">
+      <Filter>topology\dcel</Filter>
+    </ClInclude>
+    <ClInclude Include="topology\dcel\dissolve\coAbsorbFace_f.h">
+      <Filter>topology\dcel\dissolve</Filter>
+    </ClInclude>
+    <ClInclude Include="topology\dcel\dissolve\coCollapseEdges_f.h">
+      <Filter>topology\dcel\dissolve</Filter>
+    </ClInclude>
+    <ClInclude Include="topology\dcel\dissolve\coDissolveDegenerateFaces_f.h">
+      <Filter>topology\dcel\dissolve</Filter>
+    </ClInclude>
+    <ClInclude Include="topology\dcel\dissolve\coDissolveFlatVertices_f.h">
+      <Filter>topology\dcel\dissolve</Filter>
+    </ClInclude>
+    <ClInclude Include="topology\dcel\dissolve\coMergePlanarFaces_f.h">
+      <Filter>topology\dcel\dissolve</Filter>
+    </ClInclude>
+    <ClInclude Include="topology\dcel\dissolve\coRemoveUnused_f.h">
+      <Filter>topology\dcel\dissolve</Filter>
+    </ClInclude>
+    <ClInclude Include="topology\dcel\generate\coDCELGenInfo.h">
+      <Filter>topology\dcel\generate</Filter>
+    </ClInclude>
+    <ClInclude Include="topology\dcel\generate\coGenerateMesh_f.h">
+      <Filter>topology\dcel\generate</Filter>
+    </ClInclude>
+    <ClInclude Include="topology\dcel\split\coSplitHardEdges_f.h">
+      <Filter>topology\dcel\split</Filter>
+    </ClInclude>
+    <ClInclude Include="topology\dcel\split\coSplitVertices_f.h">
+      <Filter>topology\dcel\split</Filter>
+    </ClInclude>
+    <ClInclude Include="topology\dcel\visit\coVisit_f.h">
+      <Filter>topology\dcel\visit</Filter>
+    </ClInclude>
+    <ClInclude Include="topology\mesh\coMesh_f.h">
+      <Filter>topology\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="transform\coTransform.h">
+      <Filter>transform</Filter>
+    </ClInclude>
+    <ClInclude Include="transform\coTransform_f.h">
+      <Filter>transform</Filter>
+    </ClInclude>
+    <ClInclude Include="vector\coBool32x2.h">
+      <Filter>vector</Filter>
+    </ClInclude>
+    <ClInclude Include="vector\coBool32x3.h">
+      <Filter>vector</Filter>
+    </ClInclude>
+    <ClInclude Include="vector\coBool32x3_f.h">
+      <Filter>vector</Filter>
+    </ClInclude>
+    <ClInclude Include="vector\coBool32x4.h">
+      <Filter>vector</Filter>
+    </ClInclude>
+    <ClInclude Include="vector\coBool32x4_f.h">
+      <Filter>vector</Filter>
+    </ClInclude>
+    <ClInclude Include="vector\coColor.h">
+      <Filter>vector</Filter>
+    </ClInclude>
+    <ClInclude Include="vector\coFloatx2.h">
+      <Filter>vector</Filter>
+    </ClInclude>
+    <ClInclude Include="vector\coFloatx2_f.h">
+      <Filter>vector</Filter>
+    </ClInclude>
+    <ClInclude Include="vector\coFloatx3.h">
+      <Filter>vector</Filter>
+    </ClInclude>
+    <ClInclude Include="vector\coFloatx3_f.h">
+      <Filter>vector</Filter>
+    </ClInclude>
+    <ClInclude Include="vector\coFloatx4.h">
+      <Filter>vector</Filter>
+    </ClInclude>
+    <ClInclude Include="vector\coFloatx4_f.h">
+      <Filter>vector</Filter>
+    </ClInclude>
+    <ClInclude Include="vector\coInt32x2.h">
+      <Filter>vector</Filter>
+    </ClInclude>
+    <ClInclude Include="vector\coInt32x3.h">
+      <Filter>vector</Filter>
+    </ClInclude>
+    <ClInclude Include="vector\coInt32x3_f.h">
+      <Filter>vector</Filter>
+    </ClInclude>
+    <ClInclude Include="vector\coInt32x4.h">
+      <Filter>vector</Filter>
+    </ClInclude>
+    <ClInclude Include="vector\coInt32x4_f.h">
+      <Filter>vector</Filter>
+    </ClInclude>
+    <ClInclude Include="vector\coUint32x2.h">
+      <Filter>vector</Filter>
+    </ClInclude>
+    <ClInclude Include="vector\coUint32x2_f.h">
+      <Filter>vector</Filter>
+    </ClInclude>
+    <ClInclude Include="vector\coUint32x3.h">
+      <Filter>vector</Filter>
+    </ClInclude>
+    <ClInclude Include="vector\coUint32x3_f.h">
+      <Filter>vector</Filter>
+    </ClInclude>
+    <ClInclude Include="vector\coUint32x4.h">
+      <Filter>vector</Filter>
+    </ClInclude>
+    <ClInclude Include="vector\coUint64x4.h">
+      <Filter>vector</Filter>
+    </ClInclude>
+    <ClInclude Include="vector\coUint64x4_f.h">
+      <Filter>vector</Filter>
+    </ClInclude>
+    <ClInclude Include="vector\coVec2.h">
+      <Filter>vector</Filter>
+    </ClInclude>
+    <ClInclude Include="vector\coVec2_f.h">
+      <Filter>vector</Filter>
+    </ClInclude>
+    <ClInclude Include="vector\coVec3.h">
+      <Filter>vector</Filter>
+    </ClInclude>
+    <ClInclude Include="vector\coVec3_f.h">
+      <Filter>vector</Filter>
+    </ClInclude>
+    <ClInclude Include="vector\coVec4.h">
+      <Filter>vector</Filter>
+    </ClInclude>
+    <ClInclude Include="vector\coVec4_f.h">
+      <Filter>vector</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="accel\sbvh\coSBVH.cpp">
+      <Filter>accel\sbvh</Filter>
+    </ClCompile>
+    <ClCompile Include="collision\distance\coDistancePointTriangle_f.cpp">
+      <Filter>collision\distance</Filter>
+    </ClCompile>
+    <ClCompile Include="collision\distance\coDistanceSegmentSegment_f.cpp">
+      <Filter>collision\distance</Filter>
+    </ClCompile>
+    <ClCompile Include="collision\distance\coDistanceSegmentTriangle_f.cpp">
+      <Filter>collision\distance</Filter>
+    </ClCompile>
+    <ClCompile Include="collision\intersection\coIntersectCapsuleTriangle_f.cpp">
+      <Filter>collision\intersection</Filter>
+    </ClCompile>
+    <ClCompile Include="collision\intersection\coIntersectRayCapsule_f.cpp">
+      <Filter>collision\intersection</Filter>
+    </ClCompile>
+    <ClCompile Include="collision\intersection\coIntersectRaySphere_f.cpp">
+      <Filter>collision\intersection</Filter>
+    </ClCompile>
+    <ClCompile Include="collision\intersection\coIntersectTriangleBox_f.cpp">
+      <Filter>collision\intersection</Filter>
+    </ClCompile>
+    <ClCompile Include="collision\sweep\coSweepCapsuleTriangle_f.cpp">
+      <Filter>collision\sweep</Filter>
+    </ClCompile>
+    <ClCompile Include="collision\sweep\coSweepSphereTriangle_f.cpp">
+      <Filter>collision\sweep</Filter>
+    </ClCompile>
+    <ClCompile Include="hash\coHash_f.cpp">
+      <Filter>hash</Filter>
+    </ClCompile>
+    <ClCompile Include="interp\coInterp_f.cpp">
+      <Filter>interp</Filter>
+    </ClCompile>
+    <ClCompile Include="matrix\coMat3.cpp">
+      <Filter>matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="matrix\coMat3_f.cpp">
+      <Filter>matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="matrix\coMat4.cpp">
+      <Filter>matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="matrix\coMat4_f.cpp">
+      <Filter>matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="matrix\coSymMat3.cpp">
+      <Filter>matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="matrix\coSymMat3_f.cpp">
+      <Filter>matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="matrix\coSymMat4.cpp">
+      <Filter>matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="matrix\coSymMat4_f.cpp">
+      <Filter>matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="quaternion\coQuat.cpp">
+      <Filter>quaternion</Filter>
+    </ClCompile>
+    <ClCompile Include="quaternion\coQuat_f.cpp">
+      <Filter>quaternion</Filter>
+    </ClCompile>
+    <ClCompile Include="scalar\coAtomicInt32_f.cpp">
+      <Filter>scalar</Filter>
+    </ClCompile>
+    <ClCompile Include="scalar\coAtomicInt64_f.cpp">
+      <Filter>scalar</Filter>
+    </ClCompile>
+    <ClCompile Include="scalar\coFloat_f.cpp">
+      <Filter>scalar</Filter>
+    </ClCompile>
+    <ClCompile Include="scalar\coUint8_f.cpp">
+      <Filter>scalar</Filter>
+    </ClCompile>
+    <ClCompile Include="shape\aabb\coAabb.cpp">
+      <Filter>shape\aabb</Filter>
+    </ClCompile>
+    <ClCompile Include="shape\coCube_f.cpp">
+      <Filter>shape</Filter>
+    </ClCompile>
+    <ClCompile Include="shape\coDistance_f.cpp">
+      <Filter>shape</Filter>
+    </ClCompile>
+    <ClCompile Include="shape\coIntersection_f.cpp">
+      <Filter>shape</Filter>
+    </ClCompile>
+    <ClCompile Include="shape\coOverlap_f.cpp">
+      <Filter>shape</Filter>
+    </ClCompile>
+    <ClCompile Include="shape\coPlane.cpp">
+      <Filter>shape</Filter>
+    </ClCompile>
+    <ClCompile Include="shape\coPlane_f.cpp">
+      <Filter>shape</Filter>
+    </ClCompile>
+    <ClCompile Include="shape\coRay.cpp">
+      <Filter>shape</Filter>
+    </ClCompile>
+    <ClCompile Include="shape\coRay_f.cpp">
+      <Filter>shape</Filter>
+    </ClCompile>
+    <ClCompile Include="shape\coSegment.cpp">
+      <Filter>shape</Filter>
+    </ClCompile>
+    <ClCompile Include="shape\coSegment_f.cpp">
+      <Filter>shape</Filter>
+    </ClCompile>
+    <ClCompile Include="shape\coSphere.cpp">
+      <Filter>shape</Filter>
+    </ClCompile>
+    <ClCompile Include="shape\curve\coExplicitCurve_f.cpp">
+      <Filter>shape\curve</Filter>
+    </ClCompile>
+    <ClCompile Include="shape\polygon\coPolygon2.cpp">
+      <Filter>shape\polygon</Filter>
+    </ClCompile>
+    <ClCompile Include="shape\polygon\coPolygon2_f.cpp">
+      <Filter>shape\polygon</Filter>
+    </ClCompile>
+    <ClCompile Include="shape\polygon\coPolygon3_f.cpp">
+      <Filter>shape\polygon</Filter>
+    </ClCompile>
+    <ClCompile Include="solver\coSVD_f.cpp">
+      <Filter>solver</Filter>
+    </ClCompile>
+    <ClCompile Include="solver\qef\coQEF3.cpp">
+      <Filter>solver\qef</Filter>
+    </ClCompile>
+    <ClCompile Include="topology\dcel\check\coCheckLinks_f.cpp">
+      <Filter>topology\dcel\check</Filter>
+    </ClCompile>
+    <ClCompile Include="topology\dcel\coDCEL.cpp">
+      <Filter>topology\dcel</Filter>
+    </ClCompile>
+    <ClCompile Include="topology\dcel\coHalfEdge.cpp">
+      <Filter>topology\dcel</Filter>
+    </ClCompile>
+    <ClCompile Include="topology\dcel\dissolve\coAbsorbFace_f.cpp">
+      <Filter>topology\dcel\dissolve</Filter>
+    </ClCompile>
+    <ClCompile Include="topology\dcel\dissolve\coCollapseEdges_f.cpp">
+      <Filter>topology\dcel\dissolve</Filter>
+    </ClCompile>
+    <ClCompile Include="topology\dcel\dissolve\coDissolveDegenerateFaces_f.cpp">
+      <Filter>topology\dcel\dissolve</Filter>
+    </ClCompile>
+    <ClCompile Include="topology\dcel\dissolve\coDissolveFlatVertices_f.cpp">
+      <Filter>topology\dcel\dissolve</Filter>
+    </ClCompile>
+    <ClCompile Include="topology\dcel\dissolve\coMergePlanarFaces_f.cpp">
+      <Filter>topology\dcel\dissolve</Filter>
+    </ClCompile>
+    <ClCompile Include="topology\dcel\dissolve\coRemoveUnused_f.cpp">
+      <Filter>topology\dcel\dissolve</Filter>
+    </ClCompile>
+    <ClCompile Include="topology\dcel\generate\coDCELGenInfo.cpp">
+      <Filter>topology\dcel\generate</Filter>
+    </ClCompile>
+    <ClCompile Include="topology\dcel\generate\coGenerateMesh_f.cpp">
+      <Filter>topology\dcel\generate</Filter>
+    </ClCompile>
+    <ClCompile Include="topology\dcel\split\coSplitHardEdges_f.cpp">
+      <Filter>topology\dcel\split</Filter>
+    </ClCompile>
+    <ClCompile Include="topology\dcel\split\coSplitVertices_f.cpp">
+      <Filter>topology\dcel\split</Filter>
+    </ClCompile>
+    <ClCompile Include="topology\mesh\coMesh_f.cpp">
+      <Filter>topology\mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="transform\coTransform.cpp">
+      <Filter>transform</Filter>
+    </ClCompile>
+    <ClCompile Include="transform\coTransform_f.cpp">
+      <Filter>transform</Filter>
+    </ClCompile>
+    <ClCompile Include="vector\coColor.cpp">
+      <Filter>vector</Filter>
+    </ClCompile>
+    <ClCompile Include="vector\coFloatx2_f.cpp">
+      <Filter>vector</Filter>
+    </ClCompile>
+    <ClCompile Include="vector\coFloatx3.cpp">
+      <Filter>vector</Filter>
+    </ClCompile>
+    <ClCompile Include="vector\coFloatx4.cpp">
+      <Filter>vector</Filter>
+    </ClCompile>
+    <ClCompile Include="vector\coFloatx4_f.cpp">
+      <Filter>vector</Filter>
+    </ClCompile>
+    <ClCompile Include="vector\coInt32x3.cpp">
+      <Filter>vector</Filter>
+    </ClCompile>
+    <ClCompile Include="vector\coInt32x3_f.cpp">
+      <Filter>vector</Filter>
+    </ClCompile>
+    <ClCompile Include="vector\coInt32x4_f.cpp">
+      <Filter>vector</Filter>
+    </ClCompile>
+    <ClCompile Include="vector\coUint32x2.cpp">
+      <Filter>vector</Filter>
+    </ClCompile>
+    <ClCompile Include="vector\coUint32x4.cpp">
+      <Filter>vector</Filter>
+    </ClCompile>
+    <ClCompile Include="vector\coVec2.cpp">
+      <Filter>vector</Filter>
+    </ClCompile>
+    <ClCompile Include="vector\coVec2_f.cpp">
+      <Filter>vector</Filter>
+    </ClCompile>
+    <ClCompile Include="vector\coVec3.cpp">
+      <Filter>vector</Filter>
+    </ClCompile>
+    <ClCompile Include="vector\coVec3_f.cpp">
+      <Filter>vector</Filter>
+    </ClCompile>
+    <ClCompile Include="vector\coVec4.cpp">
+      <Filter>vector</Filter>
+    </ClCompile>
+    <ClCompile Include="vector\coVec4_f.cpp">
+      <Filter>vector</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="coNatvis.natvis" />
+  </ItemGroup>
+</Project>

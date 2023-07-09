@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="allocator">
+      <UniqueIdentifier>{0611BE44-727B-72BB-BBB9-236127635010}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="allocator\coAllocator.h">
+      <Filter>allocator</Filter>
+    </ClInclude>
+    <ClInclude Include="allocator\coHeapAllocator.h">
+      <Filter>allocator</Filter>
+    </ClInclude>
+    <ClInclude Include="allocator\coLocalAllocator.h">
+      <Filter>allocator</Filter>
+    </ClInclude>
+    <ClInclude Include="allocator\coStackAllocator.h">
+      <Filter>allocator</Filter>
+    </ClInclude>
+    <ClInclude Include="coMemory_f.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="publicPch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="allocator\coAllocator.cpp">
+      <Filter>allocator</Filter>
+    </ClCompile>
+    <ClCompile Include="allocator\coHeapAllocator.cpp">
+      <Filter>allocator</Filter>
+    </ClCompile>
+    <ClCompile Include="allocator\coLocalAllocator.cpp">
+      <Filter>allocator</Filter>
+    </ClCompile>
+    <ClCompile Include="allocator\coStackAllocator.cpp">
+      <Filter>allocator</Filter>
+    </ClCompile>
+    <ClCompile Include="coMemory_f.cpp" />
+    <ClCompile Include="pch.cpp" />
+  </ItemGroup>
+</Project>

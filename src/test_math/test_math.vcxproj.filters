@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="quaternion">
+      <UniqueIdentifier>{0BD57295-F78C-B4E2-6094-8D3E4C6B4FD3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shape">
+      <UniqueIdentifier>{F6B45A10-62C9-82C1-2B4B-2621971E7FF2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="topology">
+      <UniqueIdentifier>{E29C5FF7-CE69-BA02-F782-A8AAE3AEEF90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="topology\dcel">
+      <UniqueIdentifier>{49023A62-B5C2-B598-7EFD-FE15EA7CFA74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="topology\dcel\dissolve">
+      <UniqueIdentifier>{01727313-ED6B-9C65-D6D8-3276C27102D2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="transform">
+      <UniqueIdentifier>{81DD9323-ED47-489A-3686-F93FA22F26EF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vector">
+      <UniqueIdentifier>{98AF7B22-8451-A6F8-6D0C-BA4C594D2D49}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="publicPch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="coMain.cpp" />
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="quaternion\test_coQuat_f.cpp">
+      <Filter>quaternion</Filter>
+    </ClCompile>
+    <ClCompile Include="shape\test_coPlane.cpp">
+      <Filter>shape</Filter>
+    </ClCompile>
+    <ClCompile Include="topology\dcel\dissolve\test_coAbsorbFace_f.cpp">
+      <Filter>topology\dcel\dissolve</Filter>
+    </ClCompile>
+    <ClCompile Include="topology\dcel\dissolve\test_coCollapseEdges_f.cpp">
+      <Filter>topology\dcel\dissolve</Filter>
+    </ClCompile>
+    <ClCompile Include="topology\dcel\dissolve\test_coDissolveFlatVertices_f.cpp">
+      <Filter>topology\dcel\dissolve</Filter>
+    </ClCompile>
+    <ClCompile Include="topology\dcel\dissolve\test_coMergePlanarFaces_f.cpp">
+      <Filter>topology\dcel\dissolve</Filter>
+    </ClCompile>
+    <ClCompile Include="topology\dcel\test_coDCEL.cpp">
+      <Filter>topology\dcel</Filter>
+    </ClCompile>
+    <ClCompile Include="transform\test_coTransform_f.cpp">
+      <Filter>transform</Filter>
+    </ClCompile>
+    <ClCompile Include="vector\test_coFloatx4.cpp">
+      <Filter>vector</Filter>
+    </ClCompile>
+    <ClCompile Include="vector\test_coVec3.cpp">
+      <Filter>vector</Filter>
+    </ClCompile>
+    <ClCompile Include="vector\test_coVec4.cpp">
+      <Filter>vector</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

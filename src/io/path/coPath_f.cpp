@@ -27,9 +27,7 @@ void coNormalizePath(coDynamicString& _this)
 		}
 		else
 		{
-			coConstString r;
-			coGetSubStringFromPos(r, _this, 2);
-			_this = r;
+			_this = coGetSubStringFromPos(_this, 2);
 		}
 	}
 
@@ -98,43 +96,40 @@ coBool coIsPathNormalized(const coConstString& _this)
 	return _this.count == 1 || !lastWasSeparator;
 }
 
-void coGetFileName(coConstString& _out, const coConstString& _this)
+coConstString coGetFileName(const coConstString& _this)
 {
 	coASSERT(coIsPathNormalized(_this));
 	coUint pos = coFindLastChar(_this, '/');
 	pos = (pos != _this.count) ? pos + 1 : 0;
-	coGetSubStringFromPos(_out, _this, pos);
+	return coGetSubStringFromPos(_this, pos);
 }
 
-void coGetBaseName(coConstString& _out, const coConstString& _this)
+coConstString coGetBaseName(const coConstString& _this)
 {
+	coASSERT(coIsPathNormalized(_this));
+
+	coConstString out;
+	if (!coIsDotOrDoubleDot(_this))
+	{
+		out = coGetFileName(_this);
+		const coUint32 pos = coFindLastChar(out, '.');
+		out = coGetSubStringFromSize(out, pos);
+	}
+
+	return out;
+}
+
+coConstString coGetExtension(const coConstString& _this)
+{
+	coConstString out;
 	coASSERT(coIsPathNormalized(_this));
 	if (!coIsDotOrDoubleDot(_this))
 	{
-		coGetFileName(_out, _this);
-		const coUint32 pos = coFindLastChar(_out, '.');
-		coGetSubStringFromSize(_out, _out, pos);
-	}
-	else
-	{
-		_out = coConstString();
-	}
-}
-
-void coGetExtension(coConstString& _out, const coConstString& _this)
-{
-	coASSERT(coIsPathNormalized(_this));
-	if (!coIsDotOrDoubleDot(_this))
-	{
-		coConstString fileName;
-		coGetFileName(fileName, _this);
+		const coConstString fileName = coGetFileName(_this);
 		const coUint32 pos = coFindLastChar(fileName, '.');
-		coGetSubStringFromPos(_out, fileName, pos);
+		out = coGetSubStringFromPos(fileName, pos);
 	}
-	else
-	{
-		_out = coConstString();
-	}
+	return out;
 }
 
 coBool coIsDot(const coConstString& _this)
@@ -197,18 +192,17 @@ coDynamicString coJoinPaths3(const coConstString& a, const coConstString& b, con
 	return out;
 }
 
-void coGetParentDir(coConstString& _out, const coConstString& _this)
+coConstString coGetParentDir(const coConstString& _this)
 {
 	coASSERT(coIsPathNormalized(_this));
 	const coUint pos = coFindLastChar(_this, '/');
 	if (pos == _this.count)
 	{
-		_out = ".";
+		return coConstString(".");
 	}
 	else
 	{
-		_out.data = _this.data;
-		_out.count = pos;
+		return coConstString(_this.data, pos);
 	}
 }
 

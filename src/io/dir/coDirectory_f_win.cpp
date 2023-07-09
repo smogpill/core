@@ -35,6 +35,26 @@ coResult _coInitKnownDir(coDefaultDir defaultDir)
 	KNOWNFOLDERID id{};
 	switch (defaultDir)
 	{
+	case coDefaultDir::EXECUTABLE:
+	{
+		coClearLastOsError();
+		coWideChar path[MAX_PATH];
+		GetModuleFileName(nullptr, path, MAX_PATH);
+		if (coLastOsErrorExists())
+		{
+			coDynamicString s;
+			coDumpLastOsError(s);
+			coERROR("Failed to get the executable path using GetModuleFileName(): " << s);
+			return false;
+		}
+		coDynamicString filePath;
+		coSetFromWide(filePath, coConstString16(path));
+		coNormalizePath(filePath);
+		coDynamicString& dir = _co_defaultDirs->dirs[coUint(coDefaultDir::EXECUTABLE)];
+		dir = coGetParentDir(filePath);
+		coNormalizePath(dir);
+		return true;
+	}
 	case coDefaultDir::LOCAL_APP_DATA: id = FOLDERID_LocalAppData; break;
 	case coDefaultDir::ROAMING_APP_DATA: id = FOLDERID_RoamingAppData; break;
 	case coDefaultDir::SAVEGAME: id = FOLDERID_SavedGames; break;
@@ -97,6 +117,7 @@ coResult coInitDefaultDirs()
 	_co_defaultDirs = new _coDefaultDirs();
 	coTRY(_coInitCurrentDir(), "Failed to init the current directory.");
 	coTRY(_coInitTempDir(), "Failed to init the temp directory.");
+	coTRY(_coInitKnownDir(coDefaultDir::EXECUTABLE), "Failed to init the executable directory.");
 	coTRY(_coInitKnownDir(coDefaultDir::LOCAL_APP_DATA), "Failed to init the local app data directory.");
 	coTRY(_coInitKnownDir(coDefaultDir::ROAMING_APP_DATA), "Failed to init the app data directory.");
 	coTRY(_coInitKnownDir(coDefaultDir::SAVEGAME), "Failed to init the saved game directory.");

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="log">
+      <UniqueIdentifier>{078D880B-7396-887C-FC11-9F7C681A947C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="profiler">
+      <UniqueIdentifier>{48484D2A-3415-A835-5D2E-96DD495ADDC3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="log\coAssert.h">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="log\coDefaultLogHandler.h">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="log\coLog.h">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="log\coLogHandler.h">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="profiler\coProfile.h">
+      <Filter>profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="profiler\coScopeTime.h">
+      <Filter>profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="publicPch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="log\coDefaultLogHandler.cpp">
+      <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="log\coLog.cpp">
+      <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="log\coLogHandler.cpp">
+      <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="profiler\coProfile.cpp">
+      <Filter>profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="profiler\coScopeTime.cpp">
+      <Filter>profiler</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

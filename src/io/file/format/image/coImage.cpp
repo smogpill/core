@@ -65,8 +65,6 @@ const coConstString& coImage::GetDebugLabel() const
 void coImage::SetPathAsDebugLabel(const coConstString& path)
 {
 #ifdef coDEV
-	coConstString fileName;
-	coGetFileName(fileName, path);
-	SetDebugLabel(fileName);
+	SetDebugLabel(coGetFileName(path));
 #endif
 }

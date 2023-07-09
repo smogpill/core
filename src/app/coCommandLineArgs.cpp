@@ -77,8 +77,7 @@ coResult coCommandLineArgs::ParseRawArg(const coConstString& _rawArg)
 	if (isOption)
 	{
 		const coBool isLongName = _rawArg[1] == '-';
-		coConstString rawArgPrefixRemoved;
-		coLeftStrip(rawArgPrefixRemoved, _rawArg, "-");
+		const coConstString rawArgPrefixRemoved = coLeftStrip(_rawArg, "-");
 
 		coDynamicArray<coConstString> tokens;
 		coSplit(tokens, rawArgPrefixRemoved, "=");

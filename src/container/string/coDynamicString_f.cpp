@@ -100,11 +100,9 @@ void coJoin(coDynamicString& _this, const coConstString& _a, const coConstString
 {
 	coASSERT(!coAreMemoryOverlapping(_this, _a));
 	coASSERT(!coAreMemoryOverlapping(_this, _b));
-	coConstString stripped0;
-	coConstString stripped1;
-	coConstString sep(&_separator, 1);
-	coRightStrip(stripped0, _a, sep);
-	coLeftStrip(stripped1, _b, sep);
+	const coConstString sep(&_separator, 1);
+	const coConstString stripped0 = coRightStrip(_a, sep);
+	const coConstString stripped1 = coLeftStrip(_b, sep);
 	coUint32 newSize = stripped0.count + stripped1.count + sizeof(_separator);
 	coReserve(_this, newSize);
 	_this.count = newSize;

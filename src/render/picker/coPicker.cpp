@@ -9,6 +9,8 @@
 #include <lang/result/coResult_f.h>
 #include <math/vector/coVec2.h>
 #include <math/scalar/coUint32_f.h>
+#include <io/path/coPath_f.h>
+#include <io/dir/coDirectory_f.h>
 
 coPicker::~coPicker()
 {
@@ -23,25 +25,30 @@ coResult coPicker::Init(coRenderContext& context_)
 {
 	context = &context_;
 
+
+
 	// Vertex
 	{
 		ModeInfo& info = modeInfos[coUint(Mode::VERTEX)];
 		info.shader = new coShader();
-		coTRY(info.shader->Init("shaders/render/VertexPicker", coShader::VERTEX | coShader::FRAGMENT), nullptr);
+		const coDynamicString path = coJoinPaths(coGetDefaultDir(coDefaultDir::EXECUTABLE), "shaders/render/VertexPicker");
+		coTRY(info.shader->Init(path, coShader::VERTEX | coShader::FRAGMENT), nullptr);
 	}
 
 	// Triangle
 	{
 		ModeInfo& info = modeInfos[coUint(Mode::TRIANGLE)];
 		info.shader = new coShader();
-		coTRY(info.shader->Init("shaders/render/TrianglePicker", coShader::VERTEX | coShader::FRAGMENT), nullptr);
+		const coDynamicString path = coJoinPaths(coGetDefaultDir(coDefaultDir::EXECUTABLE), "shaders/render/TrianglePicker");
+		coTRY(info.shader->Init(path, coShader::VERTEX | coShader::FRAGMENT), nullptr);
 	}
 
 	// Mesh
 	{
 		ModeInfo& info = modeInfos[coUint(Mode::MESH)];
 		info.shader = new coShader();
-		coTRY(info.shader->Init("shaders/render/MeshPicker", coShader::VERTEX | coShader::FRAGMENT), nullptr);
+		const coDynamicString path = coJoinPaths(coGetDefaultDir(coDefaultDir::EXECUTABLE), "shaders/render/MeshPicker");
+		coTRY(info.shader->Init(path, coShader::VERTEX | coShader::FRAGMENT), nullptr);
 		info.idShaderLocation = info.shader->GetUniformLocation("id");
 	}
 	

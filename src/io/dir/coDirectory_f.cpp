@@ -17,18 +17,16 @@ coResult coCreateDirsIfMissing(const coConstString& _rawPath)
 	coConstString path = _rawPath;
 
 	{
-		coConstString ext;
-		coGetExtension(ext, path);
+		const coConstString ext = coGetExtension(path);
 		if (ext != "")
 		{
-			coGetParentDir(path, path);
+			path = coGetParentDir(path);
 		}
 	}
 	
 	if (!coExists(path))
 	{
-		coConstString parentDir;
-		coGetParentDir(parentDir,path);
+		const coConstString parentDir = coGetParentDir(path);
 		coTRY(coCreateDirsIfMissing(parentDir), "Failed to create: "<<parentDir);
 		coTRY(coCreateDir(path), "Failed to create: "<<path);
 	}

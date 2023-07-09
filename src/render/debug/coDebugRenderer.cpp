@@ -10,6 +10,8 @@
 #include <ecs/component/coComponent_f.h>
 #include <ecs/lib/node/coNode.h>
 #include <pattern/pointer/coUniquePtr.h>
+#include <io/path/coPath_f.h>
+#include <io/dir/coDirectory_f.h>
 #include <container/array/coDynamicArray_f.h>
 #include "../mesh/coRenderMesh.h"
 #include "../shader/coShader.h"
@@ -45,7 +47,8 @@ void coDebugRenderer::Shutdown(coEntity& entity)
 coResult coDebugRenderer::InitShaders()
 {
 	coUniquePtr<coShader> debugProgram = new coShader();
-	coTRY(debugProgram->Init("shaders/render/Debug", coShader::VERTEX | coShader::FRAGMENT), nullptr);
+	const coDynamicString path = coJoinPaths(coGetDefaultDir(coDefaultDir::EXECUTABLE), "shaders/render/Debug");
+	coTRY(debugProgram->Init(path, coShader::VERTEX | coShader::FRAGMENT), nullptr);
 	shader = debugProgram.Release();
 	return true;
 }
