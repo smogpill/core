@@ -25,4 +25,3 @@ public:
 	T* data = nullptr;
 	coUint32 count = 0;
 };
-

@@ -58,9 +58,9 @@ coResult coShaderFile::Init(Type type_, const coConstString& rawPath)
 		glCompileShader(id);
 	}
 
-	GLint state = FALSE;
+	GLint state = GL_FALSE;
 	glGetShaderiv(id, GL_COMPILE_STATUS, &state);
-	if (state == FALSE)
+	if (state == GL_FALSE)
 	{
 		GLint maxLength = 0;
 		glGetShaderiv(id, GL_INFO_LOG_LENGTH, &maxLength);

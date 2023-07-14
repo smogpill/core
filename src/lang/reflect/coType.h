@@ -8,7 +8,7 @@ class coFunction;
 class coArchive;
 using coCreateFunc = void* (*)();
 using coCopyCreateFunc = void* (*)(const void*);
-using coMoveFunc = void (*)(const void*, void*);
+using coMoveFunc = void (*)(void*, void*);
 using coConstructFunc = void (*)(void*);
 using coDestructFunc = void (*)(void*);
 using coWriteArchiveFunc = coUint32 (*)(coArchive&, const void*);

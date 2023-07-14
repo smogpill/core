@@ -22,8 +22,6 @@ coShader::~coShader()
 {
 	glDeleteProgram(id);
 	coCHECK(glGetError() == GL_NO_ERROR, "glDeleteProgram()");
-	for (coShaderFile* file : files)
-		delete file;
 }
 
 coResult coShader::Init(const coConstString& path, StageMask stages)
@@ -32,81 +30,51 @@ coResult coShader::Init(const coConstString& path, StageMask stages)
 
 	stageMask = stages;
 
-	coDynamicString filePath;
-	
-	if (stages & Stage::VERTEX)
-	{
-		filePath = path;
-		filePath << ".vert.spv";
-		if (coExists(filePath))
-		{
-			coUniquePtr<coShaderFile> file(new coShaderFile());
-			coTRY(file->Init(coShaderFile::Type::VERTEX, path), nullptr);
-			coPushBack(files, file.Release());
-		}
-	}
-
-	if (stages & Stage::GEOMETRY)
-	{
-		filePath = path;
-		filePath << ".geom.spv";
-		if (coExists(filePath))
-		{
-			coUniquePtr<coShaderFile> file(new coShaderFile());
-			coTRY(file->Init(coShaderFile::Type::GEOMETRY, path), nullptr);
-			coPushBack(files, file.Release());
-		}
-	}
-
-	if (stages & Stage::FRAGMENT)
-	{
-		filePath = path;
-		filePath << ".frag.spv";
-		if (coExists(filePath))
-		{
-			coUniquePtr<coShaderFile> file(new coShaderFile());
-			coTRY(file->Init(coShaderFile::Type::FRAGMENT, path), nullptr);
-			coPushBack(files, file.Release());
-		}
-	}
-	
-	if (stages & Stage::COMPUTE)
-	{
-		filePath = path;
-		filePath << ".comp.spv";
-		if (coExists(filePath))
-		{
-			coUniquePtr<coShaderFile> file(new coShaderFile());
-			coTRY(file->Init(coShaderFile::Type::COMPUTE, path), nullptr);
-			coPushBack(files, file.Release());
-		}
-	}
-
-	coTRY(Init(files), nullptr);
-
-#ifdef coDEV
-	{
-		SetDebugLabel(coGetFileName(path));
-	}
-#endif
-	return true;
-}
-
-coResult coShader::Init(const coArray<coShaderFile*>& files_)
-{
 	id = glCreateProgram();
 	coTRY(id, "glCreateProgram()");
 
-	for (const coShaderFile* file : files_)
+	// Load shader content
 	{
-		glAttachShader(id, file->_GetGLId());
-		coTRY(glGetError() == GL_NO_ERROR, "glAttachShader()");
-	}
-	glLinkProgram(id);
+		coShaderFile vertexFile;
+		coShaderFile geometryFile;
+		coShaderFile fragmentFile;
+		coShaderFile computeFile;
+		coDynamicString filePath;
 
-	GLint state = FALSE;
+		auto AddShaderFile = [&](Stage stage, coShaderFile& file)
+		{
+			if (stages & stage)
+			{
+				filePath = path;
+				coShaderFile::Type fileType;
+				switch (stage)
+				{
+				case Stage::VERTEX: filePath << ".vert.spv"; fileType = coShaderFile::Type::VERTEX; break;
+				case Stage::GEOMETRY: filePath << ".geom.spv"; fileType = coShaderFile::Type::GEOMETRY; break;
+				case Stage::FRAGMENT: filePath << ".frag.spv"; fileType = coShaderFile::Type::FRAGMENT; break;
+				case Stage::COMPUTE: filePath << ".comp.spv"; fileType = coShaderFile::Type::COMPUTE; break;
+				default: coASSERT(false); return false;
+				}
+				if (coExists(filePath))
+				{
+					coTRY(file.Init(fileType, path), nullptr);
+					glAttachShader(id, file._GetGLId());
+				}
+			}
+			return true;
+		};
+
+		coTRY(AddShaderFile(Stage::VERTEX, vertexFile), nullptr);
+		coTRY(AddShaderFile(Stage::GEOMETRY, geometryFile), nullptr);
+		coTRY(AddShaderFile(Stage::FRAGMENT, fragmentFile), nullptr);
+		coTRY(AddShaderFile(Stage::COMPUTE, computeFile), nullptr);
+
+		glLinkProgram(id);
+	}
+
+	GLint state = GL_FALSE;
 	glGetProgramiv(id, GL_LINK_STATUS, &state);
-	if (state == FALSE)
+	if (state == GL_FALSE)
 	{
 		GLint maxLength = 0;
 		glGetProgramiv(id, GL_INFO_LOG_LENGTH, &maxLength);
@@ -121,6 +89,26 @@ coResult coShader::Init(const coArray<coShaderFile*>& files_)
 
 	coTRY(glGetError() == GL_NO_ERROR, "glLinkProgram()");
 
+	glValidateProgram(id);
+	glGetProgramiv(id, GL_VALIDATE_STATUS, &state);
+	if (state == GL_FALSE)
+	{
+		GLint maxLength = 0;
+		glGetProgramiv(id, GL_INFO_LOG_LENGTH, &maxLength);
+
+		coDynamicArray<coChar> msg;
+		coResize(msg, maxLength);
+
+		glGetProgramInfoLog(id, maxLength, &maxLength, msg.data);
+		coERROR(msg.data);
+		return false;
+	}
+
+#ifdef coDEV
+	{
+		SetDebugLabel(coGetFileName(path));
+	}
+#endif
 	return true;
 }
 

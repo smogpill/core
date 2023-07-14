@@ -42,9 +42,6 @@ public:
 	void SetUniform(coInt location, const coMat4& value);
 
 private:
-	coResult Init(const coArray<coShaderFile*>& files);
-
 	StageMask stageMask = 0;
 	GLuint id = 0;
-	coDynamicArray<coShaderFile*> files;
 };

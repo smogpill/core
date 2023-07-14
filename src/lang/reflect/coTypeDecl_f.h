@@ -30,7 +30,7 @@ struct _coTypeFactory<T, false>
 {
 	static void* Create() { return new T(); }
 	static void* CopyCreate(const void* from) { return new T(*static_cast<const T*>(from)); }
-	static void Move(const void* from, void* to) { *static_cast<T*>(to) = std::move(*static_cast<const T*>(from)); }
+	static void Move(void* from, void* to) { *static_cast<T*>(to) = std::move(*static_cast<T*>(from)); }
 	static void Construct(void* p) { coASSERT(p); new (p) T(); }
 	static void Destruct(void* p) { coASSERT(p); static_cast<T*>(p)->~T(); }
 };
@@ -40,7 +40,7 @@ struct _coTypeFactory<T, true>
 {
 	static void* Create() { return nullptr; }
 	static void* CopyCreate(const void*) { return nullptr; }
-	static void Move(const void*, void*) {}
+	static void Move(void*, void*) {}
 	static void Construct(void* p) {}
 	static void Destruct(void* p) {}
 };
@@ -59,7 +59,7 @@ void* coCopyCreate(const void* from)
 
 
 template <class T>
-void coMove(const void* from, void* to)
+void coMove(void* from, void* to)
 {
 	_coTypeFactory<T, std::is_abstract<T>::value>::Move(from, to);
 }
