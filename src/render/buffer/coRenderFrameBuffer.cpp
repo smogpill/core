@@ -169,6 +169,7 @@ void coRenderFrameBuffer::SetDebugLabel(const coConstString& label)
 
 void coRenderFrameBuffer::Bind(BindMode mode)
 {
+	coASSERT(!bound);
 	coBool write = false;
 	coBool read = false;
 	GLenum modeGL;
@@ -192,10 +193,13 @@ void coRenderFrameBuffer::Bind(BindMode mode)
 		glReadBuffer(GL_COLOR_ATTACHMENT0);
 
 	boundMode = mode;
+	bound = true;
 }
 
 void coRenderFrameBuffer::Unbind()
 {
+	coASSERT(bound);
+	bound = false;
 	GLenum modeGL;
 	switch (boundMode)
 	{
