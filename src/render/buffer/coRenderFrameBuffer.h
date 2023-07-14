@@ -52,5 +52,6 @@ private:
 	coUint nbColorAttachments = 0;
 	coBool depth = false;
 	coBool stencil = false;
+	BindMode boundMode = BindMode::READ_WRITE;
 	coDynamicString debugLabel;
 };

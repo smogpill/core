@@ -190,11 +190,21 @@ void coRenderFrameBuffer::Bind(BindMode mode)
 		
 	if (read)
 		glReadBuffer(GL_COLOR_ATTACHMENT0);
+
+	boundMode = mode;
 }
 
 void coRenderFrameBuffer::Unbind()
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	GLenum modeGL;
+	switch (boundMode)
+	{
+	case READ: modeGL = GL_READ_FRAMEBUFFER; break;
+	case WRITE: modeGL = GL_DRAW_FRAMEBUFFER; break;
+	case READ_WRITE: modeGL = GL_FRAMEBUFFER; break;
+	default: coASSERT(false); modeGL = GL_FRAMEBUFFER; break;
+	}
+	glBindFramebuffer(modeGL, 0);
 }
 
 void coRenderFrameBuffer::Clear()
