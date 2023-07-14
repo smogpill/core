@@ -81,4 +81,6 @@ void coRenderMesh::SetBuffers(const coArray<T>& vertices, const coArray<coUint32
 	T::SetVertexAttribs();
 
 	glBindVertexArray(0);
+
+	coCHECK(glGetError() == GL_NO_ERROR, "glDeleteProgram()");
 }
