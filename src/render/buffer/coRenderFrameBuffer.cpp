@@ -217,8 +217,13 @@ void coRenderFrameBuffer::Clear()
 	//glClearNamedFramebufferfv(id, GL_COLOR, col_buff_index, &rgba);
 	//coFloat depth = 1.0f;
 	//glClearNamedFramebufferfv(id, GL_DEPTH, 0, &depth);
+	coUint32 flags = GL_COLOR_BUFFER_BIT;
+	if (depth)
+		flags |= GL_DEPTH_BUFFER_BIT;
+	if (stencil)
+		flags |= GL_STENCIL_BUFFER_BIT;
 	glClearColor(0.0, 0.0, 0.0, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	glClear(flags);
 }
 
 coBool coRenderFrameBuffer::IsRenderBuffer(const AttachmentFormat& format)
