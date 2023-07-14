@@ -72,13 +72,13 @@ void coRenderMesh::DrawAsPoints() const
 void coRenderMesh::VertexP::SetVertexAttribs()
 {
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexP), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexP), nullptr);
 }
 
 void coRenderMesh::VertexPC::SetVertexAttribs()
 {
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPC), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPC), nullptr);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(VertexPC), (void*)offsetof(VertexPC, color));
 }
@@ -86,7 +86,7 @@ void coRenderMesh::VertexPC::SetVertexAttribs()
 void coRenderMesh::VertexPN::SetVertexAttribs()
 {
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), nullptr);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPN), (void*)offsetof(VertexPN, normal));
 }
@@ -94,7 +94,7 @@ void coRenderMesh::VertexPN::SetVertexAttribs()
 void coRenderMesh::VertexPUx2::SetVertexAttribs()
 {
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPUx2), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPUx2), nullptr);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_UNSIGNED_INT, GL_FALSE, sizeof(VertexPUx2), (void*)offsetof(VertexPUx2, u));
 }
