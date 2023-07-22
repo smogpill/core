@@ -35,13 +35,8 @@ coResult coShader::Init(const coConstString& path, StageMask stages)
 
 	// Load shader content
 	{
-		coShaderFile vertexFile;
-		coShaderFile geometryFile;
-		coShaderFile fragmentFile;
-		coShaderFile computeFile;
 		coDynamicString filePath;
-
-		auto AddShaderFile = [&](Stage stage, coShaderFile& file)
+		auto InitShaderFile = [&](Stage stage)
 		{
 			if (stages & stage)
 			{
@@ -55,8 +50,9 @@ coResult coShader::Init(const coConstString& path, StageMask stages)
 				case Stage::COMPUTE: filePath << ".comp.spv"; fileType = coShaderFile::Type::COMPUTE; break;
 				default: coASSERT(false); return false;
 				}
-				if (coExists(filePath))
+				coTRY(coExists(filePath), "Missing shader file: " << filePath);
 				{
+					coShaderFile file;
 					coTRY(file.Init(fileType, path), nullptr);
 					glAttachShader(id, file._GetGLId());
 				}
@@ -64,10 +60,10 @@ coResult coShader::Init(const coConstString& path, StageMask stages)
 			return true;
 		};
 
-		coTRY(AddShaderFile(Stage::VERTEX, vertexFile), nullptr);
-		coTRY(AddShaderFile(Stage::GEOMETRY, geometryFile), nullptr);
-		coTRY(AddShaderFile(Stage::FRAGMENT, fragmentFile), nullptr);
-		coTRY(AddShaderFile(Stage::COMPUTE, computeFile), nullptr);
+		coTRY(InitShaderFile(Stage::VERTEX), nullptr);
+		coTRY(InitShaderFile(Stage::GEOMETRY), nullptr);
+		coTRY(InitShaderFile(Stage::FRAGMENT), nullptr);
+		coTRY(InitShaderFile(Stage::COMPUTE), nullptr);
 
 		glLinkProgram(id);
 	}

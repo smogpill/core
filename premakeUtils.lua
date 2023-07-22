@@ -109,7 +109,7 @@ function coSetCppProjectDefaults(_name)
 		--shaderOutPath = path.join(co_buildAbsPath, "bin/$(Configuration)/shaders/" .. _name .. "/%{file.name}.spv")
 		shaderOutPath = "$(OutDir)/shaders/" .. _name .. "/%{file.name}.spv"
 		buildmessage 'Compiling %{file.relpath}'
-		buildcommands { '$(GLSLANG)/glslangValidator.exe -G -o "'.. shaderOutPath ..'" %{file.relpath}' }
+		buildcommands { '$(GLSLANG)/glslangValidator.exe -G -d -o "'.. shaderOutPath ..'" %{file.relpath}' }
 		buildoutputs { shaderOutPath }
 	filter {}
 end
