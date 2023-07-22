@@ -29,7 +29,6 @@ public:
 	void Bind();
 	void Unbind();
 	void SetDebugLabel(const coConstString&);
-	coInt GetUniformLocation(const coChar* name) const;
 	void SetUniform(coInt location, coBool value);
 	void SetUniform(coInt location, coFloat value);
 	void SetUniform(coInt location, const coVec2& value);

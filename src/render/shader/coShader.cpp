@@ -123,11 +123,6 @@ void coShader::SetDebugLabel(const coConstString& s)
 	coRenderContext::SetGLDebugLabel(GL_PROGRAM, id, s);
 }
 
-coInt coShader::GetUniformLocation(const coChar* name) const
-{
-	return glGetUniformLocation(id, name);
-}
-
 void coShader::SetUniform(coInt location, coBool value)
 {
 	glUniform1i(location, value);

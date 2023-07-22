@@ -49,7 +49,6 @@ coResult coPicker::Init(coRenderContext& context_)
 		info.shader = new coShader();
 		const coDynamicString path = coJoinPaths(coGetDefaultDir(coDefaultDir::EXECUTABLE), "shaders/render/MeshPicker");
 		coTRY(info.shader->Init(path, coShader::VERTEX | coShader::FRAGMENT), nullptr);
-		info.idShaderLocation = info.shader->GetUniformLocation("id");
 	}
 	
 	coTRY(InitFrameBuffer(), nullptr);
@@ -95,8 +94,7 @@ void coPicker::End()
 void coPicker::SetModelViewProj(const coMat4& mvp)
 {
 	ModeInfo& modeInfo = modeInfos[coUint(currentMode)];
-	const auto modelViewProjLocation = modeInfo.shader->GetUniformLocation("modelViewProj");
-	modeInfo.shader->SetUniform(modelViewProjLocation, mvp);
+	modeInfo.shader->SetUniform(0, mvp);
 }
 
 void coPicker::BindID(coUint32 id)
@@ -104,7 +102,7 @@ void coPicker::BindID(coUint32 id)
 	coASSERT(started);
 	ModeInfo& modeInfo = modeInfos[coUint(currentMode)];
 	coASSERT(modeInfo.shader);
-	modeInfo.shader->SetUniform(modeInfo.idShaderLocation, id);
+	modeInfo.shader->SetUniform(1, id);
 }
 
 void coPicker::BindID(const coUint32x2 id)
@@ -112,7 +110,7 @@ void coPicker::BindID(const coUint32x2 id)
 	coASSERT(started);
 	ModeInfo& modeInfo = modeInfos[coUint(currentMode)];
 	coASSERT(modeInfo.shader);
-	modeInfo.shader->SetUniform(modeInfo.idShaderLocation, id);
+	modeInfo.shader->SetUniform(1, id);
 }
 
 coColor coPicker::PickColor(const coVec2& pos) const

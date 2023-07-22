@@ -43,7 +43,6 @@ private:
 	{
 	public:
 		coShader* shader = nullptr;
-		coInt idShaderLocation = -1;
 	};
 	coResult InitFrameBuffer();
 	void ShutFrameBuffer();

@@ -213,7 +213,6 @@ void coDebugRenderer::Render(const coMat4& viewProj)
 {
 	shader->Bind();
 
-	const auto modelViewProjLocation = shader->GetUniformLocation("modelViewProj");
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDepthMask(GL_FALSE);
@@ -228,7 +227,7 @@ void coDebugRenderer::Render(const coMat4& viewProj)
 				const coNode* node = renderer->GetNode();
 				coASSERT(node);
 				const coMat4 model = coMat4(node->GetGlobal());
-				shader->SetUniform(modelViewProjLocation, model * viewProj);
+				shader->SetUniform(0, model * viewProj);
 				renderMesh->Draw();
 			}
 		}
@@ -236,7 +235,7 @@ void coDebugRenderer::Render(const coMat4& viewProj)
 
 	// Draw internal buffers
 	{
-		shader->SetUniform(modelViewProjLocation, viewProj);
+		shader->SetUniform(0, viewProj);
 		glBindVertexArray(vertexArrayObject);
 
 		auto drawBuffer = [&](Buffer buffer, GLenum mode)
