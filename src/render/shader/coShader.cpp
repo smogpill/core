@@ -128,50 +128,50 @@ void coShader::SetDebugLabel(const coConstString& s)
 
 void coShader::SetUniform(coInt location, coBool value)
 {
-	glUniform1i(location, value);
+	glProgramUniform1i(id, location, value);
 }
 
 void coShader::SetUniform(coInt location, coFloat value)
 {
-	glUniform1f(location, value);
+	glProgramUniform1f(id, location, value);
 }
 
 void coShader::SetUniform(coInt location, const coVec2& value)
 {
-	glUniform2f(location, value.x, value.y);
+	glProgramUniform2f(id, location, value.x, value.y);
 }
 
 void coShader::SetUniform(coInt location, const coVec3& value)
 {
-	glUniform3f(location, value.x, value.y, value.z);
+	glProgramUniform3f(id, location, value.x, value.y, value.z);
 }
 
 void coShader::SetUniform(coInt location, const coVec4& value)
 {
-	glUniform4f(location, value.x, value.y, value.z, value.w);
+	glProgramUniform4f(id, location, value.x, value.y, value.z, value.w);
 }
 
 void coShader::SetUniform(coInt location, coInt32 value)
 {
-	glUniform1i(location, value);
+	glProgramUniform1i(id, location, value);
 }
 
 void coShader::SetUniform(coInt location, coUint32 value)
 {
-	glUniform1ui(location, value);
+	glProgramUniform1ui(id, location, value);
 }
 
 void coShader::SetUniform(coInt location, const coUint32x2& value)
 {
-	glUniform2ui(location, value.x, value.y);
+	glProgramUniform2ui(id, location, value.x, value.y);
 }
 
 void coShader::SetUniform(coInt location, const coUint32x4& value)
 {
-	glUniform4ui(location, value.x, value.y, value.z, value.w);
+	glProgramUniform4ui(id, location, value.x, value.y, value.z, value.w);
 }
 
 void coShader::SetUniform(coInt location, const coMat4& value)
 {
-	glUniformMatrix4fv(location, 1, GL_FALSE, &value.c0.x);
+	glProgramUniformMatrix4fv(id, location, 1, GL_FALSE, &value.c0.x);
 }
