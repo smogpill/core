@@ -26,6 +26,9 @@ coShader::~coShader()
 
 coResult coShader::Init(const coConstString& path, StageMask stages)
 {
+#ifdef coDEV
+	debugPath = path;
+#endif
 	//coTRY(coExists(path), "Missing: "<<path);
 
 	stageMask = stages;

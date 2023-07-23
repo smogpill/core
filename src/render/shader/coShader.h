@@ -3,6 +3,7 @@
 #pragma once
 #include <container/array/coArray.h>
 #include <container/array/coDynamicArray.h>
+#include <container/string/coDynamicString.h>
 #include <lang/result/coResult.h>
 class coShaderFile;
 class coMat4;
@@ -43,4 +44,7 @@ public:
 private:
 	StageMask stageMask = 0;
 	GLuint id = 0;
+#ifdef coDEV
+	coDynamicString debugPath;
+#endif
 };
