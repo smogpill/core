@@ -42,12 +42,19 @@ private:
 	coResult Bind();
 	static void OnDebugMessage(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
 	static coResult InitOpengl();
+	void InitPixelFormatDefaults(PIXELFORMATDESCRIPTOR& descriptor) const;
+
+	static constexpr coUint nbColorBits = 32;
+	static constexpr coUint nbAlphaBits = 8;
+	static constexpr coUint nbDepthBits = 24;
+	static constexpr coUint nbStencilBits = 8;
 
 #ifdef coMSWINDOWS
 	HWND hwnd = nullptr;
 	HDC hdc = nullptr;
 	HGLRC hglrc = nullptr;
 #endif
+
 	coRenderView* mainRenderView = nullptr;
 	coPicker* picker = nullptr;
 	coUint32 boundTextureUnits = 0;

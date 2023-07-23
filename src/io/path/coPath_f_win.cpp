@@ -33,9 +33,7 @@ coResult coGetPathStatus(coPathStatus& _status, const coConstString& _path)
 			case ERROR_PATH_NOT_FOUND: _status.status = coPathStatus::Status::notFound; return true;
 			default:
 			{
-				coDynamicString error;
-				coDumpOsError(errval, error);
-				coERROR("Path error: " << error);
+				coERROR("Path error: " << coGetOSErrorMessage(errval));
 				_status.status = coPathStatus::Status::error; return false;
 			}
 			}
@@ -66,10 +64,7 @@ coResult coGetAbsolutePath(coDynamicString& _out, const coConstString& _this)
 	const DWORD ret = ::GetFullPathNameW(p.data, coARRAY_SIZE(buffer), buffer, NULL);
 	if (ret == 0)
 	{
-		const DWORD errval = ::GetLastError();
-		coDynamicString error;
-		coDumpOsError(errval, error);
-		coERROR("Path error for '" << _this << "': " << error);
+		coERROR("Path error for '" << _this << "': " << coGetLastOSErrorMessage());
 		return false;
 	}
 	else if (ret >= coARRAY_SIZE(buffer))

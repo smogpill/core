@@ -23,9 +23,7 @@ coResult _coCloseDirectoryIteratorHandle(const HANDLE& _handle)
 		const BOOL ret = ::FindClose(_handle);
 		if (ret == FALSE)
 		{
-			coDynamicString s;
-			coDumpLastOsError(s);
-			coERROR("Failed to close the directory handle: " << s);
+			coERROR("Failed to close the directory handle: " << coGetLastOSErrorMessage());
 			return false;
 		}
 	}
@@ -90,9 +88,7 @@ coResult coDirectoryIterator::OnImplInit(const InitConfig& _config)
 		}
 		else
 		{
-			coDynamicString s;
-			coDumpOsError(lastError, s);
-			coERROR("Failed to get a handle of the first file of the directory '" << _config.path << ": " << s);
+			coERROR("Failed to get a handle of the first file of the directory '" << _config.path << ": " << coGetOSErrorMessage(lastError));
 			return false;
 		}
 	}
@@ -150,9 +146,7 @@ coDirectoryIterator& coDirectoryIterator::operator++ ()
 				const DWORD error = ::GetLastError();
 				if (error != ERROR_NO_MORE_FILES)
 				{
-					coDynamicString s;
-					coDumpOsError(error, s);
-					coERROR("Failed to find the next file: " << s);
+					coERROR("Failed to find the next file: " << coGetOSErrorMessage(error));
 				}
 				coCHECK(_coCloseDirectoryIteratorHandle(handle), nullptr);
 				entry = coDirectoryEntry();

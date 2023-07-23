@@ -110,14 +110,12 @@ static LRESULT CALLBACK coWindowProc(HWND _hwnd, UINT _msg, WPARAM _wParam, LPAR
 
 		// Set user data
 		{
-			coClearLastOsError();
+			coClearLastOSError();
 			::SetWindowLongPtrW(_hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(createStruct->lpCreateParams));
 			const DWORD res = ::GetLastError();
 			if (res)
 			{
-				coDynamicString s;
-				coDumpLastOsError(s);
-				coERROR("::SetWindowLongPtr(GWL_USER_DATA) failed on the new window: " << s);
+				coERROR("::SetWindowLongPtr(GWL_USER_DATA) failed on the new window: " << coGetLastOSErrorMessage());
 				return FALSE;
 			}
 		}
@@ -179,9 +177,7 @@ static coResult coRegisterWindowClass(HINSTANCE _hinst, const WCHAR* _className)
 			}
 			else
 			{
-				coDynamicString s;
-				coDumpLastOsError(s);
-				coWARN("Failed to retrieve the executable file name: " << s);
+				coWARN("Failed to retrieve the executable file name: " << coGetLastOSErrorMessage());
 			}
 		}
 
@@ -199,9 +195,7 @@ static coResult coRegisterWindowClass(HINSTANCE _hinst, const WCHAR* _className)
 		ATOM atom = ::RegisterClassExW(&wndClass);
 		if (atom == 0)
 		{
-			coDynamicString s;
-			coDumpLastOsError(s);
-			coERROR("Failed to register the window class: " << s);
+			coERROR("Failed to register the window class: " << coGetLastOSErrorMessage());
 			return false;
 		}
 	}
@@ -210,9 +204,7 @@ static coResult coRegisterWindowClass(HINSTANCE _hinst, const WCHAR* _className)
 		const BOOL ret = ::GetClassInfoExW(_hinst, _className, &wndClass);
 		if (ret == FALSE)
 		{
-			coDynamicString s;
-			coDumpLastOsError(s);
-			coERROR("Failed to retrieve the window class: " << s);
+			coERROR("Failed to retrieve the window class: " << coGetLastOSErrorMessage());
 			return false;
 		}
 	}
@@ -236,9 +228,7 @@ void coWindow::OnImplDestruct()
 		const BOOL res = ::DestroyWindow(hwnd);
 		if (res == FALSE)
 		{
-			coDynamicString s;
-			coDumpLastOsError(s);
-			coERROR("::DestroyWindow failed: " << s);
+			coERROR("::DestroyWindow failed: " << coGetLastOSErrorMessage());
 		}
 		hwnd = NULL;
 	}
@@ -268,9 +258,7 @@ coResult coWindow::OnImplInstanceCreate()
 // 	const int pixelFormat = ::ChoosePixelFormat(hdc, &pfd);
 // 	if (pixelFormat == 0)
 // 	{
-// 		coDynamicString s;
-// 		coDumpLastOsError(s);
-// 		coERROR("::ChoosePixelFormat() failed: " << s);
+// 		coERROR("::ChoosePixelFormat() failed: " << coGetLastOSErrorMessage());
 // 		return false;
 // 	}
 // 
@@ -280,9 +268,7 @@ coResult coWindow::OnImplInstanceCreate()
 // 		const int res = ::DescribePixelFormat(hdc, pixelFormat, sizeof(chosenPfd), &chosenPfd);
 // 		if (res == 0)
 // 		{
-// 			coDynamicString s;
-// 			coDumpLastOsError(s);
-// 			coERROR("::DescribePixelFormat() failed (used to validate the pixel format): " << s);
+// 			coERROR("::DescribePixelFormat() failed (used to validate the pixel format): " << coGetLastOSErrorMessage());
 // 			return false;
 // 		}
 // 
@@ -294,9 +280,7 @@ coResult coWindow::OnImplInstanceCreate()
 // 	const BOOL res = ::SetPixelFormat(hdc, pixelFormat, &pfd);
 // 	if (res == FALSE)
 // 	{
-// 		coDynamicString s;
-// 		coDumpLastOsError(s);
-// 		coERROR("::SetPixelFormat() failed: " << s);
+// 		coERROR("::SetPixelFormat() failed: " << coGetLastOSErrorMessage());
 // 		return false;
 // 	}
 // 
@@ -373,9 +357,7 @@ coResult coWindow::OnImplInit(const InitConfig& /*_config*/)
 		}
 		else
 		{
-			coDynamicString s;
-			coDumpLastOsError(s);
-			coWARN("Failed to compute the window size according to the client size: " << s);
+			coWARN("Failed to compute the window size according to the client size: " << coGetLastOSErrorMessage());
 		}
 	}
 
@@ -386,9 +368,7 @@ coResult coWindow::OnImplInit(const InitConfig& /*_config*/)
 	hwnd = ::CreateWindowExW(exStyle, WINDOW_CLASS_NAME, wname.data, style, x, y, width, height, parent, menu, hinstance, this);
 	if (hwnd == nullptr)
 	{
-		coDynamicString s;
-		coDumpLastOsError(s);
-		coERROR("::CreateWindowEx failed: " << s);
+		coERROR("::CreateWindowEx failed: " << coGetLastOSErrorMessage());
 		return false;
 	}
 
@@ -488,9 +468,7 @@ coResult coWindow::OnImplApplyShowState(const ShowState& _state)
 	const BOOL ret = ::ShowWindowAsync(hwnd, cmdShow);
 	if (ret == FALSE)
 	{
-		coDynamicString s;
-		coDumpLastOsError(s);
-		coERROR("::ShowWindowAsync failed: " << s);
+		coERROR("::ShowWindowAsync failed: " << coGetLastOSErrorMessage());
 		return false;
 	}
 	return true;

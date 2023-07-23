@@ -25,10 +25,7 @@ coResult coDeleteFile(const coConstString& path)
 	const BOOL res = coIsDirectory(path) ? RemoveDirectoryW(p.data) : DeleteFileW(p.data);
 	if (!res)
 	{
-		const DWORD errval = ::GetLastError();
-		coDynamicString error;
-		coDumpOsError(errval, error);
-		coERROR("Failed to delete '" << path << "': " << error);
+		coERROR("Failed to delete '" << path << "': " << coGetLastOSErrorMessage());
 		return false;
 	}
 	return true;

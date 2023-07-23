@@ -178,9 +178,7 @@ coResult coInputContext::Init(HWND hwnd_)
 
 	if (RegisterRawInputDevices(rid, 1, sizeof(rid[0])) == FALSE)
 	{
-		coDynamicString s;
-		coDumpLastOsError(s);
-		coERROR("RegisterRawInputDevices failed: " << s);
+		coERROR("RegisterRawInputDevices failed: " << coGetLastOSErrorMessage());
 		return false;
 	}
 	return true;

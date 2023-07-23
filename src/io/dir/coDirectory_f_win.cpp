@@ -22,9 +22,7 @@ coResult coCreateDir(const coConstString& _path)
 // 	securityAttributes.
 	if (::CreateDirectoryW(path.data, nullptr) == 0)
 	{
-		coDynamicString s;
-		coDumpLastOsError(s);
-		coERROR("Failed to create the directory: " << _path << " (" << s << ")");
+		coERROR("Failed to create the directory: " << _path << ": " << coGetLastOSErrorMessage());
 		return false;
 	}
 	return true;
@@ -37,14 +35,12 @@ coResult _coInitKnownDir(coDefaultDir defaultDir)
 	{
 	case coDefaultDir::EXECUTABLE:
 	{
-		coClearLastOsError();
+		coClearLastOSError();
 		coWideChar path[MAX_PATH];
 		GetModuleFileName(nullptr, path, MAX_PATH);
-		if (coLastOsErrorExists())
+		if (coLastOSErrorExists())
 		{
-			coDynamicString s;
-			coDumpLastOsError(s);
-			coERROR("Failed to get the executable path using GetModuleFileName(): " << s);
+			coERROR("Failed to get the executable path using GetModuleFileName(): " << coGetLastOSErrorMessage());
 			return false;
 		}
 		coDynamicString filePath;
@@ -79,9 +75,7 @@ coResult _coInitCurrentDir()
 	DWORD size = GetCurrentDirectoryW(0, nullptr);
 	if (size == 0)
 	{
-		coDynamicString s;
-		coDumpLastOsError(s);
-		coERROR("Failed to get the current directory path size: " << s);
+		coERROR("Failed to get the current directory path size: " << coGetLastOSErrorMessage());
 		return false;
 	}
 	coUniquePtr<coWideChar> path(new coWideChar[size]);
@@ -99,9 +93,7 @@ coResult _coInitTempDir()
 	DWORD size = GetTempPathW(coARRAY_SIZE(path), path);
 	if (size == 0)
 	{
-		coDynamicString s;
-		coDumpLastOsError(s);
-		coERROR("Failed to get the temp directory path size: " << s);
+		coERROR("Failed to get the temp directory path size: " << coGetLastOSErrorMessage());
 		return false;
 	}
 	coDynamicString& dir = _co_defaultDirs->dirs[coUint(coDefaultDir::TEMP)];

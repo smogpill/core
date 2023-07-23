@@ -22,9 +22,7 @@ coResult coFileAccess::GetSize8(coUint64& _size8) const
 	const BOOL res = ::GetFileSizeEx(handle, &info);
 	if (res == FALSE)
 	{
-		coDynamicString str;
-		coDumpLastOsError(str);
-		coERROR("Failed to get the size of the file: " << str);
+		coERROR("Failed to get the size of the file: " << coGetLastOSErrorMessage());
 		return false;
 	}
 
@@ -46,9 +44,7 @@ coResult coFileAccess::GetTime(coUint64& _creationTime, coUint64& _lastAccessTim
 	const BOOL res = ::GetFileTime(handle, &creationTime, &lastAccessTime, &lastWriteTime);
 	if (res == FALSE)
 	{
-		coDynamicString str;
-		coDumpLastOsError(str);
-		coERROR("Failed to get time from file: " << str);
+		coERROR("Failed to get time from file: " << coGetLastOSErrorMessage());
 		return false;
 	}
 	_creationTime = static_cast<coUint64>(creationTime.dwHighDateTime) << 32 | creationTime.dwLowDateTime;
@@ -117,9 +113,7 @@ coResult coFileAccess::OnImplInit(const InitConfig& /*_config*/)
 	handle = ::CreateFileW(p.data, openMode, FILE_SHARE_READ, nullptr, creationDisposition, flagsAndAttributes, nullptr);
 	if (handle == INVALID_HANDLE_VALUE)
 	{
-		coDynamicString str;
-		coDumpLastOsError(str);
-		coERROR("Failed to open the file: " << path << ": " << str);
+		coERROR("Failed to open the file: " << path << ": " << coGetLastOSErrorMessage());
 		return false;
 	}
 
@@ -134,9 +128,7 @@ void coFileAccess::OnImplDestruct()
 		const BOOL res = ::CloseHandle(handle);
 		if (res == FALSE)
 		{
-			coDynamicString str;
-			coDumpLastOsError(str);
-			coERROR("Failed to close the mapped file: " << str);
+			coERROR("Failed to close the mapped file: " << coGetLastOSErrorMessage());
 		}
 		handle = INVALID_HANDLE_VALUE;
 	}
@@ -160,9 +152,7 @@ coResult coFileAccess::Write(const void* buffer, coUint32 size)
 	const BOOL res = ::WriteFile(handle, buffer, size, &writtenSize8, nullptr);
 	if (res == FALSE)
 	{
-		coDynamicString str;
-		coDumpLastOsError(str);
-		coERROR("Failed to write to the file " << GetDebugName() << ": " << str);
+		coERROR("Failed to write to the file " << GetDebugName() << ": " << coGetLastOSErrorMessage());
 		return false;
 	}
 	coTRY(size == writtenSize8, nullptr);
@@ -177,9 +167,7 @@ coResult coFileAccess::Read(coArray<coByte>& buffer)
 	const BOOL res = ::ReadFile(handle, buffer.data, buffer.count, &readSize8, nullptr);
 	if (res == FALSE)
 	{
-		coDynamicString str;
-		coDumpLastOsError(str);
-		coERROR("Failed to read from the file " << GetDebugName() << ": " << str);
+		coERROR("Failed to read from the file " << GetDebugName() << ": " << coGetLastOSErrorMessage());
 		return false;
 	}
 	return readSize8 == buffer.count;
@@ -192,9 +180,7 @@ coResult coFileAccess::Flush()
 	const BOOL res = ::FlushFileBuffers(handle);
 	if (res == FALSE)
 	{
-		coDynamicString s;
-		coDumpLastOsError(s);
-		coERROR("Failed to flush the file " << GetDebugName() << "(" << s << ")");
+		coERROR("Failed to flush the file " << GetDebugName() << ": " << coGetLastOSErrorMessage());
 		return false;
 	}
 	return true;

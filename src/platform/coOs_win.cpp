@@ -6,31 +6,31 @@
 #include "container/string/coConstString16.h"
 #include "debug/log/coLog.h"
 
-coBool coLastOsErrorExists()
+coBool coLastOSErrorExists()
 {
 	return ::GetLastError() != 0;
 }
 
-void coClearLastOsError()
+void coClearLastOSError()
 {
 	::SetLastError(0);
 }
 
-void coDumpLastOsError(coDynamicString& _str)
+coDynamicString coGetLastOSErrorMessage()
 {
 	const DWORD err = ::GetLastError();
 	if (err)
-	{
-		coDumpOsError(err, _str);
-	}
+		return coGetOSErrorMessage(err);
+	else
+		return "<NoError>";
 }
 
-void coDumpOsError(coUint _osError, coDynamicString& _str)
+coDynamicString coGetOSErrorMessage(coUint errorValue)
 {
 	LPWSTR str = nullptr;
 	const DWORD ret = ::FormatMessageW(
 		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-		nullptr, _osError, 0, (LPTSTR)&str, 0, nullptr);
+		nullptr, errorValue, 0, (LPTSTR)&str, 0, nullptr);
 
 	if (ret == 0)
 	{
@@ -38,9 +38,10 @@ void coDumpOsError(coUint _osError, coDynamicString& _str)
 		coERROR("::FormatMessage() failed: error id " << (coUint)err);
 	}
 
-	coSetFromWide(_str, coConstString16(str));
-
+	coDynamicString output;
+	coSetFromWide(output, coConstString16(str));
 	::LocalFree(str);
+	return output;
 }
 
 coUint64 coGetTimeStamp()
