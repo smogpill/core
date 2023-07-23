@@ -59,7 +59,6 @@ void coRenderMesh::Draw() const
     {
         glDrawArrays(GL_TRIANGLES, 0, nbVertices);
     }
-    glDrawArrays(GL_TRIANGLES, 0, nbVertices);
     glBindVertexArray(0);
 }
 
