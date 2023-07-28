@@ -8,3 +8,4 @@
 #include "math/publicPch.h"
 #include <memory>
 #include <functional>
+#include <atomic>
