@@ -3,6 +3,5 @@
 #pragma once
 #include "coThread.h"
 
-coUint64 coGetGetCurrentThreadID();
 void coSleep(coUint milliseconds);
 coUint coGetMaxConcurrentThreads();
