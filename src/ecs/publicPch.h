@@ -6,3 +6,4 @@
 #include "debug/publicPch.h"
 #include "container/publicPch.h"
 #include "math/publicPch.h"
+#include "pattern/publicPch.h"

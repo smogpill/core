@@ -7,6 +7,14 @@
 #include "coTypeAutoRegistrator.h"
 #include "../result/coResult_f.h"
 
+/*
+template <class T, coBool>
+struct _coCopyCreate
+{
+	static void* CopyCreate(const void* from) { return new T(*static_cast<const T*>(from)); }
+}
+*/
+
 template <class T, class = void>
 struct coTypeHelper
 {
@@ -21,26 +29,40 @@ struct coTypeHelper<T, std::void_t<decltype(T::GetStaticType)>>
 };
 
 template <class T, coBool>
+struct _coMoveIfAvailable
+{
+};
+
+template <class T>
+struct _coMoveIfAvailable<T, true>
+{
+	static void Move(void* from, void* to) { *static_cast<T*>(to) = std::move(*static_cast<T*>(from)); }
+};
+template <class T>
+struct _coMoveIfAvailable<T, false>
+{
+	static void Move(void* from, void* to) { coASSERT(false); }
+};
+
+template <class T, coBool>
 struct _coTypeFactory
 {
 };
 
 template <class T>
-struct _coTypeFactory<T, false>
+struct _coTypeFactory<T, true>
 {
 	static void* Create() { return new T(); }
 	static void* CopyCreate(const void* from) { return new T(*static_cast<const T*>(from)); }
-	static void Move(void* from, void* to) { *static_cast<T*>(to) = std::move(*static_cast<T*>(from)); }
 	static void Construct(void* p) { coASSERT(p); new (p) T(); }
 	static void Destruct(void* p) { coASSERT(p); static_cast<T*>(p)->~T(); }
 };
 
 template <class T>
-struct _coTypeFactory<T, true>
+struct _coTypeFactory<T, false>
 {
 	static void* Create() { return nullptr; }
 	static void* CopyCreate(const void*) { return nullptr; }
-	static void Move(void*, void*) {}
 	static void Construct(void* p) {}
 	static void Destruct(void* p) {}
 };
@@ -48,32 +70,52 @@ struct _coTypeFactory<T, true>
 template <class T>
 void* coCreate()
 {
-	return _coTypeFactory<T, std::is_abstract<T>::value>::Create();
+	return _coTypeFactory<T, !std::is_abstract<T>::value>::Create();
 }
+
+template <class T, coBool>
+struct _coCopyCreateImpl
+{
+};
+template <class T>
+struct _coCopyCreateImpl<T, true>
+{
+	static void* func(const void* from) { return new T(*static_cast<const T*>(from)); }
+};
+template <class T>
+struct _coCopyCreateImpl<T, false>
+{
+	static void* func(const void*) { return nullptr; }
+};
+template <class T>
+struct _coCopyCreate : _coCopyCreateImpl<T, std::is_copy_constructible<T>::value>
+{
+
+};
 
 template <class T>
 void* coCopyCreate(const void* from)
 {
-	return _coTypeFactory<T, std::is_abstract<T>::value>::CopyCreate(from);
+	return _coTypeFactory<T, std::is_copy_constructible<T>::value>::CopyCreate(from);
 }
 
 
 template <class T>
 void coMove(void* from, void* to)
 {
-	_coTypeFactory<T, std::is_abstract<T>::value>::Move(from, to);
+	_coMoveIfAvailable<T, std::is_copy_assignable<T>::value>::Move(from, to);
 }
 
 template <class T>
 void coConstruct(void* p)
 {
-	_coTypeFactory<T, std::is_abstract<T>::value>::Construct(p);
+	_coTypeFactory<T, !std::is_abstract<T>::value>::Construct(p);
 }
 
 template <class T>
 void coDestruct(void* p)
 {
-	_coTypeFactory<T, std::is_abstract<T>::value>::Destruct(p);
+	_coTypeFactory<T, !std::is_abstract<T>::value>::Destruct(p);
 }
 
 template <class T>

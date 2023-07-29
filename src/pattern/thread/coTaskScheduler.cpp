@@ -6,6 +6,7 @@
 #include "pattern/thread/coTaskContext.h"
 #include "pattern/thread/coTask.h"
 #include "pattern/thread/coThread_f.h"
+#include "pattern/lock/coScopedLock.h"
 #include "math/scalar/coAtomicInt32_f.h"
 #include "lang/result/coResult_f.h"
 #include <math/scalar/coUint32_f.h>
@@ -33,10 +34,10 @@ void coTaskScheduler::Add(coTask& task)
 {
 	if (task.IsReady())
 	{
-		lock.Lock();
+		_mutex.Lock();
 		coPushBack(readyTasks[task.priority], &task);
 		waitCondition.WakeAll();
-		lock.Unlock();
+		_mutex.Unlock();
 	}
 	else
 	{
@@ -48,7 +49,7 @@ void coTaskScheduler::_ExecuteOneTask(const coTaskContext& context)
 {
 	waitCondition.Reset();
 
-	lock.Lock();
+	_mutex.Lock();
 	coTask* task = nullptr;
 	for (coDynamicQueue<coTask*>& tasks : readyTasks)
 	{
@@ -58,7 +59,7 @@ void coTaskScheduler::_ExecuteOneTask(const coTaskContext& context)
 			break;
 		}
 	}
-	lock.Unlock();
+	_mutex.Unlock();
 	if (!task)
 	{
 		waitCondition.Wait();
@@ -71,10 +72,10 @@ void coTaskScheduler::_ExecuteOneTask(const coTaskContext& context)
 	{
 		if (--nextTask->nbActiveDependencies == 0)
 		{
-			lock.Lock();
+			_mutex.Lock();
 			coRemoveUnordered(waitingTasks[nextTask->priority], nextTask);
 			coPushBack(readyTasks[nextTask->priority], nextTask);
-			lock.Unlock();
+			_mutex.Unlock();
 		}
 	}
 }

@@ -5,7 +5,7 @@
 #include "pattern/object/coObject.h"
 #include "pattern/thread/coWaitCondition.h"
 #include "pattern/thread/coTaskContext.h"
-#include "pattern/thread/coLock.h"
+#include "pattern/lock/coMutex.h"
 #include "pattern/singleton/coSingleton.h"
 #include "container/array/coDynamicArray.h"
 #include "container/queue/coDynamicQueue.h"
@@ -31,5 +31,5 @@ private:
 	coDynamicQueue<coTask*> readyTasks[coTask::Priority::END];
 	coDynamicArray<coTask*> waitingTasks[coTask::Priority::END];
 	coWaitCondition waitCondition;
-	mutable coLock lock;
+	mutable coMutex _mutex;
 };

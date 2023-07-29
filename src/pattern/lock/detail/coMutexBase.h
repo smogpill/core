@@ -6,13 +6,15 @@ template <class T>
 class _coMutexBase
 {
 public:
+	static constexpr coBool s_recursive = std::is_same<T, std::recursive_mutex>::value;
 	void Lock()
 	{
 #ifdef coDEV
 		if (!TryLock())
 		{
-			_impl::lock();
+			_impl.lock();
 			_lockedThreadID = std::this_thread::get_id();
+			++_nbRecursiveLocks;
 		}
 #else
 		_impl.lock();
@@ -22,7 +24,8 @@ public:
 	{
 		coASSERT(_lockedThreadID == std::this_thread::get_id());
 #ifdef coDEV
-		_lockedThreadID = thread::id();
+		if (!--_nbRecursiveLocks)
+			_lockedThreadID = std::thread::id();
 #endif
 		_impl.unlock();
 	}
@@ -30,10 +33,11 @@ public:
 	[[nodiscard]] coBool TryLock()
 	{
 #ifdef coDEV
-		coASSERT(_lockedThreadID != std::this_thread::get_id());
+		coASSERT(_lockedThreadID != std::this_thread::get_id() || s_recursive);
 		if (_impl.try_lock())
 		{
 			_lockedThreadID = std::this_thread::get_id();
+			++_nbRecursiveLocks;
 			return true;
 		}
 		return false;
@@ -53,5 +57,6 @@ protected:
 	T _impl;
 #ifdef coDEV
 	std::thread::id _lockedThreadID;
+	coUint32 _nbRecursiveLocks = 0;
 #endif
 };

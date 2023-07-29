@@ -3,7 +3,7 @@
 #pragma once
 
 template <class T>
-class [[nodiscard] coScopedLock final
+class [[nodiscard]] coScopedLock final
 {
 public:
     explicit coScopedLock(T& m) : _mutex(m) { _mutex.Lock(); }

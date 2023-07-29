@@ -2,7 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include <pattern/singleton/coSingleton.h>
-#include <pattern/thread/coLock.h>
+#include <pattern/lock/coRecursiveMutex.h>
 #include "entity/coEntityHandle.h"
 #include "entity/coEntity.h"
 class coType;
@@ -36,7 +36,7 @@ public:
 	void RequestEntityState(const coEntityHandle& entity, coEntityState state);
 	void AddProcessor(coProcessor& processor);
 	coUint32 GetNbEntities(const coEntityHandle& root) const;
-	coLock& GetLock() const { return lock; }
+	coRecursiveMutex& GetMutex() const { return _mutex; }
 	coBool IsAlive(const coEntityHandle&) const;
 	void* GetComponent(const coEntityHandle&, const coType& type) const;
 	template <class T>
@@ -62,7 +62,7 @@ private:
 	static constexpr coUint32 nbEntitiesPerBlock = 1 << blockIndexShift;
 	static constexpr coUint32 blockIndexMask = nbEntitiesPerBlock - 1;
 	
-	mutable coLock lock;
+	mutable coRecursiveMutex _mutex;
 	struct EntityBlock
 	{
 		coEntity entities[nbEntitiesPerBlock];
