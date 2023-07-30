@@ -9,7 +9,6 @@ public:
 	using UnderlyingType = Value;
 	using HandleType = coHandle<Tag, Value, _invalidValue_>;
 	coHandle() = default;
-	coHandle(const HandleType& h) : default {}
 	coHandle(const HandleType& value_) : value(value_) {}
 	coBool operator==(const coHandle& h) const { return value == h.value; }
 	coBool operator!=(const coHandle& h) const { return value != h.value; }

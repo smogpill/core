@@ -323,10 +323,10 @@ coResult coWindow::OnImplInit(const InitConfig& /*_config*/)
 		style |= WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_OVERLAPPED | WS_CAPTION | WS_SIZEBOX | WS_SYSMENU;
 		switch (showState)
 		{
-		case ShowState::default: style |= WS_VISIBLE; break;
-		case ShowState::hidden: break;
-		case ShowState::minimized: style |= WS_MINIMIZE; break;
-		case ShowState::maximized: style |= WS_MAXIMIZE; break;
+		case ShowState::DEFAULT: style |= WS_VISIBLE; break;
+		case ShowState::HIDDEN: break;
+		case ShowState::MINIMIZED: style |= WS_MINIMIZE; break;
+		case ShowState::MAXIMIZED: style |= WS_MAXIMIZE; break;
 		default:
 		{
 			coWARN_NOT_AVAILABLE();
@@ -393,14 +393,14 @@ coResult coWindow::OnImplApplyShowState(const ShowState& _state)
 	int cmdShow = 0;
 	switch (showState)
 	{
-	case ShowState::default:
+	case ShowState::DEFAULT:
 	{
 		switch (_state)
 		{
 		//case ShowState::default: cmdShow = SW_SHOWNOACTIVATE; break;
-		case ShowState::hidden: cmdShow = SW_HIDE; break;
-		case ShowState::minimized: cmdShow = SW_MINIMIZE; break;
-		case ShowState::maximized: cmdShow = SW_MAXIMIZE; break;
+		case ShowState::HIDDEN: cmdShow = SW_HIDE; break;
+		case ShowState::MINIMIZED: cmdShow = SW_MINIMIZE; break;
+		case ShowState::MAXIMIZED: cmdShow = SW_MAXIMIZE; break;
 		default:
 		{
 			coWARN_NOT_AVAILABLE();
@@ -411,13 +411,13 @@ coResult coWindow::OnImplApplyShowState(const ShowState& _state)
 		break;
 	}
 	
-	case ShowState::hidden:
+	case ShowState::HIDDEN:
 	{
 		switch (_state)
 		{
-		case ShowState::default: cmdShow = SW_SHOW; break;
-		case ShowState::minimized: cmdShow = SW_MINIMIZE; break;
-		case ShowState::maximized: cmdShow = SW_MAXIMIZE; break;
+		case ShowState::DEFAULT: cmdShow = SW_SHOW; break;
+		case ShowState::MINIMIZED: cmdShow = SW_MINIMIZE; break;
+		case ShowState::MAXIMIZED: cmdShow = SW_MAXIMIZE; break;
 		default:
 		{
 			coWARN_NOT_AVAILABLE();
@@ -427,13 +427,13 @@ coResult coWindow::OnImplApplyShowState(const ShowState& _state)
 		}
 		break;
 	}
-	case ShowState::minimized:
+	case ShowState::MINIMIZED:
 	{
 		switch (_state)
 		{
-		case ShowState::default: cmdShow = SW_RESTORE; break;
-		case ShowState::hidden: cmdShow = SW_HIDE; break;
-		case ShowState::maximized: cmdShow = SW_MAXIMIZE; break;
+		case ShowState::DEFAULT: cmdShow = SW_RESTORE; break;
+		case ShowState::HIDDEN: cmdShow = SW_HIDE; break;
+		case ShowState::MAXIMIZED: cmdShow = SW_MAXIMIZE; break;
 		default:
 		{
 			coWARN_NOT_AVAILABLE();
@@ -443,13 +443,13 @@ coResult coWindow::OnImplApplyShowState(const ShowState& _state)
 		}
 		break;
 	}
-	case ShowState::maximized:
+	case ShowState::MAXIMIZED:
 	{
 		switch (_state)
 		{
-		case ShowState::default: cmdShow = SW_RESTORE; break;
-		case ShowState::hidden: cmdShow = SW_HIDE; break;
-		case ShowState::minimized: cmdShow = SW_MINIMIZE; break;
+		case ShowState::DEFAULT: cmdShow = SW_RESTORE; break;
+		case ShowState::HIDDEN: cmdShow = SW_HIDE; break;
+		case ShowState::MINIMIZED: cmdShow = SW_MINIMIZE; break;
 		default:
 		{
 			coWARN_NOT_AVAILABLE();

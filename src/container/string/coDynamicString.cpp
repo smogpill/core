@@ -16,26 +16,13 @@ coDynamicString::coDynamicString(const coConstString& _s)
 	operator=(_s);
 }
 
-coDynamicString::coDynamicString(const coDynamicString& _)
-	: coDynamicString(static_cast<const coConstString&>(_))
-{
-
-}
-
 coDynamicString::coDynamicString(coDynamicString&& _)
-	: Super(_)
+	: Base(_)
 {
-
-}
-
-coDynamicString& coDynamicString::operator=(const coDynamicString& _s)
-{
-	operator=(static_cast<const coConstString&>(_s));
-	return *this;
 }
 
 coDynamicString& coDynamicString::operator=(const coConstString& _s)
 {
-	Super::operator=(_s);
+	Base::operator=(_s);
 	return *this;
 }

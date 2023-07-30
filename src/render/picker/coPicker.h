@@ -50,7 +50,7 @@ private:
 	coUint32 PickValue(const coUint32x2& pos) const;
 	coRenderView* GetView() const;
 	coBool started = false;
-	ModeInfo modeInfos[Mode::END];
+	ModeInfo modeInfos[coUint(Mode::END)];
 	coRenderContext* context = nullptr;
 	coRenderFrameBuffer* framebuffer = nullptr;
 	Mode currentMode = Mode::MESH;

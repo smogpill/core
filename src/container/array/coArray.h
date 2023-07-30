@@ -20,7 +20,6 @@ public:
 	coFORCE_INLINE const T& operator[] (coUint32 _i) const { coASSERT(_i < count); return data[_i]; }
 	//coArray(std::initializer_list<T> _l);
 	operator const coArray<const T>& () const { return reinterpret_cast<const coArray<const T>&>(*this); }
-	void Write(coBinaryOutputStream& stream) const;
 
 	T* data = nullptr;
 	coUint32 count = 0;

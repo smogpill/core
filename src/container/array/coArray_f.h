@@ -309,6 +309,7 @@ coBool coIsSorted(const coArray<T>& _this)
 	return coIsSorted(_this, defaultCompare);
 }
 
+/*
 template <class T>
 void coShuffle(coArray<T>& _this, coUint32& _seed)
 {
@@ -319,6 +320,7 @@ void coShuffle(coArray<T>& _this, coUint32& _seed)
 		coSwap(p[i], p[coRand(_seed, i + 1)]);
 	}
 }
+*/
 
 template <class T>
 void coRevert(coArray<T>& _this)
@@ -350,14 +352,4 @@ template <class T>
 coBool operator!= (const coArray<T>& _a, const coArray<T>& _b)
 {
 	return !(_a == _b);
-}
-
-template <class T>
-coFORCE_INLINE void coArray<T>::Write(coBinaryOutputStream& stream) const
-{
-	stream << count;
-	for (const T& v : *this)
-	{
-		stream << v;
-	}
 }

@@ -15,19 +15,6 @@ struct _coCopyCreate
 }
 */
 
-template <class T, class = void>
-struct coTypeHelper
-{
-	static coType* GetStaticType() { return nullptr; }
-};
-
-// See https://en.cppreference.com/w/cpp/types/void_t for more info on how that works
-template <class T>
-struct coTypeHelper<T, std::void_t<decltype(T::GetStaticType)>>
-{
-	static coType* GetStaticType() { return T::GetStaticType(); }
-};
-
 template <class T, coBool>
 struct _coMoveIfAvailable
 {
@@ -121,7 +108,7 @@ void coDestruct(void* p)
 template <class T>
 coType* coGetType()
 {
-	return coTypeHelper<std::conditional<_coReflectCheck<T>::value, T, _coNoReflectType>::type>::GetStaticType();
+	return coTypeHelper<T>::GetStaticType();
 }
 
 #define coDEFINE_FIELD(_name_) \

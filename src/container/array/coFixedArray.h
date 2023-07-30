@@ -29,6 +29,6 @@ coFixedArray<T,C>& coFixedArray<T,C>::operator=(const coArray<T>& other)
 {
 	coASSERT(C >= other.count);
 	coMemCopy(this->data, other.data, coUint64(other.count) * sizeof(T));
-	count = other.count;
+	this->count = other.count;
 	return *this;
 }

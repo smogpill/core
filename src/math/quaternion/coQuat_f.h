@@ -129,7 +129,7 @@ coFORCE_INLINE coQuat coLog(const coQuat& _a)
 }
 coFORCE_INLINE coQuat coSyncWith(const coQuat& _a, const coQuat& _b)
 {
-	const coInt32x4 comp = coBitCast<coInt32x4>(coDot(_a, _b) < coFloatx4_ZERO);
+	const coInt32x4 comp = coBitCast<coInt32x4>(coDot(coVec4(_a), coVec4(_b)) < coFloatx4_ZERO);
 	return coBitCast<coQuat>(coBitCast<coInt32x4>(_a) ^ (comp & coBitCast<coInt32x4>(__m128_SIGN_MASK)));
 }
 coFORCE_INLINE coQuat operator*(const coQuat& a, const coQuat& b)

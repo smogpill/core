@@ -52,3 +52,18 @@ coFORCE_INLINE coBinaryInputStream& operator>>(coBinaryInputStream& stream, T& a
 	a.Read(stream);
 	return stream;
 }
+
+template <class T>
+coBinaryInputStream& operator>>(coBinaryInputStream& stream, coDynamicArray<T>& a)
+{
+	coUint32 nb;
+	stream >> nb;
+	coClear(a);
+	if (nb)
+	{
+		coResize(a, nb);
+		for (T& v : a)
+			stream >> v;
+	}
+	return stream;
+}

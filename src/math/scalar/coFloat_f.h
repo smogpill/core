@@ -125,7 +125,7 @@ coFORCE_INLINE coFloat coAtan(coFloat _x, coFloat _y)
 
 coFORCE_INLINE coFloat coRandFloat(coUint32& _seed)
 {
-	return coFloat(coRand(_seed)) / coRAND_MAX;
+	return coFloat(coRand(_seed)) / coFloat(coRAND_MAX);
 }
 
 coFORCE_INLINE coFloat coRand11(coUint32& _seed)

@@ -78,7 +78,7 @@ only generate specific members of this structure.
 class coLocationHit : public coQueryHit
 {
 public:
-	coLocationHit() : flags(0), position(coVec3(0)), normal(coVec3(0)), distance(1e30f) {}
+	coLocationHit() : flags(0), position(coVec3(0.0f)), normal(coVec3(0.0f)), distance(1e30f) {}
 
 	/**
 	\note For raycast hits: true for shapes overlapping with raycast origin.

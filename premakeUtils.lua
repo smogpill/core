@@ -79,7 +79,7 @@ function coSetCppProjectDefaults(_name)
 	floatingpoint "Strict" -- Not slower than Fast, and helps for cross-platform/compiler determinism.
 	editandcontinue "Off"
 	symbols "On"
-	cppdialect "C++17"
+	cppdialect "C++20"
 	runtime "Release" -- Even on debug builds, Unreal is setup this way anyway. But can't use the CRT library memory leaks detector
 
 	flags { "NoMinimalRebuild", "FatalWarnings", "MultiProcessorCompile" }

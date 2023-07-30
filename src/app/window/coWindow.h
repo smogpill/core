@@ -14,10 +14,10 @@ class coWindow : public coObject
 public:
 	enum class ShowState
 	{
-		default,
-		hidden,
-		minimized,
-		maximized
+		DEFAULT,
+		HIDDEN,
+		MINIMIZED,
+		MAXIMIZED
 	};
 
 	class InitConfig : public Super::InitConfig
@@ -61,7 +61,7 @@ protected:
 private:
 	void ApplySize();
 
-	ShowState showState = ShowState::hidden;
+	ShowState showState = ShowState::HIDDEN;
 	coUint32x2 clientSize = coUint32x2(0);
 	coDynamicString name;
 	coImgui* imgui = nullptr;

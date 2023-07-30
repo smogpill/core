@@ -22,7 +22,7 @@ coDynamicString coGetLastOSErrorMessage()
 	if (err)
 		return coGetOSErrorMessage(err);
 	else
-		return "<NoError>";
+		return coDynamicString("<NoError>");
 }
 
 coDynamicString coGetOSErrorMessage(coUint errorValue)

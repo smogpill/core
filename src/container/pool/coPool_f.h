@@ -11,8 +11,8 @@ void coReserve(coPool<T, IndexType>& p, IndexType capacity_)
 	if (capacity_ > p.capacity)
 	{
 		const IndexType oldCapacity = p.capacity;
-		coReserve(p.buffer, capacity * sizeof(T));
-		coReserve(p.freeEntries, capacity);
+		coReserve(p.buffer, capacity_ * sizeof(T));
+		coReserve(p.freeEntries, capacity_);
 		for (IndexType i = oldCapacity; i < p.freeEntries.capacity; ++i)
 			coPushBack(p.freeEntries, i);
 	}
@@ -28,11 +28,13 @@ T& coGet(coPool<T, IndexType>& p, const coHandle<T, IndexType>& handle)
 template <class T, class IndexType>
 coHandle<T, IndexType> coCreate(coPool<T, IndexType>& p)
 {
+	/*
 	if (p.nbFreeEntries == 0)
 		coReserve(p, p.capacity + 1);
 	const IndexType index = p.freeEntries[--p.nbFreeEntries];
 	new (static_cast<T*>(p.buffer)[index])();
 	return coHandle<T, IndexType>(index);
+	*/
 }
 
 template <class T, class IndexType>

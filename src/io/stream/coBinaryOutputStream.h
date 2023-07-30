@@ -40,6 +40,24 @@ coFORCE_INLINE coBinaryOutputStream& operator<<(coBinaryOutputStream& stream, co
 }
 
 template <class T>
+coBinaryOutputStream& operator<<(coBinaryOutputStream& stream, const coArray<T>& a)
+{
+	stream << a.count;
+	for (const T& v : a)
+		stream << v;
+	return stream;
+}
+
+template <class T>
+coBinaryOutputStream& operator<<(coBinaryOutputStream& stream, const coDynamicArray<T>& a)
+{
+	stream << a.count;
+	for (const T& v : a)
+		stream << v;
+	return stream;
+}
+
+template <class T>
 coFORCE_INLINE coBinaryOutputStream& operator<<(coBinaryOutputStream& stream, const T& a)
 {
 	a.Write(stream);

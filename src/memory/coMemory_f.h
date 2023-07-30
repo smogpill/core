@@ -52,15 +52,6 @@ void coFill(T(&array_)[N], const T& _val)
 }
 
 template <typename T>
-coFORCE_INLINE void coSwap(T& _a, T& _b)
-{
-	// should be faster than other methods because of many possible compiler optimizations
-	const T tmp(std::move(_a));
-	_a = std::move(_b);
-	_b = std::move(tmp);
-}
-
-template <typename T>
 coFORCE_INLINE void coSwapMemory(T& _a, T& _b)
 {
 	coByte tmp[sizeof(T)];

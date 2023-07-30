@@ -85,7 +85,6 @@ coBool coStringInputStream::ReadIdentifier(coConstString& value)
 {
 	if (!coIsIdentifierHeadCompatible(GetChar()))
 		return false;
-	coConstString identifier;
 	coUint32 offset = 1;
 	while (coIsIdentifierBodyCompatible(GetChar(offset)))
 		++offset;

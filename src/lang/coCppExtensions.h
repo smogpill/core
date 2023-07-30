@@ -28,6 +28,15 @@ coFORCE_INLINE constexpr T& coBitCast(A& _a)
 	return reinterpret_cast<T&>(_a);
 }
 
+template <typename T>
+coFORCE_INLINE void coSwap(T& _a, T& _b)
+{
+	// should be faster than other methods because of many possible compiler optimizations
+	const T tmp(std::move(_a));
+	_a = std::move(_b);
+	_b = std::move(tmp);
+}
+
 #define _coSTRINGIFY(_x_) #_x_
 #define coSTRINGIFY(_x_) _coSTRINGIFY(_x_)
 #define _coCONCAT(_x_, _y_) _x_ ## _y_

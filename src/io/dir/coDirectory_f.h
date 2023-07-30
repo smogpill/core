@@ -19,7 +19,7 @@ enum class coDefaultDir
 };
 struct _coDefaultDirs
 {
-	coDynamicString dirs[coDefaultDir::END];
+	coDynamicString dirs[coUint(coDefaultDir::END)];
 };
 extern _coDefaultDirs* _co_defaultDirs;
 

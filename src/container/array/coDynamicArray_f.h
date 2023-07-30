@@ -170,20 +170,6 @@ coDynamicArray<T>& coDynamicArray<T>::operator=(const coDynamicArray<T>& _other)
 	return operator=(reinterpret_cast<const coArray<const T>&>(_other));
 }
 
-template <class T>
-coFORCE_INLINE void coDynamicArray<T>::Read(coBinaryInputStream& stream)
-{
-	coUint32 nb;
-	stream >> nb;
-	coClear(*this);
-	if (nb)
-	{
-		coResize(*this, nb);
-		for (T& v : *this)
-			stream >> v;
-	}
-}
-
 // template <class T>
 // coDynamicArray<T>& coDynamicArray<T>::operator=(const coDynamicArray<T>& _other)
 // {
