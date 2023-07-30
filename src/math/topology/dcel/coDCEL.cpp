@@ -235,7 +235,7 @@ void coDCEL::CheckEdgeNotReferencedByOthers(coUint32 edgeIdx) const
 		return;
 	for (coUint32 itEdgeIdx = 0; itEdgeIdx < halfEdges.count; ++itEdgeIdx)
 	{
-		if (coUNLIKELY(itEdgeIdx == edgeIdx))
+		if (itEdgeIdx == edgeIdx) [[unlikely]]
 			continue;
 
 		const coHalfEdge& edge = halfEdges[itEdgeIdx];

@@ -13,7 +13,7 @@ coOutputStream::~coOutputStream()
 
 void coOutputStream::Write(coByte value)
 {
-	if (coUNLIKELY(posInBlock == s_blockSize))
+	if (posInBlock == s_blockSize) [[unlikely]]
 	{
 		++blockIndex;
 		if (blockIndex == blocks.count)
@@ -31,7 +31,7 @@ void coOutputStream::Write(const void* data, coUint size)
 	do
 	{
 		const coUint available = s_blockSize - posInBlock;
-		if (coLIKELY(available >= size))
+		if (available >= size) [[likely]]
 		{
 			coByte* block = blocks[blockIndex];
 			coMemCopy(&block[posInBlock], data, size);
@@ -61,7 +61,7 @@ void coOutputStream::SetPos(coUint32 pos)
 {
 	blockIndex = pos / s_blockSize;
 	posInBlock = pos % s_blockSize;
-	if (coUNLIKELY(blockIndex >= blocks.count))
+	if (blockIndex >= blocks.count) [[unlikely]]
 	{
 		const coUint nbBlocks = blocks.count;
 		coResize(blocks, blockIndex + 1);

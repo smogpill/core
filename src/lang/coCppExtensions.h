@@ -66,14 +66,6 @@ coFORCE_INLINE void coSwap(T& _a, T& _b)
 #endif
 
 #ifdef coMSVC_COMPILER
-#	define coLIKELY(_x_) (_x_)
-#	define coUNLIKELY(_x_) (_x_)
-#else
-#	define coLIKELY(_x_) __builtin_expect(!!(_x_), true)
-#	define coUNLIKELY(_x_) __builtin_expect(!!(_x_), false)
-#endif
-
-#ifdef coMSVC_COMPILER
 #	define coRESTRICT __restrict
 #else
 #	define coRESTRICT __restrict__

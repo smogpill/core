@@ -23,7 +23,7 @@ protected:
 
 inline void coInputStream::Read(coByte& value)
 {
-	if (coLIKELY(pos < buffer.count))
+	if (pos < buffer.count) [[likely]]
 	{
 		value = buffer[pos++];
 	}
@@ -36,7 +36,7 @@ inline void coInputStream::Read(coByte& value)
 inline void coInputStream::Read(void* data, coUint size)
 {
 	const coUint32 newPos = pos + size;
-	if (coLIKELY(newPos <= buffer.count))
+	if (newPos <= buffer.count) [[likely]]
 	{
 		coMemCopy(data, &buffer[pos], size);
 		pos = newPos;
