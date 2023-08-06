@@ -21,7 +21,7 @@ public:
 	coRefCounted& operator= (const coRefCounted&) { return *this; }
 	coUint32 GetNbRefs() const { return _nbRefs.load(std::memory_order_relaxed); }
 	void AddRef() const { _nbRefs.fetch_add(1, std::memory_order_relaxed); }
-	void Release() const;
+	void RemoveRef() const;
 
 protected:
 	static constexpr coUint32 s_owned = 0x0ebedded;
@@ -33,7 +33,7 @@ class coRefCountedVirtual
 public:
 	virtual ~coRefCountedVirtual() = default;
 	virtual void AddRef() = 0;
-	virtual void Release() = 0;
+	virtual void RemoveRef() = 0;
 };
 
 /// Class for automatic referencing, this is the equivalent of a pointer to type T
@@ -49,11 +49,11 @@ public:
 	coRef(T* ptr) : _ptr(ptr) { AddRef(); }
 	coRef(const coRef<T>& ref) : _ptr(ref._ptr) { AddRef(); }
 	coRef(coRef<T>&& ref) noexcept : _ptr(ref._ptr) { ref._ptr = nullptr; }
-	~coRef() { Release(); }
+	~coRef() { RemoveRef(); }
 
-	coRef<T>& operator= (T* p) { if (_ptr != p) { Release(); _ptr = p; AddRef(); } return *this; }
-	coRef<T>& operator= (const coRef<T>& r) { if (_ptr != r._ptr) { Release(); _ptr = r._ptr; AddRef(); } return *this; }
-	coRef<T>& operator= (coRef<T>&& r) noexcept { if (_ptr != r._ptr) { Release(); _ptr = r._ptr; r._ptr = nullptr; } return *this; }
+	coRef<T>& operator= (T* p) { if (_ptr != p) { RemoveRef(); _ptr = p; AddRef(); } return *this; }
+	coRef<T>& operator= (const coRef<T>& r) { if (_ptr != r._ptr) { RemoveRef(); _ptr = r._ptr; AddRef(); } return *this; }
+	coRef<T>& operator= (coRef<T>&& r) noexcept { if (_ptr != r._ptr) { RemoveRef(); _ptr = r._ptr; r._ptr = nullptr; } return *this; }
 	operator T* const () const { return _ptr; }
 	operator T* () { return _ptr; }
 	T* const operator -> () const { return _ptr; }
@@ -72,7 +72,7 @@ private:
 	template <class T2> friend class RefConst;
 
 	void AddRef() { if (_ptr) _ptr->AddRef(); }
-	void Release() { if (_ptr) _ptr->Release(); }
+	void RemoveRef() { if (_ptr) _ptr->RemoveRef(); }
 
 	T* _ptr = nullptr;
 };
@@ -92,12 +92,12 @@ public:
 	coRefConst(coRefConst<T>&& r) noexcept : _ptr(r._ptr) { r._ptr = nullptr; }
 	coRefConst(const coRef<T>& r) : _ptr(r._ptr) { AddRef(); }
 	coRefConst(coRef<T>&& r) noexcept : _ptr(r._ptr) { r._ptr = nullptr; }
-	~coRefConst() { Release(); }
-	coRefConst<T>& operator = (const T* r) { if (_ptr != r) { Release(); _ptr = r; AddRef(); } return *this; }
-	coRefConst<T>& operator = (const coRefConst<T>& r) { if (_ptr != r._ptr) { Release(); _ptr = r._ptr; AddRef(); } return *this; }
-	coRefConst<T>& operator = (coRefConst<T>&& r) noexcept { if (_ptr != r._ptr) { Release(); _ptr = r._ptr; r._ptr = nullptr; } return *this; }
-	coRefConst<T>& operator = (const coRef<T>& r) { if (_ptr != r._ptr) { Release(); _ptr = r._ptr; AddRef(); } return *this; }
-	coRefConst<T>& operator = (coRef<T>&& r) noexcept { if (_ptr != r._ptr) { Release(); _ptr = r._ptr; r._ptr = nullptr; } return *this; }
+	~coRefConst() { RemoveRef(); }
+	coRefConst<T>& operator = (const T* r) { if (_ptr != r) { RemoveRef(); _ptr = r; AddRef(); } return *this; }
+	coRefConst<T>& operator = (const coRefConst<T>& r) { if (_ptr != r._ptr) { RemoveRef(); _ptr = r._ptr; AddRef(); } return *this; }
+	coRefConst<T>& operator = (coRefConst<T>&& r) noexcept { if (_ptr != r._ptr) { RemoveRef(); _ptr = r._ptr; r._ptr = nullptr; } return *this; }
+	coRefConst<T>& operator = (const coRef<T>& r) { if (_ptr != r._ptr) { RemoveRef(); _ptr = r._ptr; AddRef(); } return *this; }
+	coRefConst<T>& operator = (coRef<T>&& r) noexcept { if (_ptr != r._ptr) { RemoveRef(); _ptr = r._ptr; r._ptr = nullptr; } return *this; }
 
 	operator const T* () const { return _ptr; }
 	const T* operator -> () const { return _ptr; }
@@ -113,7 +113,7 @@ public:
 private:
 	/// Use "variable = nullptr;" to release an object, do not call these functions
 	void AddRef() { if (_ptr) _ptr->AddRef(); }
-	void Release() { if (_ptr) _ptr->Release(); }
+	void RemoveRef() { if (_ptr) _ptr->RemoveRef(); }
 
 	const T* _ptr = nullptr;
 };
@@ -128,7 +128,7 @@ coRefCounted<T>::~coRefCounted()
 }
 
 template <class T>
-void coRefCounted<T>::Release() const
+void coRefCounted<T>::RemoveRef() const
 {
 	// Releasing a reference must use release semantics...
 	if (_nbRefs.fetch_sub(1, std::memory_order_release) == 1)

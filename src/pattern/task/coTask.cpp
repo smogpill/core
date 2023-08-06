@@ -24,6 +24,6 @@ void coTask::RemoveRef()
 	{
 		// ... so that we can use aquire to ensure that we see any updates from other threads that released a ref before freeing the job
 		std::atomic_thread_fence(std::memory_order_acquire);
-		GetSystem().FreeTask(this);
+		GetSystem().FreeTask(*this);
 	}
 }

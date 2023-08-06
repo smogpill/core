@@ -18,29 +18,81 @@ coTaskSystem::coTaskSystem(coInt nbThreads)
 	static_assert(coIsPowerOf2(s_queueSize));
 
 	if (nbThreads < 0)
-		nbThreads = coGetMaxConcurrentThreads();
+		nbThreads = coGetMaxConcurrentThreads() - 1;
 
-	coReserve(_threads, nbThreads);
-	for (coUint threadIdx = 0; threadIdx < coUint(nbThreads); ++threadIdx)
-		coPushBack(_threads, new std::thread([this, threadIdx] { WorkerThreadMain(threadIdx); }));
+	StartThreads(nbThreads);
 }
 
 coTaskSystem::~coTaskSystem()
 {
-	exit = true;
+	StopThreads();
+}
+
+void coTaskSystem::StopThreads()
+{
+	if (_threads.count == 0)
+		return;
+
+	_exit = true;
 	_semaphore.Release(_threads.count);
-	for (std::thread* thread : _threads)
+
+	for (std::thread& thread : _threads)
+		if (thread.joinable())
+			thread.join();
+
+	coClear(_threads);
+
+	for (coUint32 head = 0; head != _tail; ++head)
 	{
-		if (thread->joinable())
-			thread->join();
-		delete thread;
+		coTask* task = _queuedTasks[head & (s_queueSize - 1)].exchange(nullptr);
+		if (task)
+		{
+			task->Execute();
+			task->RemoveRef();
+		}
 	}
+
+	delete[] _heads;
+	_heads = nullptr;
+	_tail = 0;
+}
+
+void coTaskSystem::StartThreads(coUint nb)
+{
+	// If no threads are requested we're done
+	if (nb == 0)
+		return;
+
+	_exit = false;
+
+	coASSERT(_heads == nullptr);
+	_heads = new std::atomic<coUint32>[nb];
+	for (int i = 0; i < nb; ++i)
+		_heads[i] = 0;
+
+	coASSERT(_threads.count == 0);
+	coReserve(_threads, nb);
+	for (coUint threadIdx = 0; threadIdx < nb; ++threadIdx)
+		coPushBack(_threads, new std::thread([this, threadIdx] { WorkerThreadMain(threadIdx); }));
+}
+
+void coTaskSystem::SetNbThreads(coInt nbRawThreads)
+{
+	const coUint nbThreads = nbRawThreads < 0 ? (thread::hardware_concurrency() - 1) : nbRawThreads;
+	if (_threads.count == nbThreads)
+		return;
+	StopThreads();
+	StartThreads(nbThreads);
 }
 
 void coTaskSystem::QueueTask(coTask& task)
 {
 	QueueTaskInternal(task);
 	_semaphore.Release();
+}
+
+void coTaskSystem::FreeTask(coTask& task)
+{
 }
 
 void coTaskSystem::QueueTasks(coTask** tasks, coUint nb)
@@ -105,7 +157,7 @@ void coTaskSystem::WorkerThreadMain(coUint threadIdx)
 
 	std::atomic<coUint32>& head = _heads[threadIdx];
 
-	while (!exit)
+	while (!_exit)
 	{
 		_semaphore.Acquire();
 

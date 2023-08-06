@@ -18,12 +18,17 @@ public:
 	coTaskSystem(coInt nbThreads = -1);
 	~coTaskSystem();
 
+	void SetNbThreads(coInt nbThreads);
+
 private:
 	friend class coTask;
 	void QueueTask(coTask& task);
+	void FreeTask(coTask& task);
 	void QueueTasks(coTask** tasks, coUint nb);
 	void QueueTaskInternal(coTask& task);
 	void WorkerThreadMain(coUint threadIdx);
+	void StopThreads();
+	void StartThreads(coUint nb);
 
 	static constexpr coUint s_queueSize = 1024;
 	coTask* _queuedTasks[s_queueSize] = {};
@@ -32,5 +37,5 @@ private:
 	coDynamicArray<std::thread*> _threads;
 	coCountingSemaphore32 _semaphore;
 	mutable coMutex _mutex;
-	std::atomic<coBool> exit = false;
+	std::atomic<coBool> _exit = false;
 };
