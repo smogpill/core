@@ -49,3 +49,8 @@ coUint64 coThread::GetID() const
 	const HANDLE& impl = GetImpl<HANDLE>();
 	return reinterpret_cast<coUint64>(impl);
 }
+
+void coThread::Stop()
+{
+
+}

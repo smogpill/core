@@ -1,30 +1,41 @@
-// Copyright(c) 2019 Jounayd Id Salah
+// Copyright(c) 2019-2023 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
-#include "lang/result/coResult.h"
-#include "pattern/pimpl/coPimpl.h"
-#include "pattern/object/coObject.h"
 
-class coThread : public coObject
+class coThreadSetup
 {
-	coDECLARE_BASE(coObject);
-public:
-	coThread();
-	virtual ~coThread();
+	const coChar* name = nullptr;
+};
 
-	void SetAffinityMask(coUint32 mask);
+class coThread
+{
+public:
+	template<class Function>
+	explicit coThread(const coThreadSetup& setup, Function&& f)
+	{
+		auto threadMain = []()
+		{
+			f();
+		};
+		_impl = std::move(std::thread(threadMain));
+	}
+	coThread(const coThread&) = delete;
+	~coThread();
+
 	coUint64 GetID() const;
 
+	void Stop();
 	void RequestStop() { stopRequested = true; }
 	coBool IsStopRequested() const { return stopRequested; }
-	coResult _Run();
-protected:
-	virtual coResult OnStart() override;
-	virtual void OnStop() override;
-	virtual coResult OnRun() { return true; }
 
 private:
-	coUint32 affinityMask = 0;
+	template <class Function, class... Args>
+	void ThreadMain(Function&& f, Args&&... args)
+	{
+
+		f(args);
+	}
+	std::thread _impl;
+	
 	volatile coBool stopRequested = false;
-	coDECLARE_PIMPL(8, 8);
 };

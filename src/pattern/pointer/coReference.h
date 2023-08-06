@@ -16,11 +16,11 @@ public:
 	~coRefCounted();
 
 	/// Disables the automatic deletion when all refs are removed, delete should be called manually
-	void TakeOwnership() const { coASSERT(_nbRefs.fetch_add(s_manualDelete, memory_order_relaxed) < s_owned); }
+	void TakeOwnership() const { coASSERT(_nbRefs.fetch_add(s_owned, std::memory_order_relaxed) < s_owned); }
 
 	coRefCounted& operator= (const coRefCounted&) { return *this; }
-	coUint32 GetNbRefs() const { return _nbRefs.load(memory_order_relaxed); }
-	void AddRef() const { _nbRefs.fetch_add(1, memory_order_relaxed); }
+	coUint32 GetNbRefs() const { return _nbRefs.load(std::memory_order_relaxed); }
+	void AddRef() const { _nbRefs.fetch_add(1, std::memory_order_relaxed); }
 	void Release() const;
 
 protected:
@@ -83,31 +83,31 @@ private:
 /// count of the first object again. If it reaches a reference count of zero it will
 /// be deleted
 template <class T>
-class RefConst
+class coRefConst
 {
 public:
-	RefConst() = default;
-	RefConst(const T* p) : _ptr(p) { AddRef(); }
-	RefConst(const RefConst<T>& r) : _ptr(r._ptr) { AddRef(); }
-	RefConst(RefConst<T>&& r) noexcept : _ptr(r._ptr) { r._ptr = nullptr; }
-	RefConst(const Ref<T>& r) : _ptr(r._ptr) { AddRef(); }
-	RefConst(Ref<T>&& inRHS) noexcept : _ptr(r._ptr) { r._ptr = nullptr; }
-	~RefConst() { Release(); }
-	RefConst<T>& operator = (const T* r) { if (_ptr != r) { Release(); _ptr = r; AddRef(); } return *this; }
-	RefConst<T>& operator = (const RefConst<T>& r) { if (_ptr != r._ptr) { Release(); _ptr = r._ptr; AddRef(); } return *this; }
-	RefConst<T>& operator = (RefConst<T>&& r) noexcept { if (_ptr != r._ptr) { Release(); _ptr = r._ptr; r._ptr = nullptr; } return *this; }
-	RefConst<T>& operator = (const Ref<T>& r) { if (_ptr != r._ptr) { Release(); _ptr = r._ptr; AddRef(); } return *this; }
-	RefConst<T>& operator = (Ref<T>&& r) noexcept { if (_ptr != r._ptr) { Release(); _ptr = r._ptr; r._ptr = nullptr; } return *this; }
+	coRefConst() = default;
+	coRefConst(const T* p) : _ptr(p) { AddRef(); }
+	coRefConst(const coRefConst<T>& r) : _ptr(r._ptr) { AddRef(); }
+	coRefConst(coRefConst<T>&& r) noexcept : _ptr(r._ptr) { r._ptr = nullptr; }
+	coRefConst(const coRef<T>& r) : _ptr(r._ptr) { AddRef(); }
+	coRefConst(coRef<T>&& r) noexcept : _ptr(r._ptr) { r._ptr = nullptr; }
+	~coRefConst() { Release(); }
+	coRefConst<T>& operator = (const T* r) { if (_ptr != r) { Release(); _ptr = r; AddRef(); } return *this; }
+	coRefConst<T>& operator = (const coRefConst<T>& r) { if (_ptr != r._ptr) { Release(); _ptr = r._ptr; AddRef(); } return *this; }
+	coRefConst<T>& operator = (coRefConst<T>&& r) noexcept { if (_ptr != r._ptr) { Release(); _ptr = r._ptr; r._ptr = nullptr; } return *this; }
+	coRefConst<T>& operator = (const coRef<T>& r) { if (_ptr != r._ptr) { Release(); _ptr = r._ptr; AddRef(); } return *this; }
+	coRefConst<T>& operator = (coRef<T>&& r) noexcept { if (_ptr != r._ptr) { Release(); _ptr = r._ptr; r._ptr = nullptr; } return *this; }
 
 	operator const T* () const { return _ptr; }
 	const T* operator -> () const { return _ptr; }
 	const T& operator * () const { return *_ptr; }
 	coBool operator == (const T* p) const { return _ptr == p; }
-	coBool operator == (const RefConst<T>& r) const { return _ptr == r._ptr; }
-	coBool operator == (const Ref<T>& r) const { return _ptr == r._ptr; }
+	coBool operator == (const coRefConst<T>& r) const { return _ptr == r._ptr; }
+	coBool operator == (const coRef<T>& r) const { return _ptr == r._ptr; }
 	coBool operator != (const T* p) const { return _ptr != p; }
-	coBool operator != (const RefConst<T>& r) const { return _ptr != r._ptr; }
-	coBool operator != (const Ref<T>& r) const { return _ptr != r._ptr; }
+	coBool operator != (const coRefConst<T>& r) const { return _ptr != r._ptr; }
+	coBool operator != (const coRef<T>& r) const { return _ptr != r._ptr; }
 	const T* GetPtr() const { return _ptr; }
 
 private:
@@ -122,7 +122,7 @@ template <class T>
 coRefCounted<T>::~coRefCounted()
 {
 #ifdef coDEV
-	const coUint32 value = _nbRefs.load(memory_order_relaxed);
+	const coUint32 value = _nbRefs.load(std::memory_order_relaxed);
 	coASSERT(value == 0 || value == s_owned);
 #endif
 }
@@ -131,10 +131,10 @@ template <class T>
 void coRefCounted<T>::Release() const
 {
 	// Releasing a reference must use release semantics...
-	if (_nbRefs.fetch_sub(1, memory_order_release) == 1)
+	if (_nbRefs.fetch_sub(1, std::memory_order_release) == 1)
 	{
 		// ... so that we can use aquire to ensure that we see any updates from other threads that released a ref before deleting the object
-		atomic_thread_fence(memory_order_acquire);
+		std::atomic_thread_fence(std::memory_order_acquire);
 		delete static_cast<const T*>(this);
 	}
 }

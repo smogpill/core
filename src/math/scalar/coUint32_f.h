@@ -82,14 +82,14 @@ coFORCE_INLINE coUint32 coPow(coUint32 _a, coUint32 _exponent)
 }
 
 // http://graphics.stanford.edu/~seander/bithacks.html
-coFORCE_INLINE coBool coIsPowerOf2(coUint32 _a)
+coFORCE_INLINE constexpr coBool coIsPowerOf2(coUint32 _a)
 {
 	return (_a && !(_a & (_a - 1)));
 }
 
 // http://graphics.stanford.edu/~seander/bithacks.html
 /// faster than isPowerOf2
-coFORCE_INLINE coBool coIsPowerOf2Or0(coUint32 _a)
+coFORCE_INLINE constexpr coBool coIsPowerOf2Or0(coUint32 _a)
 {
 	return ((_a & (_a - 1)) == 0);
 }

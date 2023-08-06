@@ -11,5 +11,6 @@
 #include <atomic>
 #include <mutex>
 #include <shared_mutex>
+#include <semaphore>
 #include <thread>
 #include <type_traits>
