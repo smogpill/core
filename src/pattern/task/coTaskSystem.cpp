@@ -15,6 +15,8 @@ coDEFINE_SINGLETON(coTaskSystem);
 
 coTaskSystem::coTaskSystem(coInt nbThreads)
 {
+	coASSERT(instance == nullptr);
+	instance = this;
 	static_assert(coIsPowerOf2(s_queueSize));
 
 	if (nbThreads < 0)
@@ -26,6 +28,38 @@ coTaskSystem::coTaskSystem(coInt nbThreads)
 coTaskSystem::~coTaskSystem()
 {
 	StopThreads();
+
+	for (coTaskBarrier* barrier : _barriers)
+		delete barrier;
+	instance = nullptr;
+}
+
+void coTaskSystem::StartThreads(coUint nb)
+{
+	// If no threads are requested we're done
+	if (nb == 0)
+		return;
+
+	_exit = false;
+
+	coASSERT(_heads == nullptr);
+	_heads = new std::atomic<coUint32>[nb];
+	for (coUint i = 0; i < nb; ++i)
+		_heads[i] = 0;
+
+	coASSERT(_threads.count == 0);
+	coReserve(_threads, nb);
+	for (coUint threadIdx = 0; threadIdx < nb; ++threadIdx)
+		coPushBack(_threads, new std::thread([this, threadIdx] { WorkerThreadMain(threadIdx); }));
+}
+
+coUint coTaskSystem::GetBestHead() const
+{
+	// Find the minimal value across all threads
+	coUint head = _tail;
+	for (coUint i = 0; i < _threads.count; ++i)
+		head = coMin(head, _heads[i].load());
+	return head;
 }
 
 void coTaskSystem::StopThreads()
@@ -36,9 +70,12 @@ void coTaskSystem::StopThreads()
 	_exit = true;
 	_semaphore.Release(_threads.count);
 
-	for (std::thread& thread : _threads)
-		if (thread.joinable())
-			thread.join();
+	for (std::thread* thread : _threads)
+	{
+		if (thread->joinable())
+			thread->join();
+		delete thread;
+	}
 
 	coClear(_threads);
 
@@ -57,32 +94,48 @@ void coTaskSystem::StopThreads()
 	_tail = 0;
 }
 
-void coTaskSystem::StartThreads(coUint nb)
-{
-	// If no threads are requested we're done
-	if (nb == 0)
-		return;
-
-	_exit = false;
-
-	coASSERT(_heads == nullptr);
-	_heads = new std::atomic<coUint32>[nb];
-	for (int i = 0; i < nb; ++i)
-		_heads[i] = 0;
-
-	coASSERT(_threads.count == 0);
-	coReserve(_threads, nb);
-	for (coUint threadIdx = 0; threadIdx < nb; ++threadIdx)
-		coPushBack(_threads, new std::thread([this, threadIdx] { WorkerThreadMain(threadIdx); }));
-}
-
 void coTaskSystem::SetNbThreads(coInt nbRawThreads)
 {
-	const coUint nbThreads = nbRawThreads < 0 ? (thread::hardware_concurrency() - 1) : nbRawThreads;
+	const coUint nbThreads = nbRawThreads < 0 ? (std::thread::hardware_concurrency() - 1) : nbRawThreads;
 	if (_threads.count == nbThreads)
 		return;
 	StopThreads();
 	StartThreads(nbThreads);
+}
+
+coTaskHandle coTaskSystem::CreateTask(const char* name, std::function<void()>& function, coUint32 nbDependencies)
+{
+	coTask* task = new coTask();
+	coTaskHandle handle(task);
+	if (nbDependencies == 0)
+		QueueTask(*task);
+	return handle;
+}
+
+coTaskBarrier* coTaskSystem::CreateBarrier()
+{
+	// Find the first unused barrier
+	for (coTaskBarrier* barrier : _barriers)
+	{
+		coBool expected = false;
+		if (barrier->_inUse.compare_exchange_strong(expected, true))
+			return barrier;
+	}
+
+	return nullptr;
+}
+
+void coTaskSystem::DestroyBarrier(coTaskBarrier& barrier)
+{
+	coASSERT(barrier.IsEmpty());
+	coBool expected = true;
+	barrier._inUse.compare_exchange_strong(expected, false);
+	coASSERT(expected);
+}
+
+void coTaskSystem::WaitForTasks(coTaskBarrier& barrier)
+{
+	barrier.Wait();
 }
 
 void coTaskSystem::QueueTask(coTask& task)
@@ -93,6 +146,7 @@ void coTaskSystem::QueueTask(coTask& task)
 
 void coTaskSystem::FreeTask(coTask& task)
 {
+	delete &task;
 }
 
 void coTaskSystem::QueueTasks(coTask** tasks, coUint nb)
@@ -111,7 +165,7 @@ void coTaskSystem::QueueTaskInternal(coTask& task)
 	// Need to read head first because otherwise the tail can already have passed the head
 	// We read the head outside of the loop since it involves iterating over all threads and we only need to update
 	// it if there's not enough space in the queue.
-	coUint head = GetHead();
+	coUint head = GetBestHead();
 
 	for (;;)
 	{
@@ -120,7 +174,7 @@ void coTaskSystem::QueueTaskInternal(coTask& task)
 		if (oldValue - head >= s_queueSize)
 		{
 			// We calculated the head outside of the loop, update head (and we also need to update tail to prevent it from passing head)
-			head = GetHead();
+			head = GetBestHead();
 			oldValue = _tail;
 
 			// Second check if there's space in the queue
@@ -151,9 +205,11 @@ void coTaskSystem::QueueTaskInternal(coTask& task)
 
 void coTaskSystem::WorkerThreadMain(coUint threadIdx)
 {
-	coDynamicString threadName = coDynamicString("TaskWorker") + threadIdx;
-	coSetThreadName(threadName);
-	coPROFILE_THREAD(threadName);
+	coDynamicString threadName = "TaskWorker";
+	threadName << threadIdx;
+	coNullTerminate(threadName);
+	coSetThreadName(threadName.data);
+	coPROFILE_THREAD(threadName.data);
 
 	std::atomic<coUint32>& head = _heads[threadIdx];
 
@@ -172,7 +228,7 @@ void coTaskSystem::WorkerThreadMain(coUint threadIdx)
 				if (task)
 				{
 					task->Execute();
-					task->Release();
+					task->RemoveRef();
 				}
 			}
 			++head;

@@ -6,6 +6,8 @@
 #define coDECLARE_SINGLETON(_Class_) \
 	public: \
 	inline static _Class_* instance = nullptr; \
+	template< class... Args > \
+	static void CreateInstance(Args&&... args) { coASSERT(instance == nullptr); instance = new _Class_(std::forward<Args>(args)...); } \
 	static void CreateInstanceIfMissing() { if (!instance) instance = new _Class_(); } \
 	static void SetInstance(_Class_* p) { coASSERT(instance == nullptr); instance = p; } \
 	static void DestroyInstance() { delete instance; instance = nullptr; } \

@@ -12,7 +12,7 @@ void coTaskHandle::RemoveDependencies(coTaskHandle* handles, coUint nbHandles, c
 
 	// Should prefer a dynamic stack allocation instead
 	coASSERT(nbHandles < 2048);
-	coTask** tasksToQueue[2048];
+	coTask* tasksToQueue[2048];
 	coTask** nextTask = tasksToQueue;
 
 	// Remove the dependencies on all jobs

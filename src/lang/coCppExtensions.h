@@ -37,6 +37,18 @@ coFORCE_INLINE void coSwap(T& _a, T& _b)
 	_b = std::move(tmp);
 }
 
+template <typename T>
+coFORCE_INLINE const T& coMax(const T& a, const T& b)
+{
+	return b > a ? b : a;
+}
+
+template <typename T>
+coFORCE_INLINE const T& coMin(const T& a, const T& b)
+{
+	return b < a ? b : a;
+}
+
 #define _coSTRINGIFY(_x_) #_x_
 #define coSTRINGIFY(_x_) _coSTRINGIFY(_x_)
 #define _coCONCAT(_x_, _y_) _x_ ## _y_

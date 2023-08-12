@@ -17,6 +17,7 @@ coTaskBarrier::coTaskBarrier()
 coTaskBarrier::~coTaskBarrier()
 {
 	coASSERT(IsEmpty());
+	coASSERT(!_inUse);
 }
 
 void coTaskBarrier::AddTask(const coTaskHandle& taskHandle)
@@ -71,7 +72,7 @@ void coTaskBarrier::AddTasks(const coTaskHandle* handles, coUint nbHandles)
 
 			// Add the job to our job list
 			task->AddRef();
-			uint write_index = _taskWriteIndex++;
+			coUint write_index = _taskWriteIndex++;
 			while (write_index - _taskReadIndex >= s_maxNbJobs)
 			{
 				coASSERT(false); // Barrier full, stalling!
@@ -108,7 +109,7 @@ void coTaskBarrier::Wait()
 						break;
 
 					// Job is finished, release it
-					taskPtr->Release();
+					taskPtr->RemoveRef();
 					task = nullptr;
 					++_taskReadIndex;
 				}
@@ -142,7 +143,7 @@ void coTaskBarrier::Wait()
 		std::atomic<coTask*>& task = _tasks[_taskReadIndex & (s_maxNbJobs - 1)];
 		coTask* taskPtr = task.load();
 		coASSERT(taskPtr != nullptr && taskPtr->IsDone());
-		taskPtr->Release();
+		taskPtr->RemoveRef();
 		task = nullptr;
 		++_taskReadIndex;
 	}

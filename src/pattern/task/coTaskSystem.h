@@ -8,6 +8,8 @@
 #include "container/array/coDynamicArray.h"
 #include "container/queue/coDynamicQueue.h"
 #include "memory/coCache.h"
+#include "coTaskHandle.h"
+class coTaskBarrier;
 
 // Inspired by Jorrit Rouwe's Jolt JobSystemThreadPool
 
@@ -19,9 +21,14 @@ public:
 	~coTaskSystem();
 
 	void SetNbThreads(coInt nbThreads);
+	coTaskHandle CreateTask(const char* name, std::function<void()>& function, coUint32 nbDependencies = 0);
+	coTaskBarrier* CreateBarrier();
+	void DestroyBarrier(coTaskBarrier& barrier);
+	void WaitForTasks(coTaskBarrier& barrier);
 
 private:
 	friend class coTask;
+	friend class coTaskHandle;
 	void QueueTask(coTask& task);
 	void FreeTask(coTask& task);
 	void QueueTasks(coTask** tasks, coUint nb);
@@ -29,12 +36,14 @@ private:
 	void WorkerThreadMain(coUint threadIdx);
 	void StopThreads();
 	void StartThreads(coUint nb);
+	coUint GetBestHead() const;
 
 	static constexpr coUint s_queueSize = 1024;
-	coTask* _queuedTasks[s_queueSize] = {};
+	std::atomic<coTask*> _queuedTasks[s_queueSize] = {};
 	std::atomic<coUint32>* _heads = nullptr;
 	alignas(coCACHE_LINE_SIZE) std::atomic<coUint32> _tail = 0;
 	coDynamicArray<std::thread*> _threads;
+	coDynamicArray<coTaskBarrier*> _barriers;
 	coCountingSemaphore32 _semaphore;
 	mutable coMutex _mutex;
 	std::atomic<coBool> _exit = false;

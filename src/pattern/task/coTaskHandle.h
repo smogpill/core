@@ -22,6 +22,7 @@ public:
 
 private:
 	friend class coTaskSystem;
+	friend class coTaskBarrier;
 	explicit coTaskHandle(coTask* task) : Base(task) {}
 
 	using Base::GetPtr;
