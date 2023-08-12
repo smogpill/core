@@ -21,7 +21,7 @@ public:
 	static void	RemoveDependencies(coTaskHandle* handles, coUint nbHandles, coUint count = 1);
 
 private:
-	friend class coTaskSystem;
+	friend class coTaskManager;
 	friend class coTaskBarrier;
 	explicit coTaskHandle(coTask* task) : Base(task) {}
 

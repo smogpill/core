@@ -1,7 +1,7 @@
 // Copyright(c) 2019-2023 Jounayd Id Salah
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "pattern/pch.h"
-#include "coTaskSystem.h"
+#include "coTaskManager.h"
 #include "math/scalar/coAtomicInt32_f.h"
 #include "lang/result/coResult_f.h"
 #include <debug/profiler/coProfile.h>
@@ -11,9 +11,9 @@
 #include "../lock/coScopedLock.h"
 #include "coTask.h"
 
-coDEFINE_SINGLETON(coTaskSystem);
+coDEFINE_SINGLETON(coTaskManager);
 
-coTaskSystem::coTaskSystem(coInt nbThreads)
+coTaskManager::coTaskManager(coInt nbThreads)
 {
 	coASSERT(instance == nullptr);
 	instance = this;
@@ -25,7 +25,7 @@ coTaskSystem::coTaskSystem(coInt nbThreads)
 	StartThreads(nbThreads);
 }
 
-coTaskSystem::~coTaskSystem()
+coTaskManager::~coTaskManager()
 {
 	StopThreads();
 
@@ -34,7 +34,7 @@ coTaskSystem::~coTaskSystem()
 	instance = nullptr;
 }
 
-void coTaskSystem::StartThreads(coUint nb)
+void coTaskManager::StartThreads(coUint nb)
 {
 	// If no threads are requested we're done
 	if (nb == 0)
@@ -53,7 +53,7 @@ void coTaskSystem::StartThreads(coUint nb)
 		coPushBack(_threads, new std::thread([this, threadIdx] { WorkerThreadMain(threadIdx); }));
 }
 
-coUint coTaskSystem::GetBestHead() const
+coUint coTaskManager::GetBestHead() const
 {
 	// Find the minimal value across all threads
 	coUint head = _tail;
@@ -62,7 +62,7 @@ coUint coTaskSystem::GetBestHead() const
 	return head;
 }
 
-void coTaskSystem::StopThreads()
+void coTaskManager::StopThreads()
 {
 	if (_threads.count == 0)
 		return;
@@ -94,7 +94,7 @@ void coTaskSystem::StopThreads()
 	_tail = 0;
 }
 
-void coTaskSystem::SetNbThreads(coInt nbRawThreads)
+void coTaskManager::SetNbThreads(coInt nbRawThreads)
 {
 	const coUint nbThreads = nbRawThreads < 0 ? (std::thread::hardware_concurrency() - 1) : nbRawThreads;
 	if (_threads.count == nbThreads)
@@ -103,14 +103,14 @@ void coTaskSystem::SetNbThreads(coInt nbRawThreads)
 	StartThreads(nbThreads);
 }
 
-coTaskHandle coTaskSystem::CreateTask(const std::function<void()>& func)
+coTaskHandle coTaskManager::CreateTask(const std::function<void()>& func)
 {
 	coTask* task = new coTask();
 	task->SetFunction(func);
 	return coTaskHandle(task);
 }
 
-coTaskBarrier* coTaskSystem::CreateBarrier()
+coTaskBarrier* coTaskManager::CreateBarrier()
 {
 	// Find the first unused barrier
 	for (coTaskBarrier* barrier : _barriers)
@@ -123,7 +123,7 @@ coTaskBarrier* coTaskSystem::CreateBarrier()
 	return nullptr;
 }
 
-void coTaskSystem::DestroyBarrier(coTaskBarrier& barrier)
+void coTaskManager::DestroyBarrier(coTaskBarrier& barrier)
 {
 	coASSERT(barrier.IsEmpty());
 	coBool expected = true;
@@ -131,23 +131,23 @@ void coTaskSystem::DestroyBarrier(coTaskBarrier& barrier)
 	coASSERT(expected);
 }
 
-void coTaskSystem::WaitForTasks(coTaskBarrier& barrier)
+void coTaskManager::WaitForTasks(coTaskBarrier& barrier)
 {
 	barrier.Wait();
 }
 
-void coTaskSystem::QueueTask(coTask& task)
+void coTaskManager::QueueTask(coTask& task)
 {
 	QueueTaskInternal(task);
 	_semaphore.Release();
 }
 
-void coTaskSystem::FreeTask(coTask& task)
+void coTaskManager::FreeTask(coTask& task)
 {
 	delete &task;
 }
 
-void coTaskSystem::QueueTasks(coTask** tasks, coUint nb)
+void coTaskManager::QueueTasks(coTask** tasks, coUint nb)
 {
 	coASSERT(nb > 0);
 	for (coTask** task = tasks, **taskEnd = tasks + nb; task < taskEnd; ++task)
@@ -155,7 +155,7 @@ void coTaskSystem::QueueTasks(coTask** tasks, coUint nb)
 	_semaphore.Release(coMin(nb, _threads.count));
 }
 
-void coTaskSystem::QueueTaskInternal(coTask& task)
+void coTaskManager::QueueTaskInternal(coTask& task)
 {
 	// Add reference to job because we're adding the job to the queue
 	task.AddRef();
@@ -201,7 +201,7 @@ void coTaskSystem::QueueTaskInternal(coTask& task)
 	}
 }
 
-void coTaskSystem::WorkerThreadMain(coUint threadIdx)
+void coTaskManager::WorkerThreadMain(coUint threadIdx)
 {
 	coDynamicString threadName = "TaskWorker";
 	threadName << threadIdx;

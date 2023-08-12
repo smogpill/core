@@ -6,7 +6,7 @@
 #include <debug/log/coAssert.h>
 class coTaskContext;
 class coTaskBarrier;
-class coTaskSystem;
+class coTaskManager;
 
 class coTask
 {
@@ -40,7 +40,7 @@ public:
 	static constexpr coIntPtr s_barrierDoneState = ~coIntPtr(0);
 
 private:
-	coTaskSystem& GetSystem() const;
+	coTaskManager& GetSystem() const;
 
 	friend class coTaskScheduler;
 	Priority priority = Priority::DEFAULT;

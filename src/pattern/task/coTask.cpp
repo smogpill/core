@@ -2,11 +2,11 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "pattern/pch.h"
 #include "coTask.h"
-#include "coTaskSystem.h"
+#include "coTaskManager.h"
 
-coFORCE_INLINE coTaskSystem& coTask::GetSystem() const
+coFORCE_INLINE coTaskManager& coTask::GetSystem() const
 {
-	coTaskSystem* system = coTaskSystem::instance;
+	coTaskManager* system = coTaskManager::instance;
 	coASSERT(system);
 	return *system;
 }

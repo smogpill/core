@@ -2,13 +2,13 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "pattern/pch.h"
 #include "coTaskHandle.h"
-#include "coTaskSystem.h"
+#include "coTaskManager.h"
 
 void coTaskHandle::RemoveDependencies(coTaskHandle* handles, coUint nbHandles, coUint count)
 {
 	coASSERT(nbHandles > 0);
 
-	coTaskSystem* system = coTaskSystem::instance;
+	coTaskManager* system = coTaskManager::instance;
 
 	// Should prefer a dynamic stack allocation instead
 	coASSERT(nbHandles < 2048);

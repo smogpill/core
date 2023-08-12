@@ -13,12 +13,12 @@ class coTaskBarrier;
 
 // Inspired by Jorrit Rouwe's Jolt JobSystemThreadPool
 
-class coTaskSystem
+class coTaskManager
 {
-	coDECLARE_SINGLETON(coTaskSystem);
+	coDECLARE_SINGLETON(coTaskManager);
 public:
-	coTaskSystem(coInt nbThreads = -1);
-	~coTaskSystem();
+	coTaskManager(coInt nbThreads = -1);
+	~coTaskManager();
 
 	void SetNbThreads(coInt nbThreads);
 	coTaskHandle CreateTask(const std::function<void()>& func);
