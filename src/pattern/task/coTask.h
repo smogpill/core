@@ -21,13 +21,14 @@ public:
 	};
 	virtual ~coTask() {}
 	void SetPriority(Priority priority_) { priority = priority; }
+	void SetFunction(const std::function<void()>& func) { _function = func; }
 	void AddRef();
 	void RemoveRef();
-	void AddDependency(coUint nb);
+	void AddDependency(coUint nb = 1);
 	/// Returns true whenever the dependency counter reaches zero
-	coBool RemoveDependency(coUint nb);
+	coBool RemoveDependency(coUint nb = 1);
 	/// Job will be queued whenever the dependency counter reaches zero
-	void RemoveDependencyAndQueue(coUint nb);
+	void RemoveDependencyAndQueue(coUint nb = 1);
 
 	coBool SetBarrier(coTaskBarrier* barrier);
 	coUint32 Execute();
@@ -46,7 +47,7 @@ private:
 	std::atomic<coIntPtr> _barrier = 0;
 	std::function<void()> _function;
 	std::atomic<coUint32> _nbRefs = 0;
-	std::atomic<coUint32> _nbDependencies = 0;
+	std::atomic<coUint32> _nbDependencies = 1;
 };
 
 #include "coTask.inl"

@@ -103,13 +103,11 @@ void coTaskSystem::SetNbThreads(coInt nbRawThreads)
 	StartThreads(nbThreads);
 }
 
-coTaskHandle coTaskSystem::CreateTask(const char* name, std::function<void()>& function, coUint32 nbDependencies)
+coTaskHandle coTaskSystem::CreateTask(const std::function<void()>& func)
 {
 	coTask* task = new coTask();
-	coTaskHandle handle(task);
-	if (nbDependencies == 0)
-		QueueTask(*task);
-	return handle;
+	task->SetFunction(func);
+	return coTaskHandle(task);
 }
 
 coTaskBarrier* coTaskSystem::CreateBarrier()
