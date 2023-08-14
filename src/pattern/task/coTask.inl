@@ -4,6 +4,8 @@
 #include <debug/profiler/coProfile.h>
 #include <debug/log/coAssert.h>
 #include "coTaskBarrier.h"
+#include "coTask.h"
+#include "coTaskSetup.h"
 
 inline coUint32 coTask::Execute()
 {
@@ -61,6 +63,11 @@ inline coBool coTask::RemoveDependency(coUint nb)
 	coUint32 newValue = oldValue - nb;
 	coASSERT(oldValue > newValue); // Test wrap around, this is a logic error.
 	return newValue == 0;
+}
+
+inline void coTask::SetSetup(const coTaskSetup& setup)
+{
+	_priority = setup._priority;
 }
 
 inline void coTask::AddRef()

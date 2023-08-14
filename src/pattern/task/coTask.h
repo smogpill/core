@@ -4,6 +4,7 @@
 #include "math/scalar/coAtomicInt32.h"
 #include <lang/reflect/coTypeDecl.h>
 #include <debug/log/coAssert.h>
+#include "coTaskSetup.h"
 class coTaskContext;
 class coTaskBarrier;
 class coTaskManager;
@@ -11,17 +12,10 @@ class coTaskManager;
 class coTask
 {
 public:
-	enum Priority
-	{
-		HIGH,
-		DEFAULT,
-		LOW,
-
-		END
-	};
+	
 	virtual ~coTask() {}
-	void SetPriority(Priority priority_) { priority = priority; }
-	void SetFunction(const std::function<void()>& func) { _function = func; }
+	void SetFunction(const std::function<void()>& function) { _function = function; }
+	void SetSetup(const coTaskSetup& setup);
 	void AddRef();
 	void RemoveRef();
 	void AddDependency(coUint nb = 1);
@@ -43,7 +37,7 @@ private:
 	coTaskManager& GetSystem() const;
 
 	friend class coTaskScheduler;
-	Priority priority = Priority::DEFAULT;
+	coTaskPriority _priority = coTaskPriority::DEFAULT;
 	std::atomic<coIntPtr> _barrier = 0;
 	std::function<void()> _function;
 	std::atomic<coUint32> _nbRefs = 0;

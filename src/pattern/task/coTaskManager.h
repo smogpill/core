@@ -21,7 +21,7 @@ public:
 	~coTaskManager();
 
 	void SetNbThreads(coInt nbThreads);
-	coTaskHandle CreateTask(const std::function<void()>& func);
+	coTaskHandle CreateTask(const std::function<void()>& function, const coTaskSetup& setup);
 	coTaskBarrier* CreateBarrier();
 	void DestroyBarrier(coTaskBarrier& barrier);
 	void WaitForTasks(coTaskBarrier& barrier);
