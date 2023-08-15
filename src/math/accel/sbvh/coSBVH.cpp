@@ -52,58 +52,6 @@ void coSBVH::Build(const coArray<coVec3>& vertices_, const coArray<coUint32>& in
 	BuildRec(refsTemp, aabbs, 0);
 }
 
-void coSBVH::Split(coAabb* left_, coAabb* right_, const coUint32 triangleIdx_, coUint8 axis_, coFloat pos_)
-{
-	// Impl based on: https://github.com/lighttransport/nanort/blob/sbvh/nanort.h (MIT license)
-
-	coClear(*left_);
-	coClear(*right_);
-
-	coASSERT(triangleIdx_ != static_cast<coUint32>(-1));
-	const coUint32 aIdx = (*indices)[3 * triangleIdx_ + 0];
-	const coUint32 bIdx = (*indices)[3 * triangleIdx_ + 1];
-	const coUint32 cIdx = (*indices)[3 * triangleIdx_ + 2];
-
-	coVec3 v[3];
-	v[0] = (*vertices)[aIdx];
-	v[1] = (*vertices)[bIdx];
-	v[2] = (*vertices)[cIdx];
-
-	// Clip triangle to left and right aabb by processing all edges
-	coAabb leftAabb, rightAabb;
-	coVec3 v1 = v[2];
-	for (coUint32 i = 0; i < 3; i++)
-	{
-		coVec3 v0 = v1;
-		v1 = v[i];
-		coFloat fV0d = v0[axis_], v1d = v1[axis_];
-
-		if (fV0d <= pos_)
-		{
-			leftAabb = coMerge(leftAabb, v0); // This point is on left side
-		}
-		if (fV0d >= pos_)
-		{
-			rightAabb = coMerge(rightAabb, v0); // This point is on right side
-		}
-
-		if ((fV0d < pos_ && pos_ < v1d) || (v1d < pos_ && pos_ < fV0d))
-		{
-			// The edge crosses the splitting location
-			coASSERT((v1d - fV0d) != 0.0f);
-			coVec3 vC = v0 + (pos_ - fV0d) / (v1d - fV0d) * (v1 - v0);
-			leftAabb = coMerge(leftAabb, vC);
-			rightAabb = coMerge(rightAabb, vC);
-		}
-	}
-
-	// Clip against current bounds
-	const coAabb& bounds = aabbs[triangleIdx_];
-
-	(*left_) = coIntersect(leftAabb, bounds);
-	(*right_) = coIntersect(rightAabb, bounds);
-}
-
 coUint32 coSBVH::BuildRec(const coArray<Ref>& refs_, const coArray<coAabb>& primitives_, coUint32 depth_)
 {
 	// Impl based on: https://github.com/lighttransport/nanort/blob/sbvh/nanort.h (MIT license)
@@ -374,6 +322,60 @@ coUint32 coSBVH::BuildRec(const coArray<Ref>& refs_, const coArray<coAabb>& prim
 
 	return nodesOffset;
 }
+
+
+void coSBVH::Split(coAabb* left_, coAabb* right_, coUint32 triangleIdx_, coUint8 axis_, coFloat pos_)
+{
+	// Impl based on: https://github.com/lighttransport/nanort/blob/sbvh/nanort.h (MIT license)
+
+	coClear(*left_);
+	coClear(*right_);
+
+	coASSERT(triangleIdx_ != static_cast<coUint32>(-1));
+	const coUint32 aIdx = (*indices)[3 * triangleIdx_ + 0];
+	const coUint32 bIdx = (*indices)[3 * triangleIdx_ + 1];
+	const coUint32 cIdx = (*indices)[3 * triangleIdx_ + 2];
+
+	coVec3 v[3];
+	v[0] = (*vertices)[aIdx];
+	v[1] = (*vertices)[bIdx];
+	v[2] = (*vertices)[cIdx];
+
+	// Clip triangle to left and right aabb by processing all edges
+	coAabb leftAabb, rightAabb;
+	coVec3 v1 = v[2];
+	for (coUint32 i = 0; i < 3; i++)
+	{
+		coVec3 v0 = v1;
+		v1 = v[i];
+		coFloat fV0d = v0[axis_], v1d = v1[axis_];
+
+		if (fV0d <= pos_)
+		{
+			leftAabb = coMerge(leftAabb, v0); // This point is on left side
+		}
+		if (fV0d >= pos_)
+		{
+			rightAabb = coMerge(rightAabb, v0); // This point is on right side
+		}
+
+		if ((fV0d < pos_ && pos_ < v1d) || (v1d < pos_ && pos_ < fV0d))
+		{
+			// The edge crosses the splitting location
+			coASSERT((v1d - fV0d) != 0.0f);
+			coVec3 vC = v0 + (pos_ - fV0d) / (v1d - fV0d) * (v1 - v0);
+			leftAabb = coMerge(leftAabb, vC);
+			rightAabb = coMerge(rightAabb, vC);
+		}
+	}
+
+	// Clip against current bounds
+	const coAabb& bounds = aabbs[triangleIdx_];
+
+	(*left_) = coIntersect(leftAabb, bounds);
+	(*right_) = coIntersect(rightAabb, bounds);
+}
+
 
 void coSBVH::FindOverlaps(coDynamicArray<coUint32>& triangles_, const coAabb& aabb_) const
 {

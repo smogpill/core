@@ -49,7 +49,7 @@ private:
 	template <class COLLECTOR, class T>
 	coUint32 FindOverlapsImpl(COLLECTOR collector, const T& query) const;
 	coUint32 BuildRec(const coArray<Ref>& refs, const coArray<coAabb>& primitives, coUint32 depth);
-	void Split(coAabb* left, coAabb* right, const coUint32 primIndex, coUint8 axis, coFloat pos);
+	void Split(coAabb* left, coAabb* right, coUint32 triangleIdx, coUint8 axis, coFloat pos);
 	static coBool Overlap(const coAabb& a, const coAabb& b);
 	static coBool Overlap(const coAabb& a, const Ray2& b);
 	static coBool Overlap(const coAabb& a, const MovingAABB& b);
