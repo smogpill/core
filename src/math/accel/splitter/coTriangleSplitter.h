@@ -4,7 +4,7 @@
 #include <container/array/coDynamicArray.h>
 #include <math/vector/coVec3.h>
 
-// Basd on Jorrit Rouwe's JoltPhysics' TriangleSplitter
+// Based on Jorrit Rouwe's JoltPhysics' TriangleSplitter
 
 class coTriangleSplitter
 {
@@ -19,6 +19,10 @@ public:
 		coUint32 _begin;
 		coUint32 _end;
 	};
+
+	virtual coBool Split(const Range& inTriangles, Range& outLeft, Range& outRight) = 0;
+	coUint32 GetSortedTriangle(coUint32 index) const { return _sortedTriangles[index]; }
+
 protected:
 	coBool SplitInternal(const Range& inTriangles, coUint inDimension, coFloat inSplit, Range& outLeft, Range& outRight);
 

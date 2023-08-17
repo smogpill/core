@@ -5,7 +5,7 @@
 #include <container/array/coDynamicArray_f.h>
 #include <math/vector/coVec3_f.h>
 
-// Basd on Jorrit Rouwe's JoltPhysics' TriangleSplitter
+// Based on Jorrit Rouwe's JoltPhysics' TriangleSplitter
 
 coTriangleSplitter::coTriangleSplitter(const coArray<coVec3>& vertices, const coArray<coUint32>& indices)
 	: _vertices(vertices)
