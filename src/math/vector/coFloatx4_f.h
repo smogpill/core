@@ -94,6 +94,7 @@ coFORCE_INLINE coFloatx4 coMake_floatx4XYZ0(const coFloatx3& _xyz)
 	return coBitCast<coFloatx4>(_mm_and_ps(coBitCast<__m128>(_xyz), coBitCast<__m128>(__m128_MASK_XYZ)));
 }
 coFORCE_INLINE coFloatx4 coAbs(const coFloatx4& _a) { return coBitCast<coFloatx4>(_mm_andnot_ps(__m128_SIGN_MASK, coBitCast<__m128>(_a))); }
+coFORCE_INLINE coFloatx4 coSquare(const coFloatx4& a) { return a * a; }
 coFORCE_INLINE coFloatx4 coSquareRoot(const coFloatx4& _a) { return coBitCast<coFloatx4>(_mm_sqrt_ps(coBitCast<__m128>(_a))); }
 coFORCE_INLINE coFloatx4 coInvert(const coFloatx4& _a) { return coFloatx4_ONE / _a; }
 coFORCE_INLINE coFloatx4 coInvertApprox(const coFloatx4& _a) { return coBitCast<coFloatx4>(_mm_rcp_ps(coBitCast<__m128>(_a))); }

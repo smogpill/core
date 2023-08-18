@@ -19,7 +19,7 @@ using Base = void;
 #define coDEFINE_ATTRIBUTE(_attr_, ...)
 #endif*/
 
-#ifdef coCLANG_COMPILER
+#ifdef coCLANG
 #	define _coPUSH_DISABLE_OVERRIDE_WARNING() _Pragma("clang diagnostic push") \
 	_Pragma("clang diagnostic ignored \"-Winconsistent-missing-override\"")
 #	define _coPOP_DISABLE_OVERRIDE_WARNING() _Pragma("clang diagnostic pop")

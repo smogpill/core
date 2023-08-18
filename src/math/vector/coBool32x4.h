@@ -16,6 +16,8 @@ public:
 	coFORCE_INLINE coBool32x4() {}
 	coFORCE_INLINE coBool32x4(const coBool32x3& _xyz, coUint32 _w) : x(_xyz.x), y(_xyz.y), z(_xyz.z), w(_w) {}
 	coFORCE_INLINE coBool32x4(const coBool32x3& _xyz, coBool _w) : x(_xyz.x), y(_xyz.y), z(_xyz.z), w(_w?0xffffffff : 0) {}
+	coFORCE_INLINE coUint32 operator[](coUint i) const { return *reinterpret_cast<const coUint32*>(&x)[i]; }
+	coFORCE_INLINE coUint32& operator[](coUint i) { return *reinterpret_cast<coUint32*>(&x)[i]; }
 
 	coNO_INIT coUint32 x;
 	coNO_INIT coUint32 y;

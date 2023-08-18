@@ -7,6 +7,6 @@
 #include <initializer_list>
 #include <stdio.h>
 #include <inttypes.h>
-#ifdef coMSVC_COMPILER
+#ifdef coMSVC
 #include <intrin.h>
 #endif

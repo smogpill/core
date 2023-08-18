@@ -25,7 +25,7 @@ coFORCE_INLINE constexpr coUint32 coPow3(coUint32 _a) { return _a * _a * _a; }
 /// 0 returns 0
 coFORCE_INLINE coUint32 coHighestBitIndex(coUint32 _a)
 {
-#ifdef coMSVC_COMPILER
+#ifdef coMSVC
 	unsigned long ret;
 	_BitScanReverse(&ret, _a);
 	return ret;
@@ -37,7 +37,7 @@ coFORCE_INLINE coUint32 coHighestBitIndex(coUint32 _a)
 /// 0 returns 0
 coFORCE_INLINE coUint32 coLowestBitIndex(coUint32 _a)
 {
-#ifdef coMSVC_COMPILER
+#ifdef coMSVC
 	unsigned long ret;
 	_BitScanForward(&ret, _a);
 	return ret;
@@ -95,17 +95,19 @@ coFORCE_INLINE constexpr coBool coIsPowerOf2Or0(coUint32 _a)
 }
 
 /// http://gurmeet.net/puzzles/fast-bit-counting-routines/
-coFORCE_INLINE coUint32 coCountBits16(coUint32 _mask)
+coFORCE_INLINE coUint coCountBits16(coUint32 _mask)
 {
 	coASSERT(_mask < 0x00010000u);
 	return coUint8_popclut[_mask & 0xffu] + coUint8_popclut[_mask >> 8];
 }
 
 /// Check http://gurmeet.net/puzzles/fast-bit-counting-routines/
-coFORCE_INLINE coUint32 coCountBits32(coUint32 _mask)
+coFORCE_INLINE coUint coCountBits32(coUint32 _mask)
 {
-#ifdef coGCC
+#if defined(coGCC) || defined(coCLANG)
 	return __builtin_popcount(_mask);
+#elif defined(coMSVC)
+	return _mm_popcnt_u32(_mask);
 #else
 	coUint32 result = coUint8_popclut[_mask & 0xffu];
 	result += coUint8_popclut[(_mask >> 8) & 0xffu];
@@ -162,7 +164,7 @@ coFORCE_INLINE coUint32 coRevert(coUint32 _a)
 
 coFORCE_INLINE coUint32 coRotl(coUint32 _a, coUint _shift)
 {
-#ifdef coMSVC_COMPILER
+#ifdef coMSVC
 	return _rotl(_a, _shift);
 #else
 	return (_a << _shift) | (_a >> (32 - _shift));

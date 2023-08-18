@@ -5,7 +5,7 @@
 #include <math/scalar/coUint32_f.h>
 #include <math/scalar/coUint64_f.h>
 
-#ifdef coMSVC_COMPILER
+#ifdef coMSVC
 #define coBIG_CONSTANT(_n_) (_n_)
 #else
 #define coBIG_CONSTANT(_n_) (_n_##LLU)

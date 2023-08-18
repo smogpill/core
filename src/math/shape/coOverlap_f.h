@@ -59,7 +59,7 @@ coFORCE_INLINE coBool32x4 coOverlapSolid(const coAabb& aabb, const coPlane& plan
 }
 coBool coOverlapXY(const coSegment& _a, const coSegment& _b, coVec3& _hit);
 coFORCE_INLINE coBool32x3 coOverlapSolidSolid(const coAabb& a, const coAabb& b) { return coNot(coIsEmpty(coIntersect(a, b))); }
-coFORCE_INLINE coBool32x4 coOverlapSolidSolid(const coAabb& aabb, const coSphere& s) { return coDistance(aabb, s.centerAndRadius) <= coBroadcastW(s.centerAndRadius); }
+coFORCE_INLINE coBool32x4 coOverlapSolidSolid(const coAabb& aabb, const coSphere& s) { return coSquareDistance(aabb, s.centerAndRadius) <= coSquare(coBroadcastW(s.centerAndRadius)); }
 coFORCE_INLINE coBool coOverlapSolidHollow(const coAabb& aabb, const coSphere& s)
 {
 	// https://stackoverflow.com/questions/28343716/sphere-intersection-test-of-aabb

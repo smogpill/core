@@ -20,7 +20,7 @@ coFORCE_INLINE coUint32 coCountBits(coUint64 _mask)
 
 coFORCE_INLINE coUint64 coRotl(coUint64 _a, coUint _shift)
 {
-#ifdef coMSVC_COMPILER
+#ifdef coMSVC
 	return _rotl64(_a, _shift);
 #else
 	return (_a << _shift) | (_a >> (64 - _shift));

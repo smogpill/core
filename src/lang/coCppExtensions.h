@@ -55,7 +55,7 @@ coFORCE_INLINE const T& coMin(const T& a, const T& b)
 #define coCONCAT(_x_, _y_) _coCONCAT(_x_, _y_)
 
 
-#ifdef coMSVC_COMPILER
+#ifdef coMSVC
 #	define coPRAGMA_MESSAGE(_x_)	__pragma(message(__FILE__ "("  coSTRINGIFY(__LINE__) "): " _x_))
 #	define coNOEXCEPT				throw()
 #else
@@ -63,7 +63,7 @@ coFORCE_INLINE const T& coMin(const T& a, const T& b)
 #	define coNOEXCEPT				noexcept
 #endif
 
-#ifdef coCLANG_COMPILER
+#ifdef coCLANG
 #	define coMETA(...) [[__VA_ARGS__]] //__attribute__((annotate(#__VA_ARGS__)))
 #	define coNO_INIT [[gsl::suppress("type.6")]]
 #else
@@ -71,13 +71,13 @@ coFORCE_INLINE const T& coMin(const T& a, const T& b)
 #	define coNO_INIT [[gsl::suppress(type.6)]]
 #endif
 
-#ifdef coMSVC_COMPILER
+#ifdef coMSVC
 #	define coFORCE_SYMBOL_INCLUSION_ATTRIBUTE __declspec(dllexport)
 #else
 #	define coFORCE_SYMBOL_INCLUSION_ATTRIBUTE __attribute__ ((used))
 #endif
 
-#ifdef coMSVC_COMPILER
+#ifdef coMSVC
 #	define coRESTRICT __restrict
 #else
 #	define coRESTRICT __restrict__
