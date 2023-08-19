@@ -103,21 +103,16 @@ inline coFloatx4 coSquareDistance(const coAabb& a, const coAabb& b)
 	return coSquareLength(inner);
 }
 
-coFORCE_INLINE coFloatx4 coSquareDistance(const coAabb& a, const coVec3& p)
+coFORCE_INLINE coFloatx4 coDistance(const coAabb& a, const coVec3& p)
 {
 	const coVec3 center = (a.max + a.min) * 0.5f;
 	const coVec3 d = coAbs(p - center) - (a.max - a.min) * 0.5f;
-	return coSquareLength(coMax(d, 0.0f)) + coMin(coBitCast<coFloatx4>(coMax(d)), 0.0f);
-}
-
-coFORCE_INLINE coFloatx4 coDistance(const coAabb& a, const coVec3& p)
-{
-	return coSquareRoot(coSquareDistance(a, p));
+	return coSquareLength(coMax(d, 0.0f)) + coMin(coBitCast<coFloatx4>(coMax(d)), 0.0f);;
 }
 
 coFORCE_INLINE coFloatx4 coDistance(const coAabb& a, const coSphere& s)
 {
-	return coDistance(a, s.centerAndRadius) - coBroadcastW(s.centerAndRadius);
+	return coDistance(a, s.centerAndRadius) - coSplatW(s.centerAndRadius);
 }
 
 inline coFloatx4 coSquareDistancePointQuad(const coVec3& p, const coVec3& a, const coVec3& b, const coVec3& c, const coVec3& d)

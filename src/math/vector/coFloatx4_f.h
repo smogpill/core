@@ -61,10 +61,10 @@ template <coInt8 X, coInt8 Y, coInt8 Z, coInt8 W>
 coFORCE_INLINE coFloatx4 coShuffle(const coFloatx4& _a, const coFloatx4& _b) { return coBitCast<coFloatx4>(_mm_shuffle_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_b), _MM_SHUFFLE(W, Z, Y, X))); }
 template <coInt8 X, coInt8 Y, coInt8 Z, coInt8 W>
 coFORCE_INLINE coFloatx4 coShuffle(const coFloatx4& _a) { return coBitCast<coFloatx4>(_mm_shuffle_ps(coBitCast<__m128>(_a), coBitCast<__m128>(_a), _MM_SHUFFLE(W, Z, Y, X))); }
-coFORCE_INLINE coFloatx4 coBroadcastX(const coFloatx4& _a) { return coShuffle<0, 0, 0, 0>(_a, _a); }
-coFORCE_INLINE coFloatx4 coBroadcastY(const coFloatx4& _a) { return coShuffle<1, 1, 1, 1>(_a, _a); }
-coFORCE_INLINE coFloatx4 coBroadcastZ(const coFloatx4& _a) { return coShuffle<2, 2, 2, 2>(_a, _a); }
-coFORCE_INLINE coFloatx4 coBroadcastW(const coFloatx4& _a) { return coShuffle<3, 3, 3, 3>(_a, _a); }
+coFORCE_INLINE coFloatx4 coSplatX(const coFloatx4& _a) { return coShuffle<0, 0, 0, 0>(_a, _a); }
+coFORCE_INLINE coFloatx4 coSplatY(const coFloatx4& _a) { return coShuffle<1, 1, 1, 1>(_a, _a); }
+coFORCE_INLINE coFloatx4 coSplatZ(const coFloatx4& _a) { return coShuffle<2, 2, 2, 2>(_a, _a); }
+coFORCE_INLINE coFloatx4 coSplatW(const coFloatx4& _a) { return coShuffle<3, 3, 3, 3>(_a, _a); }
 coFORCE_INLINE coFloatx4 coSelect(const coFloatx4& _a, const coFloatx4& _b, const coInt32x4& _mask)
 {
 	return coBitCast<coFloatx4>(coBitCast<coInt32x4>(_b) ^ _mask & (coBitCast<coInt32x4>(_a) ^ coBitCast<coInt32x4>(_b)));

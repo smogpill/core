@@ -7,17 +7,21 @@
 #include <math/shape/coSphere.h>
 #include "../../vector/coUint32x4_f.h"
 #include "../../collision/overlap/aabox4/coOverlap_AABox4_AABox4.h"
+#include "../../collision/overlap/aabox4/coOverlap_AABox4_Sphere.h"
 #include <container/array/coDynamicArray.h>
 
 class coAABBH
 {
 public:
 	static constexpr coUint32 s_maxQueryStackSize = 4 * 1024;
+
 	void FindOverlaps(coDynamicArray<coUint32>& outTriangles, const coAabb& aabb) const;
 	void FindOverlaps(coDynamicArray<coUint32>& outTriangles, const coVec3& halfSize, const coRay& ray) const;
 	void FindOverlaps(coDynamicArray<coUint32>& outTriangles, const coRay& ray) const;
-	template <coUint MAX_NB, class Collector>
-	coUint32 FindOverlaps(Collector collector, const coSphere& sphere) const;
+	template <class Collector>
+	void FindOverlaps(Collector collector, const coAabb& aabox) const;
+	template <class Collector>
+	void FindOverlaps(Collector collector, const coSphere& sphere) const;
 	template <class Collector>
 	coUint32 FindAABBPathsAtOverlap(Collector collector, const coSphere& sphere) const;
 
@@ -52,7 +56,9 @@ void coAABBH::FindOverlaps(COLLECTOR collector, const coAabb& aabox) const
 	auto acceptNode = [](coInt) { return true; };
 	auto visitNodes = [aabox4](const coAABox4& bounds, coUint32x4& props, coInt stackTop) -> coUint
 	{
-		const coBool32x4 overlapped = coOverlap_AABox4_AABox4(bounds, aabox4);
+		const coBool32x4 overlapped = coOverlapSolidSolid(bounds, aabox4);
+		props = coSortTrueFirst(props, overlapped);
+		return coCountTrues(overlapped);
 	};
 	auto visitObjects = [](coUint32 objectsOffset, coUint32 nbObjects)
 	{
@@ -73,9 +79,9 @@ void coAABBH::FindOverlaps(COLLECTOR collector, const coSphere& sphere) const
 	auto acceptNode = [](coInt) { return true; };
 	auto visitNodes = [](const coAABox4& bounds, coUint32x4& props, coInt) -> coUint
 	{
-		const coVec3 center = (nodeAabb.max + nodeAabb.min) * 0.5f;
-		const coVec3 d = coAbs(p - center) - (a.max - a.min) * 0.5f;
-		return coLength(coMax(d, 0.0f)) + coMin(coBitCast<coFloatx4>(coMax(d)), 0.0f);
+		const coBool32x4 overlapped = coOverlapSolidSolid(bounds, sphere);
+		props = coSortTrueFirst(props, overlapped);
+		return coCountTrues(overlapped);
 	};
 	auto visitObjects = [](coUint32 objectsOffset, coUint32 nbObjects)
 	{
