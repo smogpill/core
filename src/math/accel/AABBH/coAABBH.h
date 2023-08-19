@@ -71,13 +71,13 @@ template <class COLLECTOR>
 void coAABBH::FindOverlaps(COLLECTOR collector, const coSphere& sphere) const
 {
 	auto acceptNode = [](coInt) { return true; };
-	auto visitNodes = [](const coAABox4& bounds, coUint32x4& props, coInt) -> coUint
+	auto visitNodes = [&sphere](const coAABox4& bounds, coUint32x4& props, coInt) -> coUint
 	{
 		const coBool32x4 overlapped = coOverlapSolidSolid(bounds, sphere);
 		props = coSortTrueFirst(props, overlapped);
 		return coCountTrues(overlapped);
 	};
-	auto visitObjects = [](coUint32 objectsOffset, coUint32 nbObjects)
+	auto visitObjects = [this, &collector](coUint32 objectsOffset, coUint32 nbObjects)
 	{
 		for (coUint i = 0; i < nbObjects; ++i)
 			collector(_objects[objectsOffset + i]);

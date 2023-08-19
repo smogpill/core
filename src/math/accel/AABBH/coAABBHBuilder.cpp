@@ -117,19 +117,15 @@ void coAABBHBuilder::BuildBounds(coAABBH& aabbh, const coTriangleSplitter& split
 coUint32 coAABBHBuilder::BuildObjectList(coAABBH& aabbh, const coTriangleSplitter& splitter, const Range& range) const
 {
 	if (range.GetSize() == 0)
-	{
 		return ~coUint32(0);
-	}
-	else
+	
+	coASSERT(range.GetSize() <= _maxNbObjectsPerLeaf);
+	coDynamicArray<coUint32>& objects = aabbh._objects;
+	const coUint32 objectOffset = objects.count;
+	for (coUint32 objectIdx = range._begin; objectIdx < range._end; ++objectIdx)
 	{
-		coASSERT(range.GetSize() <= _maxNbObjectsPerLeaf);
-		coDynamicArray<coUint32>& objects = aabbh._objects;
-		const coUint32 objectOffset = objects.count;
-		for (coUint32 objectIdx = range._begin; objectIdx < range._end; ++objectIdx)
-		{
-			const coUint32 objectID = splitter.GetSortedTriangle(objectIdx);
-			coPushBack(objects, objectID);
-		}
-		return (range.GetSize() << coAABBH::s_objectCountShift) | objectOffset;
+		const coUint32 objectID = splitter.GetSortedTriangle(objectIdx);
+		coPushBack(objects, objectID);
 	}
+	return (range.GetSize() << coAABBH::s_objectCountShift) | objectOffset;
 }
