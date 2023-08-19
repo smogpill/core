@@ -4,7 +4,7 @@
 #include "coTriangleSplitter.h"
 #include <container/array/coDynamicArray_f.h>
 #include <math/vector/coVec3_f.h>
-#include <math/shape/coAabb.h>
+#include <math/shape/coAabb_f.h>
 
 // Based on Jorrit Rouwe's JoltPhysics' TriangleSplitter
 
@@ -39,10 +39,10 @@ void coTriangleSplitter::SplitNoFail(const Range& triangles, Range& outLeft, Ran
 	}
 }
 
-coAabb coTriangleSplitter::GetObjectAABB(coUint32 objectIdx) const
+coAabb coTriangleSplitter::GetObjectAABB(coUint32 objectID) const
 {
 	coAabb aabb;
-	const coUint32 indexBegin = objectIdx * 3;
+	const coUint32 indexBegin = objectID * 3;
 	const coUint32 indexEnd = indexBegin + 3;
 	for (coUint32 index = indexBegin; index != indexEnd; ++index)
 	{

@@ -3,6 +3,7 @@
 #pragma once
 #include <container/array/coDynamicArray.h>
 #include <math/vector/coVec3.h>
+#include <math/shape/coAabb.h>
 
 // Based on Jorrit Rouwe's JoltPhysics' TriangleSplitter
 
@@ -22,8 +23,10 @@ public:
 
 	void SplitNoFail(const Range& triangles, Range& outLeft, Range& outRight);
 	virtual coBool Split(const Range& inTriangles, Range& outLeft, Range& outRight) = 0;
+
+	Range GetInitialRange() const { return Range(0, _sortedTriangles.count); }
 	coUint32 GetSortedTriangle(coUint32 index) const { return _sortedTriangles[index]; }
-	coAabb GetObjectAABB(coUint32 index) const;
+	coAabb GetObjectAABB(coUint32 objectID) const;
 
 protected:
 	coBool SplitInternal(const Range& inTriangles, coUint inDimension, coFloat inSplit, Range& outLeft, Range& outRight);

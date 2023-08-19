@@ -7,50 +7,68 @@
 
 void coAABBHBuilder::Build(coAABBH& aabbh, coTriangleSplitter& splitter)
 {
-	aabbh._rootProps = 0;
+	aabbh.Clear();
 	using Range = coTriangleSplitter::Range;
-	coDynamicArray<Range> stack;
-	coDynamicArray<Node> nodes;
-	coDynamicArray<coUint32> objects;
-	coDynamicArray<coUint32> parents;
-	while (true)
-	{
-		const Range& range = coPopBack(stack);
-		Range left, right;
-		splitter.SplitNoFail(range, left, right);
-		Range ranges[4];
-		splitter.SplitNoFail(left, ranges[0], ranges[1]);
-		splitter.SplitNoFail(right, ranges[1], ranges[2]);
 
-		Node node;
-		for (coUint childIdx = 0; childIdx < 4; ++childIdx)
+	const Range initialRange = splitter.GetInitialRange();
+	if (initialRange.GetSize() <= _maxNbObjectsPerLeaf)
+	{
+		aabbh._rootProps = BuildObjectList(aabbh, splitter, initialRange);
+	}
+	else
+	{
+		coDynamicArray<Node>& nodes = aabbh._nodes;
+		coDynamicArray<coUint32>& objects = aabbh._objects;
+		struct Work
 		{
-			const Range& childRange = ranges[childIdx];
-			const coUint32 nbObjects = childRange.GetSize();
-			if (nbObjects > _maxNbObjectsPerLeaf)
+			Range _range;
+			coUint32 _nodeIdx;
+		};
+		coDynamicArray<Work> stack;
+
+		// Push first node
+		{
+			coPushBack(nodes, Node());
+			Work work;
+			work._nodeIdx = 0;
+			work._range = initialRange;
+			coPushBack(stack, work);
+		}
+
+		while (true)
+		{
+			const Work& work = coPopBack(stack);
+			Range left, right;
+			splitter.SplitNoFail(work._range, left, right);
+			Range ranges[4];
+			splitter.SplitNoFail(left, ranges[0], ranges[1]);
+			splitter.SplitNoFail(right, ranges[1], ranges[2]);
+
+			Node node;
+			for (coUint childIdx = 0; childIdx < 4; ++childIdx)
 			{
-				const coUint32 childNodeIdx = nodes.count;
-				coPushBack(nodes, Node());
-				node._props[childIdx] = childNodeIdx;
-				coPushBack(stack, childRange);
-			}
-			else
-			{
-				const coUint32 objectOffset = objects.count;
-				node._props[childIdx] = (nbObjects << coAABBH::s_objectCountShift) | objectOffset; 
-				for (coUint32 objectIdx = childRange._begin; objectIdx < childRange._end; ++objectIdx)
+				const Range& childRange = ranges[childIdx];
+				const coUint32 nbObjects = childRange.GetSize();
+				if (nbObjects > _maxNbObjectsPerLeaf)
 				{
-					const coUint32 objectID = splitter.GetSortedTriangle(objectIdx);
-					coPushBack(objects, objectID);
+					const coUint32 childNodeIdx = nodes.count;
+					coPushBack(nodes, Node());
+					node._props[childIdx] = childNodeIdx;
+					Work childWork;
+					childWork._nodeIdx = childNodeIdx;
+					childWork._range = childRange;
+					coPushBack(stack, childWork);
+				}
+				else
+				{
+					node._props[childIdx] = BuildObjectList(aabbh, splitter, childRange);
 				}
 			}
 		}
 	}
 
-	// No std::move because we want arrays to shrink their allocations.
-	aabbh._nodes = nodes;
-	aabbh._objects = objects;
-
+	coShrinkToFit(aabbh._nodes);
+	coShrinkToFit(aabbh._objects);
 	BuildBounds(aabbh, splitter);
 }
 
@@ -94,4 +112,24 @@ void coAABBHBuilder::BuildBounds(coAABBH& aabbh, const coTriangleSplitter& split
 
 	// Build the root aabb
 	aabbh._rootAabb = buildAABB(aabbh._rootProps);
+}
+
+coUint32 coAABBHBuilder::BuildObjectList(coAABBH& aabbh, const coTriangleSplitter& splitter, const Range& range) const
+{
+	if (range.GetSize() == 0)
+	{
+		return ~coUint32(0);
+	}
+	else
+	{
+		coASSERT(range.GetSize() <= _maxNbObjectsPerLeaf);
+		coDynamicArray<coUint32>& objects = aabbh._objects;
+		const coUint32 objectOffset = objects.count;
+		for (coUint32 objectIdx = range._begin; objectIdx < range._end; ++objectIdx)
+		{
+			const coUint32 objectID = splitter.GetSortedTriangle(objectIdx);
+			coPushBack(objects, objectID);
+		}
+		return (range.GetSize() << coAABBH::s_objectCountShift) | objectOffset;
+	}
 }

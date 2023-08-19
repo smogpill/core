@@ -2,7 +2,7 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #pragma once
 #include "coAABBH.h"
-class coTriangleSplitter;
+#include "../splitter/coTriangleSplitter.h"
 
 class coAABBHBuilder
 {
@@ -11,8 +11,10 @@ public:
 
 private:
 	using Node = coAABBH::Node;
+	using Range = coTriangleSplitter::Range;
 
 	void BuildBounds(coAABBH& aabbh, const coTriangleSplitter& splitter);
+	coUint32 BuildObjectList(coAABBH& aabbh, const coTriangleSplitter& splitter, const Range& range) const;
 
 	/// 4: good for speed, 8: good for memory
 	coUint _maxNbObjectsPerLeaf = 4;
