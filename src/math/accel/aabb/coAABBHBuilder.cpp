@@ -88,7 +88,7 @@ void coAABBHBuilder::BuildBounds(coAABBH& aabbh, const coTriangleSplitter& split
 		}
 		else
 		{
-			const coUint32 objectsOffset = props & ~(coAABBH::s_objectCountMask << coAABBH::s_objectCountShift);
+			const coUint32 objectsOffset = props & coAABBH::s_offsetMask;
 			for (coUint32 o = 0; o < nbObjects; ++o)
 			{
 				const coUint32 objectID = splitter.GetSortedTriangle(objects[objectsOffset + o]);

@@ -31,7 +31,7 @@ private:
 
 	static constexpr coUint32 s_objectCountBits = 4;
 	static constexpr coUint32 s_objectCountShift = 28;
-	static constexpr coUint32 s_objectCountMask = (1 << s_objectCountBits) - 1;
+	static constexpr coUint32 s_objectCountMask = (1 << s_objectCountShift) - 1;
 	static constexpr coUint32 s_offsetBits = 28;
 	static constexpr coUint32 s_offsetMask = (1 << s_offsetBits) - 1;
 
@@ -109,9 +109,9 @@ void coAABBH::WalkTree(const AcceptNode& acceptNode, const NodesVisitor& visitNo
 			coStore(childProps, &stack[top]);
 			top += nb;
 		}
-		else
+		else if (props != ~~coUint32(0))
 		{
-			const coUint32 objectsOffset = props & ~(s_objectCountMask << s_objectCountShift);
+			const coUint32 objectsOffset = props & s_offsetMask;
 			visitObjects(objectsOffset, nbObjects);
 		}
 

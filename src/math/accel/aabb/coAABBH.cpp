@@ -16,8 +16,8 @@ void coAABBH::FindOverlaps(coDynamicArray<coUint32>& objects, const coAabb& aabb
 {
 	auto collector = [&objects](coUint32 objectIdx)
 	{
-		if (!coContains(objects, objectIdx))
-			coPushBack(objects, objectIdx);
+		coASSERT(!coContains(objects, objectIdx));
+		coPushBack(objects, objectIdx);
 	};
 	FindOverlaps(collector, aabb);
 }
@@ -43,8 +43,8 @@ void coAABBH::FindOverlaps(coDynamicArray<coUint32>& objects, const coRay& ray) 
 		for (coUint i = 0; i < nbObjects; ++i)
 		{
 			const coUint32 objectIdx = _objects[objectsOffset + i];
-			if (!coContains(objects, objectIdx))
-				coPushBack(objects, objectIdx);
+			coASSERT(!coContains(objects, objectIdx));
+			coPushBack(objects, objectIdx);
 		}
 		return true;
 	};
