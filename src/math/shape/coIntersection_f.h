@@ -34,7 +34,7 @@ coFORCE_INLINE coBool coIntersect(const coPlane& plane, const coSegment& seg, co
 {
 	const coVec3 delta = seg.p1 - seg.p0;
 	// Ok even when denominator is zero, no need for tests
-	const coFloatx4 t = (-coBroadcastW(plane.normalAndDistance) - coDot(coVec3(plane.normalAndDistance), seg.p0)) / coDot(coVec3(plane.normalAndDistance), delta);
+	const coFloatx4 t = (-coSplatW(plane.normalAndDistance) - coDot(coVec3(plane.normalAndDistance), seg.p0)) / coDot(coVec3(plane.normalAndDistance), delta);
 	if (t >= 0.0f && t <= 1.0f)
 	{
 		p = seg.p0 + t * delta;

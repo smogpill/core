@@ -57,9 +57,9 @@ template <coInt8 X, coInt8 Y, coInt8 Z>
 coFORCE_INLINE coFloatx3 coShuffle(const coFloatx3& _a, const coFloatx3& _b) { return coBitCast<coFloatx3>(coShuffle<X, Y, Z, 3>(coBitCast<coFloatx4>(_a), coBitCast<coFloatx4>(_b))); }
 template <coInt8 X, coInt8 Y, coInt8 Z>
 coFORCE_INLINE coFloatx3 coShuffle(const coFloatx3& _a) { return coBitCast<coFloatx3>(coShuffle<X, Y, Z, 3>(coBitCast<coFloatx4>(_a), coBitCast<coFloatx4>(_a))); }
-coFORCE_INLINE coFloatx3 coBroadcastX(const coFloatx3& _a) { return coBitCast<coFloatx3>(coShuffle<0, 0, 0, 0>(coBitCast<coFloatx4>(_a))); }
-coFORCE_INLINE coFloatx3 coBroadcastY(const coFloatx3& _a) { return coBitCast<coFloatx3>(coShuffle<1, 1, 1, 1>(coBitCast<coFloatx4>(_a))); }
-coFORCE_INLINE coFloatx3 coBroadcastZ(const coFloatx3& _a) { return coBitCast<coFloatx3>(coShuffle<2, 2, 2, 2>(coBitCast<coFloatx4>(_a))); }
+coFORCE_INLINE coFloatx3 coSplatX(const coFloatx3& _a) { return coBitCast<coFloatx3>(coShuffle<0, 0, 0, 0>(coBitCast<coFloatx4>(_a))); }
+coFORCE_INLINE coFloatx3 coSplatY(const coFloatx3& _a) { return coBitCast<coFloatx3>(coShuffle<1, 1, 1, 1>(coBitCast<coFloatx4>(_a))); }
+coFORCE_INLINE coFloatx3 coSplatZ(const coFloatx3& _a) { return coBitCast<coFloatx3>(coShuffle<2, 2, 2, 2>(coBitCast<coFloatx4>(_a))); }
 coFORCE_INLINE coFloatx3 coSelectXY(coFloatx3 a) { a.z = 0.0f; return a; }
 coFORCE_INLINE coFloatx3 coAbs(const coFloatx3& _a) { return coBitCast<coFloatx3>(coAbs(coBitCast<coFloatx4>(_a))); }
 coFORCE_INLINE coFloatx3 coSquareRoot(const coFloatx3& _a) { return coBitCast<coFloatx3>(coSquareRoot(coBitCast<coFloatx4>(_a))); }
@@ -71,15 +71,15 @@ coFORCE_INLINE coFloatx3 coPow2(const coFloatx3& _a) { return  _a * _a; }
 coFORCE_INLINE coFloatx3 coPow4(const coFloatx3& _a) { return coPow2(_a * _a); }
 coFORCE_INLINE coFloatx3 coDenullify(const coFloatx3& _a) { return _a + coMake_Floatx3(+1.0e-037f); }
 coFORCE_INLINE coFloatx3 coMin(const coFloatx3& _a, const coFloatx3& _b) { return coBitCast<coFloatx3>(coMin(coBitCast<coFloatx4>(_a), coBitCast<coFloatx4>(_b))); }
-coFORCE_INLINE coFloatx3 coMin(const coFloatx3& _a) { return coMin(coBroadcastX(_a), coMin(coBroadcastY(_a), coBroadcastZ(_a))); }
+coFORCE_INLINE coFloatx3 coMin(const coFloatx3& _a) { return coMin(coSplatX(_a), coMin(coSplatY(_a), coSplatZ(_a))); }
 coFORCE_INLINE coFloatx3 coMax(const coFloatx3& _a, const coFloatx3& _b) { return coBitCast<coFloatx3>(coMax(coBitCast<coFloatx4>(_a), coBitCast<coFloatx4>(_b))); }
-coFORCE_INLINE coFloatx3 coMax(const coFloatx3& _a) { return coMax(coBroadcastX(_a), coMax(coBroadcastY(_a), coBroadcastZ(_a))); }
+coFORCE_INLINE coFloatx3 coMax(const coFloatx3& _a) { return coMax(coSplatX(_a), coMax(coSplatY(_a), coSplatZ(_a))); }
 coFORCE_INLINE coFloatx3 coMaxWith0(const coFloatx3& _a) { return coBitCast<coFloatx3>(coMaxWith0(coBitCast<coFloatx4>(_a))); }
 coFORCE_INLINE coFloatx3 coClamp(const coFloatx3& _a, const coFloatx3& _min, const coFloatx3& _max) { return coMin(coMax(_a, _min), _max); }
 coFORCE_INLINE coFloatx3 coClamp01(const coFloatx3& _a) { return coBitCast<coFloatx3>(coClamp01(coBitCast<coFloatx4>(_a))); }
 coFORCE_INLINE coBool32x3 coNearEqual(const coFloatx3& _a, const coFloatx3& _b, const coFloatx3& _epsilon = coFloatx3(coFloat_NearEqualDefaultEpsilon)) { return coAbs(_b - _a) < _epsilon; }
 coFORCE_INLINE coBool32x3 coNearEqual0(const coFloatx3& _a, const coFloatx3& _epsilon = coFloatx3(coFloat_NearEqualDefaultEpsilon)) { return coAbs(_a) < _epsilon; }
-coFORCE_INLINE coBool32x3 coAreXYZEqual(const coFloatx3& _a) { const coFloatx3 x = coBroadcastX(_a); return x == coBroadcastY(_a) && x == coBroadcastZ(_a); }
+coFORCE_INLINE coBool32x3 coAreXYZEqual(const coFloatx3& _a) { const coFloatx3 x = coSplatX(_a); return x == coSplatY(_a) & x == coSplatZ(_a); }
 coFORCE_INLINE coFloatx3 coSin(const coFloatx3& _a) { return coBitCast<coFloatx3>(coSin(coBitCast<coFloatx4>(_a))); }
 coFORCE_INLINE coFloatx3 coCos(const coFloatx3& _a) { return coBitCast<coFloatx3>(coCos(coBitCast<coFloatx4>(_a))); }
 coFORCE_INLINE coFloatx3 coMod(coFloatx3 _a, coFloatx3 _b) { return coFloatx3(coMod(_a.x, _b.x), coMod(_a.y, _b.y), coMod(_a.z, _b.z)); }

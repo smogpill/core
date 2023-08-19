@@ -24,22 +24,21 @@ public:
 	void FindOverlaps(Collector collector, const coSphere& sphere) const;
 	template <class Collector>
 	coUint32 FindAABBPathsAtOverlap(Collector collector, const coSphere& sphere) const;
-
 	template <class AcceptNode, class VisitNodes, class VisitObjects>
 	void WalkTree(const AcceptNode& acceptNode, const VisitNodes& visitNodes, const VisitObjects& visitObjects) const;
 
 private:
 	friend class coAABBTreeBuilder;
 
-	constexpr coUint32 s_objectCountBits = 4;
-	constexpr coUint32 s_objectCountShift = 28;
-	constexpr coUint32 s_objectCountMask = (1 << s_objectCountBits) - 1;
-	constexpr coUint32 s_offsetBits = 28;
-	constexpr coUint32 s_offsetMask = (1 << s_offsetBits) - 1;
+	static constexpr coUint32 s_objectCountBits = 4;
+	static constexpr coUint32 s_objectCountShift = 28;
+	static constexpr coUint32 s_objectCountMask = (1 << s_objectCountBits) - 1;
+	static constexpr coUint32 s_offsetBits = 28;
+	static constexpr coUint32 s_offsetMask = (1 << s_offsetBits) - 1;
 
 	struct Node
 	{
-		coAABox4 _bounds; // TOOD: Should use half instead of float later
+		coAABox4 _bounds; // TODO: Should use half instead of float later
 		coUint32x4 _props;
 	};
 
@@ -72,7 +71,7 @@ void coAABBH::FindOverlaps(COLLECTOR collector, const coAabb& aabox) const
 template <class COLLECTOR>
 void coAABBH::FindOverlaps(COLLECTOR collector, const coSphere& sphere) const
 {
-	const coFloatx4 radius = coBroadcastW(sphere.centerAndRadius);
+	const coFloatx4 radius = coSplatW(sphere.centerAndRadius);
 	coAabb aabb(-radius, +radius);
 	aabb += coVec3(sphere.centerAndRadius);
 	const coAABox4 aabox4(aabb);
@@ -95,7 +94,7 @@ void coAABBH::FindOverlaps(COLLECTOR collector, const coSphere& sphere) const
 template <class AcceptNode, class NodesVisitor, class ObjectsVisitor>
 void coAABBH::WalkTree(const AcceptNode& acceptNode, const NodesVisitor& visitNodes, const ObjectsVisitor& visitObjects) const
 {
-	if (nodes.count == 0) [[unlikely]]
+	if (_nodes.count == 0) [[unlikely]]
 		return;
 
 	coUint32 stack[s_maxQueryStackSize];
@@ -108,16 +107,17 @@ void coAABBH::WalkTree(const AcceptNode& acceptNode, const NodesVisitor& visitNo
 		const coUint32 nbObjects = props >> s_objectCountShift;
 		if (nbObjects == 0) [[likely]]
 		{
-			coUint32x4 props = node._props;
-			const coUint nb = visitNodes(node._bounds, props, top);
+			const Node& node = _nodes[props];
+			coUint32x4 childProps = node._props;
+			const coUint nb = visitNodes(node._bounds, childProps, top);
 			coASSERT(nb + 4 <= coARRAY_SIZE(stack));
-			coStore(props, &stack[top]);
+			coStore(childProps, &stack[top]);
 			top += nb;
 		}
 		else
 		{
 			const coUint32 objectsOffset = props & ~(s_objectCountMask << s_objectCountShift);
-			visitObjects(objectsOffsets, nbObjects);
+			visitObjects(objectsOffset, nbObjects);
 		}
 
 		do

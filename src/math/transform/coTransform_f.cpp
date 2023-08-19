@@ -7,6 +7,6 @@
 coBool32x4 coIsValid(const coTransform& _this)
 {
 	return coIsValid(_this.rotation)
-		&& coBool32x4(coIsValid(_this.translation), true)
-		&& coBool32x4(coIsValid(_this.scale), true);
+		& coBool32x4(coIsValid(_this.translation), true)
+		& coBool32x4(coIsValid(_this.scale), true);
 }

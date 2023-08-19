@@ -4,4 +4,4 @@
 #include "coAABox4.h"
 
 const coAABox4 coAABox4::s_empty = coAABox4();
-const coAABox4 coAABox4::s_zero = { coFloatx4(0.0f), coFloatx4(0.0f), coFloatx4(0.0f), coFloatx4(0.0f), coFloatx4(0.0f), coFloatx4(0.0f) };
+const coAABox4 coAABox4::s_zero = { coVec3x4(0.0f), coVec3x4(0.0f) };

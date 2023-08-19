@@ -16,7 +16,7 @@ coFORCE_INLINE coBool32x3 coIsValid(const coPlane& this_)
 coFORCE_INLINE void coSetFromNormalAndSignedDistance(coPlane& this_, const coVec3& normal, const coFloatx4& dist)
 {
 	coASSERT(coAreXYZWEqual(dist));
-	this_.normalAndDistance = coSelectXYZ(reinterpret_cast<const coFloatx4&>(normal), -coBroadcastX(dist));
+	this_.normalAndDistance = coSelectXYZ(reinterpret_cast<const coFloatx4&>(normal), -coSplatX(dist));
 	coASSERT(coIsValid(this_));
 }
 

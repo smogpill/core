@@ -153,7 +153,7 @@ coFORCE_INLINE coBool coSBVH::Overlap(const coAabb& a, const Ray2& ray)
 template <coUint MAX_NB, class COLLECTOR>
 coUint32 coSBVH::FindOverlaps(COLLECTOR collector, const coSphere& sphere) const
 {
-	const coFloatx4 radius = coBroadcastW(sphere.centerAndRadius);
+	const coFloatx4 radius = coSplatW(sphere.centerAndRadius);
 	const coAabb aabb(coVec3(sphere.centerAndRadius) - radius, coVec3(sphere.centerAndRadius) + radius);
 	coUint triangleIndices[MAX_NB];
 	coUint nb = 0;
@@ -175,7 +175,7 @@ coUint32 coSBVH::FindOverlaps(COLLECTOR collector, const coSphere& sphere) const
 template <class COLLECTOR>
 coUint32 coSBVH::FindAABBPathsAtOverlap(COLLECTOR collector, const coSphere& sphere) const
 {
-	const coFloatx4 radius = coBroadcastW(sphere.centerAndRadius);
+	const coFloatx4 radius = coSplatW(sphere.centerAndRadius);
 	const coAabb aabb(coVec3(sphere.centerAndRadius) - radius, coVec3(sphere.centerAndRadius) + radius);
 	if (nodes.count == 0)
 		return 0;

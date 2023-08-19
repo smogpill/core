@@ -24,7 +24,7 @@ void _coPrepareTriangulate(const coPolygon3& poly, coDynamicArray<coUint32>& tri
 
 coFORCE_INLINE coBool _coIsCornerConvexXY(const coVec3& a, const coVec3& b, const coVec3& c)
 {
-	return !coAreAllFalse(coBroadcastZ(coGetRawNormal(a, b, c)) >= coFloatx3(0.0f));
+	return !coAreAllFalse(coSplatZ(coGetRawNormal(a, b, c)) >= coFloatx3(0.0f));
 }
 coFORCE_INLINE coBool _coIsInsideTriangleXY(const coVec3& a, const coVec3& b, const coVec3& c, const coVec3& p)
 {

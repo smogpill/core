@@ -4,19 +4,22 @@
 #include "coUint32x4.h"
 #include "coBool32x4_f.h"
 
+coFORCE_INLINE coUint32x4 operator^(const coUint32x4& a, const coUint32x4& b) { return coBitCast<coUint32x4>(_mm_xor_ps(coBitCast<__m128>(a), coBitCast<__m128>(b))); }
+coFORCE_INLINE coUint32x4 operator&(const coUint32x4& a, const coUint32x4& b) { return coBitCast<coUint32x4>(_mm_and_ps(coBitCast<__m128>(a), coBitCast<__m128>(b))); }
+coFORCE_INLINE coUint32x4 operator|(const coUint32x4& a, const coUint32x4& b) { return coBitCast<coUint32x4>(_mm_or_ps(coBitCast<__m128>(a), coBitCast<__m128>(b))); }
 coFORCE_INLINE void coStore(const coUint32x4& v, coUint32* dest)
 {
 	_mm_storeu_si128(reinterpret_cast<__m128i*>(dest), coBitCast<__m128i>(v));
 }
 
-coFORCE_INLINE void coLoad(const coUint32x4& v, const coUint32* source)
+coFORCE_INLINE void coLoad(coUint32x4& v, const coUint32* source)
 {
-	v = coBitCast<coUint32x4>(_mm_loadu_si128(const reinterpret_cast<__m128i*>(source)));
+	v = coBitCast<coUint32x4>(_mm_loadu_si128(reinterpret_cast<const __m128i*>(source)));
 }
 
 coFORCE_INLINE coUint32x4 coSelect(const coUint32x4& a, const coUint32x4& b, const coBool32x4& mask)
 {
-	return coBitCast<coUint32x4>(b ^ mask & (a ^ b));
+	return coBitCast<coUint32x4>(b ^ coUint32x4(mask) & (a ^ b));
 }
 
 template <int X, int Y, int Z, int W>

@@ -13,9 +13,9 @@ coMat3 coGetPolarDecompositionRotation(const coMat3& M, coFloat tolerance);
 
 coFORCE_INLINE coVec3 operator* (const coMat3& this_, const coVec3& a)
 {
-	const coFloatx3 ax = coBroadcastX(a);
-	const coFloatx3 ay = coBroadcastY(a);
-	const coFloatx3 az = coBroadcastZ(a);
+	const coFloatx3 ax = coSplatX(a);
+	const coFloatx3 ay = coSplatY(a);
+	const coFloatx3 az = coSplatZ(a);
 	const coFloatx3 mx = this_.c0 * ax;
 	const coFloatx3 my = this_.c1 * ay;
 	const coFloatx3 mz = this_.c2 * az;
@@ -213,8 +213,8 @@ coFORCE_INLINE coFloatx3 coOneNorm(const coMat3& m)
 
 coFORCE_INLINE coFloatx3 coInfNorm(const coMat3& m)
 {
-	const coFloatx3 a = coAbs(coBroadcastX(m.c0)) + coAbs(coBroadcastX(m.c1)) + coAbs(coBroadcastX(m.c2));
-	const coFloatx3 b = coAbs(coBroadcastY(m.c0)) + coAbs(coBroadcastY(m.c1)) + coAbs(coBroadcastY(m.c2));
-	const coFloatx3 c = coAbs(coBroadcastZ(m.c0)) + coAbs(coBroadcastZ(m.c1)) + coAbs(coBroadcastZ(m.c2));
+	const coFloatx3 a = coAbs(coSplatX(m.c0)) + coAbs(coSplatX(m.c1)) + coAbs(coSplatX(m.c2));
+	const coFloatx3 b = coAbs(coSplatY(m.c0)) + coAbs(coSplatY(m.c1)) + coAbs(coSplatY(m.c2));
+	const coFloatx3 c = coAbs(coSplatZ(m.c0)) + coAbs(coSplatZ(m.c1)) + coAbs(coSplatZ(m.c2));
 	return coMax(a, coMax(b, c));
 }

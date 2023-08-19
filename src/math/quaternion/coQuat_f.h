@@ -93,7 +93,7 @@ coFORCE_INLINE coQuat _coRotation(const coVec3& _from, const coVec3& _to, coFloa
 	if (w > 1e-6f * _fromToNorm)
 	{
 		const coFloatx3 axis = coCross(_from, _to);
-		const coFloatx4 q = coSelectXYZ(coBitCast<coFloatx4>(axis), coBroadcastX(coBitCast<coFloatx4>(w)));
+		const coFloatx4 q = coSelectXYZ(coBitCast<coFloatx4>(axis), coSplatX(coBitCast<coFloatx4>(w)));
 		return coNormalize(coBitCast<coQuat>(q));
 	}
 	else
@@ -140,13 +140,13 @@ coFORCE_INLINE coQuat operator*(const coQuat& a, const coQuat& b)
 		const coFloatx4 abcd = a;
 		const coFloatx4 xyzw = b;
 
-		const coFloatx4 t0 = coBroadcastW(abcd);
+		const coFloatx4 t0 = coSplatW(abcd);
 		const coFloatx4 t1 = coShuffle<1, 0, 3, 2>(xyzw);
 
-		const coFloatx4 t3 = coBroadcastX(abcd);
+		const coFloatx4 t3 = coSplatX(abcd);
 		const coFloatx4 t4 = coShuffle<2, 3, 0, 1>(xyzw);
 
-		const coFloatx4 t5 = coBroadcastY(abcd);
+		const coFloatx4 t5 = coSplatY(abcd);
 		const coFloatx4 t6 = coShuffle<1, 3, 0, 2>(xyzw);
 
 		// [d,d,d,d] * [z,w,x,y] = [dz,dw,dx,dy]
@@ -159,7 +159,7 @@ coFORCE_INLINE coQuat operator*(const coQuat& a, const coQuat& b)
 		const coFloatx4 m2 = t5 * t6;
 
 		// [c,c,c,c] * [w,z,x,y] = [cw,cz,cx,cy]
-		const coFloatx4 t7 = coBroadcastZ(abcd);
+		const coFloatx4 t7 = coSplatZ(abcd);
 		const coFloatx4 t8 = coShuffle<1, 0, 2, 3>(xyzw);
 		const coFloatx4 m3 = t7 * t8;
 
@@ -220,7 +220,7 @@ coFORCE_INLINE coVec3 coRotateVector(const coQuat& _this, const coVec3& _vec)
 	// https://blog.molecular-matters.com/2013/05/24/a-faster-quaternion-vector-multiplication/
 
 	const coVec3 q = coBitCast<coVec3>(_this);
-	const coFloatx3 w = coFloatx3(coBroadcastW(_this));
+	const coFloatx3 w = coFloatx3(coSplatW(_this));
 	//return 2.0f * coDot(q, _vec) * q + (w*w - coDot(q, q)) * _vec + 2.0f * w * coCross(q, _vec);
 	const coVec3 t = 2.0f * coCross(q, _vec);
 	return _vec + w * t + coCross(q, t);

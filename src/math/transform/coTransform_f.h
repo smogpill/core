@@ -110,7 +110,7 @@ coFORCE_INLINE coBool32x4 coNearEqual(const coTransform& _a, const coTransform& 
 	const coBool32x4 r = coNearEqual(_a.rotation, _b.rotation, _epsilon);
 	const coBool32x4 t = coBitCast<coBool32x4>(coBitCast<coInt32x4>(coNearEqual(_a.translation, _b.translation, _epsilon)) | coInt32x4_MASK_W);
 	const coBool32x4 s = coBitCast<coBool32x4>(coBitCast<coInt32x4>(coNearEqual(_a.scale, _b.scale, _epsilon)) | coInt32x4_MASK_W);
-	return r && t && s;
+	return r & t & s;
 }
 
 coFORCE_INLINE coBinaryOutputStream& operator<<(coBinaryOutputStream& stream, const coTransform& a)
@@ -131,7 +131,7 @@ coFORCE_INLINE coBinaryInputStream& operator>>(coBinaryInputStream& stream, coTr
 
 coFORCE_INLINE coBool operator== (const coTransform& a, const coTransform& b)
 {
-	return coAreAllTrue(a.rotation == b.rotation && coBool32x4(a.translation == b.translation, true) && coBool32x4(a.scale == b.scale, true));
+	return coAreAllTrue(a.rotation == b.rotation & coBool32x4(a.translation == b.translation, true) & coBool32x4(a.scale == b.scale, true));
 }
 
 coFORCE_INLINE coBool operator!= (const coTransform& a, const coTransform& b)

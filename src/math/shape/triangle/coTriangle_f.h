@@ -35,5 +35,5 @@ coFORCE_INLINE coBool32x4 coOverlapInfiniteExtrude(const coTriangle& t, const co
 	const coVec3 u = coCross(pb, pc);
 	const coVec3 v = coCross(pc, pa);
 	const coVec3 w = coCross(pa, pb);
-	return coDot(u, v) >= 0.0f && coDot(u, w) >= 0.0f;
+	return coDot(u, v) >= 0.0f & coDot(u, w) >= 0.0f;
 }

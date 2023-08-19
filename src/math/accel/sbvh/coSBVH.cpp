@@ -395,7 +395,7 @@ void coSBVH::FindOverlaps(coDynamicArray<coUint32>& triangles_, const coRay& ray
 	// We add some epsilon because Recipral seems to create NaN instead of inf with the 0 components of the direction.
 	ray2.invDir = coInvert(ray_.GetDir() + coVec3(1e-20f));
 	coASSERT(coIsValid(ray2.invDir));
- 	ray2.len = coBroadcastW(ray_.dirAndLength);
+ 	ray2.len = coSplatW(ray_.dirAndLength);
 
 	auto collector = [&triangles_](coUint32 triangleIdx)
 	{
@@ -413,7 +413,7 @@ void coSBVH::FindOverlaps(coDynamicArray<coUint32>& triangles_, const coVec3& ha
 	// We add some epsilon because Recipral seems to create NaN instead of inf with the 0 components of the direction.
 	movingAabb.ray.invDir = coInvert(ray_.GetDir() + coVec3(1e-20f));
 	coASSERT(coIsValid(movingAabb.ray.invDir));
-	movingAabb.ray.len = coBroadcastW(ray_.dirAndLength);
+	movingAabb.ray.len = coSplatW(ray_.dirAndLength);
 	movingAabb.halfSize = halfSize_;
 
 	auto collector = [&triangles_](coUint32 triangleIdx)

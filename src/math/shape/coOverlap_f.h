@@ -11,7 +11,7 @@
 #include <math/vector/coFloatx4_f.h>
 #include <math/vector/coBool32x3_f.h>
 
-coFORCE_INLINE coBool32x3 coOverlapSolid(const coAabb& aabb, const coVec3& point) { return point >= aabb.min && point <= aabb.max; }
+coFORCE_INLINE coBool32x3 coOverlapSolid(const coAabb& aabb, const coVec3& point) { return point >= aabb.min & point <= aabb.max; }
 coFORCE_INLINE coBool coOverlapSolid(const coAabb& aabb, const coSegment& seg)
 {
 	// Refs:

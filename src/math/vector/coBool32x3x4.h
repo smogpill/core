@@ -6,9 +6,8 @@
 class alignas(16) coBool32x3x4
 {
 public:
-	coBool32x3x4() = default;
-	coBool32x3x4(coNullptr) : x(nullptr), y(nullptr), z(nullptr) {}
-	coBool32x3x4(const coBool32x4& x_, const coBool32x4& y_, const coBool32x4& z_) : x(x_), y(y_), z(z_) {}
+	coFORCE_INLINE coBool32x3x4() = default;
+	coFORCE_INLINE coBool32x3x4(const coBool32x4& x_, const coBool32x4& y_, const coBool32x4& z_) : x(x_), y(y_), z(z_) {}
 
 	coBool32x4 x;
 	coBool32x4 y;

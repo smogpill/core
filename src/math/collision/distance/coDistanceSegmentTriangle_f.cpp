@@ -25,10 +25,10 @@ coFORCE_INLINE coBool32x4 coIsValidTriangleBarycentricCoord(const coFloatx4 v, c
 	const coFloatx4 zero = -coFloatx4(FLT_EPSILON);
 	const coFloatx4 one = coFloatx4(1.0f) + coFloatx4(FLT_EPSILON);
 
-	const coBool32x4 con0 = (v >= zero) && (one >= v);
-	const coBool32x4 con1 = (w >= zero) && (one >= w);
+	const coBool32x4 con0 = (v >= zero) & (one >= v);
+	const coBool32x4 con1 = (w >= zero) & (one >= w);
 	const coBool32x4 con2 = one > (v + w);
-	return con0 && con1 && con2;
+	return con0 & con1 & con2;
 }
 
 /*
@@ -102,17 +102,17 @@ coFloatx4 coDistanceSegmentTriangleSquared(const coVec3& p, const coVec3& q,
 	coVec4 t40, t41;
 	const coVec4 sqDist44 = coDistanceSegmentSegmentSquared4(p, pq, a, ab, b, bc, a, ac, a, ab, t40, t41);
 
-	const coFloatx4 t00 = coBroadcastX(t40);
-	const coFloatx4 t10 = coBroadcastY(t40);
-	const coFloatx4 t20 = coBroadcastZ(t40);
+	const coFloatx4 t00 = coSplatX(t40);
+	const coFloatx4 t10 = coSplatY(t40);
+	const coFloatx4 t20 = coSplatZ(t40);
 
-	const coFloatx4 t01 = coBroadcastX(t41);
-	const coFloatx4 t11 = coBroadcastY(t41);
-	const coFloatx4 t21 = coBroadcastZ(t41);
+	const coFloatx4 t01 = coSplatX(t41);
+	const coFloatx4 t11 = coSplatY(t41);
+	const coFloatx4 t21 = coSplatZ(t41);
 
-	const coFloatx4 sqDist0(coBroadcastX(sqDist44));
-	const coFloatx4 sqDist1(coBroadcastY(sqDist44));
-	const coFloatx4 sqDist2(coBroadcastZ(sqDist44));
+	const coFloatx4 sqDist0(coSplatX(sqDist44));
+	const coFloatx4 sqDist1(coSplatY(sqDist44));
+	const coFloatx4 sqDist2(coSplatZ(sqDist44));
 
 	const coVec3 closestP00 = coMulAdd(pq, t00, p);
 	const coVec3 closestP01 = coMulAdd(ab, t01, a);
@@ -127,10 +127,10 @@ coFloatx4 coDistanceSegmentTriangleSquared(const coVec3& p, const coVec3& q,
 	//Get the closest point of all edges
 	const coBool32x4 con20 = sqDist1 > sqDist0;
 	const coBool32x4 con21 = sqDist2 > sqDist0;
-	const coBool32x4 con2 = con20 && con21;
+	const coBool32x4 con2 = con20 & con21;
 	const coBool32x4 con30 = sqDist0 >= sqDist1;
 	const coBool32x4 con31 = sqDist2 > sqDist1;
-	const coBool32x4 con3 = con30 && con31;
+	const coBool32x4 con3 = con30 & con31;
 	const coFloatx4 sqDistPE = FSel(con2, sqDist0, FSel(con3, sqDist1, sqDist2));
 	//const FloatV tValue = FSel(con2, t00, FSel(con3, t10, t20));
 	const coVec3 closestPE0 = V3Sel(con2, closestP00, V3Sel(con3, closestP10, closestP20)); // closestP on segment
@@ -183,7 +183,7 @@ coFloatx4 coDistanceSegmentTriangleSquared(const coVec3& p, const coVec3& q,
 	const coVec3 c20 = V3Sel(d2, closestP30, closestP40);
 	const coVec3 c21 = V3Sel(d2, closestP31, closestP41);
 
-	const coBool32x4 cond2 = con0 && con1;
+	const coBool32x4 cond2 = con0 & con1;
 
 	const coVec3 closestP0 = V3Sel(cond2, c20, V3Sel(con0, c00, V3Sel(con1, c10, closestPE0)));
 	const coVec3 closestP1 = V3Sel(cond2, c21, V3Sel(con0, c01, V3Sel(con1, c11, closestPE1)));

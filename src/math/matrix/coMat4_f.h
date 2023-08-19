@@ -11,10 +11,10 @@
 
 coFORCE_INLINE coVec4 operator* (const coVec4& _a, const coMat4& _this)
 {
-	const coFloatx4 ax = coBroadcastX(_a);
-	const coFloatx4 ay = coBroadcastY(_a);
-	const coFloatx4 az = coBroadcastZ(_a);
-	const coFloatx4 aw = coBroadcastW(_a);
+	const coFloatx4 ax = coSplatX(_a);
+	const coFloatx4 ay = coSplatY(_a);
+	const coFloatx4 az = coSplatZ(_a);
+	const coFloatx4 aw = coSplatW(_a);
 
 	const coFloatx4 mx = _this.c0 * ax;
 	const coFloatx4 my = _this.c1 * ay;
@@ -29,25 +29,25 @@ coFORCE_INLINE coMat4 operator* (const coMat4& a, const coMat4& b)
 	coMat4 o;
 	coVec4 tmp;
 
-	tmp = coBroadcastX(a[0]) * b[0];
-	tmp = coMulAdd(coBroadcastY(a[0]), b[1], tmp);
-	tmp = coMulAdd(coBroadcastZ(a[0]), b[2], tmp);
-	o.c0 = coMulAdd(coBroadcastW(a[0]), b[3], tmp);
+	tmp = coSplatX(a[0]) * b[0];
+	tmp = coMulAdd(coSplatY(a[0]), b[1], tmp);
+	tmp = coMulAdd(coSplatZ(a[0]), b[2], tmp);
+	o.c0 = coMulAdd(coSplatW(a[0]), b[3], tmp);
 
-	tmp = coBroadcastX(a[1]) * b[0];
-	tmp = coMulAdd(coBroadcastY(a[1]), b[1], tmp);
-	tmp = coMulAdd(coBroadcastZ(a[1]), b[2], tmp);
-	o.c1 = coMulAdd(coBroadcastW(a[1]), b[3], tmp);
+	tmp = coSplatX(a[1]) * b[0];
+	tmp = coMulAdd(coSplatY(a[1]), b[1], tmp);
+	tmp = coMulAdd(coSplatZ(a[1]), b[2], tmp);
+	o.c1 = coMulAdd(coSplatW(a[1]), b[3], tmp);
 
-	tmp = coBroadcastX(a[2]) * b[0];
-	tmp = coMulAdd(coBroadcastY(a[2]), b[1], tmp);
-	tmp = coMulAdd(coBroadcastZ(a[2]), b[2], tmp);
-	o.c2 = coMulAdd(coBroadcastW(a[2]), b[3], tmp);
+	tmp = coSplatX(a[2]) * b[0];
+	tmp = coMulAdd(coSplatY(a[2]), b[1], tmp);
+	tmp = coMulAdd(coSplatZ(a[2]), b[2], tmp);
+	o.c2 = coMulAdd(coSplatW(a[2]), b[3], tmp);
 
-	tmp = coBroadcastX(a[3]) * b[0];
-	tmp = coMulAdd(coBroadcastY(a[3]), b[1], tmp);
-	tmp = coMulAdd(coBroadcastZ(a[3]), b[2], tmp);
-	o.c3 = coMulAdd(coBroadcastW(a[3]), b[3], tmp);
+	tmp = coSplatX(a[3]) * b[0];
+	tmp = coMulAdd(coSplatY(a[3]), b[1], tmp);
+	tmp = coMulAdd(coSplatZ(a[3]), b[2], tmp);
+	o.c3 = coMulAdd(coSplatW(a[3]), b[3], tmp);
 
 	return o;
 }
@@ -249,7 +249,7 @@ coFORCE_INLINE coBool32x4 coNearEqual(const coMat4& _m1, const coMat4& _m2, cons
 	const coBool32x4 b1 = coNearEqual(_m1.c1, _m2.c1, _epsilon);
 	const coBool32x4 b2 = coNearEqual(_m1.c2, _m2.c2, _epsilon);
 	const coBool32x4 b3 = coNearEqual(_m1.c3, _m2.c3, _epsilon);
-	return b0 && b1 && b2 && b3;
+	return b0 & b1 & b2 & b3;
 }
 
 coFORCE_INLINE void coSetWithoutScale(coMat4& _this, const coTransform& _t)
@@ -266,9 +266,9 @@ coFORCE_INLINE void coSetWithScale(coMat4& _this, const coTransform& _t)
 {
 	coSetWithoutScale(_this, _t);
 	const coVec3 scale = _t.scale;
-	_this.c0 *= coBroadcastX(coBitCast<coFloatx4>(scale));
-	_this.c1 *= coBroadcastY(coBitCast<coFloatx4>(scale));
-	_this.c2 *= coBroadcastZ(coBitCast<coFloatx4>(scale));
+	_this.c0 *= coSplatX(coBitCast<coFloatx4>(scale));
+	_this.c1 *= coSplatY(coBitCast<coFloatx4>(scale));
+	_this.c2 *= coSplatZ(coBitCast<coFloatx4>(scale));
 }
 
 coFORCE_INLINE coMat4::coMat4(const coTransform& t)

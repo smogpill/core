@@ -12,7 +12,7 @@ public:
 	}
 	coFORCE_INLINE coVec3x4(const coFloatx4& xyz) : x(xyz), y(xyz), z(xyz) {}
 	coFORCE_INLINE coVec3x4(const coFloatx4& x_, const coFloatx4& y_, const coFloatx4& z_) : x(x_), y(y_), z(z_) {}
-	coFORCE_INLINE explicit coVec3x4(coNullPtr) = default;
+	coFORCE_INLINE explicit coVec3x4(coNullPtr) {}
 
 	coFloatx4 x;
 	coFloatx4 y;

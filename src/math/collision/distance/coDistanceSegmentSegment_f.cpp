@@ -58,12 +58,12 @@ coVec4 coDistanceSegmentSegmentSquared4(const coVec3 p, const coVec3 d0,
 	const coVec4 eps = coVec4(FLT_EPSILON);
 	const coVec4 half = coVec4(0.5f);
 
-	const coVec4 d0X = coBroadcastX(coFloatx4(d0));
-	const coVec4 d0Y = coBroadcastY(coFloatx4(d0));
-	const coVec4 d0Z = coBroadcastZ(coFloatx4(d0));
-	const coVec4 pX = coBroadcastX(coFloatx4(p));
-	const coVec4 pY = coBroadcastY(coFloatx4(p));
-	const coVec4 pZ = coBroadcastZ(coFloatx4(p));
+	const coVec4 d0X = coSplatX(coFloatx4(d0));
+	const coVec4 d0Y = coSplatY(coFloatx4(d0));
+	const coVec4 d0Z = coSplatZ(coFloatx4(d0));
+	const coVec4 pX = coSplatX(coFloatx4(p));
+	const coVec4 pY = coSplatY(coFloatx4(p));
+	const coVec4 pZ = coSplatZ(coFloatx4(p));
 
 	coVec4 d024 = coVec4(d02);
 	coVec4 d124 = coVec4(d12);
