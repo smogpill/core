@@ -15,20 +15,19 @@ class coAABBH
 public:
 	static constexpr coUint32 s_maxQueryStackSize = 4 * 1024;
 
-	void FindOverlaps(coDynamicArray<coUint32>& outTriangles, const coAabb& aabb) const;
-	void FindOverlaps(coDynamicArray<coUint32>& outTriangles, const coVec3& halfSize, const coRay& ray) const;
-	void FindOverlaps(coDynamicArray<coUint32>& outTriangles, const coRay& ray) const;
+	void Clear();
+	void FindOverlaps(coDynamicArray<coUint32>& objects, const coAabb& aabb) const;
+	void FindOverlaps(coDynamicArray<coUint32>& objects, const coVec3& halfSize, const coRay& ray) const;
+	void FindOverlaps(coDynamicArray<coUint32>& objects, const coRay& ray) const;
 	template <class Collector>
 	void FindOverlaps(Collector collector, const coAabb& aabox) const;
 	template <class Collector>
 	void FindOverlaps(Collector collector, const coSphere& sphere) const;
-	template <class Collector>
-	coUint32 FindAABBPathsAtOverlap(Collector collector, const coSphere& sphere) const;
 	template <class AcceptNode, class VisitNodes, class VisitObjects>
 	void WalkTree(const AcceptNode& acceptNode, const VisitNodes& visitNodes, const VisitObjects& visitObjects) const;
 
 private:
-	friend class coAABBTreeBuilder;
+	friend class coAABBHBuilder;
 
 	static constexpr coUint32 s_objectCountBits = 4;
 	static constexpr coUint32 s_objectCountShift = 28;
@@ -59,7 +58,7 @@ void coAABBH::FindOverlaps(COLLECTOR collector, const coAabb& aabox) const
 		props = coSortTrueFirst(props, overlapped);
 		return coCountTrues(overlapped);
 	};
-	auto visitObjects = [](coUint32 objectsOffset, coUint32 nbObjects)
+	auto visitObjects = [this, &collector](coUint32 objectsOffset, coUint32 nbObjects)
 	{
 		for (coUint i = 0; i < nbObjects; ++i)
 			collector(_objects[objectsOffset + i]);
@@ -71,10 +70,6 @@ void coAABBH::FindOverlaps(COLLECTOR collector, const coAabb& aabox) const
 template <class COLLECTOR>
 void coAABBH::FindOverlaps(COLLECTOR collector, const coSphere& sphere) const
 {
-	const coFloatx4 radius = coSplatW(sphere.centerAndRadius);
-	coAabb aabb(-radius, +radius);
-	aabb += coVec3(sphere.centerAndRadius);
-	const coAABox4 aabox4(aabb);
 	auto acceptNode = [](coInt) { return true; };
 	auto visitNodes = [](const coAABox4& bounds, coUint32x4& props, coInt) -> coUint
 	{

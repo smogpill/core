@@ -37,3 +37,19 @@ coFORCE_INLINE coBool32x4 coIsEmpty(const coAABox4& a)
 {
 	return a._min.x > a._max.x | a._min.y > a._max.y | a._min.z > a._max.z;
 }
+
+coFORCE_INLINE coAabb coMerge(const coAABox4& a)
+{
+	return coAabb(coVec3(coMin(a._min.x), coMin(a._min.y), coMin(a._min.z)),
+		coVec3(coMax(a._max.x), coMax(a._max.y), coMax(a._max.z)));
+}
+
+coFORCE_INLINE void coSetElement(coAABox4& a, coUint elementIdx, const coAabb& b)
+{
+	a._min.x[elementIdx] = b.min.x;
+	a._min.y[elementIdx] = b.min.y;
+	a._min.z[elementIdx] = b.min.z;
+	a._max.x[elementIdx] = b.min.x;
+	a._max.y[elementIdx] = b.min.y;
+	a._max.z[elementIdx] = b.min.z;
+}

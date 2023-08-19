@@ -38,3 +38,5 @@ coFORCE_INLINE coUint32x4 coSortTrueFirst(const coUint32x4& values, const coBool
 	out = coSelect(coShuffle<1, 2, 3, 3>(out), out, coSplatX(select));
 	return out;
 }
+
+coFORCE_INLINE void coSetElement(coUint32x4& a, coUint elementIdx, coUint32 value) { coASSERT(elementIdx < 4); (&a.x)[elementIdx] = value; }

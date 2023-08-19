@@ -4,6 +4,7 @@
 #include "coTriangleSplitter.h"
 #include <container/array/coDynamicArray_f.h>
 #include <math/vector/coVec3_f.h>
+#include <math/shape/coAabb.h>
 
 // Based on Jorrit Rouwe's JoltPhysics' TriangleSplitter
 
@@ -25,6 +26,30 @@ coTriangleSplitter::coTriangleSplitter(const coArray<coVec3>& vertices, const co
 		const coVec3& c = vertices[indices[indexOffset++]];
 		_centroids[i] = (a + b + c) / 3.0f;
 	}
+}
+
+void coTriangleSplitter::SplitNoFail(const Range& triangles, Range& outLeft, Range& outRight)
+{
+	if (!Split(triangles, outLeft, outRight))
+	{
+		const coUint32 half = triangles.GetSize() / 2;
+		coASSERT(half > 0);
+		outLeft = Range(triangles._begin, triangles._begin + half);
+		outRight = Range(triangles._begin + half, triangles._end);
+	}
+}
+
+coAabb coTriangleSplitter::GetObjectAABB(coUint32 objectIdx) const
+{
+	coAabb aabb;
+	const coUint32 indexBegin = objectIdx * 3;
+	const coUint32 indexEnd = indexBegin + 3;
+	for (coUint32 index = indexBegin; index != indexEnd; ++index)
+	{
+		const coVec3& vert = _vertices[_indices[index]];
+		aabb = coMerge(aabb, vert);
+	}
+	return aabb;
 }
 
 coBool coTriangleSplitter::SplitInternal(const Range& inTriangles, coUint inDimension, coFloat inSplit, Range& outLeft, Range& outRight)

@@ -20,8 +20,10 @@ public:
 		coUint32 _end;
 	};
 
+	void SplitNoFail(const Range& triangles, Range& outLeft, Range& outRight);
 	virtual coBool Split(const Range& inTriangles, Range& outLeft, Range& outRight) = 0;
 	coUint32 GetSortedTriangle(coUint32 index) const { return _sortedTriangles[index]; }
+	coAabb GetObjectAABB(coUint32 index) const;
 
 protected:
 	coBool SplitInternal(const Range& inTriangles, coUint inDimension, coFloat inSplit, Range& outLeft, Range& outRight);
