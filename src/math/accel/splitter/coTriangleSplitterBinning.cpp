@@ -60,9 +60,9 @@ coBool coTriangleSplitterBinning::Split(const Range& inTriangles, Range& outLeft
 			// Accumulate triangle in bin
 			const coUint32 sortedTriangleIdx = _sortedTriangles[t];
 			const coUint32 sortedTriangleFirstIdx = sortedTriangleIdx * 3;
-			bin._bounds = coMerge(bin._bounds, _vertices[sortedTriangleFirstIdx + 0]);
-			bin._bounds = coMerge(bin._bounds, _vertices[sortedTriangleFirstIdx + 1]);
-			bin._bounds = coMerge(bin._bounds, _vertices[sortedTriangleFirstIdx + 2]);
+			bin._bounds = coMerge(bin._bounds, _vertices[_indices[sortedTriangleFirstIdx + 0]]);
+			bin._bounds = coMerge(bin._bounds, _vertices[_indices[sortedTriangleFirstIdx + 1]]);
+			bin._bounds = coMerge(bin._bounds, _vertices[_indices[sortedTriangleFirstIdx + 2]]);
 			bin._minCentroid = coMin(bin._minCentroid, centroid_pos);
 			bin._nbTriangles++;
 		}

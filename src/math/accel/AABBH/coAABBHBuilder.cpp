@@ -42,9 +42,9 @@ void coAABBHBuilder::Build(coAABBH& aabbh, coTriangleSplitter& splitter)
 			splitter.SplitNoFail(work._range, left, right);
 			Range ranges[4];
 			splitter.SplitNoFail(left, ranges[0], ranges[1]);
-			splitter.SplitNoFail(right, ranges[1], ranges[2]);
+			splitter.SplitNoFail(right, ranges[2], ranges[3]);
 
-			Node node;
+			Node& node = nodes[work._nodeIdx];
 			for (coUint childIdx = 0; childIdx < 4; ++childIdx)
 			{
 				const Range& childRange = ranges[childIdx];
@@ -52,12 +52,12 @@ void coAABBHBuilder::Build(coAABBH& aabbh, coTriangleSplitter& splitter)
 				if (nbObjects > _maxNbObjectsPerLeaf)
 				{
 					const coUint32 childNodeIdx = nodes.count;
-					coPushBack(nodes, Node());
 					node._props[childIdx] = childNodeIdx;
 					Work childWork;
 					childWork._nodeIdx = childNodeIdx;
 					childWork._range = childRange;
 					coPushBack(stack, childWork);
+					coPushBack(nodes, Node());
 				}
 				else
 				{
