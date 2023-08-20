@@ -109,7 +109,7 @@ void coAABBH::WalkTree(const AcceptNode& acceptNode, const NodesVisitor& visitNo
 			coStore(childProps, &stack[top]);
 			top += nb;
 		}
-		else if (props != ~~coUint32(0))
+		else if (props != ~coUint32(0))
 		{
 			const coUint32 objectsOffset = props & s_offsetMask;
 			visitObjects(objectsOffset, nbObjects);
