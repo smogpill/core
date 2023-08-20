@@ -80,7 +80,6 @@ void coAABBHBuilder::Build4ChildRanges(const Range& initialRange, coTriangleSpli
 	coBool split = false;
 	do
 	{
-		auto& currentRanges = _scratchRanges[curStackIdx];
 		auto& nextRanges = _scratchRanges[nextStackIdx];
 		coClear(nextRanges);
 		split = false;
@@ -104,8 +103,32 @@ void coAABBHBuilder::Build4ChildRanges(const Range& initialRange, coTriangleSpli
 		coSwap(curStackIdx, nextStackIdx);
 	} while (nbRangesFound < 4 && split);
 
+	auto& currentRanges = _scratchRanges[curStackIdx];
+
+	// Split current ranges further down to balance through the remaining slots
+	// (Since we already have them allocated, better use them)
+	while (nbRangesFound != 4)
+	{
+		coUint maxIdx = 0;
+		for (coUint j = 1; j < nbRangesFound; ++j)
+			if (currentRanges[j].GetSize() > currentRanges[maxIdx].GetSize())
+				maxIdx = j;
+		const Range& maxRange = currentRanges[maxIdx];
+		if (maxRange.GetSize() < 2)
+			break;
+
+		Range left, right;
+		splitter.SplitNoFail(maxRange, left, right);
+		coASSERT(left.GetSize() > 0);
+		coASSERT(right.GetSize() > 0);
+		coRemoveUnorderedByIndex(currentRanges, maxIdx);
+		coPushBack(currentRanges, left);
+		coPushBack(currentRanges, right);
+		++nbRangesFound;
+	}
+
 	for (coUint i = 0; i < nbRangesFound; ++i)
-		ranges[i] = _scratchRanges[curStackIdx][i];
+		ranges[i] = currentRanges[i];
 
 	for (coUint i = nbRangesFound; i < 4; ++i)
 		ranges[i] = Range(0, 0);
@@ -164,6 +187,7 @@ coUint32 coAABBHBuilder::BuildObjectList(coAABBH& aabbh, const coTriangleSplitte
 	for (coUint32 objectIdx = range._begin; objectIdx < range._end; ++objectIdx)
 	{
 		const coUint32 objectID = splitter.GetSortedTriangle(objectIdx);
+		coASSERT(!coContains(objects, objectID));
 		coPushBack(objects, objectID);
 	}
 	return (range.GetSize() << coAABBH::s_objectCountShift) | objectOffset;
