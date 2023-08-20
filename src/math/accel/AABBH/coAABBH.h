@@ -105,7 +105,7 @@ void coAABBH::WalkTree(const AcceptNode& acceptNode, const NodesVisitor& visitNo
 			const Node& node = _nodes[props];
 			coUint32x4 childProps = node._props;
 			const coUint nb = visitNodes(node._bounds, childProps, top);
-			coASSERT(nb + 4 <= coARRAY_SIZE(stack));
+			coASSERT(top + 4 <= coARRAY_SIZE(stack));
 			coStore(childProps, &stack[top]);
 			top += nb;
 		}
