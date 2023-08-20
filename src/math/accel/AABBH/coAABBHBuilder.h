@@ -15,9 +15,12 @@ private:
 
 	void Build4ChildRanges(const Range& initialRange, coTriangleSplitter& splitter, Range* ranges);
 	void BuildBounds(coAABBH& aabbh, const coTriangleSplitter& splitter);
-	coUint32 BuildObjectList(coAABBH& aabbh, const coTriangleSplitter& splitter, const Range& range) const;
+	coUint32 BuildObjectList(coAABBH& aabbh, const coTriangleSplitter& splitter, const Range& range);
 
 	/// 4: good for speed, 8: good for memory
 	coUint _maxNbObjectsPerLeaf = 4;
 	coDynamicArray<Range> _scratchRanges[2];
+#ifdef coDEV
+	coDynamicArray<coBool> _touchedObjects;
+#endif
 };

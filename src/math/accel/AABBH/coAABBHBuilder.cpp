@@ -7,6 +7,10 @@
 
 void coAABBHBuilder::Build(coAABBH& aabbh, coTriangleSplitter& splitter)
 {
+#ifdef coDEV
+	coClear(_touchedObjects);
+	coResize(_touchedObjects, splitter.GetInitialRange().GetSize(), false);
+#endif
 	aabbh.Clear();
 	using Range = coTriangleSplitter::Range;
 
@@ -67,6 +71,10 @@ void coAABBHBuilder::Build(coAABBH& aabbh, coTriangleSplitter& splitter)
 	coShrinkToFit(aabbh._nodes);
 	coShrinkToFit(aabbh._objects);
 	BuildBounds(aabbh, splitter);
+#ifdef coDEV
+	for (const coBool touchedObject : _touchedObjects)
+		coASSERT(touchedObject);
+#endif
 }
 
 void coAABBHBuilder::Build4ChildRanges(const Range& initialRange, coTriangleSplitter& splitter, Range* ranges)
@@ -176,7 +184,7 @@ void coAABBHBuilder::BuildBounds(coAABBH& aabbh, const coTriangleSplitter& split
 	aabbh._rootAabb = buildAABB(aabbh._rootProps);
 }
 
-coUint32 coAABBHBuilder::BuildObjectList(coAABBH& aabbh, const coTriangleSplitter& splitter, const Range& range) const
+coUint32 coAABBHBuilder::BuildObjectList(coAABBH& aabbh, const coTriangleSplitter& splitter, const Range& range)
 {
 	if (range.GetSize() == 0)
 		return ~coUint32(0);
@@ -189,6 +197,10 @@ coUint32 coAABBHBuilder::BuildObjectList(coAABBH& aabbh, const coTriangleSplitte
 		const coUint32 objectID = splitter.GetSortedTriangle(objectIdx);
 		coASSERT(!coContains(objects, objectID));
 		coPushBack(objects, objectID);
+#ifdef coDEV
+		coASSERT(!_touchedObjects[objectID]);
+		_touchedObjects[objectID] = true;
+#endif
 	}
 	return (range.GetSize() << coAABBH::s_objectCountShift) | objectOffset;
 }
