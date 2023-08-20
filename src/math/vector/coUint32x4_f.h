@@ -33,21 +33,9 @@ coFORCE_INLINE coUint32x4 coSplatW(const coUint32x4& a) { return coShuffle<3, 3,
 
 coFORCE_INLINE coUint32x4 coSortTrueFirst(const coUint32x4& values, const coBool32x4& select)
 {
-
 	coUint32x4 out = coSelect(coShuffle<0, 1, 3, 3>(values), values, coSplatZ(select));
 	out = coSelect(coShuffle<0, 2, 3, 3>(out), out, coSplatY(select));
 	out = coSelect(coShuffle<1, 2, 3, 3>(out), out, coSplatX(select));
-
-	/*// If inValue.z is false then shift W to Z
-	UVec4 v = UVec4::sSelect(inIndex.Swizzle<SWIZZLE_X, SWIZZLE_Y, SWIZZLE_W, SWIZZLE_W>(), inIndex, inValue.SplatZ());
-
-	// If inValue.y is false then shift Z and further to Y and further
-	v = UVec4::sSelect(v.Swizzle<SWIZZLE_X, SWIZZLE_Z, SWIZZLE_W, SWIZZLE_W>(), v, inValue.SplatY());
-
-	// If inValue.x is false then shift X and furhter to Y and furhter
-	v = UVec4::sSelect(v.Swizzle<SWIZZLE_Y, SWIZZLE_Z, SWIZZLE_W, SWIZZLE_W>(), v, inValue.SplatX());
-
-	*/
 	return out;
 }
 

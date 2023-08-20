@@ -65,25 +65,25 @@ coFORCE_INLINE coFloatx4 coSplatX(const coFloatx4& _a) { return coShuffle<0, 0, 
 coFORCE_INLINE coFloatx4 coSplatY(const coFloatx4& _a) { return coShuffle<1, 1, 1, 1>(_a, _a); }
 coFORCE_INLINE coFloatx4 coSplatZ(const coFloatx4& _a) { return coShuffle<2, 2, 2, 2>(_a, _a); }
 coFORCE_INLINE coFloatx4 coSplatW(const coFloatx4& _a) { return coShuffle<3, 3, 3, 3>(_a, _a); }
-coFORCE_INLINE coFloatx4 coSelect(const coFloatx4& _a, const coFloatx4& _b, const coInt32x4& _mask)
+coFORCE_INLINE coFloatx4 coSelect(const coFloatx4& a, const coFloatx4& b, const coInt32x4& mask)
 {
-	return coBitCast<coFloatx4>(coBitCast<coInt32x4>(_b) ^ _mask & (coBitCast<coInt32x4>(_a) ^ coBitCast<coInt32x4>(_b)));
+	return coBitCast<coFloatx4>(_mm_blendv_ps(coBitCast<__m128>(a), coBitCast<__m128>(b), _mm_castsi128_ps(coBitCast<__m128i>(mask))));
 }
-coFORCE_INLINE coFloatx4 coSelectX(const coFloatx4& _a, const coFloatx4& _b)
+coFORCE_INLINE coFloatx4 coSelectX(const coFloatx4& a, const coFloatx4& b)
 {
-	return coBitCast<coFloatx4>(_mm_or_ps(_mm_and_ps(__m128_MASK_X, coBitCast<__m128>(_a)), _mm_andnot_ps(__m128_MASK_X, coBitCast<__m128>(_b))));
+	return coSelect(a, b, coBitCast<coInt32x4>(__m128_MASK_X));
 }
-coFORCE_INLINE coFloatx4 coSelectY(const coFloatx4& _a, const coFloatx4& _b)
+coFORCE_INLINE coFloatx4 coSelectY(const coFloatx4& a, const coFloatx4& b)
 {
-	return coBitCast<coFloatx4>(_mm_or_ps(_mm_and_ps(__m128_MASK_Y, coBitCast<__m128>(_a)), _mm_andnot_ps(__m128_MASK_Y, coBitCast<__m128>(_b))));
+	return coSelect(a, b, coBitCast<coInt32x4>(__m128_MASK_Y));
 }
-coFORCE_INLINE coFloatx4 coSelectZ(const coFloatx4& _a, const coFloatx4& _b)
+coFORCE_INLINE coFloatx4 coSelectZ(const coFloatx4& a, const coFloatx4& b)
 {
-	return coBitCast<coFloatx4>(_mm_or_ps(_mm_and_ps(__m128_MASK_Z, coBitCast<__m128>(_a)), _mm_andnot_ps(__m128_MASK_Z, coBitCast<__m128>(_b))));
+	return coSelect(a, b, coBitCast<coInt32x4>(__m128_MASK_Z));
 }
-coFORCE_INLINE coFloatx4 coSelectXYZ(const coFloatx4& _a, const coFloatx4& _b)
+coFORCE_INLINE coFloatx4 coSelectXYZ(const coFloatx4& a, const coFloatx4& b)
 {
-	return coBitCast<coFloatx4>(_mm_or_ps(_mm_and_ps(__m128_MASK_XYZ, coBitCast<__m128>(_a)), _mm_andnot_ps(__m128_MASK_XYZ, coBitCast<__m128>(_b))));
+	return coSelect(a, b, coBitCast<coInt32x4>(__m128_MASK_XYZ));
 }
 coFORCE_INLINE coFloatx4 coMake_floatx4XYZ0(const coFloatx4& _xyz)
 {
