@@ -9,13 +9,13 @@ coFORCE_INLINE coAABox4 coIntersect(const coAABox4& a, const coAabb& b)
 {
 	return coAABox4(
 		coVec3x4(
-			coMin(a._max.x, coSplatX(coFloatx4(b.max))),
-			coMin(a._max.y, coSplatY(coFloatx4(b.max))),
-			coMin(a._max.z, coSplatZ(coFloatx4(b.max)))),
-		coVec3x4(
 			coMax(a._min.x, coSplatX(coFloatx4(b.min))),
 			coMax(a._min.y, coSplatY(coFloatx4(b.min))),
-			coMax(a._min.z, coSplatZ(coFloatx4(b.min))))
+			coMax(a._min.z, coSplatZ(coFloatx4(b.min)))),
+		coVec3x4(
+			coMin(a._max.x, coSplatX(coFloatx4(b.max))),
+			coMin(a._max.y, coSplatY(coFloatx4(b.max))),
+			coMin(a._max.z, coSplatZ(coFloatx4(b.max))))
 	);
 }
 
@@ -23,13 +23,13 @@ coFORCE_INLINE coAABox4 coIntersect(const coAABox4& a, const coAABox4& b)
 {
 	return coAABox4(
 		coVec3x4(
-			coMin(a._max.x, b._max.x),
-			coMin(a._max.y, b._max.y),
-			coMin(a._max.z, b._max.z)),
-		coVec3x4(
 			coMax(a._min.x, b._min.x),
 			coMax(a._min.y, b._min.y),
-			coMax(a._min.z, b._min.z))
+			coMax(a._min.z, b._min.z)),
+		coVec3x4(
+			coMin(a._max.x, b._max.x),
+			coMin(a._max.y, b._max.y),
+			coMin(a._max.z, b._max.z))
 	);
 }
 

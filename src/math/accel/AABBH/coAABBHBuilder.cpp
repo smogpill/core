@@ -176,7 +176,7 @@ void coAABBHBuilder::BuildBounds(coAABBH& aabbh, const coTriangleSplitter& split
 		for (coUint childIdx = 0; childIdx < 4; ++childIdx)
 		{
 			const coUint32 props = node._props[childIdx];
-			node._bounds[childIdx] = buildAABB(props);
+			coSetElement(node._bounds, childIdx, buildAABB(props));
 		}
 	}
 

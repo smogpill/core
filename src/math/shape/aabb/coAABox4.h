@@ -18,7 +18,8 @@ public:
 	coAABox4(const coVec3x4& min, const coVec3x4& max) 
 		: _min(min), _max(max) {}
 
-	coFORCE_INLINE coAabb operator[](coUint index) const { return coAabb(coVec3(_min.x[index], _min.y[index], _min.z[index]), coVec3(_max.x[index], _max.y[index], _max.z[index])); }
+	// Return value is const to avoid mistakes because of missing non-const operator[]
+	coFORCE_INLINE const coAabb operator[](coUint index) const { return coAabb(coVec3(_min.x[index], _min.y[index], _min.z[index]), coVec3(_max.x[index], _max.y[index], _max.z[index])); }
 
 	coVec3x4 _min = coVec3x4(1e30f);
 	coVec3x4 _max = coVec3x4(-1e30f);
