@@ -82,9 +82,9 @@ coMat4 coMakeOrthographic(coFloat _left, coFloat _right, coFloat _bottom, coFloa
 void coSetPerspective(coMat4& _this, coFloat _fovyRadians, coFloat _aspect, coFloat _zNear, coFloat _zFar);
 coFORCE_INLINE void coSetUpperMat3(coMat4& _m4, const coMat3& _m3)
 {
-	_m4.c0 = coSelectXYZ(coMake_floatx4XYZ0(_m3.c0), _m4.c0);
-	_m4.c1 = coSelectXYZ(coMake_floatx4XYZ0(_m3.c1), _m4.c1);
-	_m4.c2 = coSelectXYZ(coMake_floatx4XYZ0(_m3.c2), _m4.c2);
+	_m4.c0 = coSelectXYZ(_m4.c0, coMake_floatx4XYZ0(_m3.c0));
+	_m4.c1 = coSelectXYZ(_m4.c1, coMake_floatx4XYZ0(_m3.c1));
+	_m4.c2 = coSelectXYZ(_m4.c2, coMake_floatx4XYZ0(_m3.c2));
 }
 
 coFORCE_INLINE coMat4 coTranspose(const coMat4& _a)

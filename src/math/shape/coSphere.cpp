@@ -4,9 +4,9 @@
 #include "coSphere.h"
 #include "../vector/coFloatx4_f.h"
 
-//: centerAndRadius(coSelectXYZ(center, radius)) {}
+//: centerAndRadius(coSelectXYZ(radius, center)) {}
 
 coSphere::coSphere(const coVec3& center, const coFloatx4& radius)
-	: centerAndRadius(coSelectXYZ(coBitCast<coFloatx4>(center), radius))
+	: centerAndRadius(coSelectXYZ(radius, coBitCast<coFloatx4>(center)))
 {
 }

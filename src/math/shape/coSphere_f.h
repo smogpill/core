@@ -4,5 +4,5 @@
 #include "coSphere.h"
 #include "../vector/coFloatx4_f.h"
 
-coFORCE_INLINE void coSetCenter(coSphere& a, const coVec3& center) { a.centerAndRadius = coSelectXYZ(center, a.centerAndRadius); }
-coFORCE_INLINE void coSetRadius(coSphere& a, const coFloatx4& radius) { a.centerAndRadius = coSelectXYZ(a.centerAndRadius, radius); }
+coFORCE_INLINE void coSetCenter(coSphere& a, const coVec3& center) { a.centerAndRadius = coSelectXYZ(a.centerAndRadius, center); }
+coFORCE_INLINE void coSetRadius(coSphere& a, const coFloatx4& radius) { a.centerAndRadius = coSelectXYZ(radius, a.centerAndRadius); }

@@ -82,7 +82,7 @@ coFORCE_INLINE coQuat coRotation(const coVec3& _axis, coFloat _angle)
 	const coFloatx4 halfAngle = _angle * 0.5f;
 	const coFloatx4 s = coSin(halfAngle);
 	const coFloatx4 c = coCos(halfAngle);
-	const coQuat q = coBitCast<coQuat>(coSelectXYZ(coBitCast<coFloatx4>(_axis) * s, c));
+	const coQuat q = coBitCast<coQuat>(coSelectXYZ(c, coBitCast<coFloatx4>(_axis) * s));
 	return q;
 }
 coFORCE_INLINE coQuat _coRotation(const coVec3& _from, const coVec3& _to, coFloatx3 _fromToNorm)
@@ -93,7 +93,7 @@ coFORCE_INLINE coQuat _coRotation(const coVec3& _from, const coVec3& _to, coFloa
 	if (w > 1e-6f * _fromToNorm)
 	{
 		const coFloatx3 axis = coCross(_from, _to);
-		const coFloatx4 q = coSelectXYZ(coBitCast<coFloatx4>(axis), coSplatX(coBitCast<coFloatx4>(w)));
+		const coFloatx4 q = coSelectXYZ(coSplatX(coBitCast<coFloatx4>(w)), coBitCast<coFloatx4>(axis));
 		return coNormalize(coBitCast<coQuat>(q));
 	}
 	else

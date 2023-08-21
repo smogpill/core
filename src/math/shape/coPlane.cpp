@@ -8,7 +8,7 @@
 
 coPlane::coPlane(const coVec3& normal, const coVec3& point)
 {
-	normalAndDistance = coSelectXYZ(reinterpret_cast<const coFloatx4&>(normal), -coSplatX(coDot(normal, point)));
+	normalAndDistance = coSelectXYZ(-coSplatX(coDot(normal, point)), reinterpret_cast<const coFloatx4&>(normal));
 }
 
 coPlane::coPlane(const coVec3& a, const coVec3& b, const coVec3& c)
@@ -18,5 +18,5 @@ coPlane::coPlane(const coVec3& a, const coVec3& b, const coVec3& c)
 
 coPlane::coPlane(const coVec3& normal, const coFloatx4& distance)
 {
-	normalAndDistance = coSelectXYZ(reinterpret_cast<const coFloatx4&>(normal), distance);
+	normalAndDistance = coSelectXYZ(distance, reinterpret_cast<const coFloatx4&>(normal));
 }
