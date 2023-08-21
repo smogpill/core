@@ -16,6 +16,9 @@ public:
 	static constexpr coUint32 s_maxQueryStackSize = 4 * 1024;
 
 	void Clear();
+	const coArray<coUint32>& GetObjects() const { return _objects; }
+
+	// Queries
 	void FindOverlaps(coDynamicArray<coUint32>& objects, const coAabb& aabb) const;
 	void FindOverlaps(coDynamicArray<coUint32>& objects, const coVec3& halfSize, const coRay& ray) const;
 	void FindOverlaps(coDynamicArray<coUint32>& objects, const coRay& ray) const;

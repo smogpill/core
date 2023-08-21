@@ -23,7 +23,7 @@ coFORCE_INLINE coAabb operator- (const coAabb& a, const coFloatx3& b) { return c
 coFORCE_INLINE coAabb operator+ (const coAabb& a, const coFloatx3& b) { return coAabb(a.min + b, a.max + b); }
 coFORCE_INLINE [[nodiscard]] coFloat coGetSurfaceArea(const coAabb& a)
 {
-	if (coIsEmpty(a))
+	if (coAreAllTrue(coIsEmpty(a)))
 	{
 		return 0.0f;
 	}

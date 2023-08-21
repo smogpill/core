@@ -10,6 +10,7 @@ class coBinaryInputStream;
 class coVec3 : public coFloatx3
 {
 	coDECLARE_CLASS_NO_POLYMORPHISM(coVec3);
+	coDECLARE_SIMD();
 public:
 	using coFloatx3::coFloatx3;
 	coFORCE_INLINE coVec3() { coBitCast<__m128>(*this) = _mm_setzero_ps(); }

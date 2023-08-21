@@ -5,6 +5,7 @@
 
 class alignas(16) coBool32x3x4
 {
+	coDECLARE_SIMD();
 public:
 	coFORCE_INLINE coBool32x3x4() = default;
 	coFORCE_INLINE coBool32x3x4(const coBool32x4& x_, const coBool32x4& y_, const coBool32x4& z_) : x(x_), y(y_), z(z_) {}

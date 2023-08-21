@@ -11,6 +11,7 @@ class coVec3;
 class coVec4 : public coFloatx4
 {
 	coDECLARE_CLASS_NO_POLYMORPHISM(coFloatx4);
+	coDECLARE_SIMD();
 public:
 	coFORCE_INLINE coVec4() { coBitCast<__m128>(*this) = _mm_setzero_ps(); }
 	coFORCE_INLINE coVec4(const coFloat _xyzw) : coFloatx4(_xyzw) {}

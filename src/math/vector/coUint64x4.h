@@ -7,6 +7,7 @@
 class alignas(32) coUint64x4
 {
 	coDECLARE_CLASS_NO_POLYMORPHISM(coUint64x4);
+	coDECLARE_SIMD();
 public:
 	coFORCE_INLINE coUint64x4() {}
 	coFORCE_INLINE coUint64x4(coUint64 x, coUint64 y, coUint64 z, coUint64 w) : x(x), y(y), z(z), w(w) {}

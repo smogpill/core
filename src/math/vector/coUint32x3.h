@@ -6,6 +6,7 @@
 class alignas(16) coUint32x3
 {
 	coDECLARE_CLASS_NO_POLYMORPHISM(coUint32x3);
+	coDECLARE_SIMD();
 public:
 	coFORCE_INLINE coUint32x3() {}
 	coFORCE_INLINE coUint32x3(coUint32 x, coUint32 y, coUint32 z) : x(x), y(y), z(z) {}

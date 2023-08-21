@@ -6,6 +6,7 @@
 class coUint32x2
 {
 	coDECLARE_CLASS_NO_POLYMORPHISM(coUint32x2);
+	coDECLARE_SIMD();
 public:
 	coFORCE_INLINE coUint32x2() {}
 	coFORCE_INLINE coUint32x2(coUint32 x, coUint32 y) : x(x), y(y) {}

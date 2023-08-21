@@ -28,7 +28,12 @@ coFORCE_INLINE constexpr T& coBitCast(A& _a)
 	return reinterpret_cast<T&>(_a);
 }
 
-template <typename T>
+template <class T>
+concept coIsSIMD = requires(T a) { T::s_simd; };
+
+#define coDECLARE_SIMD() public: static constexpr bool s_simd = true; private:
+
+template <class T>
 coFORCE_INLINE void coSwap(T& _a, T& _b)
 {
 	// should be faster than other methods because of many possible compiler optimizations
@@ -37,13 +42,13 @@ coFORCE_INLINE void coSwap(T& _a, T& _b)
 	_b = std::move(tmp);
 }
 
-template <typename T>
+template <class T> requires (!coIsSIMD<T>)
 coFORCE_INLINE const T& coMax(const T& a, const T& b)
 {
 	return b > a ? b : a;
 }
 
-template <typename T>
+template <class T> requires (!coIsSIMD<T>)
 coFORCE_INLINE const T& coMin(const T& a, const T& b)
 {
 	return b < a ? b : a;

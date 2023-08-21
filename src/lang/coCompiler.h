@@ -45,7 +45,12 @@ bool _IsDebuggerPresent();
 #ifdef coMSVC
 #	define coFORCE_INLINE __forceinline
 #	define coNO_INLINE __declspec(noinline)
-#else
-#	define coFORCE_INLINE inline __attribute__((always_inline))
+#elif defined(coGCC_COMPATIBLE)
+#	define coFORCE_INLINE [[gnu::always_inline]]
 #	define coNO_INLINE __attribute__((noinline))
+#elif defined(coCLANG)
+#	define coFORCE_INLINE [[clang::always_inline]]
+#	define coNO_INLINE __attribute__((noinline))
+#else
+# error "Missing compiler impl"
 #endif

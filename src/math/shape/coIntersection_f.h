@@ -35,7 +35,7 @@ coFORCE_INLINE coBool coIntersect(const coPlane& plane, const coSegment& seg, co
 	const coVec3 delta = seg.p1 - seg.p0;
 	// Ok even when denominator is zero, no need for tests
 	const coFloatx4 t = (-coSplatW(plane.normalAndDistance) - coDot(coVec3(plane.normalAndDistance), seg.p0)) / coDot(coVec3(plane.normalAndDistance), delta);
-	if (t >= 0.0f && t <= 1.0f)
+	if (coAreAllTrue((t >= 0.0f & t <= 1.0f)))
 	{
 		p = seg.p0 + t * delta;
 		return true;
@@ -56,12 +56,12 @@ coFORCE_INLINE coBool coIntersect(const coRay& ray, const coTriangle& triangle, 
 	{
 		// if the determinant is negative the triangle is backfacing
 		// if the determinant is close to 0, the ray misses the triangle
-		if (det < epsilon) return false;
+		if (det.x < epsilon) return false;
 	}
 	else
 	{
 		// ray and triangle are parallel if det is close to 0
-		if (coAbs(det) < epsilon) return false;
+		if (coAbs(det.x) < epsilon) return false;
 	}
 
 	const coFloatx4 invDet = 1.0f / det;

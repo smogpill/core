@@ -8,14 +8,14 @@
 #include "math/vector/coVec4_f.h"
 #include "debug/log/coAssert.h"
 
-coFORCE_INLINE coBool32x3 coIsValid(const coPlane& this_)
+coFORCE_INLINE coBool coIsValid(const coPlane& this_)
 {
-	return coIsNormalized(coBitCast<coVec3>(this_.normalAndDistance));
+	return coAreAllTrue(coIsNormalized(coBitCast<coVec3>(this_.normalAndDistance)));
 }
 
 coFORCE_INLINE void coSetFromNormalAndSignedDistance(coPlane& this_, const coVec3& normal, const coFloatx4& dist)
 {
-	coASSERT(coAreXYZWEqual(dist));
+	coASSERT(coAreAllTrue(coAreXYZWEqual(dist)));
 	this_.normalAndDistance = coSelectXYZ(-coSplatX(dist), reinterpret_cast<const coFloatx4&>(normal));
 	coASSERT(coIsValid(this_));
 }
@@ -42,7 +42,7 @@ coFORCE_INLINE coBool32x4 coRayPlaneIntersection(const coPlane& this_, const coV
 	coASSERT(rayDir.w == 0.0f);
 	const coFloatx4 dot = coDot(rayPoint, this_.normalAndDistance);
 	const coFloatx4 dot2 = coDot(rayDir, this_.normalAndDistance);
-	if (coNotNearEqual0(dot2))
+	if (coAreAllTrue(coNotNearEqual0(dot2)))
 	{
 		t = - dot / dot2;
 		return coBool32x4_true;

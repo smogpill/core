@@ -113,7 +113,7 @@ coBool coIntersectCapsuleTriangle(const coVec3& N, const coVec3& pA, const coVec
 	const coVec3 p1 = pB;
 	const coVec3 p2 = pC;
 
-	coASSERT(!coNearEqual(capsule.a, capsule.b));
+	coASSERT(coAreAllTrue(coNot(coNearEqual(capsule.a, capsule.b))));
 
 	{
 		const coFloat d2 = coDistancePointSegmentSquaredInternal(capsule.a, params.mCapsuleDir, p0);

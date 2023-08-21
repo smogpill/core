@@ -5,6 +5,7 @@
 
 class alignas(16) coVec3x4
 {
+	coDECLARE_SIMD();
 public:
 	coFORCE_INLINE coVec3x4() : coVec3x4(coBitCast<coFloatx4>(_mm_setzero_ps())) {}
 	coFORCE_INLINE coVec3x4(const coFloatx4& xyz) : x(xyz), y(xyz), z(xyz) {}

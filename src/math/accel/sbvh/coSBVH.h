@@ -111,7 +111,7 @@ coFORCE_INLINE coUint32 coSBVH::FindOverlapsImpl(COLLECTOR collector, const T& q
 
 coFORCE_INLINE coBool coSBVH::Overlap(const coAabb& a, const coAabb& b)
 {
-	return coOverlapSolidSolid(a, b);
+	return coAreAllTrue(coOverlapSolidSolid(a, b));
 }
 
 coFORCE_INLINE coBool coSBVH::Overlap(const coAabb& a, const MovingAABB& b)

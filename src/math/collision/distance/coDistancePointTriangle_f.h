@@ -14,7 +14,7 @@ inline coFloatx4 coSquareDistancePointTriangle(const coVec3& p, const coVec3& a,
 	const coFloatx4 f = coSign(coDot(coCross(ba, nor), pa))
 		+ coSign(coDot(coCross(cb, nor), pb))
 		+ coSign(coDot(coCross(ac, nor), pc));
-	const coFloatx4 v = f < 2.0f ?
+	const coFloatx4 v = f.x < 2.0f ?
 		coMin(coMin(
 			coSquareLength(ba * coClamp01(coDot(ba, pa) / coSquareLength(ba)) - pa),
 			coSquareLength(cb * coClamp01(coDot(cb, pb) / coSquareLength(cb)) - pb)),
