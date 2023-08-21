@@ -72,8 +72,28 @@ void coAABBHBuilder::Build(coAABBH& aabbh, coTriangleSplitter& splitter)
 	coShrinkToFit(aabbh._objects);
 	BuildBounds(aabbh, splitter);
 #ifdef coDEV
-	for (const coBool touchedObject : _touchedObjects)
+	for (coBool& touchedObject : _touchedObjects)
+	{
 		coASSERT(touchedObject);
+		touchedObject = false;
+	}
+	auto acceptNode = [](coInt) { return true; };
+	auto visitNodes = [](const coAABox4&, coUint32x4&, coInt) -> coUint { return 4; };
+	auto visitObjects = [this, &aabbh](coUint32 objectsOffset, coUint32 nbObjects)
+	{
+		for (coUint i = 0; i < nbObjects; ++i)
+		{
+			const coUint32 objectIdx = aabbh._objects[objectsOffset + i];
+			coASSERT(_touchedObjects[objectIdx] == false);
+			_touchedObjects[objectIdx] = true;
+		}
+		return true;
+	};
+	aabbh.WalkTree(acceptNode, visitNodes, visitObjects);
+	for (coBool& touchedObject : _touchedObjects)
+	{
+		coASSERT(touchedObject);
+	}
 #endif
 }
 
