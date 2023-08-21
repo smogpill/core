@@ -161,7 +161,7 @@ void coAABBHBuilder::BuildBounds(coAABBH& aabbh, const coTriangleSplitter& split
 			const coUint32 objectsOffset = props & coAABBH::s_offsetMask;
 			for (coUint32 o = 0; o < nbObjects; ++o)
 			{
-				const coUint32 objectID = splitter.GetSortedTriangle(objects[objectsOffset + o]);
+				const coUint32 objectID = objects[objectsOffset + o];
 				const coAabb objectAABB = splitter.GetObjectAABB(objectID);
 				bounds = coMerge(bounds, objectAABB);
 			}

@@ -49,7 +49,7 @@ coFORCE_INLINE void coSetElement(coAABox4& a, coUint elementIdx, const coAabb& b
 	a._min.x[elementIdx] = b.min.x;
 	a._min.y[elementIdx] = b.min.y;
 	a._min.z[elementIdx] = b.min.z;
-	a._max.x[elementIdx] = b.min.x;
-	a._max.y[elementIdx] = b.min.y;
-	a._max.z[elementIdx] = b.min.z;
+	a._max.x[elementIdx] = b.max.x;
+	a._max.y[elementIdx] = b.max.y;
+	a._max.z[elementIdx] = b.max.z;
 }
