@@ -16,8 +16,10 @@ public:
 	coFloatx4 z;
 };
 
+/*
 class coVec3Splatx4 : public coVec3
 {
 public:
 	using coVec3::coVec3;
 };
+*/
