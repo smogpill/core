@@ -3,6 +3,8 @@
 #include "math/pch.h"
 #include "coAABBH.h"
 #include <container/array/coDynamicArray_f.h>
+#include "../../shape/ray/coRayx4.h"
+#include "../../collision/overlap/aabox4/coOverlap_AABox4_Rayx4.h"
 
 void coAABBH::Clear()
 {
@@ -24,19 +26,29 @@ void coAABBH::FindOverlaps(coDynamicArray<coUint32>& objects, const coAabb& aabb
 
 void coAABBH::FindOverlaps(coDynamicArray<coUint32>& objects, const coVec3& halfSize, const coRay& ray) const
 {
+	MovingAABB movingAabb;
+	movingAabb.ray.origin = ray_.origin;
+	// We add some epsilon because Recipral seems to create NaN instead of inf with the 0 components of the direction.
+	movingAabb.ray.invDir = coInvert(ray_.GetDir() + coVec3(1e-20f));
+	coASSERT(coIsValid(movingAabb.ray.invDir));
+	movingAabb.ray.len = coSplatW(ray_.dirAndLength);
+	movingAabb.halfSize = halfSize_;
 }
 
 void coAABBH::FindOverlaps(coDynamicArray<coUint32>& objects, const coRay& ray) const
 {
+	coRay2x4 ray2;
+	ray2._origin = ray.origin;
+	// We add some epsilon because Recipral seems to create NaN instead of inf with the 0 components of the direction.
+	ray2._invDir = coInvert(ray.GetDir() + coVec3(1e-20f));
+	ray2._length = coSplatW(ray.dirAndLength);
+
 	auto acceptNode = [](coInt) { return true; };
-	auto visitNodes = [](const coAABox4& bounds, coUint32x4& props, coInt) -> coUint
+	auto visitNodes = [ray2](const coAABox4& bounds, coUint32x4& props, coInt) -> coUint
 	{
-		/*
-		const coBool32x4 overlapped = coOverlapSolidSolid(bounds, ray);
+		const coBool32x4 overlapped = coOverlapSolidSolid(bounds, ray2);
 		props = coSortTrueFirst(props, overlapped);
 		return coCountTrues(overlapped);
-		*/
-		return false;
 	};
 	auto visitObjects = [this, &objects](coUint32 objectsOffset, coUint32 nbObjects)
 	{

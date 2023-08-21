@@ -12,8 +12,8 @@ coFORCE_INLINE coBool32x3x4 operator<=(const coVec3x4& a, const coFloatx4& b) { 
 coFORCE_INLINE coVec3x4 operator*(const coVec3x4& a, const coFloatx4& b) { return coVec3x4(a.x * b, a.y * b, a.z * b); }
 coFORCE_INLINE coVec3x4 operator/(const coVec3x4& a, const coFloatx4& b) { return coVec3x4(a.x / b, a.y / b, a.z / b); }
 coFORCE_INLINE coVec3x4 operator+(const coVec3x4& a, const coFloatx4& b) { return coVec3x4(a.x + b, a.y + b, a.z + b); }
-coFORCE_INLINE coVec3x4 operator-(const coVec3x4& a, const coFloatx4& b) { return coVec3x4(a.x - b, a.y - b, a.z - b); }
 coFORCE_INLINE coVec3x4 operator+(const coVec3x4& a, const coVec3x4& b) { return coVec3x4(a.x + b.x, a.y + b.y, a.z + b.z); }
+coFORCE_INLINE coVec3x4 operator-(const coVec3x4& a, const coFloatx4& b) { return coVec3x4(a.x - b, a.y - b, a.z - b); }
 coFORCE_INLINE coVec3x4 operator-(const coVec3x4& a, const coVec3x4& b) { return coVec3x4(a.x - b.x, a.y - b.y, a.z - b.z); }
 coFORCE_INLINE coVec3x4 coAbs(const coVec3x4& a) { return coVec3x4(coAbs(a.x), coAbs(a.y), coAbs(a.z)); }
 coFORCE_INLINE coVec3x4 coMin(const coVec3x4& a, const coVec3x4& b) { return coVec3x4(coMin(a.x, b.x), coMin(a.y, b.y), coMin(a.z, b.z)); }
