@@ -50,6 +50,5 @@ private:
 
 	Queue _queues[coUint(coTaskPriority::END)];
 	coDynamicArray<coTaskBarrier*> _barriers;
-	mutable coMutex _mutex;
 	std::atomic<coBool> _exit = false;
 };
