@@ -28,6 +28,7 @@ public:
 	coUint32 Execute();
 	coBool CanBeExecuted() const { return _nbDependencies.load(std::memory_order_relaxed) == 0; }
 	coBool IsDone() const { return _nbDependencies.load(std::memory_order_relaxed) == s_doneState; }
+	coTaskPriority GetPriority() const { return _priority; }
 
 	static constexpr coUint32 s_executingState = 0xe0e0e0e0;
 	static constexpr coUint32 s_doneState = 0xd0d0d0d0;
@@ -37,7 +38,7 @@ private:
 	coTaskManager& GetSystem() const;
 
 	friend class coTaskScheduler;
-	coTaskPriority _priority = coTaskPriority::DEFAULT;
+	coTaskPriority _priority = coTaskPriority::FRAME;
 	std::atomic<coIntPtr> _barrier = 0;
 	std::function<void()> _function;
 	std::atomic<coUint32> _nbRefs = 0;

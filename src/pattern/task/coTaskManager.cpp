@@ -42,62 +42,71 @@ void coTaskManager::StartThreads(coUint nb)
 
 	_exit = false;
 
-	coASSERT(_heads == nullptr);
-	_heads = new std::atomic<coUint32>[nb];
-	for (coUint i = 0; i < nb; ++i)
-		_heads[i] = 0;
+	for (coUint priorityIdx = 0; priorityIdx < coUint(coTaskPriority::END); ++priorityIdx)
+	{
+		Queue& queue = _queues[priorityIdx];
+		coASSERT(queue._heads == nullptr);
+		queue._heads = new std::atomic<coUint32>[nb];
+		for (coUint i = 0; i < nb; ++i)
+			queue._heads[i] = 0;
 
-	coASSERT(_threads.count == 0);
-	coReserve(_threads, nb);
-	for (coUint threadIdx = 0; threadIdx < nb; ++threadIdx)
-		coPushBack(_threads, new std::thread([this, threadIdx] { WorkerThreadMain(threadIdx); }));
+		coASSERT(queue._threads.count == 0);
+		coReserve(queue._threads, nb);
+		const coTaskPriority priority = static_cast<coTaskPriority>(priorityIdx);
+		for (coUint threadIdx = 0; threadIdx < nb; ++threadIdx)
+			coPushBack(queue._threads, new std::thread([this, priority, threadIdx] { WorkerThreadMain(priority, threadIdx); }));
+	}
 }
 
-coUint coTaskManager::GetBestHead() const
+coUint coTaskManager::GetBestHead(const Queue& queue) const
 {
 	// Find the minimal value across all threads
-	coUint head = _tail;
-	for (coUint i = 0; i < _threads.count; ++i)
-		head = coMin(head, _heads[i].load());
+	coUint head = queue._tail;
+	for (coUint i = 0; i < queue._threads.count; ++i)
+		head = coMin(head, queue._heads[i].load());
 	return head;
 }
 
 void coTaskManager::StopThreads()
 {
-	if (_threads.count == 0)
-		return;
-
 	_exit = true;
-	_semaphore.Release(_threads.count);
 
-	for (std::thread* thread : _threads)
+	for (Queue& queue : _queues)
 	{
-		if (thread->joinable())
-			thread->join();
-		delete thread;
-	}
+		if (queue._threads.count == 0)
+			return;
 
-	coClear(_threads);
+		queue._semaphore.Release(queue._threads.count);
 
-	for (coUint32 head = 0; head != _tail; ++head)
-	{
-		coTask* task = _queuedTasks[head & (s_queueSize - 1)].exchange(nullptr);
-		if (task)
+		for (std::thread* thread : queue._threads)
 		{
-			task->Execute();
-			task->RemoveRef();
+			if (thread->joinable())
+				thread->join();
+			delete thread;
 		}
-	}
 
-	delete[] _heads;
-	_heads = nullptr;
-	_tail = 0;
+		coClear(queue._threads);
+
+		for (coUint32 head = 0; head != queue._tail; ++head)
+		{
+			coTask* task = queue._queuedTasks[head & (s_queueSize - 1)].exchange(nullptr);
+			if (task)
+			{
+				task->Execute();
+				task->RemoveRef();
+			}
+		}
+
+		delete[] queue._heads;
+		queue._heads = nullptr;
+		queue._tail = 0;
+	}
 }
 
 void coTaskManager::SetNbThreads(coInt nbRawThreads)
 {
 	const coUint nbThreads = nbRawThreads < 0 ? (std::thread::hardware_concurrency() - 1) : nbRawThreads;
-	if (_threads.count == nbThreads)
+	if (_queues[0]._threads.count == nbThreads)
 		return;
 	StopThreads();
 	StartThreads(nbThreads);
@@ -140,7 +149,7 @@ void coTaskManager::WaitForTasks(coTaskBarrier& barrier)
 void coTaskManager::QueueTask(coTask& task)
 {
 	QueueTaskInternal(task);
-	_semaphore.Release();
+	_queues[coUint(task.GetPriority())]._semaphore.Release();
 }
 
 void coTaskManager::FreeTask(coTask& task)
@@ -151,9 +160,21 @@ void coTaskManager::FreeTask(coTask& task)
 void coTaskManager::QueueTasks(coTask** tasks, coUint nb)
 {
 	coASSERT(nb > 0);
+	coUint prioNbs[coUint(coTaskPriority::END)] = {};
 	for (coTask** task = tasks, **taskEnd = tasks + nb; task < taskEnd; ++task)
+	{
+		++prioNbs[coUint((**task).GetPriority())];
 		QueueTaskInternal(**task);
-	_semaphore.Release(coMin(nb, _threads.count));
+	}
+	for (coUint priority = 0; priority < coUint(coTaskPriority::END); ++priority)
+	{
+		const coUint prioNb = prioNbs[priority];
+		if (prioNb)
+		{
+			Queue& queue = _queues[priority];
+			queue._semaphore.Release(coMin(prioNb, queue._threads.count));
+		}
+	}
 }
 
 void coTaskManager::QueueTaskInternal(coTask& task)
@@ -161,26 +182,28 @@ void coTaskManager::QueueTaskInternal(coTask& task)
 	// Add reference to job because we're adding the job to the queue
 	task.AddRef();
 
+	Queue& queue = _queues[coUint(task.GetPriority())];
+
 	// Need to read head first because otherwise the tail can already have passed the head
 	// We read the head outside of the loop since it involves iterating over all threads and we only need to update
 	// it if there's not enough space in the queue.
-	coUint head = GetBestHead();
+	coUint head = GetBestHead(queue);
 
 	for (;;)
 	{
 		// Check if there's space in the queue
-		coUint oldValue = _tail;
+		coUint oldValue = queue._tail;
 		if (oldValue - head >= s_queueSize)
 		{
 			// We calculated the head outside of the loop, update head (and we also need to update tail to prevent it from passing head)
-			head = GetBestHead();
-			oldValue = _tail;
+			head = GetBestHead(queue);
+			oldValue = queue._tail;
 
 			// Second check if there's space in the queue
 			if (oldValue - head >= s_queueSize)
 			{
 				// Wake up all threads in order to ensure that they can clear any nullptrs they may not have processed yet
-				_semaphore.Release(_threads.count);
+				queue._semaphore.Release(queue._threads.count);
 
 				// Sleep a little (we have to wait for other threads to update their head pointer in order for us to be able to continue)
 				std::this_thread::sleep_for(std::chrono::microseconds(100));
@@ -190,11 +213,11 @@ void coTaskManager::QueueTaskInternal(coTask& task)
 
 		// Write the job pointer if the slot is empty
 		coTask* expectedTask = nullptr;
-		const coBool success = _queuedTasks[oldValue & (s_queueSize - 1)].compare_exchange_strong(expectedTask, &task);
+		const coBool success = queue._queuedTasks[oldValue & (s_queueSize - 1)].compare_exchange_strong(expectedTask, &task);
 
 		// Regardless of who wrote the slot, we will update the tail (if the successful thread got scheduled out 
 		// after writing the pointer we still want to be able to continue)
-		_tail.compare_exchange_strong(oldValue, oldValue + 1);
+		queue._tail.compare_exchange_strong(oldValue, oldValue + 1);
 
 		// If we successfully added our job we're done
 		if (success)
@@ -202,25 +225,54 @@ void coTaskManager::QueueTaskInternal(coTask& task)
 	}
 }
 
-void coTaskManager::WorkerThreadMain(coUint threadIdx)
+void coTaskManager::WorkerThreadMain(coTaskPriority priority, coUint threadIdx)
 {
-	coDynamicString threadName = "TaskWorker";
-	threadName << threadIdx;
-	coNullTerminate(threadName);
-	coSetThreadName(threadName.data);
+	// Thread name
+	coDynamicString threadName;
+	{
+		threadName = "TaskWorker_";
+		switch (priority)
+		{
+		case coTaskPriority::FRAME: threadName << "Frame"; break;
+		case coTaskPriority::BACKGROUND: threadName << "Background"; break;
+		default:
+		{
+			coASSERT(false);
+			break;
+		}
+		}
+		threadName << "_";
+		threadName << threadIdx;
+		coNullTerminate(threadName);
+		coSetThreadName(threadName.data);
+	}
+	
+	// Thread priority
+	{
+		coThreadPriority threadPriority = coThreadPriority::NORMAL;
+		switch (priority)
+		{
+		case coTaskPriority::FRAME: threadPriority = coThreadPriority::NORMAL; break;
+		case coTaskPriority::BACKGROUND: threadPriority = coThreadPriority::LOW; break;
+		default: coASSERT(false); break;
+		}
+		coSetThreadPriority(threadPriority);
+	}
+
 	coPROFILE_THREAD(threadName.data);
 
-	std::atomic<coUint32>& head = _heads[threadIdx];
+	Queue& queue = _queues[coUint(priority)];
+	std::atomic<coUint32>& head = queue._heads[threadIdx];
 
 	while (!_exit)
 	{
-		_semaphore.Acquire();
+		queue._semaphore.Acquire();
 
 		// Execute tasks
-		while (head != _tail)
+		while (head != queue._tail)
 		{
 			// Exchange any job pointer we find with a nullptr
-			std::atomic<coTask*>& taskAtomic = _queuedTasks[head & (s_queueSize - 1)];
+			std::atomic<coTask*>& taskAtomic = queue._queuedTasks[head & (s_queueSize - 1)];
 			if (taskAtomic.load())
 			{
 				coTask* task = taskAtomic.exchange(nullptr);

@@ -2,6 +2,9 @@
 // Distributed under the MIT License (See accompanying file LICENSE.md file or copy at http://opensource.org/licenses/MIT).
 #include "pattern/pch.h"
 #include "pattern/thread/coThread_f.h"
+#include <debug/log/coAssert.h>
+#include <debug/log/coLog.h>
+#include <platform/coOs.h>
 
 void coSleep(coUint milliseconds)
 {
@@ -42,5 +45,39 @@ void coSetThreadName(const coChar* name)
 	__except (EXCEPTION_EXECUTE_HANDLER)
 	{
 	}
+#endif
+}
+
+coUint64 GetGetCurrentThreadID()
+{
+#ifdef coMSWINDOWS
+	return static_cast<coUint64>(::GetCurrentThreadId());
+#else
+#error "Missing impl"
+#endif
+}
+
+void coSetThreadPriority(coThreadPriority priority)
+{
+#ifdef coMSWINDOWS
+	int nativePriority = 0;
+	switch (priority)
+	{
+	case coThreadPriority::IDLE: nativePriority = THREAD_PRIORITY_IDLE; break;
+	case coThreadPriority::LOW: nativePriority = THREAD_PRIORITY_BELOW_NORMAL; break;
+	case coThreadPriority::NORMAL: nativePriority = THREAD_PRIORITY_NORMAL; break;
+	case coThreadPriority::HIGH: nativePriority = THREAD_PRIORITY_ABOVE_NORMAL; break;
+	default:
+	{
+		coASSERT(false);
+		break;
+	}
+	}
+	if (!SetThreadPriority(0, nativePriority))
+	{
+		coERROR("SetThreadPriority(" << nativePriority << ") failed: " << coGetLastOSErrorMessage());
+	}
+#else
+#error "missing impl"
 #endif
 }

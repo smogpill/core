@@ -27,24 +27,29 @@ public:
 	void WaitForTasks(coTaskBarrier& barrier);
 
 private:
+	static constexpr coUint s_queueSize = 1024;
+	struct Queue
+	{
+		std::atomic<coTask*> _queuedTasks[s_queueSize] = {};
+		std::atomic<coUint32>* _heads = nullptr;
+		alignas(coCACHE_LINE_SIZE) std::atomic<coUint32> _tail = 0;
+		coDynamicArray<std::thread*> _threads;
+		coCountingSemaphore32 _semaphore;
+	};
+
 	friend class coTask;
 	friend class coTaskHandle;
 	void QueueTask(coTask& task);
 	void FreeTask(coTask& task);
 	void QueueTasks(coTask** tasks, coUint nb);
 	void QueueTaskInternal(coTask& task);
-	void WorkerThreadMain(coUint threadIdx);
+	void WorkerThreadMain(coTaskPriority priority, coUint threadIdx);
 	void StopThreads();
 	void StartThreads(coUint nb);
-	coUint GetBestHead() const;
+	coUint GetBestHead(const Queue& queue) const;
 
-	static constexpr coUint s_queueSize = 1024;
-	std::atomic<coTask*> _queuedTasks[s_queueSize] = {};
-	std::atomic<coUint32>* _heads = nullptr;
-	alignas(coCACHE_LINE_SIZE) std::atomic<coUint32> _tail = 0;
-	coDynamicArray<std::thread*> _threads;
+	Queue _queues[coUint(coTaskPriority::END)];
 	coDynamicArray<coTaskBarrier*> _barriers;
-	coCountingSemaphore32 _semaphore;
 	mutable coMutex _mutex;
 	std::atomic<coBool> _exit = false;
 };
