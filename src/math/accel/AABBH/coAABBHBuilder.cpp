@@ -7,15 +7,21 @@
 
 void coAABBHBuilder::Build(coAABBH& aabbh, coTriangleSplitter& splitter)
 {
-#ifdef coDEV
-	coClear(_touchedObjects);
-	coResize(_touchedObjects, splitter.GetInitialRange().GetSize(), false);
-#endif
 	aabbh.Clear();
 	using Range = coTriangleSplitter::Range;
 
 	const Range initialRange = splitter.GetInitialRange();
-	if (initialRange.GetSize() <= _maxNbObjectsPerLeaf)
+	const coUint32 nbObjects = initialRange.GetSize();
+
+#ifdef coDEV
+	coClear(_touchedObjects);
+	coResize(_touchedObjects, nbObjects, false);
+#endif
+
+	coReserve(aabbh._objects, nbObjects);
+	coReserve(aabbh._nodes, nbObjects * 3); // arbitrary
+
+	if (nbObjects <= _maxNbObjectsPerLeaf)
 	{
 		aabbh._rootProps = BuildObjectList(aabbh, splitter, initialRange);
 	}
@@ -49,8 +55,8 @@ void coAABBHBuilder::Build(coAABBH& aabbh, coTriangleSplitter& splitter)
 			for (coUint childIdx = 0; childIdx < 4; ++childIdx)
 			{
 				const Range& childRange = ranges[childIdx];
-				const coUint32 nbObjects = childRange.GetSize();
-				if (nbObjects > _maxNbObjectsPerLeaf)
+				const coUint32 nbChildObjects = childRange.GetSize();
+				if (nbChildObjects > _maxNbObjectsPerLeaf)
 				{
 					const coUint32 childNodeIdx = nodes.count;
 					nodes[nodeIdx]._props[childIdx] = childNodeIdx;
@@ -215,7 +221,6 @@ coUint32 coAABBHBuilder::BuildObjectList(coAABBH& aabbh, const coTriangleSplitte
 	for (coUint32 objectIdx = range._begin; objectIdx < range._end; ++objectIdx)
 	{
 		const coUint32 objectID = splitter.GetSortedTriangle(objectIdx);
-		coASSERT(!coContains(objects, objectID));
 		coPushBack(objects, objectID);
 #ifdef coDEV
 		coASSERT(!_touchedObjects[objectID]);

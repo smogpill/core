@@ -27,7 +27,7 @@ public:
 	void WaitForTasks(coTaskBarrier& barrier);
 
 private:
-	static constexpr coUint s_queueSize = 1024;
+	static constexpr coUint s_queueSize = 4096;
 	struct Queue
 	{
 		std::atomic<coTask*> _queuedTasks[s_queueSize] = {};
