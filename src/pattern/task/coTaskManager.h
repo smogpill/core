@@ -20,8 +20,13 @@ public:
 	coTaskManager(coInt nbThreads = -1);
 	~coTaskManager();
 
+	/// Sets the number of worker threads for each priority
+	/// Negative values will let the manager choose a good number based on the 
+	/// max hardware concurrent threads.
 	void SetNbThreads(coInt nbThreads);
-	coTaskHandle CreateTask(const std::function<void()>& function, const coTaskSetup& setup);
+	/// Returns the number of worker threads for each priority
+	coUint GetNbThreads() const { return _queues[0]._threads.count; }
+	coTaskHandle CreateTask(const coTaskFunction& function, const coTaskSetup& setup);
 	coTaskBarrier* CreateBarrier();
 	void DestroyBarrier(coTaskBarrier& barrier);
 	void WaitForTasks(coTaskBarrier& barrier);

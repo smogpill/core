@@ -15,30 +15,42 @@ inline coUint32 coTask::Execute()
 		return state; // state is updated by compare_exchange_strong to the current value
 
 	// Run the job function
+	coTaskResult result;
 	{
 		//coPROFILE(mJobName, mColor.GetUInt32());
-		_function();
+		result = _function();
 	}
 
-	// Fetch the barrier pointer and exchange it for the done state, so we're sure that no barrier gets set after we want to call the callback
-	coIntPtr barrier = _barrier.load(std::memory_order_relaxed);
-	for (;;)
+	if (result == coTaskResult::DONE)
 	{
-		if (_barrier.compare_exchange_weak(barrier, s_barrierDoneState, std::memory_order_relaxed))
-			break;
+		// Fetch the barrier pointer and exchange it for the done state, so we're sure that no barrier gets set after we want to call the callback
+		coIntPtr barrier = _barrier.load(std::memory_order_relaxed);
+		for (;;)
+		{
+			if (_barrier.compare_exchange_weak(barrier, s_barrierDoneState, std::memory_order_relaxed))
+				break;
+		}
+		coASSERT(barrier != s_barrierDoneState);
+
+		// Mark job as done
+		state = s_executingState;
+		_nbDependencies.compare_exchange_strong(state, s_doneState, std::memory_order_relaxed);
+		coASSERT(state == s_executingState);
+
+		// Notify the barrier after we've changed the job to the done state so that any thread reading the state after receiving the callback will see that the job has finished
+		if (barrier != 0)
+			reinterpret_cast<coTaskBarrier*>(barrier)->OnTaskFinished();
+
+		return s_doneState;
 	}
-	coASSERT(barrier != s_barrierDoneState);
-
-	// Mark job as done
-	state = s_executingState;
-	_nbDependencies.compare_exchange_strong(state, s_doneState, std::memory_order_relaxed);
-	coASSERT(state == s_executingState);
-
-	// Notify the barrier after we've changed the job to the done state so that any thread reading the state after receiving the callback will see that the job has finished
-	if (barrier != 0)
-		reinterpret_cast<coTaskBarrier*>(barrier)->OnTaskFinished();
-
-	return s_doneState;
+	else
+	{
+		// Add dependency
+		state = s_executingState;
+		_nbDependencies.compare_exchange_strong(state, 1, std::memory_order_relaxed);
+		coASSERT(state == s_executingState);
+		return 1;
+	}
 }
 
 inline coBool coTask::SetBarrier(coTaskBarrier* barrier_)

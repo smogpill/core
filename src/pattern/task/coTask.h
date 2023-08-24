@@ -5,6 +5,7 @@
 #include <lang/reflect/coTypeDecl.h>
 #include <debug/log/coAssert.h>
 #include "coTaskSetup.h"
+#include "coTaskFunction.h"
 class coTaskContext;
 class coTaskBarrier;
 class coTaskManager;
@@ -14,7 +15,7 @@ class coTask
 public:
 	
 	virtual ~coTask() {}
-	void SetFunction(const std::function<void()>& function) { _function = function; }
+	void SetFunction(const coTaskFunction& function) { _function = function; }
 	void SetSetup(const coTaskSetup& setup);
 	void AddRef();
 	void RemoveRef();
@@ -40,7 +41,7 @@ private:
 	friend class coTaskScheduler;
 	coTaskPriority _priority = coTaskPriority::FRAME;
 	std::atomic<coIntPtr> _barrier = 0;
-	std::function<void()> _function;
+	coTaskFunction _function;
 	std::atomic<coUint32> _nbRefs = 0;
 	std::atomic<coUint32> _nbDependencies = 1;
 };

@@ -112,7 +112,7 @@ void coTaskManager::SetNbThreads(coInt nbRawThreads)
 	StartThreads(nbThreads);
 }
 
-coTaskHandle coTaskManager::CreateTask(const std::function<void()>& function, const coTaskSetup& setup)
+coTaskHandle coTaskManager::CreateTask(const coTaskFunction& function, const coTaskSetup& setup)
 {
 	coTask* task = new coTask();
 	task->SetFunction(function);
