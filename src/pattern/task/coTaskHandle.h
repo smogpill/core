@@ -19,6 +19,7 @@ public:
 	void AddDependency(coUint nb = 1) const { GetPtr()->AddDependency(nb); }
 	void RemoveDependency(coUint nb = 1) const { GetPtr()->RemoveDependencyAndQueue(nb); }
 	static void	RemoveDependencies(coTaskHandle* handles, coUint nbHandles, coUint count = 1);
+	coUint32 GetNbDependencies() const { return GetPtr()->GetNbDependencies(); }
 
 private:
 	friend class coTaskManager;

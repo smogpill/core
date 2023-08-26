@@ -30,6 +30,7 @@ public:
 	coBool CanBeExecuted() const { return _nbDependencies.load(std::memory_order_relaxed) == 0; }
 	coBool IsDone() const { return _nbDependencies.load(std::memory_order_relaxed) == s_doneState; }
 	coTaskPriority GetPriority() const { return _priority; }
+	coUint32 GetNbDependencies() const { return _nbDependencies.load(std::memory_order_relaxed); }
 
 	static constexpr coUint32 s_executingState = 0xe0e0e0e0;
 	static constexpr coUint32 s_doneState = 0xd0d0d0d0;

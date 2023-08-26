@@ -26,8 +26,8 @@ public:
 	void SetNbThreads(coInt nbThreads);
 	/// Returns the number of worker threads for each priority
 	coUint GetNbThreads() const { return _queues[0]._threads.count; }
-	coTaskHandle CreateTask(const coTaskFunction& function, const coTaskSetup& setup);
-	coTaskBarrier* CreateBarrier();
+	[[nodiscard]] coTaskHandle CreateTask(const coTaskFunction& function, const coTaskSetup& setup);
+	[[nodiscard]] coTaskBarrier* CreateBarrier();
 	void DestroyBarrier(coTaskBarrier& barrier);
 	void WaitForTasks(coTaskBarrier& barrier);
 
