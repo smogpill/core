@@ -145,6 +145,17 @@ void coRemoveUnorderedByIndex(coArray<T>& _this, coUint _index)
 	--_this.count;
 }
 
+
+template <class T>
+T* coRemoveUnordered(coArray<T>& a, T* it)
+{
+	coASSERT(it);
+	coASSERT(it >= coBegin(a) && it < coEnd(a));
+	*it = coBack(a);
+	--a.count;
+	return it;
+}
+
 template <class T>
 void coRemoveUnordered(coArray<T>& _this, const T& _e)
 {

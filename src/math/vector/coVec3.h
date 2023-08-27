@@ -15,6 +15,7 @@ public:
 	using coFloatx3::coFloatx3;
 	coFORCE_INLINE coVec3() { coBitCast<__m128>(*this) = _mm_setzero_ps(); }
 	coFORCE_INLINE coVec3(const coFloatx3& _xyz) : coFloatx3(_xyz) {}
+	coFORCE_INLINE explicit coVec3(const coInt32x3& xyz) : coFloatx3(coFloat(xyz.x), coFloat(xyz.y), coFloat(xyz.z)) {}
 	coFORCE_INLINE coVec3(const coFloatx4& _xyz) : coFloatx3(_xyz) {}
 	coFORCE_INLINE coVec3(const coFloatx3& _xxx, const coFloatx3& _yyy, const coFloatx3& _zzz) : coFloatx3(_xxx, _yyy, _zzz) {}
 	coFORCE_INLINE coVec3(const coFloatx2& _xy, const coFloatx3& _zzz) : coFloatx3(_xy, _zzz) {}

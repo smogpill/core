@@ -88,6 +88,8 @@ coFORCE_INLINE coFloatx3 coConvertToDeg(coFloatx3 radians) { return radians * 57
 coFORCE_INLINE coFloatx3 coRand01x3(coUint32& seed) { return coFloatx3(coRand01(seed), coRand01(seed), coRand01(seed)); }
 coFORCE_INLINE coFloatx3 coRand11x3(coUint32& seed) { return coFloatx3(coRand11(seed), coRand11(seed), coRand11(seed)); }
 coFORCE_INLINE coFloatx3 coRound(const coFloatx3& a) { return coBitCast<coFloatx3>(_mm_round_ps(coBitCast<__m128>(a), _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC)); }
+coFORCE_INLINE coFloatx3 coCeil(const coFloatx3& a) { return coBitCast<coFloatx3>(_mm_ceil_ps(coBitCast<__m128>(a))); }
+coFORCE_INLINE coFloatx3 coFloor(const coFloatx3& a) { return coBitCast<coFloatx3>(_mm_floor_ps(coBitCast<__m128>(a))); }
 coFORCE_INLINE coFloatx3 coSelect(const coFloatx3& a, const coFloatx3& b, const coInt32x3& mask)
 {
 	return coBitCast<coFloatx3>(_mm_blendv_ps(coBitCast<__m128>(a), coBitCast<__m128>(b), _mm_castsi128_ps(coBitCast<__m128i>(mask))));

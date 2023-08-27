@@ -24,8 +24,8 @@ public:
 
 	coUint32 capacity = 0;
 
-	explicit coDynamicArray(const coArray<T>&);
-	explicit coDynamicArray(const coDynamicArray<T>&);
+	coDynamicArray(const coArray<T>&);
+	coDynamicArray(const coDynamicArray<T>&);
 	coDynamicArray(coDynamicArray<T>&&);
 	coDynamicArray<T>& operator=(const coArray<T>&);
 	coDynamicArray<T>& operator=(const coArray<const T>&);
