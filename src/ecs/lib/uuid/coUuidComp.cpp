@@ -4,10 +4,11 @@
 #include "coUuidComp.h"
 #include "coUuidRegistry.h"
 #include "../../entity/coEntity.h"
+#include "../../entity/coEntityType.h"
 #include "../../component/coComponent_f.h"
 
 coBEGIN_COMPONENT(coUuidComp);
-coDEFINE_FIELD(uuid);
+coDEFINE_FIELD(_uuid);
 coDEFINE_COMPONENT_INIT();
 coDEFINE_COMPONENT_SHUTDOWN();
 coEND_COMPONENT();
@@ -15,21 +16,21 @@ coEND_COMPONENT();
 void coUuidComp::Init(coEntity& entity)
 {
 	Base::Init(entity);
-	if (uuid.IsValid())
+	if (_uuid.IsValid())
 	{
 		coUuidRegistry* registry = coUuidRegistry::instance;
 		coASSERT(registry);
-		registry->SetEntity(uuid, entity.GetHandle());
+		registry->SetEntity(_uuid, entity.GetHandle());
 	}
 }
 
 void coUuidComp::Shutdown(coEntity& entity)
 {
-	if (uuid.IsValid())
+	if (_uuid.IsValid())
 	{
 		coUuidRegistry* registry = coUuidRegistry::instance;
 		coASSERT(registry);
-		registry->SetEntity(uuid, coEntityHandle::invalid);
+		registry->SetEntity(_uuid, coEntityHandle::invalid);
 	}
 	Base::Shutdown(entity);
 }

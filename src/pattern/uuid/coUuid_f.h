@@ -8,21 +8,36 @@
 
 coUuid coMakeUuid();
 coUuid coMakeUuid(const coChar*);
-coFORCE_INLINE coBool coIsNull(const coUuid& u) { return u.high == 0 && u.low == 0; }
+coFORCE_INLINE coBool coIsNull(const coUuid& u) { return u._u64[0] == 0 && u._u64[1] == 0; }
+
+coFORCE_INLINE coUuid operator^(const coUuid& a, const coUuid& b)
+{
+	return coUuid(a._u64[0] ^ b._u64[0], a._u64[1] ^ b._u64[1]);
+}
+
+coFORCE_INLINE coUuid operator|(const coUuid& a, const coUuid& b)
+{
+	return coUuid(a._u64[0] | b._u64[0], a._u64[1] | b._u64[1]);
+}
+
+coFORCE_INLINE coUuid operator&(const coUuid& a, const coUuid& b)
+{
+	return coUuid(a._u64[0] & b._u64[0], a._u64[1] & b._u64[1]);
+}
 
 coFORCE_INLINE void coUuid::Write(coBinaryOutputStream& stream) const
 {
-	stream << low;
-	stream << high;
+	stream << _u64[0];
+	stream << _u64[1];
 }
 
 coFORCE_INLINE void coUuid::Read(coBinaryInputStream& stream)
 {
-	stream >> low;
-	stream >> high;
+	stream >> _u64[0];
+	stream >> _u64[1];
 }
 
 coFORCE_INLINE coUint32 coHashMapHash<coUuid>::operator()(const coUuid& v) const
 {
-	return coFastHash32(v.high) ^ coFastHash32(v.low);
+	return coFastHash32(v._u64[1]) ^ coFastHash32(v._u64[0]);
 }

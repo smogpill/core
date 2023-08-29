@@ -12,16 +12,23 @@ class coUuid
 public:
 	coUuid() = default;
 	coUuid(const coUuid& other) = default;
-	coUuid(coUint64 low, coUint64 high) : low(low), high(high) {}
-	coBool operator==(const coUuid& other) const { return low == other.low && high == other.high; }
-	coBool operator!=(const coUuid& other) const { return low != other.low || high != other.high; }
+	coUuid(coUint64 low, coUint64 high) : _u64{ low, high } {}
+	coUuid(coUint32 user0, coUint32 user1, coUint32 user2, coUint32 type) : _u64{ (coUint64(user1) << 32) | coUint64(user0), (coUint64(type) << 32) | coUint64(user2) } {}
+	void SetUser(coUint32 user0, coUint32 user1, coUint32 user2) { _u32[0] = user0; _u32[1] = user1; _u32[2] = user2; }
+	void SetUser(const coUuid& user) { _u64[0] = user._u64[0]; _u32[0] = user._u32[0]; }
+	void SetType(coUint32 type) { _u32[3] = type; }
+	coBool operator==(const coUuid& other) const { return _u64[0] == other._u64[0] && _u64[1] == other._u64[1]; }
+	coBool operator!=(const coUuid& other) const { return _u64[0] != other._u64[0] || _u64[1] != other._u64[1]; }
 	void Write(coBinaryOutputStream& stream) const;
 	void Read(coBinaryInputStream& stream);
-	coBool IsValid() const { return (low | high) != 0; }
-	coBool IsInvalid() const { return (low | high) == 0; }
+	coBool IsValid() const { return (_u64[0] | _u64[1]) != 0; }
+	coBool IsInvalid() const { return (_u64[0] | _u64[1]) == 0; }
 
-	coUint64 low = 0;
-	coUint64 high = 0;
+	union
+	{
+		coUint64 _u64[2] = {};
+		coUint32 _u32[4];
+	};
 
 	static const coUuid invalid;
 };
