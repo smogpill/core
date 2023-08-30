@@ -65,7 +65,7 @@ coTEST(coDissolveFlatVertices, simple)
 coTEST(coDissolveFlatVertices, Twin0)
 {
 	coDCEL dcel;
-	dcel.vertices =
+	dcel.vertices = 
 	{
 		coVec3(0, 0, 0),
 		coVec3(0.5f, 0, 0),
@@ -87,7 +87,7 @@ coTEST(coDissolveFlatVertices, Twin0)
 coTEST(coDissolveFlatVertices, Twin1)
 {
 	coDCEL dcel;
-	dcel.vertices =
+	dcel.vertices = 
 	{
 		coVec3(0, 0, 0),
 		coVec3(0.5f, 0, 0),
@@ -109,7 +109,7 @@ coTEST(coDissolveFlatVertices, Twin1)
 coTEST(coDissolveFlatVertices, twoSeparateTwinFaces)
 {
 	coDCEL dcel;
-	dcel.vertices =
+	dcel.vertices = coDynamicArray<coVec3>(
 	{
 		coVec3(0, 0, 0),
 		coVec3(0.5f, 0, 0),
@@ -117,7 +117,7 @@ coTEST(coDissolveFlatVertices, twoSeparateTwinFaces)
 		coVec3(1, -1, 0),
 		coVec3(0, 1, 0),
 		coVec3(1, 1, 0),
-	};
+	});
 
 	const coUint32 a0 = dcel.AddFace(0, coDynamicArray<coUint32>({ 0, 1, 2, 3 }));
 	const coUint32 b0 = dcel.AddFace(1, coDynamicArray<coUint32>({ 1, 0, 4 }));
@@ -135,7 +135,7 @@ coTEST(coDissolveFlatVertices, twoSeparateTwinFaces)
 coTEST(coDissolveFlatVertices, twoTwinFacesTwinAsWell)
 {
 	coDCEL dcel;
-	dcel.vertices =
+	dcel.vertices = 
 	{
 		coVec3(0, 0, 0),
 		coVec3(0.5f, 0, 0),

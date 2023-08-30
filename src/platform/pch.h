@@ -3,3 +3,4 @@
 #pragma once
 
 #include "platform/publicPCH.h"
+#include <initializer_list>

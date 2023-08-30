@@ -4,4 +4,5 @@
 
 #include "debug/publicPCH.h"
 #include <stdio.h>
+#include <initializer_list>
 #include "platform/coOsHeaders.h"

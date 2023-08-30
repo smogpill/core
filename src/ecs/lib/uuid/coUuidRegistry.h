@@ -3,6 +3,9 @@
 #pragma once
 #include <pattern/singleton/coSingleton.h>
 #include <pattern/uuid/coUuid_f.h>
+#include <pattern/lock/coSharedMutex.h>
+#include <pattern/lock/coSharedLock.h>
+#include <pattern/lock/coScopedLock.h>
 #include <container/map/coHashMap.h>
 #include <container/map/coHashMap_f.h>
 #include "../../entity/coEntityHandle.h"
@@ -17,15 +20,18 @@ public:
 	void SetEntity(const coUuid& uuid, const coEntityHandle& entity);
 
 private:
-	coHashMap<coUuid, coEntityHandle, 4096> uuidToEntity;
+	coHashMap<coUuid, coEntityHandle, 4096> _uuidToEntity;
+	mutable coSharedMutex _mutex;
 };
 
 inline const coEntityHandle& coUuidRegistry::GetEntity(const coUuid& uuid)
 {
-	return coGet(uuidToEntity, uuid, coEntityHandle());
+	coSharedLock lock(_mutex);
+	return coGet(_uuidToEntity, uuid, coEntityHandle());
 }
 
 inline void coUuidRegistry::SetEntity(const coUuid& uuid, const coEntityHandle& entity)
 {
-	coSet(uuidToEntity, uuid, entity);
+	coScopedLock lock(_mutex);
+	coSet(_uuidToEntity, uuid, entity);
 }

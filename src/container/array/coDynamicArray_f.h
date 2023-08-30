@@ -170,6 +170,15 @@ coDynamicArray<T>& coDynamicArray<T>::operator=(const coDynamicArray<T>& _other)
 	return operator=(reinterpret_cast<const coArray<const T>&>(_other));
 }
 
+template <class T>
+template <coUint N>
+coDynamicArray<T>& coDynamicArray<T>::operator=(const T(&a)[N])
+{
+	coClear(*this);
+	coPushBackArray(*this, coArray<T>(const_cast<T*>(a), N));
+	return *this;
+}
+
 // template <class T>
 // coDynamicArray<T>& coDynamicArray<T>::operator=(const coDynamicArray<T>& _other)
 // {

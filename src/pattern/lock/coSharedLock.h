@@ -3,11 +3,11 @@
 #pragma once
 
 template <class T>
-class [[nodiscard] coSharedLock final
+class [[nodiscard]] coSharedLock final
 {
 public:
     explicit coSharedLock(T & m) : _mutex(m) { _mutex.LockShared(); }
-    coSharedLock(const coScopedLock&) = delete;
+    coSharedLock(const coSharedLock&) = delete;
     ~coSharedLock() { _mutex.UnlockShared(); }
     coSharedLock& operator=(const coSharedLock&) = delete;
 private:

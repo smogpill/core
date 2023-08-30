@@ -47,6 +47,6 @@ public:
 
 private:
 #ifdef coDEV
-	thread_local static coUint32 s_nbLockShared = 0;
+	thread_local static inline coUint32 s_nbLockShared = 0;
 #endif
 };
