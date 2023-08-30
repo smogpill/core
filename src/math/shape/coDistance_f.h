@@ -6,6 +6,8 @@
 #include "coSphere.h"
 #include "coIntersection_f.h"
 
+// TODO: Should be moved to the math/collision directory
+
 inline coFloatx4 coSquareDistancePointSegment(const coVec3& p, const coVec3& a, const coVec3& b)
 {
 	const coVec3 ab = b - a;

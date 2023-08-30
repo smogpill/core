@@ -6,6 +6,8 @@
 #include "math/shape/coPlane_f.h"
 #include "math/shape/triangle/coTriangle.h"
 
+// TODO: Should be moved to the math/collision directory
+
 coFORCE_INLINE coFloat coSigned2DTriArea(const coVec3& a, const coVec3& b, const coVec3& c)
 {
 	return (a.x - c.x) * (b.y - c.y) - (a.y - c.y) * (b.x - c.x);
