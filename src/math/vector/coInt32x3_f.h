@@ -14,11 +14,20 @@ coFORCE_INLINE coInt32x3 coInt32x3_XYMask() { return coBitCast<coInt32x3>(_mm_se
 coFORCE_INLINE coInt32x3 coInt32x3_XZMask() { return coBitCast<coInt32x3>(_mm_set_epi32(0, 0xffffffff, 0, 0xffffffff)); }
 coFORCE_INLINE coInt32x3 coInt32x3_YZMask() { return coBitCast<coInt32x3>(_mm_set_epi32(0, 0xffffffff, 0xffffffff, 0)); }
 coFORCE_INLINE coInt32x3 coInt32x3_XYZMask() { return coBitCast<coInt32x3>(_mm_set_epi32(0, 0xffffffff, 0xffffffff, 0xffffffff)); }
+/// Creates a full mask without having to rely on a constant
+coFORCE_INLINE coInt32x3 coFullMask(const coInt32x3& m)
+{
+	return coBitCast<coInt32x3>(_mm_cmpeq_epi32(coBitCast<__m128i>(m), coBitCast<__m128i>(m)));
+}
 coFORCE_INLINE coBool32x3 operator== (const coInt32x3& a, const coInt32x3& b) { return coBitCast<coBool32x3>(_mm_cmpeq_epi32(coBitCast<__m128i>(a), coBitCast<__m128i>(b))); }
 coFORCE_INLINE coBool32x3 operator!= (const coInt32x3& a, const coInt32x3& b) { return coNot(coBitCast<coBool32x3>(_mm_cmpeq_epi32(coBitCast<__m128i>(a), coBitCast<__m128i>(b)))); }
 coFORCE_INLINE coInt32x3 operator& (const coInt32x3& a, const coInt32x3& b) { return coBitCast<coInt32x3>(_mm_and_si128(coBitCast<__m128i>(a), coBitCast<__m128i>(b))); }
 coFORCE_INLINE coInt32x3 operator| (const coInt32x3& a, const coInt32x3& b) { return coBitCast<coInt32x3>(_mm_or_si128(coBitCast<__m128i>(a), coBitCast<__m128i>(b))); }
 coFORCE_INLINE coInt32x3 operator^ (const coInt32x3& a, const coInt32x3& b) { return coBitCast<coInt32x3>(_mm_xor_si128(coBitCast<__m128i>(a), coBitCast<__m128i>(b))); }
+coFORCE_INLINE coInt32x3 operator~(const coInt32x3& m)
+{
+	return coBitCast<coInt32x3>(_mm_xor_si128(coBitCast<__m128i>(m), coBitCast<__m128i>(coFullMask(m))));
+}
 coFORCE_INLINE coInt32x3 operator* (const coInt32x3& a, const coInt32x3& b) { return coBitCast<coInt32x3>(_mm_mullo_epi32(coBitCast<__m128i>(a), coBitCast<__m128i>(b))); }
 coFORCE_INLINE coInt32x3 operator/ (const coInt32x3& a, const coInt32x3& b) { return coInt32x3(a.x / b.x, a.y / b.y, a.z / b.z); }
 coFORCE_INLINE coInt32x3 operator+ (const coInt32x3& a, const coInt32x3& b) { return coBitCast<coInt32x3>(_mm_add_epi32(coBitCast<__m128i>(a), coBitCast<__m128i>(b))); }

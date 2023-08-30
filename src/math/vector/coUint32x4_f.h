@@ -4,9 +4,19 @@
 #include "coUint32x4.h"
 #include "coBool32x4_f.h"
 
+/// Creates a full mask without having to rely on a constant
+coFORCE_INLINE coUint32x4 coFullMask(const coUint32x4& m)
+{
+	return coBitCast<coUint32x4>(_mm_cmpeq_epi32(coBitCast<__m128i>(m), coBitCast<__m128i>(m)));
+}
+
 coFORCE_INLINE coUint32x4 operator^(const coUint32x4& a, const coUint32x4& b) { return coBitCast<coUint32x4>(_mm_xor_ps(coBitCast<__m128>(a), coBitCast<__m128>(b))); }
 coFORCE_INLINE coUint32x4 operator&(const coUint32x4& a, const coUint32x4& b) { return coBitCast<coUint32x4>(_mm_and_ps(coBitCast<__m128>(a), coBitCast<__m128>(b))); }
 coFORCE_INLINE coUint32x4 operator|(const coUint32x4& a, const coUint32x4& b) { return coBitCast<coUint32x4>(_mm_or_ps(coBitCast<__m128>(a), coBitCast<__m128>(b))); }
+coFORCE_INLINE coUint32x4 operator~(const coUint32x4& m)
+{
+	return coBitCast<coUint32x4>(_mm_xor_si128(coBitCast<__m128i>(m), coBitCast<__m128i>(coFullMask(m))));
+}
 coFORCE_INLINE void coStore(const coUint32x4& v, coUint32* dest)
 {
 	_mm_storeu_si128(reinterpret_cast<__m128i*>(dest), coBitCast<__m128i>(v));

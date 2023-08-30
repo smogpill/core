@@ -7,6 +7,9 @@
 class alignas(32) coBitMat888
 {
 public:
+	coBitMat888() = default;
+	coBitMat888(coNullPtr) {}
+	coBitMat888(const coUint64x4& h0, const coUint64x4& h1) : _h{h0, h1}{}
 	coBool operator()(coUint x, coUint y, coUint z) const;
 	void operator=(coBool b);
 

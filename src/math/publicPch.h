@@ -8,4 +8,5 @@
 #include <math.h>
 #include <cmath>
 #include <intrin.h>
+#include <immintrin.h>
 #include <softintrin.h>
