@@ -8,5 +8,8 @@ class coSphere
 public:
 	coSphere() = default;
 	coSphere(const coVec3& center, const coFloatx4& radius);
+	const coVec3& GetCenter() const { return static_cast<const coVec3&>(centerAndRadius); }
+	coFloat GetRadius() const { return centerAndRadius.w; }
+
 	coVec4 centerAndRadius;
 };
